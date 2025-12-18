@@ -20,6 +20,7 @@
 		B5ACCE16A7996B790BBF09CA /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8827C015A536153957BA6AC /* Timer.swift */; };
 		B9C7BC253C6ABA4DAA4D41C9 /* ValetudoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4727F8CABE30473DD20C391 /* ValetudoApp.swift */; };
 		D4ACB8D36AF5B70E720588DE /* TimersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74E6E7081C7AE4DA22B562 /* TimersView.swift */; };
+		DA136B4862BD6BD33702E71A /* IntensityControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172B1FB7678A953A4655A3EE /* IntensityControlView.swift */; };
 		DDD26A60B887E1133DD2E18B /* AddRobotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BEF0FC2A1B164BA6099BBC /* AddRobotView.swift */; };
 		E3B89B8282E352373120510B /* RobotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE7F0D27E21AAB984042AF4 /* RobotManager.swift */; };
 		EF03FC536C8B10A814C55E48 /* ConsumablesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24988119F831BB0A8B779FA /* ConsumablesView.swift */; };
@@ -30,6 +31,7 @@
 /* Begin PBXFileReference section */
 		004F5A0A2815A8D95949878D /* ValetudoAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValetudoAPI.swift; sourceTree = "<group>"; };
 		0EB9C50A27756E4D5EDFB505 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		172B1FB7678A953A4655A3EE /* IntensityControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntensityControlView.swift; sourceTree = "<group>"; };
 		1B5589AF6019A8A237268523 /* RobotConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotConfig.swift; sourceTree = "<group>"; };
 		34DD7833558396395DCA7D32 /* RobotDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailView.swift; sourceTree = "<group>"; };
 		44002D9750AED2C37546A796 /* ValetudoApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ValetudoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -68,6 +70,7 @@
 			children = (
 				C3BEF0FC2A1B164BA6099BBC /* AddRobotView.swift */,
 				F24988119F831BB0A8B779FA /* ConsumablesView.swift */,
+				172B1FB7678A953A4655A3EE /* IntensityControlView.swift */,
 				0EB9C50A27756E4D5EDFB505 /* MapView.swift */,
 				34DD7833558396395DCA7D32 /* RobotDetailView.swift */,
 				5713E6238AD5A3F2420EE02B /* RobotListView.swift */,
@@ -198,6 +201,7 @@
 				4F1CBBF41038293EA0F80B16 /* Consumable.swift in Sources */,
 				EF03FC536C8B10A814C55E48 /* ConsumablesView.swift in Sources */,
 				6FD4E58AD099B5D5DEC67AA2 /* ContentView.swift in Sources */,
+				DA136B4862BD6BD33702E71A /* IntensityControlView.swift in Sources */,
 				812642A8D77C6E37764AC03D /* MapView.swift in Sources */,
 				583401D717322CA5AE6527B8 /* NotificationService.swift in Sources */,
 				8F8EB3702AA2ADAC6889DC0D /* RobotConfig.swift in Sources */,

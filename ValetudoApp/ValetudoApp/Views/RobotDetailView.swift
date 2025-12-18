@@ -34,6 +34,25 @@ struct RobotDetailView: View {
                 // Rooms
                 roomsSection
 
+                // Intensity Control (Fan Speed / Water Usage)
+                Section {
+                    NavigationLink {
+                        IntensityControlView(robot: robot)
+                    } label: {
+                        HStack {
+                            Label(String(localized: "intensity.title"), systemImage: "slider.horizontal.3")
+                            Spacer()
+                            // Show current fan speed if available
+                            if let fanSpeed = status?.attributes.first(where: {
+                                $0.__class == "PresetSelectionStateAttribute" && $0.type == "fan_speed"
+                            })?.value {
+                                Text(fanSpeed.capitalized)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    }
+                }
+
                 // Timer Link
                 Section {
                     NavigationLink {

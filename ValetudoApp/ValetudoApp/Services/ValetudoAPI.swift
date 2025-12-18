@@ -209,6 +209,26 @@ actor ValetudoAPI {
         try await requestVoid("/timers/\(id)", method: "DELETE")
     }
 
+    // MARK: - Fan Speed Control
+    func getFanSpeedPresets() async throws -> [String] {
+        try await request("/robot/capabilities/FanSpeedControlCapability/presets")
+    }
+
+    func setFanSpeed(preset: String) async throws {
+        let body = try JSONEncoder().encode(PresetControlRequest(name: preset))
+        try await requestVoid("/robot/capabilities/FanSpeedControlCapability/preset", body: body)
+    }
+
+    // MARK: - Water Usage Control
+    func getWaterUsagePresets() async throws -> [String] {
+        try await request("/robot/capabilities/WaterUsageControlCapability/presets")
+    }
+
+    func setWaterUsage(preset: String) async throws {
+        let body = try JSONEncoder().encode(PresetControlRequest(name: preset))
+        try await requestVoid("/robot/capabilities/WaterUsageControlCapability/preset", body: body)
+    }
+
     // MARK: - Connection Check
     func checkConnection() async -> Bool {
         do {

@@ -94,3 +94,61 @@ struct Coordinate: Codable {
     let x: Int
     let y: Int
 }
+
+// MARK: - Preset Control (Fan Speed / Water Usage)
+struct PresetControlRequest: Codable {
+    let name: String
+}
+
+enum FanSpeedPreset: String, CaseIterable, Identifiable {
+    case off, min, low, medium, high, max, turbo
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .off: return String(localized: "fanspeed.off")
+        case .min: return String(localized: "fanspeed.min")
+        case .low: return String(localized: "fanspeed.low")
+        case .medium: return String(localized: "fanspeed.medium")
+        case .high: return String(localized: "fanspeed.high")
+        case .max: return String(localized: "fanspeed.max")
+        case .turbo: return String(localized: "fanspeed.turbo")
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .off: return "fan.slash"
+        case .min, .low: return "fan"
+        case .medium: return "fan"
+        case .high, .max, .turbo: return "fan.fill"
+        }
+    }
+}
+
+enum WaterUsagePreset: String, CaseIterable, Identifiable {
+    case off, min, low, medium, high, max
+
+    var id: String { rawValue }
+
+    var displayName: String {
+        switch self {
+        case .off: return String(localized: "water.off")
+        case .min: return String(localized: "water.min")
+        case .low: return String(localized: "water.low")
+        case .medium: return String(localized: "water.medium")
+        case .high: return String(localized: "water.high")
+        case .max: return String(localized: "water.max")
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .off: return "drop.slash"
+        case .min, .low: return "drop"
+        case .medium: return "drop.fill"
+        case .high, .max: return "drop.circle.fill"
+        }
+    }
+}
