@@ -321,6 +321,17 @@ actor ValetudoAPI {
         try await requestVoid("/robot/capabilities/CombinedVirtualRestrictionsCapability", body: body)
     }
 
+    // MARK: - Map Segment Edit
+    func joinSegments(segmentAId: String, segmentBId: String) async throws {
+        let body = try JSONEncoder().encode(JoinSegmentsRequest(segmentAId: segmentAId, segmentBId: segmentBId))
+        try await requestVoid("/robot/capabilities/MapSegmentEditCapability", body: body)
+    }
+
+    func splitSegment(segmentId: String, pointA: ZonePoint, pointB: ZonePoint) async throws {
+        let body = try JSONEncoder().encode(SplitSegmentRequest(segmentId: segmentId, pointA: pointA, pointB: pointB))
+        try await requestVoid("/robot/capabilities/MapSegmentEditCapability", body: body)
+    }
+
     // MARK: - Connection Check
     func checkConnection() async -> Bool {
         do {

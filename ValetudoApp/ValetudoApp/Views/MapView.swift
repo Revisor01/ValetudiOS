@@ -18,10 +18,246 @@ struct MapParams {
     let minY: Int
 }
 
-struct MapView: View {
+// MARK: - Map Tab View (for Tab Bar)
+struct MapTabView: View {
     @EnvironmentObject var robotManager: RobotManager
-    @Environment(\.dismiss) var dismiss
     let robot: RobotConfig
+
+    var body: some View {
+        NavigationStack {
+            MapContentView(robot: robot, isFullscreen: true)
+                .navigationTitle(String(localized: "map.title"))
+                .navigationBarTitleDisplayMode(.inline)
+        }
+    }
+}
+
+// MARK: - Embedded Map Preview (for Detail View)
+struct MapPreviewView: View {
+    @EnvironmentObject var robotManager: RobotManager
+    let robot: RobotConfig
+    @State private var map: RobotMap?
+    @State private var isLoading = true
+    @Binding var showFullMap: Bool
+
+    private var api: ValetudoAPI? {
+        robotManager.getAPI(for: robot.id)
+    }
+
+    var body: some View {
+        Button {
+            showFullMap = true
+        } label: {
+            ZStack {
+                if isLoading {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(.systemGray6))
+                        .frame(height: 200)
+                        .overlay {
+                            ProgressView()
+                        }
+                } else if let map = map {
+                    GeometryReader { geometry in
+                        MiniMapView(map: map, viewSize: geometry.size)
+                    }
+                    .frame(height: 200)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color(.systemGray4), lineWidth: 1)
+                    )
+                } else {
+                    RoundedRectangle(cornerRadius: 12)
+                        .fill(Color(.systemGray6))
+                        .frame(height: 200)
+                        .overlay {
+                            VStack(spacing: 8) {
+                                Image(systemName: "map")
+                                    .font(.title)
+                                    .foregroundStyle(.secondary)
+                                Text(String(localized: "map.unavailable"))
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                }
+
+                // Overlay tap hint
+                VStack {
+                    Spacer()
+                    HStack {
+                        Spacer()
+                        HStack(spacing: 4) {
+                            Image(systemName: "arrow.up.left.and.arrow.down.right")
+                                .font(.caption2)
+                            Text(String(localized: "map.tap_to_expand"))
+                                .font(.caption2)
+                        }
+                        .padding(.horizontal, 8)
+                        .padding(.vertical, 4)
+                        .background(.ultraThinMaterial)
+                        .clipShape(Capsule())
+                        .padding(8)
+                    }
+                }
+            }
+        }
+        .buttonStyle(.plain)
+        .task {
+            await loadMap()
+        }
+    }
+
+    private func loadMap() async {
+        guard let api = api else {
+            isLoading = false
+            return
+        }
+
+        do {
+            map = try await api.getMap()
+        } catch {
+            print("Failed to load map preview: \(error)")
+        }
+        isLoading = false
+    }
+}
+
+// MARK: - Mini Map View (simplified, no interaction)
+struct MiniMapView: View {
+    let map: RobotMap
+    let viewSize: CGSize
+
+    var body: some View {
+        Canvas { context, size in
+            let pixelSize = map.pixelSize ?? 5
+            guard let layers = map.layers, !layers.isEmpty else { return }
+
+            guard let params = calculateMapParams(layers: layers, pixelSize: pixelSize, size: size) else { return }
+
+            // Draw floor
+            drawLayers(context: context, layers: layers, type: "floor", color: Color(white: 0.92), params: params, pixelSize: pixelSize)
+
+            // Draw segments
+            for layer in layers where layer.type == "segment" {
+                let pixels = layer.decompressedPixels
+                guard !pixels.isEmpty else { continue }
+                let segmentId = layer.metaData?.segmentId
+                let color = segmentColor(segmentId: segmentId).opacity(0.6)
+                drawPixels(context: context, pixels: pixels, color: color, params: params, pixelSize: pixelSize)
+            }
+
+            // Draw walls
+            for layer in layers where layer.type == "wall" {
+                let pixels = layer.decompressedPixels
+                guard !pixels.isEmpty else { continue }
+                drawPixels(context: context, pixels: pixels, color: Color(white: 0.25), params: params, pixelSize: pixelSize)
+            }
+
+            // Draw robot position
+            if let entities = map.entities {
+                for entity in entities where entity.type == "robot_position" {
+                    drawRobot(context: context, entity: entity, params: params)
+                }
+                for entity in entities where entity.type == "charger_location" {
+                    drawCharger(context: context, entity: entity, params: params)
+                }
+            }
+        }
+        .background(Color(.systemGray6))
+    }
+
+    private let segmentColors: [Color] = [
+        Color(red: 0.35, green: 0.60, blue: 0.85),
+        Color(red: 0.45, green: 0.75, blue: 0.55),
+        Color(red: 0.85, green: 0.55, blue: 0.45),
+        Color(red: 0.65, green: 0.50, blue: 0.75),
+    ]
+
+    private func segmentColor(segmentId: String?) -> Color {
+        if let id = segmentId, let num = Int(id) {
+            return segmentColors[num % segmentColors.count]
+        }
+        return segmentColors[0]
+    }
+
+    private func calculateMapParams(layers: [MapLayer], pixelSize: Int, size: CGSize) -> MapParams? {
+        var minX = Int.max, maxX = Int.min
+        var minY = Int.max, maxY = Int.min
+
+        for layer in layers {
+            let pixels = layer.decompressedPixels
+            guard !pixels.isEmpty else { continue }
+            var i = 0
+            while i < pixels.count - 1 {
+                minX = min(minX, pixels[i])
+                maxX = max(maxX, pixels[i])
+                minY = min(minY, pixels[i + 1])
+                maxY = max(maxY, pixels[i + 1])
+                i += 2
+            }
+        }
+
+        guard minX < Int.max else { return nil }
+
+        let contentWidth = CGFloat(maxX - minX + pixelSize)
+        let contentHeight = CGFloat(maxY - minY + pixelSize)
+        let padding: CGFloat = 10
+        let availableWidth = size.width - padding * 2
+        let availableHeight = size.height - padding * 2
+        let scaleX = availableWidth / contentWidth
+        let scaleY = availableHeight / contentHeight
+        let scale = min(scaleX, scaleY)
+        let offsetX = padding + (availableWidth - contentWidth * scale) / 2 - CGFloat(minX) * scale
+        let offsetY = padding + (availableHeight - contentHeight * scale) / 2 - CGFloat(minY) * scale
+
+        return MapParams(scale: scale, offsetX: offsetX, offsetY: offsetY, minX: minX, minY: minY)
+    }
+
+    private func drawLayers(context: GraphicsContext, layers: [MapLayer], type: String, color: Color, params: MapParams, pixelSize: Int) {
+        for layer in layers where layer.type == type {
+            let pixels = layer.decompressedPixels
+            guard !pixels.isEmpty else { continue }
+            drawPixels(context: context, pixels: pixels, color: color, params: params, pixelSize: pixelSize)
+        }
+    }
+
+    private func drawPixels(context: GraphicsContext, pixels: [Int], color: Color, params: MapParams, pixelSize: Int) {
+        let pixelScale = params.scale * CGFloat(pixelSize)
+        var i = 0
+        while i < pixels.count - 1 {
+            let x = CGFloat(pixels[i]) * params.scale + params.offsetX
+            let y = CGFloat(pixels[i + 1]) * params.scale + params.offsetY
+            let rect = CGRect(x: x, y: y, width: pixelScale + 0.5, height: pixelScale + 0.5)
+            context.fill(Path(rect), with: .color(color))
+            i += 2
+        }
+    }
+
+    private func drawRobot(context: GraphicsContext, entity: MapEntity, params: MapParams) {
+        guard let points = entity.points, points.count >= 2 else { return }
+        let x = CGFloat(points[0]) * params.scale + params.offsetX
+        let y = CGFloat(points[1]) * params.scale + params.offsetY
+        let size: CGFloat = 16
+        let rect = CGRect(x: x - size/2, y: y - size/2, width: size, height: size)
+        context.fill(Circle().path(in: rect), with: .color(Color.blue))
+    }
+
+    private func drawCharger(context: GraphicsContext, entity: MapEntity, params: MapParams) {
+        guard let points = entity.points, points.count >= 2 else { return }
+        let x = CGFloat(points[0]) * params.scale + params.offsetX
+        let y = CGFloat(points[1]) * params.scale + params.offsetY
+        let size: CGFloat = 14
+        let rect = CGRect(x: x - size/2, y: y - size/2, width: size, height: size)
+        context.fill(RoundedRectangle(cornerRadius: 3).path(in: rect), with: .color(Color.green))
+    }
+}
+
+// MARK: - Map Content View (shared between Tab and Sheet)
+struct MapContentView: View {
+    @EnvironmentObject var robotManager: RobotManager
+    let robot: RobotConfig
+    let isFullscreen: Bool
 
     @State private var map: RobotMap?
     @State private var segments: [Segment] = []
@@ -51,129 +287,117 @@ struct MapView: View {
 
     // Existing restrictions from robot
     @State private var existingRestrictions: VirtualRestrictions?
+    @State private var loadError: String?
 
     private var api: ValetudoAPI? {
         robotManager.getAPI(for: robot.id)
     }
 
     var body: some View {
-        NavigationStack {
-            VStack(spacing: 0) {
-                // Map
-                GeometryReader { geometry in
-                    ZStack {
-                        Color(uiColor: .systemGroupedBackground)
-                            .ignoresSafeArea()
+        VStack(spacing: 0) {
+            // Map
+            GeometryReader { geometry in
+                ZStack {
+                    Color(uiColor: .systemGroupedBackground)
+                        .ignoresSafeArea()
 
-                        if isLoading && map == nil {
-                            ProgressView()
-                                .scaleEffect(1.5)
-                        } else if let map = map {
-                            ZStack {
-                                InteractiveMapView(
-                                    map: map,
-                                    segments: segments,
-                                    selectedSegmentIds: $selectedSegmentIds,
-                                    viewSize: geometry.size,
-                                    drawnZones: drawnZones,
-                                    drawnNoGoAreas: drawnNoGoAreas,
-                                    drawnNoMopAreas: drawnNoMopAreas,
-                                    drawnVirtualWalls: drawnVirtualWalls,
-                                    existingRestrictions: existingRestrictions,
-                                    currentDrawStart: currentDrawStart,
-                                    currentDrawEnd: currentDrawEnd,
-                                    editMode: editMode
-                                )
-                                .scaleEffect(scale)
-                                .offset(offset)
-
-                                // Drawing overlay for edit modes
-                                if editMode != .none {
-                                    drawingOverlay(geometry: geometry)
-                                }
-                            }
-                            .gesture(editMode == .none ? combinedGesture : nil)
-                        } else {
-                            ContentUnavailableView(
-                                loadError ?? String(localized: "map.unavailable"),
-                                systemImage: "map"
+                    if isLoading && map == nil {
+                        ProgressView()
+                            .scaleEffect(1.5)
+                    } else if let map = map {
+                        ZStack {
+                            InteractiveMapView(
+                                map: map,
+                                segments: segments,
+                                selectedSegmentIds: $selectedSegmentIds,
+                                viewSize: geometry.size,
+                                drawnZones: drawnZones,
+                                drawnNoGoAreas: drawnNoGoAreas,
+                                drawnNoMopAreas: drawnNoMopAreas,
+                                drawnVirtualWalls: drawnVirtualWalls,
+                                existingRestrictions: existingRestrictions,
+                                currentDrawStart: currentDrawStart,
+                                currentDrawEnd: currentDrawEnd,
+                                editMode: editMode
                             )
-                        }
+                            .scaleEffect(scale)
+                            .offset(offset)
 
-                        // Live indicator
-                        VStack {
-                            HStack {
-                                Spacer()
-                                if isLive {
-                                    HStack(spacing: 6) {
-                                        Circle()
-                                            .fill(.red)
-                                            .frame(width: 8, height: 8)
-                                        Text("LIVE")
-                                            .font(.caption2)
-                                            .fontWeight(.bold)
-                                    }
-                                    .padding(.horizontal, 10)
-                                    .padding(.vertical, 5)
-                                    .background(.regularMaterial)
-                                    .clipShape(Capsule())
-                                }
+                            // Drawing overlay for edit modes
+                            if editMode != .none {
+                                drawingOverlay(geometry: geometry)
                             }
-                            .padding()
+                        }
+                        .gesture(editMode == .none ? combinedGesture : nil)
+                    } else {
+                        ContentUnavailableView(
+                            loadError ?? String(localized: "map.unavailable"),
+                            systemImage: "map"
+                        )
+                    }
+
+                    // Live indicator
+                    VStack {
+                        HStack {
                             Spacer()
-                        }
-                    }
-                }
-
-                // Bottom bar - always visible
-                selectedRoomsBar
-            }
-            .navigationTitle(String(localized: "map.title"))
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .cancellationAction) {
-                    Button {
-                        dismiss()
-                    } label: {
-                        Image(systemName: "xmark.circle.fill")
-                            .symbolRenderingMode(.hierarchical)
-                    }
-                }
-
-                ToolbarItem(placement: .primaryAction) {
-                    HStack(spacing: 12) {
-                        Button {
-                            isLive.toggle()
-                        } label: {
-                            Image(systemName: isLive ? "pause.circle.fill" : "play.circle.fill")
-                        }
-
-                        Button {
-                            withAnimation(.spring) {
-                                scale = 1.0
-                                offset = .zero
-                                lastScale = 1.0
-                                lastOffset = .zero
+                            if isLive {
+                                HStack(spacing: 6) {
+                                    Circle()
+                                        .fill(.red)
+                                        .frame(width: 8, height: 8)
+                                    Text("LIVE")
+                                        .font(.caption2)
+                                        .fontWeight(.bold)
+                                }
+                                .padding(.horizontal, 10)
+                                .padding(.vertical, 5)
+                                .background(.regularMaterial)
+                                .clipShape(Capsule())
                             }
-                        } label: {
-                            Image(systemName: "arrow.counterclockwise.circle.fill")
                         }
+                        .padding()
+                        Spacer()
                     }
                 }
             }
-            .task {
-                await loadData()
-                startLiveRefresh()
-            }
-            .onDisappear {
-                refreshTask?.cancel()
-            }
-            .onChange(of: isLive) { _, newValue in
-                if newValue {
-                    startLiveRefresh()
-                } else {
-                    refreshTask?.cancel()
+
+            // Bottom bar
+            selectedRoomsBar
+        }
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                HStack(spacing: 12) {
+                    Button {
+                        isLive.toggle()
+                    } label: {
+                        Image(systemName: isLive ? "pause.circle.fill" : "play.circle.fill")
+                    }
+
+                    Button {
+                        withAnimation(.spring) {
+                            scale = 1.0
+                            offset = .zero
+                            lastScale = 1.0
+                            lastOffset = .zero
+                        }
+                    } label: {
+                        Image(systemName: "arrow.counterclockwise.circle.fill")
+                    }
                 }
+            }
+        }
+        .task {
+            await loadData()
+            startLiveRefresh()
+        }
+        .onDisappear {
+            refreshTask?.cancel()
+        }
+        .onChange(of: isLive) { _, newValue in
+            if newValue {
+                startLiveRefresh()
+            } else {
+                refreshTask?.cancel()
             }
         }
     }
@@ -185,10 +409,8 @@ struct MapView: View {
             Divider()
 
             if editMode != .none {
-                // Edit mode bar
                 editModeBar
             } else {
-                // Normal control buttons
                 normalControlBar
             }
         }
@@ -197,9 +419,7 @@ struct MapView: View {
     @ViewBuilder
     private var normalControlBar: some View {
         VStack(spacing: 8) {
-            // Primary actions row
             HStack(spacing: 12) {
-                // Clear selection
                 MapControlButton(
                     title: String(localized: "map.clear_selection"),
                     icon: "xmark",
@@ -210,7 +430,6 @@ struct MapView: View {
                 .opacity(selectedSegmentIds.isEmpty ? 0.4 : 1.0)
                 .disabled(selectedSegmentIds.isEmpty)
 
-                // Clean selected rooms
                 MapControlButton(
                     title: String(localized: "rooms.clean_selected"),
                     icon: isCleaning ? "hourglass" : "play.fill",
@@ -221,7 +440,6 @@ struct MapView: View {
                 .opacity(selectedSegmentIds.isEmpty ? 0.4 : 1.0)
                 .disabled(selectedSegmentIds.isEmpty || isCleaning)
 
-                // Go to location
                 MapControlButton(
                     title: String(localized: "map.goto"),
                     icon: editMode == .goTo ? "location.fill" : "location",
@@ -233,7 +451,6 @@ struct MapView: View {
                 .disabled(!hasGoTo)
             }
 
-            // Secondary actions row (Zone & Restrictions)
             if hasZoneCleaning || hasVirtualRestrictions {
                 HStack(spacing: 12) {
                     if hasZoneCleaning {
@@ -274,13 +491,11 @@ struct MapView: View {
     @ViewBuilder
     private var editModeBar: some View {
         VStack(spacing: 8) {
-            // Info text
             Text(editModeDescription)
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
             HStack(spacing: 12) {
-                // Cancel
                 Button {
                     cancelEditMode()
                 } label: {
@@ -292,7 +507,6 @@ struct MapView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
 
-                // Confirm
                 Button {
                     Task { await confirmEditMode() }
                 } label: {
@@ -354,12 +568,6 @@ struct MapView: View {
         }
     }
 
-    private var selectedRoomNames: [String] {
-        selectedSegmentIds.compactMap { id in
-            segments.first { $0.id == id }?.displayName
-        }.sorted()
-    }
-
     // MARK: - Drawing Overlay
     @ViewBuilder
     private func drawingOverlay(geometry: GeometryProxy) -> some View {
@@ -373,17 +581,8 @@ struct MapView: View {
                         }
                         currentDrawEnd = value.location
                     }
-                    .onEnded { value in
-                        finishDrawing(in: geometry.size)
-                    }
-            )
-            .simultaneousGesture(
-                TapGesture()
                     .onEnded { _ in
-                        // For GoTo mode, use the tap location
-                        if editMode == .goTo, let start = currentDrawStart {
-                            // We handle this in DragGesture
-                        }
+                        finishDrawing(in: geometry.size)
                     }
             )
     }
@@ -408,7 +607,6 @@ struct MapView: View {
             return
         }
 
-        // Convert screen coordinates to map coordinates
         let mapStartX = Int((start.x - params.offsetX) / params.scale)
         let mapStartY = Int((start.y - params.offsetY) / params.scale)
         let mapEndX = Int((end.x - params.offsetX) / params.scale)
@@ -463,7 +661,6 @@ struct MapView: View {
             drawnVirtualWalls.append(wall)
 
         case .goTo:
-            // For GoTo, we use the start point as target
             Task { await goToLocation(x: mapStartX, y: mapStartY) }
 
         case .none:
@@ -499,7 +696,6 @@ struct MapView: View {
             }
 
         case .noGoArea, .noMopArea, .virtualWall:
-            // Combine existing and new restrictions
             var restrictions = existingRestrictions ?? VirtualRestrictions()
             restrictions.restrictedZones.append(contentsOf: drawnNoGoAreas)
             restrictions.noMopZones.append(contentsOf: drawnNoMopAreas)
@@ -512,11 +708,7 @@ struct MapView: View {
                 print("Setting restrictions failed: \(error)")
             }
 
-        case .goTo:
-            // Already handled in finishDrawing
-            break
-
-        case .none:
+        case .goTo, .none:
             break
         }
 
@@ -592,22 +784,15 @@ struct MapView: View {
     }
 
     // MARK: - Data Loading
-    @State private var loadError: String?
-
     private func loadData() async {
-        print("🗺️ loadData() called")
-
         guard let api = api else {
             loadError = "No API available"
-            print("🗺️ ERROR: No API available for robot \(robot.id)")
             isLoading = false
             return
         }
 
-        print("🗺️ API available, starting load...")
         if map == nil { isLoading = true }
 
-        // Load capabilities
         do {
             let capabilities = try await api.getCapabilities()
             await MainActor.run {
@@ -616,10 +801,9 @@ struct MapView: View {
                 hasGoTo = capabilities.contains("GoToLocationCapability")
             }
         } catch {
-            print("🗺️ Capabilities failed: \(error)")
+            print("Capabilities failed: \(error)")
         }
 
-        // Load existing virtual restrictions
         if hasVirtualRestrictions {
             do {
                 let restrictions = try await api.getVirtualRestrictions()
@@ -627,22 +811,17 @@ struct MapView: View {
                     existingRestrictions = restrictions
                 }
             } catch {
-                print("🗺️ Virtual restrictions failed: \(error)")
+                print("Virtual restrictions failed: \(error)")
             }
         }
 
         do {
-            print("🗺️ Fetching map from API...")
             let loadedMap = try await api.getMap()
-            print("🗺️ Map received!")
-
             var loadedSegments: [Segment] = []
             do {
-                print("🗺️ Fetching segments...")
                 loadedSegments = try await api.getSegments()
-                print("🗺️ Segments received: \(loadedSegments.count)")
             } catch {
-                print("🗺️ Segments failed (non-critical): \(error)")
+                print("Segments failed: \(error)")
             }
 
             await MainActor.run {
@@ -651,20 +830,11 @@ struct MapView: View {
                 loadError = nil
                 isLoading = false
             }
-
-            // Debug info
-            print("🗺️ Map loaded: pixelSize=\(loadedMap.pixelSize ?? -1), layers=\(loadedMap.layers?.count ?? 0), entities=\(loadedMap.entities?.count ?? 0)")
-            if let layers = loadedMap.layers {
-                for layer in layers {
-                    print("🗺️   Layer type=\(layer.type ?? "nil"), pixels=\(layer.pixels?.count ?? 0), segmentId=\(layer.metaData?.segmentId ?? "none")")
-                }
-            }
         } catch {
             await MainActor.run {
                 loadError = error.localizedDescription
                 isLoading = false
             }
-            print("🗺️ FAILED to load map: \(error)")
         }
     }
 
@@ -695,6 +865,30 @@ struct MapView: View {
             await robotManager.refreshRobot(robot.id)
         } catch {
             print("Clean failed: \(error)")
+        }
+    }
+}
+
+// MARK: - Map View (Sheet/Modal version - uses MapContentView)
+struct MapView: View {
+    @Environment(\.dismiss) var dismiss
+    let robot: RobotConfig
+
+    var body: some View {
+        NavigationStack {
+            MapContentView(robot: robot, isFullscreen: true)
+                .navigationTitle(String(localized: "map.title"))
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button {
+                            dismiss()
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .symbolRenderingMode(.hierarchical)
+                        }
+                    }
+                }
         }
     }
 }

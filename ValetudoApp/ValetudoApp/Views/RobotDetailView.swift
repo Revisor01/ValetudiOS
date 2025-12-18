@@ -8,7 +8,7 @@ struct RobotDetailView: View {
     @State private var consumables: [Consumable] = []
     @State private var selectedSegments: Set<String> = []
     @State private var isLoading = false
-    @State private var showMap = false
+    @State private var showFullMap = false
     @State private var showTimers = false
 
     private var status: RobotStatus? {
@@ -21,6 +21,13 @@ struct RobotDetailView: View {
 
     var body: some View {
         List {
+            // Map Preview Section
+            if status?.isOnline == true {
+                Section {
+                    MapPreviewView(robot: robot, showFullMap: $showFullMap)
+                }
+            }
+
             // Status Section
             statusSection
 
@@ -91,17 +98,7 @@ struct RobotDetailView: View {
             }
         }
         .navigationTitle(robot.name)
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                Button {
-                    showMap = true
-                } label: {
-                    Image(systemName: "map")
-                }
-                .disabled(status?.isOnline != true)
-            }
-        }
-        .sheet(isPresented: $showMap) {
+        .sheet(isPresented: $showFullMap) {
             MapView(robot: robot)
         }
         .task {

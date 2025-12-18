@@ -403,3 +403,30 @@ struct NoGoAreaRequest: Codable {
 struct NoMopAreaRequest: Codable {
     let points: ZonePoints
 }
+
+// MARK: - Map Segment Edit
+struct JoinSegmentsRequest: Codable {
+    let action: String
+    let segment_a_id: String
+    let segment_b_id: String
+
+    init(segmentAId: String, segmentBId: String) {
+        self.action = "join_segments"
+        self.segment_a_id = segmentAId
+        self.segment_b_id = segmentBId
+    }
+}
+
+struct SplitSegmentRequest: Codable {
+    let action: String
+    let segment_id: String
+    let pA: ZonePoint
+    let pB: ZonePoint
+
+    init(segmentId: String, pointA: ZonePoint, pointB: ZonePoint) {
+        self.action = "split_segment"
+        self.segment_id = segmentId
+        self.pA = pointA
+        self.pB = pointB
+    }
+}
