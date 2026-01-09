@@ -101,7 +101,17 @@ struct SettingsView: View {
 
                     Link(destination: URL(string: "https://github.com/Hypfer/Valetudo")!) {
                         HStack {
-                            Label("GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
+                            Label("Valetudo GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
+                            Spacer()
+                            Image(systemName: "arrow.up.right.square")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+
+                    Link(destination: URL(string: "https://github.com/Revisor01/ValetudiOS")!) {
+                        HStack {
+                            Label("ValetudiOS GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
                             Spacer()
                             Image(systemName: "arrow.up.right.square")
                                 .font(.caption)
@@ -111,7 +121,11 @@ struct SettingsView: View {
                 } header: {
                     Text("settings.about")
                 } footer: {
-                    Text("settings.license_footer")
+                    VStack(spacing: 4) {
+                        Text("settings.license_footer")
+                        Text("settings.made_in")
+                            .padding(.top, 8)
+                    }
                 }
             }
             .navigationTitle(String(localized: "settings.title"))

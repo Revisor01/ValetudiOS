@@ -4370,6 +4370,22 @@
         }
       }
     },
+    "settings.made_in" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Gemacht mit ❤️ in Hennstedt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Made with ❤️ in Hennstedt"
+          }
+        }
+      }
+    },
     "settings.map" : {
       "extractionState" : "stale",
       "localizations" : {
