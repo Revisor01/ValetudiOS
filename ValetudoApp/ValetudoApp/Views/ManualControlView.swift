@@ -4,148 +4,215 @@ struct ManualControlView: View {
     let robot: RobotConfig
     @EnvironmentObject var robotManager: RobotManager
 
-    @State private var isControlling = false
-    @State private var currentDirection: Direction?
+    @State private var isEnabled = false
+    @State private var useHighRes = false
+    @State private var touchOffset: CGSize = .zero
+    @State private var isTouching = false
 
     private var api: ValetudoAPI? {
         robotManager.getAPI(for: robot.id)
     }
 
-    enum Direction: String, CaseIterable {
-        case forward, backward, left, right
+    // Touchpad size
+    private let padSize: CGFloat = 280
+    private let maxOffset: CGFloat = 100
 
-        var icon: String {
-            switch self {
-            case .forward: return "arrow.up"
-            case .backward: return "arrow.down"
-            case .left: return "arrow.left"
-            case .right: return "arrow.right"
-            }
-        }
+    // Calculate velocity and angle from touch offset
+    private var velocity: Int {
+        let normalizedY = -touchOffset.height / maxOffset  // Negative because up = forward
+        return Int(max(-300, min(300, normalizedY * 300)))
+    }
 
-        var action: String {
-            switch self {
-            case .forward: return "forward"
-            case .backward: return "backward"
-            case .left: return "rotate_counterclockwise"
-            case .right: return "rotate_clockwise"
-            }
-        }
+    private var angle: Int {
+        let normalizedX = touchOffset.width / maxOffset
+        return Int(max(-90, min(90, -normalizedX * 90)))  // Negative for correct rotation direction
     }
 
     var body: some View {
-        VStack(spacing: 40) {
+        VStack(spacing: 30) {
             Spacer()
 
-            // Direction pad
-            VStack(spacing: 20) {
-                // Forward
-                ControlPadButton(direction: .forward, isActive: currentDirection == .forward) {
-                    await move(.forward)
-                } onRelease: {
-                    await stopMoving()
-                }
+            // Status indicator
+            HStack(spacing: 8) {
+                Circle()
+                    .fill(isTouching ? Color.green : Color.gray.opacity(0.3))
+                    .frame(width: 10, height: 10)
+                Text(isTouching ? String(localized: "manual.active") : String(localized: "manual.ready"))
+                    .font(.subheadline)
+                    .foregroundStyle(isTouching ? .primary : .secondary)
+            }
 
-                HStack(spacing: 60) {
-                    // Left
-                    ControlPadButton(direction: .left, isActive: currentDirection == .left) {
-                        await move(.left)
-                    } onRelease: {
-                        await stopMoving()
+            // Touchpad
+            ZStack {
+                // Background
+                RoundedRectangle(cornerRadius: 40)
+                    .fill(Color(.systemGray6))
+                    .frame(width: padSize, height: padSize)
+
+                // Direction indicators (subtle)
+                VStack {
+                    Image(systemName: "chevron.up")
+                        .foregroundStyle(.tertiary)
+                    Spacer()
+                    Image(systemName: "chevron.down")
+                        .foregroundStyle(.tertiary)
+                }
+                .frame(height: padSize - 60)
+
+                HStack {
+                    Image(systemName: "chevron.left")
+                        .foregroundStyle(.tertiary)
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .foregroundStyle(.tertiary)
+                }
+                .frame(width: padSize - 60)
+
+                // Center dot (resting position)
+                Circle()
+                    .stroke(Color.gray.opacity(0.3), lineWidth: 2)
+                    .frame(width: 60, height: 60)
+
+                // Touch indicator (follows finger)
+                Circle()
+                    .fill(isTouching ? Color.blue : Color.blue.opacity(0.3))
+                    .frame(width: 50, height: 50)
+                    .shadow(color: isTouching ? .blue.opacity(0.4) : .clear, radius: 10)
+                    .offset(touchOffset)
+                    .animation(.interactiveSpring(response: 0.15), value: touchOffset)
+            }
+            .frame(width: padSize, height: padSize)
+            .gesture(
+                DragGesture(minimumDistance: 0)
+                    .onChanged { value in
+                        // Clamp offset to maxOffset
+                        let x = max(-maxOffset, min(maxOffset, value.translation.width))
+                        let y = max(-maxOffset, min(maxOffset, value.translation.height))
+                        touchOffset = CGSize(width: x, height: y)
+
+                        if !isTouching {
+                            isTouching = true
+                        }
+
+                        // Send movement command
+                        Task {
+                            await sendMovement()
+                        }
                     }
-
-                    // Right
-                    ControlPadButton(direction: .right, isActive: currentDirection == .right) {
-                        await move(.right)
-                    } onRelease: {
-                        await stopMoving()
+                    .onEnded { _ in
+                        // Reset and stop
+                        withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
+                            touchOffset = .zero
+                        }
+                        isTouching = false
+                        Task {
+                            await stopMovement()
+                        }
                     }
-                }
+            )
 
-                // Backward
-                ControlPadButton(direction: .backward, isActive: currentDirection == .backward) {
-                    await move(.backward)
-                } onRelease: {
-                    await stopMoving()
+            // Speed indicator
+            if isTouching {
+                VStack(spacing: 4) {
+                    Text("v: \(velocity) • ∠: \(angle)°")
+                        .font(.caption.monospacedDigit())
+                        .foregroundStyle(.secondary)
                 }
+                .transition(.opacity)
             }
 
             Spacer()
 
             // Instructions
-            Text(String(localized: "manual.hint"))
+            Text(String(localized: "manual.touchpad_hint"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
                 .multilineTextAlignment(.center)
-                .padding()
+                .padding(.horizontal, 40)
+                .padding(.bottom)
         }
         .navigationTitle(String(localized: "manual.title"))
-    }
-
-    private func move(_ direction: Direction) async {
-        guard let api = api else { return }
-        currentDirection = direction
-        isControlling = true
-
-        do {
-            try await api.manualControl(
-                action: direction.action,
-                movementSpeed: 100,
-                angle: direction == .left ? -90 : (direction == .right ? 90 : nil),
-                duration: nil
-            )
-        } catch {
-            print("Manual control failed: \(error)")
+        .task {
+            await checkCapabilities()
+            await enableManualControl()
+        }
+        .onDisappear {
+            Task {
+                await disableManualControl()
+            }
         }
     }
 
-    private func stopMoving() async {
+    private func checkCapabilities() async {
         guard let api = api else { return }
-        currentDirection = nil
-        isControlling = false
+        do {
+            let capabilities = try await api.getCapabilities()
+            useHighRes = capabilities.contains("HighResolutionManualControlCapability")
+        } catch {
+            print("Failed to check capabilities: \(error)")
+        }
+    }
+
+    private func enableManualControl() async {
+        guard let api = api else { return }
+        do {
+            if useHighRes {
+                try await api.enableHighResManualControl()
+            }
+            isEnabled = true
+        } catch {
+            print("Failed to enable manual control: \(error)")
+        }
+    }
+
+    private func disableManualControl() async {
+        guard let api = api, isEnabled else { return }
+        do {
+            if useHighRes {
+                try await api.disableHighResManualControl()
+            }
+            isEnabled = false
+        } catch {
+            print("Failed to disable manual control: \(error)")
+        }
+    }
+
+    @MainActor
+    private func sendMovement() async {
+        guard let api = api, isEnabled else { return }
 
         do {
-            try await api.manualControl(action: "stop")
+            if useHighRes {
+                try await api.highResManualControl(velocity: velocity, angle: angle)
+            } else {
+                // Fallback for regular ManualControl - determine direction
+                let direction: String
+                if abs(touchOffset.height) > abs(touchOffset.width) {
+                    direction = touchOffset.height < 0 ? "forward" : "backward"
+                } else if abs(touchOffset.width) > 20 {
+                    direction = touchOffset.width < 0 ? "rotate_counterclockwise" : "rotate_clockwise"
+                } else {
+                    return
+                }
+                try await api.manualControl(action: direction, movementSpeed: 100)
+            }
+        } catch {
+            print("Movement failed: \(error)")
+        }
+    }
+
+    private func stopMovement() async {
+        guard let api = api else { return }
+
+        do {
+            if useHighRes {
+                try await api.highResManualControl(velocity: 0, angle: 0)
+            } else {
+                try await api.manualControl(action: "stop")
+            }
         } catch {
             print("Stop failed: \(error)")
         }
-    }
-}
-
-// MARK: - Control Pad Button
-struct ControlPadButton: View {
-    let direction: ManualControlView.Direction
-    let isActive: Bool
-    let onPress: () async -> Void
-    let onRelease: () async -> Void
-
-    @State private var isPressed = false
-
-    var body: some View {
-        Image(systemName: direction.icon)
-            .font(.system(size: 40, weight: .medium))
-            .foregroundStyle(isActive ? .white : .blue)
-            .frame(width: 80, height: 80)
-            .background(
-                Circle()
-                    .fill(isActive ? Color.blue : Color.blue.opacity(0.15))
-            )
-            .scaleEffect(isPressed ? 0.9 : 1.0)
-            .gesture(
-                DragGesture(minimumDistance: 0)
-                    .onChanged { _ in
-                        if !isPressed {
-                            isPressed = true
-                            Task { await onPress() }
-                        }
-                    }
-                    .onEnded { _ in
-                        isPressed = false
-                        Task { await onRelease() }
-                    }
-            )
-            .animation(.easeInOut(duration: 0.1), value: isPressed)
-            .animation(.easeInOut(duration: 0.1), value: isActive)
     }
 }
 

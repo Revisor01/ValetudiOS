@@ -31,6 +31,7 @@ struct RobotSettingsView: View {
     @State private var hasCollisionAvoidance = DebugConfig.showAllCapabilities
     @State private var hasMopDockAutoDrying = DebugConfig.showAllCapabilities
     @State private var hasMopDockWashTemperature = DebugConfig.showAllCapabilities
+    @State private var hasFloorMaterialNavigation = DebugConfig.showAllCapabilities
 
     // Carpet sensor mode
     @State private var carpetSensorMode: String = ""
@@ -41,6 +42,7 @@ struct RobotSettingsView: View {
     @State private var mopDockAutoDrying = false
     @State private var mopDockWashTemperaturePresets: [String] = []
     @State private var currentWashTemperature: String = ""
+    @State private var floorMaterialNavigation = false
 
     @State private var volumeChanged = false
     @State private var showMappingAlert = false
@@ -96,7 +98,7 @@ struct RobotSettingsView: View {
             }
 
             // Cleaning Settings Section
-            if hasCarpetMode || hasObstacleAvoidance || hasPetObstacleAvoidance || hasCollisionAvoidance || hasCarpetSensorMode {
+            if hasCarpetMode || hasObstacleAvoidance || hasPetObstacleAvoidance || hasCollisionAvoidance || hasCarpetSensorMode || hasFloorMaterialNavigation {
                 Section {
                     if hasCarpetMode {
                         Toggle(isOn: $carpetMode) {
@@ -151,6 +153,20 @@ struct RobotSettingsView: View {
                         .onChange(of: collisionAvoidance) { _, newValue in
                             guard !isInitialLoad else { return }
                             Task { await setCollisionAvoidance(newValue) }
+                        }
+                    }
+
+                    if hasFloorMaterialNavigation {
+                        Toggle(isOn: $floorMaterialNavigation) {
+                            HStack {
+                                Image(systemName: "arrow.left.and.right")
+                                    .foregroundStyle(.cyan)
+                                Text(String(localized: "settings.floor_material_navigation"))
+                            }
+                        }
+                        .onChange(of: floorMaterialNavigation) { _, newValue in
+                            guard !isInitialLoad else { return }
+                            Task { await setFloorMaterialNavigation(newValue) }
                         }
                     }
 
@@ -444,6 +460,7 @@ struct RobotSettingsView: View {
             hasCollisionAvoidance = DebugConfig.showAllCapabilities || capabilities.contains("CollisionAvoidantNavigationControlCapability")
             hasMopDockAutoDrying = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopAutoDryingControlCapability")
             hasMopDockWashTemperature = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopWashTemperatureControlCapability")
+            hasFloorMaterialNavigation = DebugConfig.showAllCapabilities || capabilities.contains("FloorMaterialDirectionAwareNavigationControlCapability")
         } catch {
             hasMappingPass = DebugConfig.showAllCapabilities
         }
@@ -494,6 +511,15 @@ struct RobotSettingsView: View {
                 collisionAvoidance = try await api.getCollisionAvoidantNavigation()
             } catch {
                 if !DebugConfig.showAllCapabilities { hasCollisionAvoidance = false }
+            }
+        }
+
+        // Load floor material navigation
+        if hasFloorMaterialNavigation {
+            do {
+                floorMaterialNavigation = try await api.getFloorMaterialNavigation()
+            } catch {
+                if !DebugConfig.showAllCapabilities { hasFloorMaterialNavigation = false }
             }
         }
 
@@ -661,6 +687,17 @@ struct RobotSettingsView: View {
         } catch {
             print("Failed to set collision avoidance: \(error)")
             collisionAvoidance = !enabled
+        }
+    }
+
+    private func setFloorMaterialNavigation(_ enabled: Bool) async {
+        guard let api = api else { return }
+
+        do {
+            try await api.setFloorMaterialNavigation(enabled: enabled)
+        } catch {
+            print("Failed to set floor material navigation: \(error)")
+            floorMaterialNavigation = !enabled
         }
     }
 

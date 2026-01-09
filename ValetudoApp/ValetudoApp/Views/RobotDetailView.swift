@@ -1221,7 +1221,7 @@ extension RobotDetailView {
         do {
             let capabilities = try await api.getCapabilities()
             await MainActor.run {
-                hasManualControl = DebugConfig.showAllCapabilities || capabilities.contains("ManualControlCapability")
+                hasManualControl = DebugConfig.showAllCapabilities || capabilities.contains("HighResolutionManualControlCapability")
                 hasAutoEmptyTrigger = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockManualTriggerCapability")
                 hasMopDockClean = DebugConfig.showAllCapabilities || capabilities.contains("MopDockCleanManualTriggerCapability")
                 hasMopDockDry = DebugConfig.showAllCapabilities || capabilities.contains("MopDockDryManualTriggerCapability")

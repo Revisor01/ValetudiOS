@@ -63,6 +63,36 @@ struct LayerMetaData: Codable {
     let segmentId: String?
     let name: String?
     let active: Bool?
+    let material: String?  // Floor material: generic, tile, wood, wood_horizontal, wood_vertical
+}
+
+// MARK: - Floor Material Types
+enum FloorMaterial: String, CaseIterable, Codable {
+    case generic = "generic"
+    case tile = "tile"
+    case wood = "wood"
+    case woodHorizontal = "wood_horizontal"
+    case woodVertical = "wood_vertical"
+
+    var displayName: String {
+        switch self {
+        case .generic: return String(localized: "material.generic")
+        case .tile: return String(localized: "material.tile")
+        case .wood: return String(localized: "material.wood")
+        case .woodHorizontal: return String(localized: "material.wood_horizontal")
+        case .woodVertical: return String(localized: "material.wood_vertical")
+        }
+    }
+
+    var icon: String {
+        switch self {
+        case .generic: return "square.fill"
+        case .tile: return "square.grid.2x2.fill"
+        case .wood: return "line.3.horizontal"
+        case .woodHorizontal: return "line.3.horizontal"
+        case .woodVertical: return "line.3.horizontal"
+        }
+    }
 }
 
 struct LayerDimensions: Codable {

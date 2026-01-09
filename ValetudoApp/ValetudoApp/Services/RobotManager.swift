@@ -6,15 +6,6 @@ class RobotManager: ObservableObject {
     @Published var robots: [RobotConfig] = []
     @Published var robotStates: [UUID: RobotStatus] = [:]
     @Published var robotUpdateAvailable: [UUID: Bool] = [:]
-    @AppStorage("demo_mode_enabled") var demoModeEnabled: Bool = false {
-        didSet {
-            if demoModeEnabled {
-                setupDemoRobot()
-            } else {
-                removeDemoRobot()
-            }
-        }
-    }
 
     private var apis: [UUID: ValetudoAPI] = [:]
     private var refreshTask: Task<Void, Never>?
@@ -23,18 +14,10 @@ class RobotManager: ObservableObject {
     private let storageKey = "valetudo_robots"
     private let notificationService = NotificationService.shared
 
-    // Demo robot ID (fixed UUID for consistency)
-    static let demoRobotId = UUID(uuidString: "00000000-0000-0000-0000-000000000001")!
-
     init() {
         loadRobots()
         startRefreshing()
         notificationService.setupCategories()
-
-        // Setup demo robot if enabled
-        if demoModeEnabled {
-            setupDemoRobot()
-        }
 
         // Request notification permission
         Task {
@@ -224,63 +207,6 @@ class RobotManager: ObservableObject {
         if let encoded = try? JSONEncoder().encode(robots) {
             UserDefaults.standard.set(encoded, forKey: storageKey)
         }
-    }
-
-    // MARK: - Demo Mode
-    private func setupDemoRobot() {
-        let demoConfig = RobotConfig(
-            id: RobotManager.demoRobotId,
-            name: "Demo Robot",
-            host: "demo.local"
-        )
-
-        // Add demo robot if not already present
-        if !robots.contains(where: { $0.id == RobotManager.demoRobotId }) {
-            robots.insert(demoConfig, at: 0)
-        }
-
-        // Create demo status with realistic data
-        let demoStatus = createDemoStatus()
-        robotStates[RobotManager.demoRobotId] = demoStatus
-    }
-
-    private func removeDemoRobot() {
-        robots.removeAll { $0.id == RobotManager.demoRobotId }
-        robotStates.removeValue(forKey: RobotManager.demoRobotId)
-        apis.removeValue(forKey: RobotManager.demoRobotId)
-    }
-
-    private func createDemoStatus() -> RobotStatus {
-        let demoAttributes: [RobotAttribute] = [
-            // Battery
-            RobotAttribute(__class: "BatteryStateAttribute", type: nil, subType: nil, value: nil, level: 78, flag: "none"),
-            // Status
-            RobotAttribute(__class: "StatusStateAttribute", type: nil, subType: nil, value: "docked", level: nil, flag: "none"),
-            // Attachments
-            RobotAttribute(__class: "AttachmentStateAttribute", type: "dustbin", subType: nil, value: "true", level: nil, flag: nil),
-            RobotAttribute(__class: "AttachmentStateAttribute", type: "watertank", subType: nil, value: "true", level: nil, flag: nil),
-            RobotAttribute(__class: "AttachmentStateAttribute", type: "mop", subType: nil, value: "false", level: nil, flag: nil),
-            // Presets
-            RobotAttribute(__class: "PresetSelectionStateAttribute", type: "fan_speed", subType: nil, value: "medium", level: nil, flag: nil),
-            RobotAttribute(__class: "PresetSelectionStateAttribute", type: "water_grade", subType: nil, value: "medium", level: nil, flag: nil),
-            RobotAttribute(__class: "PresetSelectionStateAttribute", type: "operation_mode", subType: nil, value: "vacuum", level: nil, flag: nil)
-        ]
-
-        let demoInfo = RobotInfo(
-            manufacturer: "Dreame",
-            modelName: "L10s Ultra",
-            implementation: "DreameValetudoRobot"
-        )
-
-        return RobotStatus(
-            isOnline: true,
-            attributes: demoAttributes,
-            info: demoInfo
-        )
-    }
-
-    func isDemoRobot(_ id: UUID) -> Bool {
-        return id == RobotManager.demoRobotId && demoModeEnabled
     }
 }
 

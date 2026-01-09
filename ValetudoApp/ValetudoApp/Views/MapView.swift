@@ -2190,8 +2190,9 @@ struct InteractiveMapView: View {
                 let isSelected = segmentId.map { selectedSegmentIds.contains($0) } ?? false
                 let baseColor = segmentColor(segmentId: segmentId)
                 let color = isSelected ? baseColor.opacity(0.9) : baseColor.opacity(0.6)
+                let material = layer.metaData?.material
 
-                drawPixels(context: context, pixels: pixels, color: color, params: p, pixelSize: pixelSize)
+                drawPixelsWithMaterial(context: context, pixels: pixels, color: color, material: material, params: p, pixelSize: pixelSize)
 
                 // Draw selection border
                 if isSelected {
@@ -2429,6 +2430,59 @@ struct InteractiveMapView: View {
             let y = CGFloat(pixels[i + 1]) * params.scale + params.offsetY
             let rect = CGRect(x: x, y: y, width: pixelScale + 0.5, height: pixelScale + 0.5)
             context.fill(Path(rect), with: .color(color))
+            i += 2
+        }
+    }
+
+    private func drawPixelsWithMaterial(context: GraphicsContext, pixels: [Int], color: Color, material: String?, params: MapParams, pixelSize: Int) {
+        let pixelScale = params.scale * CGFloat(pixelSize)
+        var i = 0
+
+        // Determine texture pattern based on material
+        let textureInterval: Int
+        let isHorizontal: Bool
+        let isVertical: Bool
+
+        switch material {
+        case "tile":
+            textureInterval = 4  // Grid pattern every 4 pixels
+            isHorizontal = true
+            isVertical = true
+        case "wood", "wood_horizontal":
+            textureInterval = 3  // Horizontal lines every 3 pixels
+            isHorizontal = true
+            isVertical = false
+        case "wood_vertical":
+            textureInterval = 3  // Vertical lines every 3 pixels
+            isHorizontal = false
+            isVertical = true
+        default:
+            // Generic or unknown - just draw plain pixels
+            textureInterval = 0
+            isHorizontal = false
+            isVertical = false
+        }
+
+        let accentColor = color.opacity(0.85)  // Slightly darker for texture lines
+
+        while i < pixels.count - 1 {
+            let px = pixels[i]
+            let py = pixels[i + 1]
+            let x = CGFloat(px) * params.scale + params.offsetX
+            let y = CGFloat(py) * params.scale + params.offsetY
+            let rect = CGRect(x: x, y: y, width: pixelScale + 0.5, height: pixelScale + 0.5)
+
+            // Check if this pixel should be accented for texture
+            let shouldAccent: Bool
+            if textureInterval > 0 {
+                let hMatch = isHorizontal && (py % textureInterval == 0)
+                let vMatch = isVertical && (px % textureInterval == 0)
+                shouldAccent = hMatch || vMatch
+            } else {
+                shouldAccent = false
+            }
+
+            context.fill(Path(rect), with: .color(shouldAccent ? accentColor : color))
             i += 2
         }
     }

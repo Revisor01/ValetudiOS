@@ -80,17 +80,6 @@ struct SettingsView: View {
                     }
                 }
 
-                // MARK: - Demo Mode Section
-                Section {
-                    Toggle(isOn: $robotManager.demoModeEnabled) {
-                        Label(String(localized: "settings.demo_mode"), systemImage: "play.square")
-                    }
-                } header: {
-                    Text("settings.demo")
-                } footer: {
-                    Text("settings.demo_footer")
-                }
-
                 // MARK: - About Section
                 Section {
                     HStack {

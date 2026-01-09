@@ -13,6 +13,12 @@ struct RoomsManagementView: View {
     // Capabilities
     @State private var hasSegmentRename = false
     @State private var hasSegmentEdit = false
+    @State private var hasSegmentMaterial = false
+    @State private var supportedMaterials: [String] = []
+
+    // Material editing
+    @State private var showMaterialSheet = false
+    @State private var materialSegment: Segment?
 
     // Join segments
     @State private var showJoinSheet = false
@@ -68,6 +74,17 @@ struct RoomsManagementView: View {
 
                             Spacer()
 
+                            if hasSegmentMaterial {
+                                Button {
+                                    materialSegment = segment
+                                    showMaterialSheet = true
+                                } label: {
+                                    Image(systemName: "square.fill.on.square.fill")
+                                        .foregroundStyle(.orange)
+                                }
+                                .buttonStyle(.plain)
+                            }
+
                             if hasSegmentRename {
                                 Button {
                                     editingSegment = segment
@@ -84,8 +101,8 @@ struct RoomsManagementView: View {
                 } header: {
                     Label(String(localized: "rooms.title"), systemImage: "square.split.2x2")
                 } footer: {
-                    if hasSegmentRename {
-                        Text(String(localized: "rooms.rename_hint"))
+                    if hasSegmentRename || hasSegmentMaterial {
+                        Text(String(localized: "rooms.edit_actions_hint"))
                     }
                 }
             }
@@ -129,6 +146,17 @@ struct RoomsManagementView: View {
                 }
             )
         }
+        .sheet(isPresented: $showMaterialSheet) {
+            if let segment = materialSegment {
+                SegmentMaterialSheet(
+                    segment: segment,
+                    supportedMaterials: supportedMaterials,
+                    onSetMaterial: { material in
+                        await setSegmentMaterial(segment: segment, material: material)
+                    }
+                )
+            }
+        }
         .overlay {
             if isLoading && segments.isEmpty {
                 ProgressView()
@@ -143,9 +171,36 @@ struct RoomsManagementView: View {
             await MainActor.run {
                 hasSegmentRename = capabilities.contains("MapSegmentRenameCapability")
                 hasSegmentEdit = capabilities.contains("MapSegmentEditCapability")
+                hasSegmentMaterial = capabilities.contains("MapSegmentMaterialControlCapability")
+            }
+
+            // Load supported materials if capability exists
+            if hasSegmentMaterial {
+                do {
+                    let props = try await api.getSegmentMaterialProperties()
+                    await MainActor.run {
+                        supportedMaterials = props.supportedMaterials
+                    }
+                } catch {
+                    print("Failed to load material properties: \(error)")
+                }
             }
         } catch {
             print("Failed to load capabilities: \(error)")
+        }
+    }
+
+    private func setSegmentMaterial(segment: Segment, material: String) async {
+        guard let api = api else { return }
+        isLoading = true
+        defer { isLoading = false }
+
+        do {
+            try await api.setSegmentMaterial(segmentId: segment.id, material: material)
+            showMaterialSheet = false
+            materialSegment = nil
+        } catch {
+            print("Failed to set segment material: \(error)")
         }
     }
 
@@ -591,6 +646,70 @@ struct SplitMapView: View {
             context.fill(Path(rect), with: .color(color))
             i += 2
         }
+    }
+}
+
+// MARK: - Segment Material Sheet
+struct SegmentMaterialSheet: View {
+    let segment: Segment
+    let supportedMaterials: [String]
+    let onSetMaterial: (String) async -> Void
+    @Environment(\.dismiss) var dismiss
+    @State private var selectedMaterial: String?
+
+    var body: some View {
+        NavigationStack {
+            List {
+                Section {
+                    ForEach(supportedMaterials, id: \.self) { material in
+                        Button {
+                            selectedMaterial = material
+                        } label: {
+                            HStack {
+                                Image(systemName: FloorMaterial(rawValue: material)?.icon ?? "square.fill")
+                                    .foregroundStyle(.orange)
+                                    .frame(width: 24)
+                                Text(FloorMaterial(rawValue: material)?.displayName ?? material)
+                                    .foregroundStyle(.primary)
+                                Spacer()
+                                if selectedMaterial == material {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundStyle(.blue)
+                                } else {
+                                    Image(systemName: "circle")
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+                    }
+                } header: {
+                    Text(String(localized: "material.select"))
+                } footer: {
+                    Text(String(localized: "material.hint"))
+                }
+            }
+            .navigationTitle(segment.displayName)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button(String(localized: "settings.cancel")) {
+                        dismiss()
+                    }
+                }
+                ToolbarItem(placement: .confirmationAction) {
+                    Button(String(localized: "settings.save")) {
+                        if let material = selectedMaterial {
+                            Task {
+                                await onSetMaterial(material)
+                                dismiss()
+                            }
+                        }
+                    }
+                    .disabled(selectedMaterial == nil)
+                }
+            }
+        }
+        .presentationDetents([.medium])
     }
 }
 

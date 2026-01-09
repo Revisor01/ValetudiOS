@@ -379,6 +379,22 @@ extension ValetudoAPI {
         try await requestVoid("/robot/capabilities/ManualControlCapability", body: body)
     }
 
+    // MARK: - High Resolution Manual Control (for S5 Max etc.)
+    func enableHighResManualControl() async throws {
+        let body = try JSONEncoder().encode(ActionRequest(action: "enable"))
+        try await requestVoid("/robot/capabilities/HighResolutionManualControlCapability", body: body)
+    }
+
+    func disableHighResManualControl() async throws {
+        let body = try JSONEncoder().encode(ActionRequest(action: "disable"))
+        try await requestVoid("/robot/capabilities/HighResolutionManualControlCapability", body: body)
+    }
+
+    func highResManualControl(velocity: Int, angle: Int) async throws {
+        let body = try JSONEncoder().encode(HighResManualControlRequest(action: "move", vector: HighResManualControlVector(velocity: velocity, angle: angle)))
+        try await requestVoid("/robot/capabilities/HighResolutionManualControlCapability", body: body)
+    }
+
     // MARK: - Quirks
     func getQuirks() async throws -> [Quirk] {
         try await request("/robot/capabilities/QuirksCapability")
@@ -481,6 +497,27 @@ extension ValetudoAPI {
     func setMopDockWashTemperature(preset: String) async throws {
         let body = try JSONEncoder().encode(PresetControlRequest(name: preset))
         try await requestVoid("/robot/capabilities/MopDockMopWashTemperatureControlCapability/preset", body: body)
+    }
+
+    // MARK: - Map Segment Material Control
+    func getSegmentMaterialProperties() async throws -> SegmentMaterialProperties {
+        try await request("/robot/capabilities/MapSegmentMaterialControlCapability/properties")
+    }
+
+    func setSegmentMaterial(segmentId: String, material: String) async throws {
+        let body = try JSONEncoder().encode(SegmentMaterialRequest(action: "set_material", segmentId: segmentId, material: material))
+        try await requestVoid("/robot/capabilities/MapSegmentMaterialControlCapability", body: body)
+    }
+
+    // MARK: - Floor Material Direction Aware Navigation
+    func getFloorMaterialNavigation() async throws -> Bool {
+        let response: EnabledResponse = try await request("/robot/capabilities/FloorMaterialDirectionAwareNavigationControlCapability")
+        return response.enabled
+    }
+
+    func setFloorMaterialNavigation(enabled: Bool) async throws {
+        let body = try JSONEncoder().encode(ActionRequest(action: enabled ? "enable" : "disable"))
+        try await requestVoid("/robot/capabilities/FloorMaterialDirectionAwareNavigationControlCapability", body: body)
     }
 
     // MARK: - MQTT

@@ -486,6 +486,22 @@ struct ManualControlRequest: Codable {
     }
 }
 
+// MARK: - High Resolution Manual Control
+struct HighResManualControlRequest: Codable {
+    let action: String
+    let vector: HighResManualControlVector?
+
+    init(action: String, vector: HighResManualControlVector? = nil) {
+        self.action = action
+        self.vector = vector
+    }
+}
+
+struct HighResManualControlVector: Codable {
+    let velocity: Int
+    let angle: Int
+}
+
 // MARK: - Quirks
 struct Quirk: Codable, Identifiable {
     let id: String
@@ -563,6 +579,23 @@ struct WifiConfigRequest: Codable {
         self.ssid = ssid
         self.credentials = WifiCredentials(password: password)
     }
+}
+
+// MARK: - Segment Material
+struct SegmentMaterialRequest: Codable {
+    let action: String
+    let segmentId: String
+    let material: String
+
+    enum CodingKeys: String, CodingKey {
+        case action
+        case segmentId = "segment_id"
+        case material
+    }
+}
+
+struct SegmentMaterialProperties: Codable {
+    let supportedMaterials: [String]
 }
 
 // MARK: - MQTT
