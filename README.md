@@ -8,6 +8,14 @@
   Native iOS-App für <a href="https://valetudo.cloud">Valetudo</a> Saugroboter.
 </p>
 
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-iOS%2017%2B-blue?logo=apple" alt="Platform">
+  <img src="https://img.shields.io/github/v/tag/Revisor01/ValetudiOS?label=Version&color=green" alt="Version">
+  <img src="https://img.shields.io/badge/Xcode-15%2B-blue?logo=xcode" alt="Xcode">
+  <img src="https://img.shields.io/badge/Swift-5.9-orange?logo=swift" alt="Swift">
+  <img src="https://img.shields.io/github/license/Revisor01/ValetudiOS" alt="License">
+</p>
+
 ## Features
 
 - **Multi-Roboter-Unterstützung**: Verwalte mehrere Valetudo-Roboter in einer App
