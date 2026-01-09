@@ -123,8 +123,13 @@ struct SettingsView: View {
                 } footer: {
                     VStack(spacing: 4) {
                         Text("settings.license_footer")
-                        Text("settings.made_in")
-                            .padding(.top, 8)
+                        HStack(spacing: 4) {
+                            Text("settings.made_with")
+                            Image(systemName: "heart.fill")
+                                .foregroundStyle(.red)
+                            Text("settings.made_location")
+                        }
+                        .padding(.top, 8)
                     }
                 }
             }

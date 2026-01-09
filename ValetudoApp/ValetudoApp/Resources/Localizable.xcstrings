@@ -4370,18 +4370,34 @@
         }
       }
     },
-    "settings.made_in" : {
+    "settings.made_with" : {
       "localizations" : {
         "de" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Gemacht mit ❤️ in Hennstedt"
+            "value" : "Gemacht mit"
           }
         },
         "en" : {
           "stringUnit" : {
             "state" : "translated",
-            "value" : "Made with ❤️ in Hennstedt"
+            "value" : "Made with"
+          }
+        }
+      }
+    },
+    "settings.made_location" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "in Hennstedt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "in Hennstedt"
           }
         }
       }
