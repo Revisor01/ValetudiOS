@@ -30,7 +30,7 @@
 - **Siri-Kurzbefehle**: Sprachsteuerung für häufige Aktionen
 - **Push-Benachrichtigungen**: Über Reinigungsstatus und Fehler informiert werden
 - **Dark Mode**: Vollständige Unterstützung für den Dunkelmodus
-- **Lokalisierung**: Deutsch und Englisch
+- **Lokalisierung**: Deutsch, Englisch und Französich
 
 ## Voraussetzungen
 
