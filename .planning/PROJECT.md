@@ -36,11 +36,11 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 
 ### Active
 
-- [ ] Valetudo API vollständig integrieren (fehlende Capabilities)
+- [x] Valetudo API vollständig integrieren (fehlende Capabilities) -- Phase 3
 - [x] mDNS/Bonjour statt IP-Brute-Force -- Phase 2
 - [x] SSE Real-Time Updates -- Phase 2
 - [x] Map-Pixel-Caching -- Phase 2
-- [ ] Notification-Actions implementieren
+- [x] Notification-Actions implementieren -- Phase 3
 - [ ] ViewModel-Extraktion (MapView, RobotDetailView, RobotSettingsView)
 - [ ] Test-Coverage aufbauen
 
@@ -106,4 +106,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-27 after Phase 2 Network Layer completion*
+*Last updated: 2026-03-28 after Phase 3 API Completeness completion*
