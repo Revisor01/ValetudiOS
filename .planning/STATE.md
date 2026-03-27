@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: executing
-stopped_at: Completed 03-api-completeness 03-02-PLAN.md
-last_updated: "2026-03-27T23:05:01.184Z"
+stopped_at: Completed 04-view-refactoring-tests 04-03-PLAN.md
+last_updated: "2026-03-27T23:26:47.285Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 4
   completed_phases: 3
-  total_plans: 9
-  completed_plans: 9
+  total_plans: 13
+  completed_plans: 11
   percent: 0
 ---
 
@@ -21,12 +21,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-27)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 03 — api-completeness
+**Current focus:** Phase 04 — view-refactoring-tests
 
 ## Current Position
 
-Phase: 4
-Plan: Not started
+Phase: 04 (view-refactoring-tests) — EXECUTING
+Plan: 2 of 4
 Status: Ready to execute
 Last activity: 2026-03-27
 
@@ -55,6 +55,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-network-layer P03 | 10min | 2 tasks | 2 files |
 | Phase 03-api-completeness P01 | 8min | 2 tasks | 3 files |
 | Phase 03-api-completeness P02 | 2min | 2 tasks | 3 files |
+| Phase 04-view-refactoring-tests P03 | 9min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -88,6 +89,7 @@ Recent decisions affecting current work:
 - [Phase 03-api-completeness]: Static weak var robotManagerRef on NotificationService set via onAppear — avoids singleton coupling while staying MainActor-safe
 - [Phase 03-api-completeness]: completionHandler() called immediately in didReceive, Task runs independently — UNNotificationCenterDelegate pitfall 6 compliance
 - [Phase 03-api-completeness]: No Map Snapshot create button — snapshots created automatically by firmware (pitfall 3)
+- [Phase 04-view-refactoring-tests]: @StateObject injected via init with explicit robotManager parameter — not via @EnvironmentObject — to keep ViewModel init testable and self-contained
 
 ### Pending Todos
 
@@ -100,6 +102,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T22:45:37.660Z
-Stopped at: Completed 03-api-completeness 03-02-PLAN.md
+Last session: 2026-03-27T23:26:47.280Z
+Stopped at: Completed 04-view-refactoring-tests 04-03-PLAN.md
 Resume file: None
