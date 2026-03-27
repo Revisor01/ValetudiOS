@@ -15,6 +15,7 @@ class RobotManager: ObservableObject {
     private var lastConsumableCheck: [UUID: Date] = [:]
     private let storageKey = "valetudo_robots"
     private let notificationService = NotificationService.shared
+    private let sseManager = SSEConnectionManager()
 
     init() {
         loadRobots()
@@ -55,6 +56,8 @@ class RobotManager: ObservableObject {
     }
 
     func removeRobot(_ id: UUID) {
+        // Disconnect SSE before clearing state so stream cleanup completes
+        Task { await sseManager.disconnect(robotId: id) }
         KeychainStore.delete(for: id)
         robots.removeAll { $0.id == id }
         apis.removeValue(forKey: id)
@@ -72,10 +75,45 @@ class RobotManager: ObservableObject {
     }
 
     // MARK: - Status Refresh
+
     private func startRefreshing() {
         refreshTask = Task {
             while !Task.isCancelled {
-                await refreshAllRobots()
+                // Connect SSE for each robot that doesn't have an active connection yet
+                for robot in robots {
+                    guard let api = apis[robot.id] else { continue }
+                    let sseActive = await sseManager.isSSEActive(for: robot.id)
+                    if !sseActive {
+                        let robotId = robot.id
+                        await sseManager.connect(
+                            robotId: robotId,
+                            api: api,
+                            onAttributesUpdate: { [weak self] attrs in
+                                Task { @MainActor [weak self] in
+                                    self?.applyAttributeUpdate(attrs, for: robotId)
+                                }
+                            },
+                            onConnectionChange: { [weak self] connected in
+                                Task { @MainActor [weak self] in
+                                    self?.sseConnectionChanged(connected, for: robotId)
+                                }
+                            }
+                        )
+                    }
+                }
+
+                // Poll only robots without active SSE (fallback)
+                await withTaskGroup(of: Void.self) { group in
+                    for robot in robots {
+                        group.addTask {
+                            let sseActive = await self.sseManager.isSSEActive(for: robot.id)
+                            if !sseActive {
+                                await self.refreshRobot(robot.id)
+                            }
+                        }
+                    }
+                }
+
                 try? await Task.sleep(for: .seconds(5))
             }
         }
@@ -94,47 +132,57 @@ class RobotManager: ObservableObject {
         let robotName = getRobotName(for: id)
         let previousState = previousStates[id]
 
-        let isOnline = await api.checkConnection()
+        do {
+            let attributes = try await api.getAttributes()
+            let info = try await api.getRobotInfo()
 
-        if isOnline {
-            do {
-                let attributes = try await api.getAttributes()
-                let info = try await api.getRobotInfo()
+            let newStatus = RobotStatus(
+                isOnline: true,
+                attributes: attributes,
+                info: info
+            )
 
-                let newStatus = RobotStatus(
-                    isOnline: true,
-                    attributes: attributes,
-                    info: info
-                )
+            // Check for state changes and send notifications
+            checkStateChanges(robotName: robotName, previous: previousState, current: newStatus)
 
-                // Check for state changes and send notifications
-                checkStateChanges(robotName: robotName, previous: previousState, current: newStatus)
+            previousStates[id] = robotStates[id]
+            robotStates[id] = newStatus
 
-                await MainActor.run {
-                    self.previousStates[id] = self.robotStates[id]
-                    self.robotStates[id] = newStatus
-                }
-
-                // Check for updates and consumables (in background, don't block refresh)
-                Task {
-                    await self.checkUpdateForRobot(id)
-                    await self.checkConsumables(for: id)
-                }
-            } catch {
-                await MainActor.run {
-                    self.robotStates[id] = RobotStatus(isOnline: false)
-                }
+            // Check for updates and consumables (in background, don't block refresh)
+            Task {
+                await self.checkUpdateForRobot(id)
+                await self.checkConsumables(for: id)
             }
-        } else {
-            // Notify if robot went offline
+        } catch {
+            // Treat any error as offline signal — avoids double-request overhead of checkConnection()
             if previousState?.isOnline == true {
                 notificationService.notifyRobotOffline(robotName: robotName)
             }
+            previousStates[id] = robotStates[id]
+            robotStates[id] = RobotStatus(isOnline: false)
+        }
+    }
 
-            await MainActor.run {
-                self.previousStates[id] = self.robotStates[id]
-                self.robotStates[id] = RobotStatus(isOnline: false)
-            }
+    // MARK: - SSE Update Handling
+
+    private func applyAttributeUpdate(_ attrs: [RobotAttribute], for id: UUID) {
+        let existingInfo = robotStates[id]?.info
+        let newStatus = RobotStatus(
+            isOnline: true,
+            attributes: attrs,
+            info: existingInfo
+        )
+        let robotName = getRobotName(for: id)
+        checkStateChanges(robotName: robotName, previous: previousStates[id], current: newStatus)
+        previousStates[id] = robotStates[id]
+        robotStates[id] = newStatus
+    }
+
+    private func sseConnectionChanged(_ connected: Bool, for id: UUID) {
+        if connected {
+            logger.info("SSE connection established for robot \(id, privacy: .public)")
+        } else {
+            logger.warning("SSE connection lost for robot \(id, privacy: .public) — falling back to polling")
         }
     }
 
