@@ -13,6 +13,7 @@
 		143326E22353048B7A54418D /* PresetHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489C5B4217131AFAA714813 /* PresetHelpers.swift */; };
 		1932127BBDCC8FBE2645FC31 /* RobotSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 698C8F9BC11A4FCCF9D99923 /* RobotSettingsView.swift */; };
 		26187F76B128067478E11E35 /* RobotDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DD7833558396395DCA7D32 /* RobotDetailView.swift */; };
+		5AC8DC8FDF9A485180374DC9 /* ObstaclePhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B057E6983548828E2840DF /* ObstaclePhotoView.swift */; };
 		268751822B3D802C519CE03C /* SSEConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9841E9A11C0D78ACE274994 /* SSEConnectionManager.swift */; };
 		48E82472B522893504594AC9 /* RobotState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602023483884AA7FC99EE28A /* RobotState.swift */; };
 		4F1CBBF41038293EA0F80B16 /* Consumable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B313EE35A432692658D58220 /* Consumable.swift */; };
@@ -53,6 +54,7 @@
 		21BF56FF46BA4144DBD73CA4 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		2F02071A0C637423ED754AC4 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		34DD7833558396395DCA7D32 /* RobotDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailView.swift; sourceTree = "<group>"; };
+		A4B057E6983548828E2840DF /* ObstaclePhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObstaclePhotoView.swift; sourceTree = "<group>"; };
 		44002D9750AED2C37546A796 /* ValetudoApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ValetudoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BE7F0D27E21AAB984042AF4 /* RobotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotManager.swift; sourceTree = "<group>"; };
 		4C082534D8ADAC8160B2405F /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -104,6 +106,7 @@
 				172B1FB7678A953A4655A3EE /* IntensityControlView.swift */,
 				8B35122CA897ECE8B3B52014 /* ManualControlView.swift */,
 				0EB9C50A27756E4D5EDFB505 /* MapView.swift */,
+				A4B057E6983548828E2840DF /* ObstaclePhotoView.swift */,
 				B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */,
 				34DD7833558396395DCA7D32 /* RobotDetailView.swift */,
 				5713E6238AD5A3F2420EE02B /* RobotListView.swift */,
@@ -266,6 +269,7 @@
 				D692854F2D2227501DA43AF6 /* KeychainStore.swift in Sources */,
 				A2F93F458EDD354944B50689 /* ManualControlView.swift in Sources */,
 				812642A8D77C6E37764AC03D /* MapView.swift in Sources */,
+				5AC8DC8FDF9A485180374DC9 /* ObstaclePhotoView.swift in Sources */,
 				DB3194EBB4566F919E12A364 /* NWBrowserService.swift in Sources */,
 				C51D8291FD9CFE191FA9557D /* NetworkScanner.swift in Sources */,
 				583401D717322CA5AE6527B8 /* NotificationService.swift in Sources */,

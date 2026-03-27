@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RobotDetailView: View {
     @EnvironmentObject var robotManager: RobotManager
+    @EnvironmentObject var errorRouter: ErrorRouter
     let robot: RobotConfig
 
     @State private var segments: [Segment] = []
@@ -41,6 +42,15 @@ struct RobotDetailView: View {
     @State private var hasAutoEmptyTrigger = DebugConfig.showAllCapabilities
     @State private var hasMopDockClean = DebugConfig.showAllCapabilities
     @State private var hasMopDockDry = DebugConfig.showAllCapabilities
+
+    // Clean Route
+    @State private var hasCleanRoute = DebugConfig.showAllCapabilities
+    @State private var currentCleanRoute = ""
+    @State private var cleanRouteOptions: [String] = ["normal", "quick", "intensive", "deep"]
+
+    // Events
+    @State private var events: [ValetudoEvent] = []
+    @State private var hasObstacleImages = DebugConfig.showAllCapabilities
 
     // Update check
     @State private var currentVersion: String?
@@ -221,6 +231,12 @@ struct RobotDetailView: View {
 
                 // Statistics (Accordion)
                 statisticsSection
+
+                // Clean Route (Capability-gated)
+                cleanRouteSection
+
+                // Events Section
+                eventsSection
 
                 // Settings Section
                 Section {
@@ -983,6 +999,68 @@ extension RobotDetailView {
         }
     }
 
+    // MARK: - Clean Route Section
+    @ViewBuilder
+    private var cleanRouteSection: some View {
+        if hasCleanRoute {
+            Section {
+                Picker(String(localized: "detail.clean_route"), selection: Binding(
+                    get: { currentCleanRoute },
+                    set: { newValue in
+                        currentCleanRoute = newValue
+                        Task {
+                            guard let api = robotManager.getAPI(for: robot.id) else { return }
+                            do {
+                                try await api.setCleanRoute(route: newValue)
+                            } catch {
+                                errorRouter.show(error)
+                            }
+                        }
+                    }
+                )) {
+                    Text(String(localized: "cleanroute.normal")).tag("normal")
+                    Text(String(localized: "cleanroute.quick")).tag("quick")
+                    Text(String(localized: "cleanroute.intensive")).tag("intensive")
+                    Text(String(localized: "cleanroute.deep")).tag("deep")
+                }
+            }
+        }
+    }
+
+    // MARK: - Events Section
+    @ViewBuilder
+    private var eventsSection: some View {
+        if !events.isEmpty {
+            Section(header: Text(String(localized: "detail.events"))) {
+                ForEach(events.prefix(10)) { event in
+                    HStack {
+                        Image(systemName: event.iconName)
+                            .foregroundStyle(event.__class.contains("Error") ? .red : .secondary)
+                            .frame(width: 24)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(event.displayName)
+                                .font(.subheadline)
+                            if let message = event.message {
+                                Text(message)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Text(event.timestamp)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                        Spacer()
+                        if !event.processed {
+                            Circle()
+                                .fill(.blue)
+                                .frame(width: 8, height: 8)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // MARK: - Rooms Section (Accordion)
     @ViewBuilder
     private var roomsSection: some View {
@@ -1110,7 +1188,8 @@ extension RobotDetailView {
         async let fanSpeedTask: () = loadFanSpeedPresets()
         async let updateTask: () = checkForUpdate()
         async let statsTask: () = loadLastCleaningStats()
-        _ = await (segmentsTask, consumablesTask, capabilitiesTask, fanSpeedTask, updateTask, statsTask)
+        async let eventsTask: () = loadEvents()
+        _ = await (segmentsTask, consumablesTask, capabilitiesTask, fanSpeedTask, updateTask, statsTask, eventsTask)
     }
 
     private func loadLastCleaningStats() async {
@@ -1225,9 +1304,33 @@ extension RobotDetailView {
                 hasAutoEmptyTrigger = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockManualTriggerCapability")
                 hasMopDockClean = DebugConfig.showAllCapabilities || capabilities.contains("MopDockCleanManualTriggerCapability")
                 hasMopDockDry = DebugConfig.showAllCapabilities || capabilities.contains("MopDockDryManualTriggerCapability")
+                hasCleanRoute = DebugConfig.showAllCapabilities || capabilities.contains("CleanRouteControlCapability")
+                hasObstacleImages = DebugConfig.showAllCapabilities || capabilities.contains("ObstacleImagesCapability")
+            }
+            if hasCleanRoute {
+                do {
+                    let routeState = try await api.getCleanRoute()
+                    await MainActor.run {
+                        currentCleanRoute = routeState.route
+                    }
+                } catch {
+                    // Silently ignore — robot may not support this
+                }
             }
         } catch {
             print("Failed to load capabilities: \(error)")
+        }
+    }
+
+    private func loadEvents() async {
+        guard let api = api else { return }
+        do {
+            let fetchedEvents = try await api.getEvents()
+            await MainActor.run {
+                events = fetchedEvents
+            }
+        } catch {
+            // Silently ignore — events endpoint may not be available
         }
     }
 
@@ -1515,5 +1618,6 @@ struct DockActionButton: View {
     NavigationStack {
         RobotDetailView(robot: RobotConfig(name: "Test Robot", host: "192.168.0.35"))
             .environmentObject(RobotManager())
+            .environmentObject(ErrorRouter())
     }
 }
