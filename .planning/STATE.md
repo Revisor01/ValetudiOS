@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: verifying
-stopped_at: Completed 02-network-layer 02-03-PLAN.md
-last_updated: "2026-03-27T19:37:27.711Z"
+status: executing
+stopped_at: Completed 03-api-completeness 03-01-PLAN.md
+last_updated: "2026-03-27T22:40:29.553Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 4
   completed_phases: 2
-  total_plans: 6
-  completed_plans: 6
+  total_plans: 9
+  completed_plans: 7
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-27)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 02 — network-layer
+**Current focus:** Phase 03 — api-completeness
 
 ## Current Position
 
-Phase: 3
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 03 (api-completeness) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
 Last activity: 2026-03-27
 
 Progress: [░░░░░░░░░░] 0%
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-network-layer P02 | 8min | 2 tasks | 4 files |
 | Phase 02-network-layer P01 | 15m | 2 tasks | 4 files |
 | Phase 02-network-layer P03 | 10min | 2 tasks | 2 files |
+| Phase 03-api-completeness P01 | 8min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -81,6 +82,8 @@ Recent decisions affecting current work:
 - [Phase 02-network-layer]: refreshRobot() removes checkConnection() pre-flight — API call errors treated as offline signal, saving one HTTP round-trip per poll cycle
 - [Phase 02-network-layer]: MapLayerCache uses final class (not lazy var) — MapLayer is a struct, lazy var would require mutating which fails in SwiftUI let-binding context
 - [Phase 02-network-layer]: Map-SSE lifecycle bounded to MapContentView open/close via refreshTask — SSEConnectionManager handles attributes-SSE only, not map-SSE
+- [Phase 03-api-completeness]: getEvents() dict-first then array fallback — API spec ambiguous, defensive decoding avoids runtime crashes across Valetudo versions
+- [Phase 03-api-completeness]: getObstacleImage uses raw URLSession.data (not request<T: Decodable>) — binary image data cannot be JSON-decoded
 
 ### Pending Todos
 
@@ -93,6 +96,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T19:32:29.016Z
-Stopped at: Completed 02-network-layer 02-03-PLAN.md
+Last session: 2026-03-27T22:40:29.551Z
+Stopped at: Completed 03-api-completeness 03-01-PLAN.md
 Resume file: None

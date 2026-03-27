@@ -12,7 +12,7 @@ Requirements for milestone v1.2.0: Quality & API Completeness.
 - [x] **UX-01**: Robot-Zeile in der Liste ist vollständig klickbar
 - [x] **UX-02**: Benutzer sieht Fehlermeldungen bei fehlgeschlagenen Aktionen (statt stiller Fehler)
 - [ ] **UX-03**: Notification-Actions GO_HOME und LOCATE führen die jeweilige Aktion aus
-- [ ] **UX-04**: Benutzer kann Valetudo Events einsehen (DustBinFull, MopReminder, Errors etc.)
+- [x] **UX-04**: Benutzer kann Valetudo Events einsehen (DustBinFull, MopReminder, Errors etc.)
 
 ### Netzwerk
 
@@ -22,10 +22,10 @@ Requirements for milestone v1.2.0: Quality & API Completeness.
 
 ### API Capabilities
 
-- [ ] **API-01**: Benutzer kann Map-Snapshots erstellen und wiederherstellen
-- [ ] **API-02**: Benutzer kann ausstehende Kartenänderungen akzeptieren/ablehnen
-- [ ] **API-03**: Benutzer kann Reinigungsroute wählen (Standard, Bow-Tie, Spiral etc.)
-- [ ] **API-04**: Benutzer kann Fotos erkannter Hindernisse ansehen
+- [x] **API-01**: Benutzer kann Map-Snapshots erstellen und wiederherstellen
+- [x] **API-02**: Benutzer kann ausstehende Kartenänderungen akzeptieren/ablehnen
+- [x] **API-03**: Benutzer kann Reinigungsroute wählen (Standard, Bow-Tie, Spiral etc.)
+- [x] **API-04**: Benutzer kann Fotos erkannter Hindernisse ansehen
 
 ### Tech Debt
 
@@ -67,14 +67,14 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UX-01 | Phase 1 | Complete |
 | UX-02 | Phase 1 | Complete |
 | UX-03 | Phase 3 | Pending |
-| UX-04 | Phase 3 | Pending |
+| UX-04 | Phase 3 | Complete |
 | NET-01 | Phase 2 | Complete |
 | NET-02 | Phase 2 | Complete |
 | NET-03 | Phase 1 | Complete |
-| API-01 | Phase 3 | Pending |
-| API-02 | Phase 3 | Pending |
-| API-03 | Phase 3 | Pending |
-| API-04 | Phase 3 | Pending |
+| API-01 | Phase 3 | Complete |
+| API-02 | Phase 3 | Complete |
+| API-03 | Phase 3 | Complete |
+| API-04 | Phase 3 | Complete |
 | DEBT-01 | Phase 1 | Complete |
 | DEBT-02 | Phase 4 | Pending |
 | DEBT-03 | Phase 2 | Complete |
