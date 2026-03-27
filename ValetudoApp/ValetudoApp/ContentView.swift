@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ContentView: View {
     @EnvironmentObject var robotManager: RobotManager
+    @EnvironmentObject var errorRouter: ErrorRouter
     @State private var selectedTab = 0
     @State private var selectedRobotId: UUID?
 
@@ -48,4 +49,5 @@ struct ContentView: View {
 #Preview {
     ContentView()
         .environmentObject(RobotManager())
+        .environmentObject(ErrorRouter())
 }
