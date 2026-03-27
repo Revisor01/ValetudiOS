@@ -16,7 +16,7 @@
 
 - [x] **Phase 1: Foundation** - Keychain, ErrorRouter, os.Logger — Infrastruktur-Grundlage und Fehlerbehandlung (completed 2026-03-27)
 - [x] **Phase 2: Network Layer** - SSE-Streaming, mDNS-Discovery, Map-Pixel-Cache (completed 2026-03-27)
-- [ ] **Phase 3: API Completeness** - Neue Valetudo-Capabilities und Notification Actions
+- [x] **Phase 3: API Completeness** - Neue Valetudo-Capabilities und Notification Actions (completed 2026-03-28)
 - [ ] **Phase 4: View Refactoring & Tests** - ViewModel-Extraktion und XCTest-Coverage
 
 ## Phase Details
@@ -90,5 +90,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-03-27 |
 | 2. Network Layer | 3/3 | Complete   | 2026-03-27 |
-| 3. API Completeness | 1/3 | In Progress|  |
+| 3. API Completeness | 3/3 | Complete   | 2026-03-28 |
 | 4. View Refactoring & Tests | 0/TBD | Not started | - |
