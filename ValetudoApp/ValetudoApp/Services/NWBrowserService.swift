@@ -1,6 +1,6 @@
 import Foundation
 import Network
-import OSLog
+import os
 
 @MainActor
 final class NWBrowserService: ObservableObject {
@@ -51,6 +51,14 @@ final class NWBrowserService: ObservableObject {
         self.browser = browser
     }
 
+    private func txtRecordValue(_ record: NWTXTRecord, key: String) -> String? {
+        guard let entry = record.getEntry(for: key) else { return nil }
+        if case let .string(value) = entry {
+            return value
+        }
+        return nil
+    }
+
     func stopBrowsing() {
         browser?.cancel()
         browser = nil
@@ -68,8 +76,8 @@ final class NWBrowserService: ObservableObject {
             var model: String? = nil
 
             if case let .bonjour(txtRecord) = result.metadata {
-                friendlyName = txtRecord.dictionary["friendlyName"]
-                model = txtRecord.dictionary["model"]
+                friendlyName = self.txtRecordValue(txtRecord, key: "friendlyName")
+                model = self.txtRecordValue(txtRecord, key: "model")
             }
 
             // Use <name>.local as host (simpler than NWConnection resolution per D-10)
