@@ -12,6 +12,22 @@ struct MapSize: Codable {
     let y: Int
 }
 
+/// Cache class for MapLayer pixel decompression.
+/// Using a class (reference type) allows caching on structs passed as `let` in SwiftUI Canvas closures,
+/// where `lazy var` (mutating) would not compile.
+final class MapLayerCache {
+    private var cachedPixels: [Int]?
+
+    func decompressedPixels(from layer: MapLayer) -> [Int] {
+        if let cached = cachedPixels { return cached }
+        let result = layer.computeDecompressedPixels()
+        cachedPixels = result
+        return result
+    }
+
+    func invalidate() { cachedPixels = nil }
+}
+
 struct MapLayer: Codable {
     let `__class`: String?
     let type: String?
@@ -19,15 +35,22 @@ struct MapLayer: Codable {
     let compressedPixels: [Int]?
     let metaData: LayerMetaData?
     let dimensions: LayerDimensions?
+    let cache = MapLayerCache()
 
     enum CodingKeys: String, CodingKey {
         case `__class`, type, pixels, compressedPixels, metaData, dimensions
     }
 
-    /// Returns decompressed pixels - Valetudo uses run-length encoding
-    /// Format: [x1, y1, count1, x2, y2, count2, ...]
-    /// Each entry means: starting at (x,y), draw 'count' pixels horizontally
+    /// Returns decompressed pixels - cached via MapLayerCache to avoid recomputation per frame.
+    /// Cache is naturally invalidated when new map data arrives (new MapLayer instances = fresh cache).
     var decompressedPixels: [Int] {
+        cache.decompressedPixels(from: self)
+    }
+
+    /// Computes decompressed pixels from raw data. Called only by MapLayerCache on first access.
+    /// Valetudo uses run-length encoding: [x1, y1, count1, x2, y2, count2, ...]
+    /// Each entry means: starting at (x,y), draw 'count' pixels horizontally.
+    fileprivate func computeDecompressedPixels() -> [Int] {
         // If regular pixels exist, use them
         if let pixels = pixels, !pixels.isEmpty {
             return pixels
