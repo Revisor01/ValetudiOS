@@ -3,6 +3,7 @@ import SwiftUI
 struct RobotSettingsView: View {
     let robot: RobotConfig
     @EnvironmentObject var robotManager: RobotManager
+    @EnvironmentObject var errorRouter: ErrorRouter
 
     @State private var volume: Double = 80
     @State private var carpetMode = false
@@ -32,6 +33,14 @@ struct RobotSettingsView: View {
     @State private var hasMopDockAutoDrying = DebugConfig.showAllCapabilities
     @State private var hasMopDockWashTemperature = DebugConfig.showAllCapabilities
     @State private var hasFloorMaterialNavigation = DebugConfig.showAllCapabilities
+    @State private var hasMapSnapshot = false
+    @State private var hasPendingMapChange = false
+
+    // Map Snapshot & Pending Map Change state
+    @State private var mapSnapshots: [MapSnapshot] = []
+    @State private var pendingMapChangeEnabled = false
+    @State private var isRestoringSnapshot = false
+    @State private var isHandlingMapChange = false
 
     // Carpet sensor mode
     @State private var carpetSensorMode: String = ""
@@ -270,6 +279,92 @@ struct RobotSettingsView: View {
                 }
             }
 
+            // MARK: - Map Snapshots
+            if hasMapSnapshot {
+                Section(header: Text(String(localized: "settings.map_snapshots"))) {
+                    if mapSnapshots.isEmpty {
+                        Text(String(localized: "settings.no_snapshots"))
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(mapSnapshots) { snapshot in
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text(snapshot.id)
+                                        .font(.footnote)
+                                        .lineLimit(1)
+                                }
+                                Spacer()
+                                Button {
+                                    Task {
+                                        guard let api = robotManager.getAPI(for: robot.id) else { return }
+                                        isRestoringSnapshot = true
+                                        do {
+                                            try await api.restoreMapSnapshot(id: snapshot.id)
+                                        } catch {
+                                            errorRouter.show(error)
+                                        }
+                                        isRestoringSnapshot = false
+                                    }
+                                } label: {
+                                    if isRestoringSnapshot {
+                                        ProgressView()
+                                    } else {
+                                        Text(String(localized: "settings.restore"))
+                                    }
+                                }
+                                .disabled(isRestoringSnapshot)
+                            }
+                        }
+                    }
+                }
+            }
+
+            // MARK: - Pending Map Change
+            if hasPendingMapChange && pendingMapChangeEnabled {
+                Section(header: Text(String(localized: "settings.pending_map_change"))) {
+                    Text(String(localized: "settings.pending_map_change.description"))
+                        .font(.footnote)
+                        .foregroundStyle(.secondary)
+                    HStack {
+                        Button {
+                            Task {
+                                guard let api = robotManager.getAPI(for: robot.id) else { return }
+                                isHandlingMapChange = true
+                                do {
+                                    try await api.handlePendingMapChange(action: "accept")
+                                    pendingMapChangeEnabled = false
+                                } catch {
+                                    errorRouter.show(error)
+                                }
+                                isHandlingMapChange = false
+                            }
+                        } label: {
+                            Label(String(localized: "settings.accept"), systemImage: "checkmark.circle.fill")
+                        }
+                        .disabled(isHandlingMapChange)
+
+                        Spacer()
+
+                        Button(role: .destructive) {
+                            Task {
+                                guard let api = robotManager.getAPI(for: robot.id) else { return }
+                                isHandlingMapChange = true
+                                do {
+                                    try await api.handlePendingMapChange(action: "reject")
+                                    pendingMapChangeEnabled = false
+                                } catch {
+                                    errorRouter.show(error)
+                                }
+                                isHandlingMapChange = false
+                            }
+                        } label: {
+                            Label(String(localized: "settings.reject"), systemImage: "xmark.circle.fill")
+                        }
+                        .disabled(isHandlingMapChange)
+                    }
+                }
+            }
+
             // Quirks Section
             if hasQuirks {
                 Section {
@@ -461,6 +556,8 @@ struct RobotSettingsView: View {
             hasMopDockAutoDrying = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopAutoDryingControlCapability")
             hasMopDockWashTemperature = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopWashTemperatureControlCapability")
             hasFloorMaterialNavigation = DebugConfig.showAllCapabilities || capabilities.contains("FloorMaterialDirectionAwareNavigationControlCapability")
+            hasMapSnapshot = DebugConfig.showAllCapabilities || capabilities.contains("MapSnapshotCapability")
+            hasPendingMapChange = DebugConfig.showAllCapabilities || capabilities.contains("PendingMapChangeHandlingCapability")
         } catch {
             hasMappingPass = DebugConfig.showAllCapabilities
         }
@@ -545,6 +642,25 @@ struct RobotSettingsView: View {
             } catch {
                 if !DebugConfig.showAllCapabilities { hasMopDockWashTemperature = false }
                 mopDockWashTemperaturePresets = []
+            }
+        }
+
+        // Load map snapshots if capability exists
+        if hasMapSnapshot {
+            do {
+                mapSnapshots = try await api.getMapSnapshots()
+            } catch {
+                // Silently ignore — not critical
+            }
+        }
+
+        // Check pending map change
+        if hasPendingMapChange {
+            do {
+                let state = try await api.getPendingMapChange()
+                pendingMapChangeEnabled = state.enabled
+            } catch {
+                // Silently ignore
             }
         }
 
