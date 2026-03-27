@@ -33,7 +33,7 @@
 **Plans**: 3 plans
 
 Plans:
-- [ ] 01-01-PLAN.md — Keychain-Migration: KeychainStore Service, RobotConfig CodingKeys-Exclusion, Migration in RobotManager, ValetudoAPI/Intents Credential-Umstellung
+- [x] 01-01-PLAN.md — Keychain-Migration: KeychainStore Service, RobotConfig CodingKeys-Exclusion, Migration in RobotManager, ValetudoAPI/Intents Credential-Umstellung
 - [x] 01-02-PLAN.md — ErrorRouter fuer sichtbare Fehlermeldungen + NavigationLink-Fix fuer klickbare Robot-Zeilen
 - [ ] 01-03-PLAN.md — os.Logger-Migration: print() durch strukturiertes Logging in allen Service-Dateien ersetzen
 
@@ -79,7 +79,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 1/3 | In Progress|  |
+| 1. Foundation | 2/3 | In Progress|  |
 | 2. Network Layer | 0/TBD | Not started | - |
 | 3. API Completeness | 0/TBD | Not started | - |
 | 4. View Refactoring & Tests | 0/TBD | Not started | - |

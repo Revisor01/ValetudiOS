@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: executing
-stopped_at: Completed 01-foundation-01-02-PLAN.md
-last_updated: "2026-03-27T16:37:35.143Z"
+stopped_at: Completed 01-foundation-01-PLAN.md
+last_updated: "2026-03-27T16:38:19.493Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 4
   completed_phases: 0
   total_plans: 3
-  completed_plans: 1
+  completed_plans: 2
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-27)
 ## Current Position
 
 Phase: 01 (Foundation) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-03-27
 
@@ -48,6 +48,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 01-foundation P02 | 12 | 2 tasks | 6 files |
+| Phase 01-foundation P01 | 15 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -64,6 +65,9 @@ Recent decisions affecting current work:
 - Previous releases: v1.0 (App Store), v1.1.0 (Touchpad steering, floor materials)
 - [Phase 01-foundation]: selectedRobotId set in onAppear only — Map tab stays visible for last-viewed robot, no false onDisappear triggers
 - [Phase 01-foundation]: withErrorAlert(router:) applied at WindowGroup root for single alert source of truth
+- [Phase 01-foundation]: KeychainStore uses kSecAttrAccessibleWhenUnlockedThisDeviceOnly for device-only credential storage
+- [Phase 01-foundation]: RobotConfig.CodingKeys excludes password — never serialized to UserDefaults JSON
+- [Phase 01-foundation]: Keychain migration uses read-back verification before clearing password from UserDefaults blob
 
 ### Pending Todos
 
@@ -76,6 +80,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T16:37:35.140Z
-Stopped at: Completed 01-foundation-01-02-PLAN.md
+Last session: 2026-03-27T16:38:19.490Z
+Stopped at: Completed 01-foundation-01-PLAN.md
 Resume file: None
