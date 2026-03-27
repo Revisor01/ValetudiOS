@@ -16,6 +16,9 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 - ErrorRouter: Zentrales Error-Handling mit .alert-basierter Fehlermeldung -- Phase 1
 - Robot-Zeile klickbar: Gesamte Zeile navigiert zur Detailansicht -- Phase 1
 - Strukturiertes Logging: os.Logger statt print() in allen Services -- Phase 1
+- SSE Real-Time Updates: Roboterstatus via Server-Sent Events mit Polling-Fallback -- Phase 2
+- mDNS/Bonjour Discovery: NWBrowser-basierte Roboter-Erkennung mit IP-Scan-Fallback -- Phase 2
+- Map-Pixel-Caching: MapLayerCache class-wrapper für gecachte Dekompression -- Phase 2
 - Robot-Management: Hinzufügen, Konfigurieren, Entfernen von Robotern via LAN
 - Live-Karte: Interaktive Kartenansicht mit Zoom/Pan, Raumanzeige, Zonen
 - Raumreinigung: Einzelne Räume auswählen und reinigen
@@ -34,9 +37,9 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 ### Active
 
 - [ ] Valetudo API vollständig integrieren (fehlende Capabilities)
-- [ ] mDNS/Bonjour statt IP-Brute-Force
-- [ ] SSE Real-Time Updates
-- [ ] Map-Pixel-Caching
+- [x] mDNS/Bonjour statt IP-Brute-Force -- Phase 2
+- [x] SSE Real-Time Updates -- Phase 2
+- [x] Map-Pixel-Caching -- Phase 2
 - [ ] Notification-Actions implementieren
 - [ ] ViewModel-Extraktion (MapView, RobotDetailView, RobotSettingsView)
 - [ ] Test-Coverage aufbauen
@@ -64,7 +67,7 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 - **Stack:** Swift 5.9, SwiftUI, iOS 17+, Zero externe Dependencies
 - **Architektur:** MVVM-lite mit zentralem RobotManager als ObservableObject
 - **API:** Valetudo REST API v2, Basic Auth, optionales SSL
-- **Persistenz:** UserDefaults (kein Keychain, kein CoreData)
+- **Persistenz:** UserDefaults + Keychain (Credentials), kein CoreData
 - **Tests:** Keine vorhanden
 - **Version:** v1.1.0 (App Store), Xcode 15+, XcodeGen
 - **Robot:** Primär getestet mit Roborock S5 Max
@@ -103,4 +106,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-27 after Phase 1 Foundation completion*
+*Last updated: 2026-03-27 after Phase 2 Network Layer completion*
