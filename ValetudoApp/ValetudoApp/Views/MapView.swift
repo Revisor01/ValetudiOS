@@ -1877,12 +1877,35 @@ struct MapContentView: View {
     private func startLiveRefresh() {
         refreshTask?.cancel()
         refreshTask = Task {
-            while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(2))
-                if !Task.isCancelled, let api = api {
-                    if let newMap = try? await api.getMap() {
-                        await MainActor.run { map = newMap }
+            guard let api = api else { return }
+
+            // Try SSE first — real-time map updates while MapView is open
+            do {
+                let bytes = try await api.streamMapLines()
+                for try await line in bytes.lines {
+                    guard !Task.isCancelled else { break }
+                    guard line.hasPrefix("data:") else { continue }
+                    let json = String(line.dropFirst(5)).trimmingCharacters(in: .whitespaces)
+                    if let data = json.data(using: .utf8),
+                       let newMap = try? JSONDecoder().decode(RobotMap.self, from: data) {
+                        await MainActor.run { self.map = newMap }
                     }
+                }
+            } catch is CancellationError {
+                return  // Clean exit via onDisappear task cancellation
+            } catch {
+                // SSE failed — fall back to 2s polling
+                await pollMapFallback(api: api)
+            }
+        }
+    }
+
+    private func pollMapFallback(api: ValetudoAPI) async {
+        while !Task.isCancelled {
+            try? await Task.sleep(for: .seconds(2))
+            if !Task.isCancelled {
+                if let newMap = try? await api.getMap() {
+                    await MainActor.run { self.map = newMap }
                 }
             }
         }
