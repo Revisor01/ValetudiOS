@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: executing
-stopped_at: Completed 02-network-layer 02-02-PLAN.md
-last_updated: "2026-03-27T19:16:46.415Z"
+stopped_at: Completed 02-network-layer 02-01-PLAN.md
+last_updated: "2026-03-27T19:18:30.273Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 4
   completed_phases: 1
   total_plans: 6
-  completed_plans: 4
+  completed_plans: 5
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-27)
 ## Current Position
 
 Phase: 02 (network-layer) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-03-27
 
@@ -51,6 +51,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-foundation P01 | 15 | 2 tasks | 6 files |
 | Phase 01-foundation P03 | 4 | 1 tasks | 4 files |
 | Phase 02-network-layer P02 | 8min | 2 tasks | 4 files |
+| Phase 02-network-layer P01 | 15m | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -74,6 +75,9 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: url.path used instead of url.absoluteString in API logging to prevent potential credential leakage
 - [Phase 02-network-layer]: MainActor.assumeIsolated used for NWBrowser callbacks — browser started on .main, so isolation guaranteed at runtime without extra dispatch overhead
 - [Phase 02-network-layer]: DiscoveredRobot Hashable by host (not UUID) — enables deduplication in mDNS+IP-scan merge
+- [Phase 02-network-layer]: SSEConnectionManager uses computed property with backing var for sseSession since Swift actors cannot use lazy stored properties directly
+- [Phase 02-network-layer]: ErrorRouter not wired to SSE failures — no shared singleton exists; os.Logger warning + polling fallback provides silent recovery without UI alert spam
+- [Phase 02-network-layer]: refreshRobot() removes checkConnection() pre-flight — API call errors treated as offline signal, saving one HTTP round-trip per poll cycle
 
 ### Pending Todos
 
@@ -86,6 +90,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T19:16:46.413Z
-Stopped at: Completed 02-network-layer 02-02-PLAN.md
+Last session: 2026-03-27T19:18:30.268Z
+Stopped at: Completed 02-network-layer 02-01-PLAN.md
 Resume file: None
