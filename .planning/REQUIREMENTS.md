@@ -17,7 +17,7 @@ Requirements for milestone v1.2.0: Quality & API Completeness.
 ### Netzwerk
 
 - [ ] **NET-01**: App nutzt SSE-Streams für Echtzeit-State-Updates statt 5s-Polling
-- [ ] **NET-02**: App findet Roboter via mDNS/Bonjour (mit IP-Scan-Fallback)
+- [x] **NET-02**: App findet Roboter via mDNS/Bonjour (mit IP-Scan-Fallback)
 - [x] **NET-03**: Credentials werden im iOS Keychain gespeichert (Migration aus UserDefaults)
 
 ### API Capabilities
@@ -69,7 +69,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | UX-03 | Phase 3 | Pending |
 | UX-04 | Phase 3 | Pending |
 | NET-01 | Phase 2 | Pending |
-| NET-02 | Phase 2 | Pending |
+| NET-02 | Phase 2 | Complete |
 | NET-03 | Phase 1 | Complete |
 | API-01 | Phase 3 | Pending |
 | API-02 | Phase 3 | Pending |

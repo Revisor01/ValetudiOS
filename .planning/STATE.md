@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: verifying
-stopped_at: Phase 2 context gathered
-last_updated: "2026-03-27T17:00:34.881Z"
+status: executing
+stopped_at: Completed 02-network-layer 02-02-PLAN.md
+last_updated: "2026-03-27T19:16:46.415Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 4
   completed_phases: 1
-  total_plans: 3
-  completed_plans: 3
+  total_plans: 6
+  completed_plans: 4
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-27)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 01 — Foundation
+**Current focus:** Phase 02 — network-layer
 
 ## Current Position
 
-Phase: 2
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 02 (network-layer) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
 Last activity: 2026-03-27
 
 Progress: [░░░░░░░░░░] 0%
@@ -50,6 +50,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 01-foundation P02 | 12 | 2 tasks | 6 files |
 | Phase 01-foundation P01 | 15 | 2 tasks | 6 files |
 | Phase 01-foundation P03 | 4 | 1 tasks | 4 files |
+| Phase 02-network-layer P02 | 8min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -71,6 +72,8 @@ Recent decisions affecting current work:
 - [Phase 01-foundation]: Keychain migration uses read-back verification before clearing password from UserDefaults blob
 - [Phase 01-foundation]: os.Logger subsystem=Bundle.main.bundleIdentifier; body/subnet with .private, error descriptions with .public
 - [Phase 01-foundation]: url.path used instead of url.absoluteString in API logging to prevent potential credential leakage
+- [Phase 02-network-layer]: MainActor.assumeIsolated used for NWBrowser callbacks — browser started on .main, so isolation guaranteed at runtime without extra dispatch overhead
+- [Phase 02-network-layer]: DiscoveredRobot Hashable by host (not UUID) — enables deduplication in mDNS+IP-scan merge
 
 ### Pending Todos
 
@@ -83,6 +86,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T17:00:34.876Z
-Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-network-layer/02-CONTEXT.md
+Last session: 2026-03-27T19:16:46.413Z
+Stopped at: Completed 02-network-layer 02-02-PLAN.md
+Resume file: None
