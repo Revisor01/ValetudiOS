@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: executing
-stopped_at: Completed 04-view-refactoring-tests 04-02-PLAN.md
-last_updated: "2026-03-27T23:27:17.151Z"
+stopped_at: Completed 04-view-refactoring-tests 04-04-PLAN.md
+last_updated: "2026-03-27T23:42:45.006Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 4
   completed_phases: 3
   total_plans: 13
-  completed_plans: 11
+  completed_plans: 12
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-27)
 ## Current Position
 
 Phase: 04 (view-refactoring-tests) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-03-27
 
@@ -57,6 +57,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 03-api-completeness P02 | 2min | 2 tasks | 3 files |
 | Phase 04-view-refactoring-tests P03 | 9min | 2 tasks | 4 files |
 | Phase 04-view-refactoring-tests P02 | 15min | 2 tasks | 4 files |
+| Phase 04-view-refactoring-tests P04 | 25min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -93,6 +94,8 @@ Recent decisions affecting current work:
 - [Phase 04-view-refactoring-tests]: @StateObject injected via init with explicit robotManager parameter — not via @EnvironmentObject — to keep ViewModel init testable and self-contained
 - [Phase 04-view-refactoring-tests]: RobotManager passed explicitly via RobotDetailView init for @StateObject compatibility (not @EnvironmentObject)
 - [Phase 04-view-refactoring-tests]: RobotDetailView reduced from 30+ @State to 2 UI-only @State (showFullMap, showUpdateWarning) after ViewModel extraction
+- [Phase 04-view-refactoring-tests]: @StateObject initialized in MapContentView init(robot:robotManager:isFullscreen:) — robotManager passed explicitly to avoid @EnvironmentObject capture issues in non-view context
+- [Phase 04-view-refactoring-tests]: Gesture/drawing state (scale, offset, currentDrawStart/End) kept View-local in MapContentView — frame-dependent, tied to SwiftUI render loop
 
 ### Pending Todos
 
@@ -105,6 +108,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T23:27:17.140Z
-Stopped at: Completed 04-view-refactoring-tests 04-02-PLAN.md
+Last session: 2026-03-27T23:42:44.979Z
+Stopped at: Completed 04-view-refactoring-tests 04-04-PLAN.md
 Resume file: None
