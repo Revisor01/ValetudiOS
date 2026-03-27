@@ -24,14 +24,19 @@ struct RobotConfig: Codable, Identifiable, Equatable, Hashable {
         self.ignoreCertificateErrors = ignoreCertificateErrors
     }
 
+    private enum CodingKeys: String, CodingKey {
+        case id, name, host, username, useSSL, ignoreCertificateErrors
+    }
+
     // Custom decoder for backward compatibility with existing saved robots
+    // Note: password is intentionally excluded from CodingKeys — stored in Keychain, never in UserDefaults
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         id = try container.decode(UUID.self, forKey: .id)
         name = try container.decode(String.self, forKey: .name)
         host = try container.decode(String.self, forKey: .host)
         username = try container.decodeIfPresent(String.self, forKey: .username)
-        password = try container.decodeIfPresent(String.self, forKey: .password)
+        password = nil // Passwords are stored in Keychain, not in UserDefaults JSON
         useSSL = try container.decodeIfPresent(Bool.self, forKey: .useSSL) ?? false
         ignoreCertificateErrors = try container.decodeIfPresent(Bool.self, forKey: .ignoreCertificateErrors) ?? false
     }
