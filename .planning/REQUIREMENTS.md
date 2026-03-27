@@ -31,7 +31,7 @@ Requirements for milestone v1.2.0: Quality & API Completeness.
 
 - [x] **DEBT-01**: Alle print()-Aufrufe durch os.Logger ersetzt, Debug-Output nur in DEBUG-Builds
 - [ ] **DEBT-02**: MapView, RobotDetailView, RobotSettingsView in ViewModels + Sub-Views aufgeteilt
-- [ ] **DEBT-03**: Map-Pixel-Dekompression wird gecacht statt bei jedem Render neu berechnet
+- [x] **DEBT-03**: Map-Pixel-Dekompression wird gecacht statt bei jedem Render neu berechnet
 - [ ] **DEBT-04**: XCTest-Target mit Tests für Timer, Consumable, MapLayer
 
 ## v2 Requirements
@@ -77,7 +77,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 | API-04 | Phase 3 | Pending |
 | DEBT-01 | Phase 1 | Complete |
 | DEBT-02 | Phase 4 | Pending |
-| DEBT-03 | Phase 2 | Pending |
+| DEBT-03 | Phase 2 | Complete |
 | DEBT-04 | Phase 4 | Pending |
 
 **Coverage:**
