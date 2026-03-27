@@ -45,8 +45,12 @@ Plans:
   1. Statusanzeige des Roboters aktualisiert sich bei Zustandsanderungen ohne 5-Sekunden-Verzögerung (SSE aktiv, Polling deaktiviert)
   2. Roboter-Scan per mDNS/Bonjour findet Valetudo-Geräte ohne IP-Brute-Force; IP-Scan bleibt als Fallback aktiv
   3. Map-Rendering ist merklich flüssiger, da Pixel-Dekompression pro Map-Daten-Version gecacht wird (nicht per Frame neu berechnet)
-**Plans**: TBD
-**UI hint**: yes
+**Plans**: 3 plans
+
+Plans:
+- [ ] 02-01-PLAN.md — SSE-Echtzeit-Updates: SSEConnectionManager actor, ValetudoAPI SSE-Methoden, RobotManager SSE-first mit Polling-Fallback
+- [ ] 02-02-PLAN.md — mDNS/Bonjour Discovery: NWBrowserService, NetworkScanner mDNS-Integration, AddRobotView Ergebnisanzeige
+- [ ] 02-03-PLAN.md — Map-Pixel-Cache und Map-SSE: MapLayerCache class-wrapper, MapView Map-SSE-Lifecycle
 
 ### Phase 3: API Completeness
 **Goal**: Alle verifizierten Valetudo-Capabilities sind in der App erreichbar und Notification-Actions lösen reale Roboter-Befehle aus
@@ -80,6 +84,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation | 2/3 | In Progress|  |
-| 2. Network Layer | 0/TBD | Not started | - |
+| 2. Network Layer | 0/3 | Not started | - |
 | 3. API Completeness | 0/TBD | Not started | - |
 | 4. View Refactoring & Tests | 0/TBD | Not started | - |
