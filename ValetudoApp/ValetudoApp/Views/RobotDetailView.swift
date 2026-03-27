@@ -51,6 +51,7 @@ struct RobotDetailView: View {
     // Events
     @State private var events: [ValetudoEvent] = []
     @State private var hasObstacleImages = DebugConfig.showAllCapabilities
+    @State private var obstacleEntities: [(id: String, label: String?)] = []
 
     // Update check
     @State private var currentVersion: String?
@@ -237,6 +238,9 @@ struct RobotDetailView: View {
 
                 // Events Section
                 eventsSection
+
+                // Obstacle Images (Capability-gated)
+                obstacleImagesSection
 
                 // Settings Section
                 Section {
@@ -1061,6 +1065,24 @@ extension RobotDetailView {
         }
     }
 
+    // MARK: - Obstacle Images Section
+    @ViewBuilder
+    private var obstacleImagesSection: some View {
+        if hasObstacleImages, let api = api {
+            if !obstacleEntities.isEmpty {
+                Section(header: Text(String(localized: "detail.obstacle_images"))) {
+                    ForEach(obstacleEntities, id: \.id) { obstacle in
+                        NavigationLink {
+                            ObstaclePhotoView(obstacleId: obstacle.id, label: obstacle.label, api: api)
+                        } label: {
+                            Label(obstacle.label ?? obstacle.id, systemImage: "camera.viewfinder")
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     // MARK: - Rooms Section (Accordion)
     @ViewBuilder
     private var roomsSection: some View {
@@ -1315,6 +1337,20 @@ extension RobotDetailView {
                     }
                 } catch {
                     // Silently ignore — robot may not support this
+                }
+            }
+            if hasObstacleImages {
+                do {
+                    let map = try await api.getMap()
+                    let obstacles = (map.entities ?? []).compactMap { entity -> (id: String, label: String?)? in
+                        guard let id = entity.metaData?.id else { return nil }
+                        return (id: id, label: entity.metaData?.label)
+                    }
+                    await MainActor.run {
+                        obstacleEntities = obstacles
+                    }
+                } catch {
+                    // Silently ignore — obstacle photos are optional
                 }
             }
         } catch {
