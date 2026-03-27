@@ -42,7 +42,7 @@ struct MapTabView: View {
 
     var body: some View {
         NavigationStack {
-            MapContentView(robot: robot, isFullscreen: true)
+            MapContentView(robot: robot, robotManager: robotManager, isFullscreen: true)
                 .id(viewId)
                 .navigationTitle(String(localized: "map.title"))
                 .navigationBarTitleDisplayMode(.inline)
@@ -466,79 +466,27 @@ struct MapContentView: View {
     let robot: RobotConfig
     let isFullscreen: Bool
 
-    @State private var map: RobotMap?
-    @State private var segments: [Segment] = []
-    @State private var selectedSegmentIds: Set<String> = []
-    @State private var isLoading = true
-    @State private var mapRefreshId = UUID() // For forcing view refresh
+    @StateObject private var viewModel: MapViewModel
+
+    // MARK: - Gesture / View-local state (inherently view-bound)
     @State private var scale: CGFloat = 1.0
     @State private var lastScale: CGFloat = 1.0
     @State private var offset: CGSize = .zero
     @State private var lastOffset: CGSize = .zero
-    @State private var refreshTask: Task<Void, Never>?
-    @State private var isCleaning = false
 
-    // Edit mode
-    @State private var editMode: MapEditMode = .none
-    @State private var drawnZones: [CleaningZone] = []
-    @State private var drawnNoGoAreas: [NoGoArea] = []
-    @State private var drawnNoMopAreas: [NoMopArea] = []
-    @State private var drawnVirtualWalls: [VirtualWall] = []
+    // Drawing state (gesture-local, frame-dependent)
     @State private var currentDrawStart: CGPoint?
     @State private var currentDrawEnd: CGPoint?
-
-    // Capabilities
-    @State private var hasZoneCleaning = false
-    @State private var hasVirtualRestrictions = false
-    @State private var hasGoTo = false
-    @State private var hasSegmentRename = false
-    @State private var hasSegmentEdit = false
-
-    // Existing restrictions from robot
-    @State private var existingRestrictions: VirtualRestrictions?
-    @State private var loadError: String?
-    @State private var showDeleteRestrictionMode = false
-    @State private var restrictionToDelete: RestrictionIdentifier?
-
-    // Split line editing
-    @State private var splitLineStart: CGPoint?
-    @State private var splitLineEnd: CGPoint?
     @State private var isDraggingSplitStart = false
     @State private var isDraggingSplitEnd = false
-
-    // Room editing
-    @State private var showRenameSheet = false
-    @State private var renameSegmentId: String?
-    @State private var renameNewName = ""
-    @State private var showRoomActionSheet = false
-    @State private var splitSegmentId: String?
-
-    // GoTo presets
-    @StateObject private var presetStore = GoToPresetStore()
-    @State private var showSavePresetSheet = false
-    @State private var pendingGoToX: Int?
-    @State private var pendingGoToY: Int?
-    @State private var newPresetName = ""
-    @State private var showPresetsSheet = false
-    @State private var showPresetsOnMap = false
-    @State private var editingPreset: GoToPreset?
-
-    // GoTo confirmation mode
-    @State private var goToMarkerPosition: CGPoint?
-    @State private var goToApiCoords: (x: Int, y: Int)?
-    @State private var showGoToConfirm = false
-
-    // Cleaning iterations
-    @State private var selectedIterations: Int = 1
-
-    // Room labels visibility
-    @State private var showRoomLabels: Bool = true
 
     // Store current view size for coordinate calculations
     @State private var currentViewSize: CGSize = .zero
 
-    private var api: ValetudoAPI? {
-        robotManager.getAPI(for: robot.id)
+    init(robot: RobotConfig, robotManager: RobotManager, isFullscreen: Bool = false) {
+        self.robot = robot
+        self.isFullscreen = isFullscreen
+        _viewModel = StateObject(wrappedValue: MapViewModel(robot: robot, robotManager: robotManager, isFullscreen: isFullscreen))
     }
 
     var body: some View {
@@ -549,10 +497,10 @@ struct MapContentView: View {
                     Color(uiColor: .systemGroupedBackground)
                         .ignoresSafeArea()
 
-                    if isLoading && map == nil {
+                    if viewModel.isLoading && viewModel.map == nil {
                         ProgressView()
                             .scaleEffect(1.5)
-                    } else if let map = map {
+                    } else if let map = viewModel.map {
                         let pixelSize = map.pixelSize ?? 5
                         let params = calculateMapParams(
                             layers: map.layers ?? [],
@@ -563,39 +511,39 @@ struct MapContentView: View {
                         ZStack {
                             InteractiveMapView(
                                 map: map,
-                                segments: segments,
-                                selectedSegmentIds: $selectedSegmentIds,
+                                segments: viewModel.segments,
+                                selectedSegmentIds: $viewModel.selectedSegmentIds,
                                 viewSize: geometry.size,
-                                drawnZones: drawnZones,
-                                drawnNoGoAreas: drawnNoGoAreas,
-                                drawnNoMopAreas: drawnNoMopAreas,
-                                drawnVirtualWalls: drawnVirtualWalls,
-                                existingRestrictions: existingRestrictions,
+                                drawnZones: viewModel.drawnZones,
+                                drawnNoGoAreas: viewModel.drawnNoGoAreas,
+                                drawnNoMopAreas: viewModel.drawnNoMopAreas,
+                                drawnVirtualWalls: viewModel.drawnVirtualWalls,
+                                existingRestrictions: viewModel.existingRestrictions,
                                 currentDrawStart: currentDrawStart,
                                 currentDrawEnd: currentDrawEnd,
-                                editMode: editMode,
-                                showRoomLabels: showRoomLabels
+                                editMode: viewModel.editMode,
+                                showRoomLabels: viewModel.showRoomLabels
                             )
-                            .id(mapRefreshId) // Force redraw when segments change
+                            .id(viewModel.mapRefreshId) // Force redraw when segments change
                             .scaleEffect(scale)
                             .offset(offset)
 
                             // Drawing overlay for edit modes
-                            if editMode != .none && editMode != .roomEdit && editMode != .deleteRestriction {
+                            if viewModel.editMode != .none && viewModel.editMode != .roomEdit && viewModel.editMode != .deleteRestriction {
                                 // For splitRoom with existing line, show drag handles
-                                if editMode == .splitRoom && currentDrawStart != nil && currentDrawEnd != nil {
+                                if viewModel.editMode == .splitRoom && currentDrawStart != nil && currentDrawEnd != nil {
                                     splitLineHandles(geometry: geometry)
-                                } else if editMode != .splitRoom || currentDrawStart == nil {
+                                } else if viewModel.editMode != .splitRoom || currentDrawStart == nil {
                                     drawingOverlay(geometry: geometry)
                                 }
                             }
 
                             // GoTo/SavePreset marker (draggable circle)
                             // goToMarkerPosition is stored in map coordinates
-                            if let markerPos = goToMarkerPosition, (showGoToConfirm || editMode == .savePreset), let p = params {
+                            if let markerPos = viewModel.goToMarkerPosition, (viewModel.showGoToConfirm || viewModel.editMode == .savePreset), let p = params {
                                 let screenPos = mapToScreenCoords(markerPos, viewSize: geometry.size)
                                 // Yellow for preset save/edit, blue for regular goTo
-                                let markerColor: Color = (editMode == .savePreset || editingPreset != nil) ? .yellow : .blue
+                                let markerColor: Color = (viewModel.editMode == .savePreset || viewModel.editingPreset != nil) ? .yellow : .blue
 
                                 Circle()
                                     .fill(markerColor.opacity(0.3))
@@ -616,25 +564,25 @@ struct MapContentView: View {
                                             .onChanged { value in
                                                 // Convert screen position to map coordinates
                                                 let mapPos = screenToMapCoords(value.location, viewSize: geometry.size)
-                                                goToMarkerPosition = mapPos
+                                                viewModel.goToMarkerPosition = mapPos
                                                 // Update API coordinates
                                                 let pixelX = Int((mapPos.x - p.offsetX) / p.scale)
                                                 let pixelY = Int((mapPos.y - p.offsetY) / p.scale)
                                                 let apiX = pixelX * pixelSize
                                                 let apiY = pixelY * pixelSize
-                                                goToApiCoords = (x: apiX, y: apiY)
+                                                viewModel.goToApiCoords = (x: apiX, y: apiY)
                                                 // Also update pending preset coordinates
-                                                if editMode == .savePreset {
-                                                    pendingGoToX = apiX
-                                                    pendingGoToY = apiY
+                                                if viewModel.editMode == .savePreset {
+                                                    viewModel.pendingGoToX = apiX
+                                                    viewModel.pendingGoToY = apiY
                                                 }
                                             }
                                     )
                             }
 
                             // Preset markers (when toggled visible)
-                            if showPresetsOnMap && !showGoToConfirm && editMode == .none, let p = params {
-                                ForEach(presetStore.presets(for: robot.id)) { preset in
+                            if viewModel.showPresetsOnMap && !viewModel.showGoToConfirm && viewModel.editMode == .none, let p = params {
+                                ForEach(viewModel.presetStore.presets(for: robot.id)) { preset in
                                     // Calculate position in map coordinates
                                     let mapX = CGFloat(preset.x / pixelSize) * p.scale + p.offsetX
                                     let mapY = CGFloat(preset.y / pixelSize) * p.scale + p.offsetY
@@ -642,7 +590,7 @@ struct MapContentView: View {
                                     let screenPos = mapToScreenCoords(CGPoint(x: mapX, y: mapY), viewSize: geometry.size)
 
                                     Button {
-                                        Task { await goToLocation(x: preset.x, y: preset.y, fromPreset: true) }
+                                        Task { await viewModel.goToPoint(x: preset.x, y: preset.y) }
                                     } label: {
                                         VStack(spacing: 2) {
                                             Image(systemName: "star.circle.fill")
@@ -664,14 +612,14 @@ struct MapContentView: View {
                             }
 
                             // Restriction delete targets
-                            if editMode == .deleteRestriction, let p = params, let restrictions = existingRestrictions {
+                            if viewModel.editMode == .deleteRestriction, let p = params, let restrictions = viewModel.existingRestrictions {
                                 restrictionDeleteOverlay(params: p, restrictions: restrictions, viewSize: geometry.size)
                             }
                         }
                         .gesture(combinedGesture)
                     } else {
                         ContentUnavailableView(
-                            loadError ?? String(localized: "map.unavailable"),
+                            viewModel.loadError ?? String(localized: "map.unavailable"),
                             systemImage: "map"
                         )
                     }
@@ -693,10 +641,10 @@ struct MapContentView: View {
                 HStack(spacing: 16) {
                     Button {
                         withAnimation(.easeInOut(duration: 0.2)) {
-                            showRoomLabels.toggle()
+                            viewModel.showRoomLabels.toggle()
                         }
                     } label: {
-                        Image(systemName: showRoomLabels ? "eye.fill" : "eye.slash")
+                        Image(systemName: viewModel.showRoomLabels ? "tag.fill" : "tag")
                             .font(.system(size: 14))
                     }
 
@@ -714,56 +662,56 @@ struct MapContentView: View {
             }
         }
         .task {
-            await loadData()
-            startLiveRefresh()
+            await viewModel.loadMap()
+            viewModel.startMapRefresh()
         }
         .onDisappear {
-            refreshTask?.cancel()
+            viewModel.stopMapRefresh()
         }
-        .sheet(isPresented: $showRenameSheet) {
+        .sheet(isPresented: $viewModel.showRenameSheet) {
             MapRenameSheet(
-                segmentName: segments.first { $0.id == renameSegmentId }?.displayName ?? "",
-                newName: $renameNewName,
+                segmentName: viewModel.segments.first { $0.id == viewModel.renameSegmentId }?.displayName ?? "",
+                newName: $viewModel.renameNewName,
                 onRename: {
-                    Task { await renameSegment() }
+                    Task { await viewModel.renameRoom(id: viewModel.renameSegmentId ?? "", name: viewModel.renameNewName) }
                 },
                 onCancel: {
-                    renameSegmentId = nil
-                    renameNewName = ""
+                    viewModel.renameSegmentId = nil
+                    viewModel.renameNewName = ""
                 }
             )
         }
-        .sheet(isPresented: $showSavePresetSheet) {
+        .sheet(isPresented: $viewModel.showSavePresetSheet) {
             SaveGoToPresetSheet(
-                presetName: $newPresetName,
+                presetName: $viewModel.newPresetName,
                 onSave: {
-                    saveCurrentLocationAsPreset()
+                    viewModel.saveCurrentLocationAsPreset()
                 },
                 onCancel: {
-                    pendingGoToX = nil
-                    pendingGoToY = nil
-                    newPresetName = ""
+                    viewModel.pendingGoToX = nil
+                    viewModel.pendingGoToY = nil
+                    viewModel.newPresetName = ""
                 }
             )
         }
-        .sheet(isPresented: $showPresetsSheet) {
+        .sheet(isPresented: $viewModel.showPresetsSheet) {
             GoToPresetsSheet(
                 robot: robot,
-                presetStore: presetStore,
+                presetStore: viewModel.presetStore,
                 onSelect: { preset in
-                    Task { await goToLocation(x: preset.x, y: preset.y, fromPreset: true) }
+                    Task { await viewModel.goToPoint(x: preset.x, y: preset.y) }
                 },
                 onEdit: { preset in
-                    editingPreset = preset
+                    viewModel.editingPreset = preset
                     // Show the preset on map and allow repositioning
-                    if let map = map, let layers = map.layers {
+                    if let map = viewModel.map, let layers = map.layers {
                         let pixelSize = map.pixelSize ?? 5
                         if let params = calculateMapParams(layers: layers, pixelSize: pixelSize, size: currentViewSize) {
                             let mapX = CGFloat(preset.x / pixelSize) * params.scale + params.offsetX
                             let mapY = CGFloat(preset.y / pixelSize) * params.scale + params.offsetY
-                            goToMarkerPosition = CGPoint(x: mapX, y: mapY)
-                            goToApiCoords = (x: preset.x, y: preset.y)
-                            showGoToConfirm = true
+                            viewModel.goToMarkerPosition = CGPoint(x: mapX, y: mapY)
+                            viewModel.goToApiCoords = (x: preset.x, y: preset.y)
+                            viewModel.showGoToConfirm = true
                         }
                     }
                 }
@@ -777,15 +725,15 @@ struct MapContentView: View {
         VStack(spacing: 0) {
             Divider()
 
-            if editMode == .roomEdit {
+            if viewModel.editMode == .roomEdit {
                 roomEditBar
-            } else if editMode == .splitRoom {
+            } else if viewModel.editMode == .splitRoom {
                 splitRoomBar
-            } else if showGoToConfirm {
+            } else if viewModel.showGoToConfirm {
                 goToConfirmBar
-            } else if editMode == .savePreset && goToMarkerPosition != nil {
+            } else if viewModel.editMode == .savePreset && viewModel.goToMarkerPosition != nil {
                 savePresetConfirmBar
-            } else if editMode != .none {
+            } else if viewModel.editMode != .none {
                 editModeBar
             } else {
                 normalControlBar
@@ -798,19 +746,19 @@ struct MapContentView: View {
         VStack(spacing: 8) {
             HStack(spacing: 12) {
                 // GoTo preset quick select (tap toggles visibility or opens sheet, longpress shows menu)
-                let quickPresets = presetStore.presets(for: robot.id)
+                let quickPresets = viewModel.presetStore.presets(for: robot.id)
                 MapControlButton(
                     title: String(localized: "map.presets"),
-                    icon: quickPresets.isEmpty ? "star" : (showPresetsOnMap ? "star.fill" : "star"),
-                    color: quickPresets.isEmpty ? .gray : (showPresetsOnMap ? .yellow : .gray)
+                    icon: quickPresets.isEmpty ? "star" : (viewModel.showPresetsOnMap ? "star.fill" : "star"),
+                    color: quickPresets.isEmpty ? .gray : (viewModel.showPresetsOnMap ? .yellow : .gray)
                 ) {
                     if quickPresets.isEmpty {
                         // No presets - start save mode
-                        editMode = .savePreset
+                        viewModel.editMode = .savePreset
                     } else {
                         // Toggle presets visibility on map
                         withAnimation(.easeInOut(duration: 0.2)) {
-                            showPresetsOnMap.toggle()
+                            viewModel.showPresetsOnMap.toggle()
                         }
                     }
                 }
@@ -818,7 +766,7 @@ struct MapContentView: View {
                     if !quickPresets.isEmpty {
                         ForEach(quickPresets) { preset in
                             Button {
-                                Task { await goToLocation(x: preset.x, y: preset.y, fromPreset: true) }
+                                Task { await viewModel.goToPoint(x: preset.x, y: preset.y) }
                             } label: {
                                 Label(preset.name, systemImage: "location.fill")
                             }
@@ -826,13 +774,13 @@ struct MapContentView: View {
                         Divider()
                     }
                     Button {
-                        editMode = .savePreset
+                        viewModel.editMode = .savePreset
                     } label: {
                         Label(String(localized: "map.add_preset"), systemImage: "plus.circle")
                     }
                     if !quickPresets.isEmpty {
                         Button {
-                            showPresetsSheet = true
+                            viewModel.showPresetsSheet = true
                         } label: {
                             Label(String(localized: "map.manage_presets"), systemImage: "list.bullet")
                         }
@@ -842,22 +790,22 @@ struct MapContentView: View {
                 // Clean button with iterations indicator and long-press menu
                 MapControlButton(
                     title: String(localized: "rooms.clean_selected"),
-                    icon: isCleaning ? "hourglass" : "play.fill",
+                    icon: viewModel.isCleaning ? "hourglass" : "play.fill",
                     color: .green,
-                    badge: "\(selectedIterations)×"
+                    badge: "\(viewModel.selectedIterations)×"
                 ) {
-                    await cleanSelectedRooms()
+                    await viewModel.cleanSelectedRooms()
                 }
-                .opacity(selectedSegmentIds.isEmpty ? 0.4 : 1.0)
-                .disabled(selectedSegmentIds.isEmpty || isCleaning)
+                .opacity(viewModel.selectedSegmentIds.isEmpty ? 0.4 : 1.0)
+                .disabled(viewModel.selectedSegmentIds.isEmpty || viewModel.isCleaning)
                 .contextMenu {
                     ForEach(1...3, id: \.self) { count in
                         Button {
-                            selectedIterations = count
+                            viewModel.selectedIterations = count
                         } label: {
                             HStack {
                                 Text(count == 1 ? String(localized: "iterations.single") : String(localized: "iterations.multiple \(count)"))
-                                if selectedIterations == count {
+                                if viewModel.selectedIterations == count {
                                     Image(systemName: "checkmark")
                                 }
                             }
@@ -867,44 +815,44 @@ struct MapContentView: View {
 
                 MapControlButton(
                     title: String(localized: "map.goto"),
-                    icon: editMode == .goTo ? "location.fill" : "location",
+                    icon: viewModel.editMode == .goTo ? "location.fill" : "location",
                     color: .blue
                 ) {
-                    editMode = editMode == .goTo ? .none : .goTo
+                    viewModel.editMode = viewModel.editMode == .goTo ? .none : .goTo
                 }
-                .opacity(hasGoTo ? 1.0 : 0.4)
-                .disabled(!hasGoTo)
+                .opacity(viewModel.hasGoTo ? 1.0 : 0.4)
+                .disabled(!viewModel.hasGoTo)
 
             }
 
             HStack(spacing: 12) {
-                if hasSegmentRename || hasSegmentEdit {
+                if viewModel.hasSegmentRename || viewModel.hasSegmentEdit {
                     MapControlButton(
                         title: String(localized: "rooms.edit"),
                         icon: "square.and.pencil",
                         color: .indigo
                     ) {
-                        editMode = .roomEdit
+                        viewModel.editMode = .roomEdit
                     }
                 }
 
-                if hasZoneCleaning {
+                if viewModel.hasZoneCleaning {
                     MapControlButton(
                         title: String(localized: "map.zone"),
                         icon: "rectangle.dashed",
                         color: .orange
                     ) {
-                        editMode = .zone
+                        viewModel.editMode = .zone
                     }
                 }
 
-                if hasVirtualRestrictions {
+                if viewModel.hasVirtualRestrictions {
                     MapControlButton(
                         title: String(localized: "map.nogo"),
                         icon: "nosign",
                         color: .red
                     ) {
-                        editMode = .noGoArea
+                        viewModel.editMode = .noGoArea
                     }
 
                     MapControlButton(
@@ -912,17 +860,17 @@ struct MapContentView: View {
                         icon: "line.diagonal",
                         color: .purple
                     ) {
-                        editMode = .virtualWall
+                        viewModel.editMode = .virtualWall
                     }
 
                     // Delete existing restrictions
-                    if existingRestrictions != nil {
+                    if viewModel.existingRestrictions != nil {
                         MapControlButton(
                             title: String(localized: "map.delete"),
                             icon: "trash",
                             color: .gray
                         ) {
-                            editMode = .deleteRestriction
+                            viewModel.editMode = .deleteRestriction
                         }
                     }
                 }
@@ -942,20 +890,24 @@ struct MapContentView: View {
 
             HStack(spacing: 12) {
                 Button {
-                    cancelEditMode()
+                    viewModel.cancelEditMode()
+                    currentDrawStart = nil
+                    currentDrawEnd = nil
                 } label: {
-                    Text(editMode == .deleteRestriction ? String(localized: "map.done") : String(localized: "settings.cancel"))
+                    Text(viewModel.editMode == .deleteRestriction ? String(localized: "map.done") : String(localized: "settings.cancel"))
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 12)
-                        .background(editMode == .deleteRestriction ? Color.blue.opacity(0.15) : Color.gray.opacity(0.15))
-                        .foregroundStyle(editMode == .deleteRestriction ? .blue : .gray)
+                        .background(viewModel.editMode == .deleteRestriction ? Color.blue.opacity(0.15) : Color.gray.opacity(0.15))
+                        .foregroundStyle(viewModel.editMode == .deleteRestriction ? .blue : .gray)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
 
                 // Don't show confirm button for deleteRestriction - deletes happen immediately on tap
-                if editMode != .deleteRestriction {
+                if viewModel.editMode != .deleteRestriction {
                     Button {
-                        Task { await confirmEditMode() }
+                        Task { await viewModel.confirmEditMode(currentDrawStart: currentDrawStart, currentDrawEnd: currentDrawEnd) }
+                        currentDrawStart = nil
+                        currentDrawEnd = nil
                     } label: {
                         Text(confirmButtonTitle)
                             .frame(maxWidth: .infinity)
@@ -978,16 +930,16 @@ struct MapContentView: View {
     @ViewBuilder
     private var roomEditBar: some View {
         VStack(spacing: 8) {
-            if selectedSegmentIds.isEmpty {
+            if viewModel.selectedSegmentIds.isEmpty {
                 Text(String(localized: "rooms.select_to_edit"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
-            } else if selectedSegmentIds.count == 1 {
+            } else if viewModel.selectedSegmentIds.count == 1 {
                 Text(String(localized: "rooms.one_selected"))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             } else {
-                Text(String(format: String(localized: "rooms.multiple_selected %lld"), selectedSegmentIds.count))
+                Text(String(format: String(localized: "rooms.multiple_selected %lld"), viewModel.selectedSegmentIds.count))
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -1000,43 +952,43 @@ struct MapContentView: View {
                     icon: "xmark",
                     color: .gray
                 ) {
-                    cancelEditMode()
+                    viewModel.cancelEditMode()
                 }
 
                 // Action buttons based on selection
-                if selectedSegmentIds.count == 1 {
-                    if hasSegmentRename {
+                if viewModel.selectedSegmentIds.count == 1 {
+                    if viewModel.hasSegmentRename {
                         RoomEditButton(
                             title: String(localized: "rooms.rename"),
                             icon: "pencil",
                             color: .blue
                         ) {
-                            if let segmentId = selectedSegmentIds.first {
-                                renameSegmentId = segmentId
+                            if let segmentId = viewModel.selectedSegmentIds.first {
+                                viewModel.renameSegmentId = segmentId
                                 // Use displayName for initial value
-                                renameNewName = segments.first { $0.id == segmentId }?.displayName ?? ""
-                                showRenameSheet = true
+                                viewModel.renameNewName = viewModel.segments.first { $0.id == segmentId }?.displayName ?? ""
+                                viewModel.showRenameSheet = true
                             }
                         }
                     }
 
-                    if hasSegmentEdit {
+                    if viewModel.hasSegmentEdit {
                         RoomEditButton(
                             title: String(localized: "rooms.split"),
                             icon: "scissors",
                             color: .orange
                         ) {
-                            splitSegmentId = selectedSegmentIds.first
-                            editMode = .splitRoom
+                            viewModel.splitSegmentId = viewModel.selectedSegmentIds.first
+                            viewModel.editMode = .splitRoom
                         }
                     }
-                } else if selectedSegmentIds.count == 2 && hasSegmentEdit {
+                } else if viewModel.selectedSegmentIds.count == 2 && viewModel.hasSegmentEdit {
                     RoomEditButton(
                         title: String(localized: "rooms.join_action"),
                         icon: "arrow.triangle.merge",
                         color: .green
                     ) {
-                        Task { await joinSelectedSegments() }
+                        Task { await viewModel.joinRooms(ids: Array(viewModel.selectedSegmentIds)) }
                     }
                 }
             }
@@ -1050,18 +1002,18 @@ struct MapContentView: View {
     @ViewBuilder
     private var goToConfirmBar: some View {
         VStack(spacing: 8) {
-            Text(editingPreset != nil ? String(localized: "map.preset_move_hint") : String(localized: "map.goto_confirm_hint"))
+            Text(viewModel.editingPreset != nil ? String(localized: "map.preset_move_hint") : String(localized: "map.goto_confirm_hint"))
                 .font(.caption)
                 .foregroundStyle(.secondary)
 
             HStack(spacing: 12) {
                 Button {
                     // Cancel
-                    goToMarkerPosition = nil
-                    goToApiCoords = nil
-                    showGoToConfirm = false
-                    editingPreset = nil
-                    cancelEditMode()
+                    viewModel.goToMarkerPosition = nil
+                    viewModel.goToApiCoords = nil
+                    viewModel.showGoToConfirm = false
+                    viewModel.editingPreset = nil
+                    viewModel.cancelEditMode()
                 } label: {
                     Text(String(localized: "settings.cancel"))
                         .frame(maxWidth: .infinity)
@@ -1072,35 +1024,35 @@ struct MapContentView: View {
                 }
 
                 Button {
-                    if let coords = goToApiCoords {
-                        if let preset = editingPreset {
+                    if let coords = viewModel.goToApiCoords {
+                        if let preset = viewModel.editingPreset {
                             // Update preset position
                             var updatedPreset = preset
                             updatedPreset.x = coords.x
                             updatedPreset.y = coords.y
-                            presetStore.updatePreset(updatedPreset)
-                            editingPreset = nil
-                            goToMarkerPosition = nil
-                            goToApiCoords = nil
-                            showGoToConfirm = false
+                            viewModel.presetStore.updatePreset(updatedPreset)
+                            viewModel.editingPreset = nil
+                            viewModel.goToMarkerPosition = nil
+                            viewModel.goToApiCoords = nil
+                            viewModel.showGoToConfirm = false
                         } else {
                             // Confirm and go
                             Task {
-                                await goToLocation(x: coords.x, y: coords.y)
-                                goToMarkerPosition = nil
-                                goToApiCoords = nil
-                                showGoToConfirm = false
+                                await viewModel.goToPoint(x: coords.x, y: coords.y)
+                                viewModel.goToMarkerPosition = nil
+                                viewModel.goToApiCoords = nil
+                                viewModel.showGoToConfirm = false
                             }
                         }
                     }
                 } label: {
                     HStack {
-                        Image(systemName: editingPreset != nil ? "checkmark.circle.fill" : "arrow.right.circle.fill")
-                        Text(editingPreset != nil ? String(localized: "settings.save") : String(localized: "map.goto_go"))
+                        Image(systemName: viewModel.editingPreset != nil ? "checkmark.circle.fill" : "arrow.right.circle.fill")
+                        Text(viewModel.editingPreset != nil ? String(localized: "settings.save") : String(localized: "map.goto_go"))
                     }
                     .frame(maxWidth: .infinity)
                     .padding(.vertical, 12)
-                    .background(editingPreset != nil ? Color.green : Color.blue)
+                    .background(viewModel.editingPreset != nil ? Color.green : Color.blue)
                     .foregroundStyle(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 10))
                 }
@@ -1122,10 +1074,10 @@ struct MapContentView: View {
             HStack(spacing: 12) {
                 Button {
                     // Cancel
-                    goToMarkerPosition = nil
-                    pendingGoToX = nil
-                    pendingGoToY = nil
-                    cancelEditMode()
+                    viewModel.goToMarkerPosition = nil
+                    viewModel.pendingGoToX = nil
+                    viewModel.pendingGoToY = nil
+                    viewModel.cancelEditMode()
                 } label: {
                     Text(String(localized: "settings.cancel"))
                         .frame(maxWidth: .infinity)
@@ -1137,7 +1089,7 @@ struct MapContentView: View {
 
                 Button {
                     // Show save sheet
-                    showSavePresetSheet = true
+                    viewModel.showSavePresetSheet = true
                 } label: {
                     HStack {
                         Image(systemName: "star.fill")
@@ -1166,10 +1118,10 @@ struct MapContentView: View {
 
             HStack(spacing: 12) {
                 Button {
-                    splitSegmentId = nil
+                    viewModel.splitSegmentId = nil
                     currentDrawStart = nil
                     currentDrawEnd = nil
-                    editMode = .roomEdit
+                    viewModel.editMode = .roomEdit
                 } label: {
                     Text(String(localized: "settings.cancel"))
                         .frame(maxWidth: .infinity)
@@ -1194,7 +1146,21 @@ struct MapContentView: View {
                 .opacity(currentDrawStart == nil ? 0.4 : 1.0)
 
                 Button {
-                    Task { await performSplit() }
+                    guard let segmentId = viewModel.splitSegmentId,
+                          let start = currentDrawStart,
+                          let end = currentDrawEnd else { return }
+                    Task {
+                        await viewModel.splitRoom(
+                            segmentId: segmentId,
+                            start: start,
+                            end: end,
+                            viewSize: currentViewSize,
+                            gestureScale: scale,
+                            gestureOffset: offset
+                        )
+                        currentDrawStart = nil
+                        currentDrawEnd = nil
+                    }
                 } label: {
                     HStack {
                         Image(systemName: "scissors")
@@ -1216,7 +1182,7 @@ struct MapContentView: View {
     }
 
     private var editModeDescription: String {
-        switch editMode {
+        switch viewModel.editMode {
         case .zone: return String(localized: "map.zone_hint")
         case .noGoArea: return String(localized: "map.nogo_hint")
         case .noMopArea: return String(localized: "map.nomop_hint")
@@ -1231,7 +1197,7 @@ struct MapContentView: View {
     }
 
     private var confirmButtonTitle: String {
-        switch editMode {
+        switch viewModel.editMode {
         case .zone: return String(localized: "map.clean_zones")
         case .noGoArea, .noMopArea, .virtualWall: return String(localized: "settings.save")
         case .goTo: return String(localized: "map.goto")
@@ -1244,7 +1210,7 @@ struct MapContentView: View {
     }
 
     private var editModeColor: Color {
-        switch editMode {
+        switch viewModel.editMode {
         case .zone: return .orange
         case .noGoArea: return .red
         case .noMopArea: return .blue
@@ -1259,16 +1225,16 @@ struct MapContentView: View {
     }
 
     private var canConfirmEditMode: Bool {
-        switch editMode {
-        case .zone: return !drawnZones.isEmpty
-        case .noGoArea: return !drawnNoGoAreas.isEmpty || existingRestrictions != nil
-        case .noMopArea: return !drawnNoMopAreas.isEmpty || existingRestrictions != nil
-        case .virtualWall: return !drawnVirtualWalls.isEmpty || existingRestrictions != nil
+        switch viewModel.editMode {
+        case .zone: return !viewModel.drawnZones.isEmpty
+        case .noGoArea: return !viewModel.drawnNoGoAreas.isEmpty || viewModel.existingRestrictions != nil
+        case .noMopArea: return !viewModel.drawnNoMopAreas.isEmpty || viewModel.existingRestrictions != nil
+        case .virtualWall: return !viewModel.drawnVirtualWalls.isEmpty || viewModel.existingRestrictions != nil
         case .goTo: return currentDrawStart != nil
         case .savePreset: return currentDrawStart != nil
         case .roomEdit: return false
         case .splitRoom: return currentDrawStart != nil && currentDrawEnd != nil
-        case .deleteRestriction: return restrictionToDelete != nil
+        case .deleteRestriction: return viewModel.restrictionToDelete != nil
         case .none: return false
         }
     }
@@ -1312,7 +1278,7 @@ struct MapContentView: View {
 
                         // For goTo/savePreset: always update to new tap position
                         // For other modes: only set start once (for drag drawing)
-                        if editMode == .goTo || editMode == .savePreset {
+                        if viewModel.editMode == .goTo || viewModel.editMode == .savePreset {
                             currentDrawStart = mapStart
                         } else if currentDrawStart == nil {
                             currentDrawStart = mapStart
@@ -1419,7 +1385,7 @@ struct MapContentView: View {
     // MARK: - Restriction Delete Overlay
     @ViewBuilder
     private func restrictionDeleteOverlay(params: MapParams, restrictions: VirtualRestrictions, viewSize: CGSize) -> some View {
-        let ps = CGFloat(map?.pixelSize ?? 5)
+        let ps = CGFloat(viewModel.map?.pixelSize ?? 5)
 
         // Virtual walls
         ForEach(Array(restrictions.virtualWalls.enumerated()), id: \.offset) { index, wall in
@@ -1433,7 +1399,7 @@ struct MapContentView: View {
 
             Button {
                 Task {
-                    await deleteRestriction(type: .virtualWall, index: index)
+                    await viewModel.deleteRestriction(type: .virtualWall, index: index)
                 }
             } label: {
                 ZStack {
@@ -1458,7 +1424,7 @@ struct MapContentView: View {
 
             Button {
                 Task {
-                    await deleteRestriction(type: .noGoZone, index: index)
+                    await viewModel.deleteRestriction(type: .noGoZone, index: index)
                 }
             } label: {
                 ZStack {
@@ -1483,7 +1449,7 @@ struct MapContentView: View {
 
             Button {
                 Task {
-                    await deleteRestriction(type: .noMopZone, index: index)
+                    await viewModel.deleteRestriction(type: .noMopZone, index: index)
                 }
             } label: {
                 ZStack {
@@ -1501,35 +1467,6 @@ struct MapContentView: View {
         }
     }
 
-    // MARK: - Delete Restriction Immediately
-    private func deleteRestriction(type: RestrictionType, index: Int) async {
-        guard let api = api, var restrictions = existingRestrictions else { return }
-
-        switch type {
-        case .virtualWall:
-            if index < restrictions.virtualWalls.count {
-                restrictions.virtualWalls.remove(at: index)
-            }
-        case .noGoZone:
-            if index < restrictions.restrictedZones.count {
-                restrictions.restrictedZones.remove(at: index)
-            }
-        case .noMopZone:
-            if index < restrictions.noMopZones.count {
-                restrictions.noMopZones.remove(at: index)
-            }
-        }
-
-        do {
-            try await api.setVirtualRestrictions(restrictions)
-            await MainActor.run {
-                existingRestrictions = restrictions
-            }
-        } catch {
-            print("[DEBUG] Delete restriction FAILED: \(error)")
-        }
-    }
-
     private func finishDrawing(in size: CGSize) {
         guard let start = currentDrawStart, let end = currentDrawEnd else {
             currentDrawStart = nil
@@ -1537,7 +1474,7 @@ struct MapContentView: View {
             return
         }
 
-        guard let map = map, let layers = map.layers else {
+        guard let map = viewModel.map, let layers = map.layers else {
             currentDrawStart = nil
             currentDrawEnd = nil
             return
@@ -1563,17 +1500,12 @@ struct MapContentView: View {
         let apiEndX = pixelEndX * pixelSize
         let apiEndY = pixelEndY * pixelSize
 
-        print("[DEBUG] finishDrawing: start=\(start), end=\(end)")
-        print("[DEBUG] finishDrawing: pixelStart=(\(pixelStartX), \(pixelStartY)), pixelEnd=(\(pixelEndX), \(pixelEndY))")
-        print("[DEBUG] finishDrawing: apiStart=(\(apiStartX), \(apiStartY)), apiEnd=(\(apiEndX), \(apiEndY))")
-        print("[DEBUG] finishDrawing: params.scale=\(params.scale), params.offset=(\(params.offsetX), \(params.offsetY))")
-
         let minX = min(apiStartX, apiEndX)
         let maxX = max(apiStartX, apiEndX)
         let minY = min(apiStartY, apiEndY)
         let maxY = max(apiStartY, apiEndY)
 
-        switch editMode {
+        switch viewModel.editMode {
         case .zone:
             let zone = CleaningZone(
                 points: ZonePoints(
@@ -1583,7 +1515,7 @@ struct MapContentView: View {
                     pD: ZonePoint(x: minX, y: maxY)
                 )
             )
-            drawnZones.append(zone)
+            viewModel.drawnZones.append(zone)
 
         case .noGoArea:
             let area = NoGoArea(
@@ -1594,7 +1526,7 @@ struct MapContentView: View {
                     pD: ZonePoint(x: minX, y: maxY)
                 )
             )
-            drawnNoGoAreas.append(area)
+            viewModel.drawnNoGoAreas.append(area)
 
         case .noMopArea:
             let area = NoMopArea(
@@ -1605,7 +1537,7 @@ struct MapContentView: View {
                     pD: ZonePoint(x: minX, y: maxY)
                 )
             )
-            drawnNoMopAreas.append(area)
+            viewModel.drawnNoMopAreas.append(area)
 
         case .virtualWall:
             let wall = VirtualWall(
@@ -1614,20 +1546,20 @@ struct MapContentView: View {
                     pB: ZonePoint(x: apiEndX, y: apiEndY)
                 )
             )
-            drawnVirtualWalls.append(wall)
+            viewModel.drawnVirtualWalls.append(wall)
 
         case .goTo:
             // Tap places/moves marker to new position
-            goToMarkerPosition = start
-            goToApiCoords = (x: apiStartX, y: apiStartY)
-            showGoToConfirm = true
+            viewModel.goToMarkerPosition = start
+            viewModel.goToApiCoords = (x: apiStartX, y: apiStartY)
+            viewModel.showGoToConfirm = true
             return
 
         case .savePreset:
             // Tap places/moves marker to new position
-            goToMarkerPosition = start
-            pendingGoToX = apiStartX
-            pendingGoToY = apiStartY
+            viewModel.goToMarkerPosition = start
+            viewModel.pendingGoToX = apiStartX
+            viewModel.pendingGoToY = apiStartY
             return
 
         case .splitRoom:
@@ -1640,124 +1572,6 @@ struct MapContentView: View {
 
         currentDrawStart = nil
         currentDrawEnd = nil
-    }
-
-    private func cancelEditMode() {
-        editMode = .none
-        drawnZones.removeAll()
-        drawnNoGoAreas.removeAll()
-        drawnNoMopAreas.removeAll()
-        drawnVirtualWalls.removeAll()
-        currentDrawStart = nil
-        currentDrawEnd = nil
-        splitSegmentId = nil
-        selectedSegmentIds.removeAll()
-        restrictionToDelete = nil
-        splitLineStart = nil
-        splitLineEnd = nil
-    }
-
-    private func confirmEditMode() async {
-        print("[DEBUG] confirmEditMode called, editMode=\(editMode)")
-
-        guard let api = api else {
-            print("[DEBUG] confirmEditMode: No API available")
-            return
-        }
-
-        switch editMode {
-        case .zone:
-            print("[DEBUG] confirmEditMode: Zone mode, drawnZones count=\(drawnZones.count)")
-            if !drawnZones.isEmpty {
-                do {
-                    try await api.cleanZones(drawnZones)
-                    print("[DEBUG] confirmEditMode: Zone cleaning started successfully")
-                    await robotManager.refreshRobot(robot.id)
-                } catch {
-                    print("[DEBUG] confirmEditMode: Zone cleaning FAILED: \(error)")
-                }
-            }
-
-        case .noGoArea, .noMopArea, .virtualWall:
-            print("[DEBUG] confirmEditMode: Restrictions mode")
-            print("[DEBUG] drawnNoGoAreas: \(drawnNoGoAreas.count)")
-            print("[DEBUG] drawnNoMopAreas: \(drawnNoMopAreas.count)")
-            print("[DEBUG] drawnVirtualWalls: \(drawnVirtualWalls.count)")
-
-            var restrictions = existingRestrictions ?? VirtualRestrictions()
-            restrictions.restrictedZones.append(contentsOf: drawnNoGoAreas)
-            restrictions.noMopZones.append(contentsOf: drawnNoMopAreas)
-            restrictions.virtualWalls.append(contentsOf: drawnVirtualWalls)
-
-            print("[DEBUG] confirmEditMode: Total restrictions - zones=\(restrictions.restrictedZones.count), noMop=\(restrictions.noMopZones.count), walls=\(restrictions.virtualWalls.count)")
-
-            do {
-                try await api.setVirtualRestrictions(restrictions)
-                print("[DEBUG] confirmEditMode: Restrictions saved successfully")
-                existingRestrictions = restrictions
-            } catch {
-                print("[DEBUG] confirmEditMode: Setting restrictions FAILED: \(error)")
-            }
-
-        case .deleteRestriction:
-            if let toDelete = restrictionToDelete, var restrictions = existingRestrictions {
-                switch toDelete.type {
-                case .virtualWall:
-                    if toDelete.index < restrictions.virtualWalls.count {
-                        restrictions.virtualWalls.remove(at: toDelete.index)
-                    }
-                case .noGoZone:
-                    if toDelete.index < restrictions.restrictedZones.count {
-                        restrictions.restrictedZones.remove(at: toDelete.index)
-                    }
-                case .noMopZone:
-                    if toDelete.index < restrictions.noMopZones.count {
-                        restrictions.noMopZones.remove(at: toDelete.index)
-                    }
-                }
-
-                do {
-                    try await api.setVirtualRestrictions(restrictions)
-                    existingRestrictions = restrictions
-                    restrictionToDelete = nil
-                } catch {
-                    print("[DEBUG] Delete restriction FAILED: \(error)")
-                }
-            }
-
-        case .goTo, .savePreset, .roomEdit, .splitRoom, .none:
-            break
-        }
-
-        cancelEditMode()
-    }
-
-    private func goToLocation(x: Int, y: Int, fromPreset: Bool = false) async {
-        guard let api = api else { return }
-        print("[GoTo DEBUG] Sending coordinates: x=\(x), y=\(y), fromPreset=\(fromPreset)")
-        do {
-            try await api.goTo(x: x, y: y)
-            print("[GoTo DEBUG] GoTo command sent successfully")
-            await robotManager.refreshRobot(robot.id)
-        } catch {
-            print("[GoTo DEBUG] GoTo failed: \(error)")
-        }
-        cancelEditMode()
-    }
-
-    private func saveCurrentLocationAsPreset() {
-        guard let x = pendingGoToX, let y = pendingGoToY else { return }
-        let trimmedName = newPresetName.trimmingCharacters(in: .whitespaces)
-        guard !trimmedName.isEmpty else { return }
-
-        let preset = GoToPreset(name: trimmedName, x: x, y: y, robotId: robot.id)
-        presetStore.addPreset(preset)
-
-        pendingGoToX = nil
-        pendingGoToY = nil
-        newPresetName = ""
-        goToMarkerPosition = nil
-        cancelEditMode()
     }
 
     private func calculateMapParams(layers: [MapLayer], pixelSize: Int, size: CGSize) -> MapParams? {
@@ -1816,326 +1630,17 @@ struct MapContentView: View {
                 }
         )
     }
-
-    // MARK: - Data Loading
-    private func loadData() async {
-        guard let api = api else {
-            loadError = "No API available"
-            isLoading = false
-            return
-        }
-
-        if map == nil { isLoading = true }
-
-        do {
-            let capabilities = try await api.getCapabilities()
-            await MainActor.run {
-                hasZoneCleaning = capabilities.contains("ZoneCleaningCapability")
-                hasVirtualRestrictions = capabilities.contains("CombinedVirtualRestrictionsCapability")
-                hasGoTo = capabilities.contains("GoToLocationCapability")
-                hasSegmentRename = capabilities.contains("MapSegmentRenameCapability")
-                hasSegmentEdit = capabilities.contains("MapSegmentEditCapability")
-            }
-        } catch {
-            // Silently ignore capability check failures
-        }
-
-        if hasVirtualRestrictions {
-            do {
-                let restrictions = try await api.getVirtualRestrictions()
-                await MainActor.run {
-                    existingRestrictions = restrictions
-                }
-            } catch {
-                print("Virtual restrictions failed: \(error)")
-            }
-        }
-
-        do {
-            let loadedMap = try await api.getMap()
-            var loadedSegments: [Segment] = []
-            do {
-                loadedSegments = try await api.getSegments()
-            } catch {
-                print("Segments failed: \(error)")
-            }
-
-            await MainActor.run {
-                map = loadedMap
-                segments = loadedSegments
-                loadError = nil
-                isLoading = false
-            }
-        } catch {
-            await MainActor.run {
-                loadError = error.localizedDescription
-                isLoading = false
-            }
-        }
-    }
-
-    private func startLiveRefresh() {
-        refreshTask?.cancel()
-        refreshTask = Task {
-            guard let api = api else { return }
-
-            // Try SSE first — real-time map updates while MapView is open
-            do {
-                let bytes = try await api.streamMapLines()
-                for try await line in bytes.lines {
-                    guard !Task.isCancelled else { break }
-                    guard line.hasPrefix("data:") else { continue }
-                    let json = String(line.dropFirst(5)).trimmingCharacters(in: .whitespaces)
-                    if let data = json.data(using: .utf8),
-                       let newMap = try? JSONDecoder().decode(RobotMap.self, from: data) {
-                        await MainActor.run { self.map = newMap }
-                    }
-                }
-            } catch is CancellationError {
-                return  // Clean exit via onDisappear task cancellation
-            } catch {
-                // SSE failed — fall back to 2s polling
-                await pollMapFallback(api: api)
-            }
-        }
-    }
-
-    private func pollMapFallback(api: ValetudoAPI) async {
-        while !Task.isCancelled {
-            try? await Task.sleep(for: .seconds(2))
-            if !Task.isCancelled {
-                if let newMap = try? await api.getMap() {
-                    await MainActor.run { self.map = newMap }
-                }
-            }
-        }
-    }
-
-    private func cleanSelectedRooms() async {
-        guard let api = api, !selectedSegmentIds.isEmpty else { return }
-        isCleaning = true
-        defer { isCleaning = false }
-
-        do {
-            try await api.cleanSegments(ids: Array(selectedSegmentIds), iterations: selectedIterations)
-            selectedSegmentIds.removeAll()
-            selectedIterations = 1 // Reset to default
-            await robotManager.refreshRobot(robot.id)
-        } catch {
-            // Silently ignore clean failures
-        }
-    }
-
-    // MARK: - Room Editing
-    private func renameSegment() async {
-        print("[DEBUG] renameSegment called")
-        print("[DEBUG] renameSegmentId: \(String(describing: renameSegmentId))")
-        print("[DEBUG] renameNewName: '\(renameNewName)'")
-
-        guard let api = api else {
-            print("[DEBUG] renameSegment: No API available")
-            return
-        }
-        guard let segmentId = renameSegmentId else {
-            print("[DEBUG] renameSegment: No segment ID")
-            return
-        }
-        guard !renameNewName.trimmingCharacters(in: .whitespaces).isEmpty else {
-            print("[DEBUG] renameSegment: Name is empty")
-            return
-        }
-
-        let trimmedName = renameNewName.trimmingCharacters(in: .whitespaces)
-        print("[DEBUG] renameSegment: Calling API with segmentId=\(segmentId), name='\(trimmedName)'")
-
-        do {
-            try await api.renameSegment(id: segmentId, name: trimmedName)
-            print("[DEBUG] renameSegment: API call successful")
-
-            // Small delay to let the robot process the rename
-            try? await Task.sleep(for: .milliseconds(500))
-
-            // Reload segments to get updated names
-            let newSegments = try await api.getSegments()
-            print("[DEBUG] renameSegment: Segments reloaded, count=\(newSegments.count)")
-            for seg in newSegments {
-                print("[DEBUG] Segment: id=\(seg.id), name=\(seg.name ?? "nil")")
-            }
-
-            await MainActor.run {
-                segments = newSegments
-                // Force complete view refresh
-                mapRefreshId = UUID()
-                // Close the rename sheet
-                showRenameSheet = false
-                // Exit room edit mode
-                editMode = .none
-                selectedSegmentIds.removeAll()
-                renameSegmentId = nil
-                renameNewName = ""
-            }
-        } catch {
-            print("[DEBUG] renameSegment FAILED: \(error)")
-            await MainActor.run {
-                showRenameSheet = false
-                editMode = .none
-                selectedSegmentIds.removeAll()
-                renameSegmentId = nil
-                renameNewName = ""
-            }
-        }
-    }
-
-    private func joinSelectedSegments() async {
-        print("[DEBUG] joinSelectedSegments called")
-        print("[DEBUG] selectedSegmentIds: \(selectedSegmentIds)")
-
-        guard let api = api else {
-            print("[DEBUG] joinSelectedSegments: No API available")
-            return
-        }
-        guard selectedSegmentIds.count == 2 else {
-            print("[DEBUG] joinSelectedSegments: Need exactly 2 segments, got \(selectedSegmentIds.count)")
-            return
-        }
-
-        let ids = Array(selectedSegmentIds)
-        print("[DEBUG] joinSelectedSegments: Calling API with segmentA=\(ids[0]), segmentB=\(ids[1])")
-
-        do {
-            try await api.joinSegments(segmentAId: ids[0], segmentBId: ids[1])
-            print("[DEBUG] joinSelectedSegments: API call successful")
-            selectedSegmentIds.removeAll()
-
-            // Reload map and segments
-            if let newMap = try? await api.getMap() {
-                await MainActor.run { self.map = newMap }
-            }
-            if let newSegments = try? await api.getSegments() {
-                await MainActor.run { self.segments = newSegments }
-                print("[DEBUG] joinSelectedSegments: Reloaded \(newSegments.count) segments")
-            }
-        } catch {
-            print("[DEBUG] joinSelectedSegments FAILED: \(error)")
-        }
-    }
-
-    private func performSplit() async {
-        print("[DEBUG] performSplit called")
-        print("[DEBUG] splitSegmentId: \(String(describing: splitSegmentId))")
-        print("[DEBUG] currentDrawStart: \(String(describing: currentDrawStart))")
-        print("[DEBUG] currentDrawEnd: \(String(describing: currentDrawEnd))")
-
-        guard let api = api else {
-            print("[DEBUG] performSplit: No API available")
-            return
-        }
-        guard let segmentId = splitSegmentId else {
-            print("[DEBUG] performSplit: No segment ID")
-            return
-        }
-        guard let start = currentDrawStart else {
-            print("[DEBUG] performSplit: No start point")
-            return
-        }
-        guard let end = currentDrawEnd else {
-            print("[DEBUG] performSplit: No end point")
-            return
-        }
-        guard let map = map, let layers = map.layers else {
-            print("[DEBUG] performSplit: No map or layers")
-            return
-        }
-
-        let pixelSize = map.pixelSize ?? 5
-
-        // Calculate map params using current view size
-        // We need the geometry size, so we'll use the stored map params calculation
-        var minX = Int.max, maxX = Int.min
-        var minY = Int.max, maxY = Int.min
-
-        for layer in layers {
-            let pixels = layer.decompressedPixels
-            var i = 0
-            while i < pixels.count - 1 {
-                minX = min(minX, pixels[i])
-                maxX = max(maxX, pixels[i])
-                minY = min(minY, pixels[i + 1])
-                maxY = max(maxY, pixels[i + 1])
-                i += 2
-            }
-        }
-
-        guard minX < Int.max else { return }
-
-        // We need to reverse the screen coordinates to map coordinates
-        let contentWidth = CGFloat(maxX - minX + pixelSize)
-        let contentHeight = CGFloat(maxY - minY + pixelSize)
-
-        // Use the stored view size (updated on geometry change)
-        let viewWidth: CGFloat = currentViewSize.width > 0 ? currentViewSize.width : 400
-        let viewHeight: CGFloat = currentViewSize.height > 0 ? currentViewSize.height : 600
-        let padding: CGFloat = 20
-        let availableWidth = viewWidth - padding * 2
-        let availableHeight = viewHeight - padding * 2
-        let scaleX = availableWidth / contentWidth
-        let scaleY = availableHeight / contentHeight
-        let mapScale = min(scaleX, scaleY)
-        let offsetX = padding + (availableWidth - contentWidth * mapScale) / 2 - CGFloat(minX) * mapScale
-        let offsetY = padding + (availableHeight - contentHeight * mapScale) / 2 - CGFloat(minY) * mapScale
-
-        // Account for view scale and offset from gestures
-        let adjustedStartX = (start.x - offset.width) / scale
-        let adjustedStartY = (start.y - offset.height) / scale
-        let adjustedEndX = (end.x - offset.width) / scale
-        let adjustedEndY = (end.y - offset.height) / scale
-
-        // Convert to pixel coordinates first
-        let pixelAX = Int((adjustedStartX - offsetX) / mapScale)
-        let pixelAY = Int((adjustedStartY - offsetY) / mapScale)
-        let pixelBX = Int((adjustedEndX - offsetX) / mapScale)
-        let pixelBY = Int((adjustedEndY - offsetY) / mapScale)
-
-        // Split API expects coordinates multiplied by pixelSize (like GoTo)
-        let pointA = ZonePoint(x: pixelAX * pixelSize, y: pixelAY * pixelSize)
-        let pointB = ZonePoint(x: pixelBX * pixelSize, y: pixelBY * pixelSize)
-
-        print("[DEBUG] performSplit: Pixel coords: A=(\(pixelAX),\(pixelAY)), B=(\(pixelBX),\(pixelBY))")
-        print("[DEBUG] performSplit: API coords (x\(pixelSize)): A=(\(pointA.x),\(pointA.y)), B=(\(pointB.x),\(pointB.y))")
-        print("[DEBUG] performSplit: Calling API with segmentId=\(segmentId)")
-
-        do {
-            try await api.splitSegment(segmentId: segmentId, pointA: pointA, pointB: pointB)
-            print("[DEBUG] performSplit: API call successful")
-
-            // Reload map and segments
-            if let newMap = try? await api.getMap() {
-                await MainActor.run { self.map = newMap }
-            }
-            if let newSegments = try? await api.getSegments() {
-                await MainActor.run { self.segments = newSegments }
-                print("[DEBUG] performSplit: Reloaded \(newSegments.count) segments")
-            }
-
-            splitSegmentId = nil
-            currentDrawStart = nil
-            currentDrawEnd = nil
-            selectedSegmentIds.removeAll()
-            editMode = .none
-        } catch {
-            print("[DEBUG] performSplit FAILED: \(error)")
-        }
-    }
 }
 
 // MARK: - Map View (Sheet/Modal version - uses MapContentView)
 struct MapView: View {
     @Environment(\.dismiss) var dismiss
+    @EnvironmentObject var robotManager: RobotManager
     let robot: RobotConfig
 
     var body: some View {
         NavigationStack {
-            MapContentView(robot: robot, isFullscreen: true)
+            MapContentView(robot: robot, robotManager: robotManager, isFullscreen: true)
                 .navigationTitle(String(localized: "map.title"))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {

@@ -1,90 +1,19 @@
 import SwiftUI
 
 struct RobotDetailView: View {
-    @EnvironmentObject var robotManager: RobotManager
-    @EnvironmentObject var errorRouter: ErrorRouter
-    let robot: RobotConfig
+    @StateObject private var viewModel: RobotDetailViewModel
 
-    @State private var segments: [Segment] = []
-    @State private var consumables: [Consumable] = []
-    @State private var selectedSegments: Set<String> = []
-    @State private var selectedIterations: Int = 1
-    @State private var isLoading = false
     @State private var showFullMap = false
-    @State private var showTimers = false
-    @State private var hasManualControl = DebugConfig.showAllCapabilities
-
-    // Intensity control
-    @State private var fanSpeedPresets: [String] = []
-    @State private var waterUsagePresets: [String] = []
-    @State private var operationModePresets: [String] = []
-
-    // Read current intensity values directly from status attributes
-    private var currentFanSpeed: String? {
-        status?.attributes.first(where: {
-            $0.__class == "PresetSelectionStateAttribute" && $0.type == "fan_speed"
-        })?.value
-    }
-
-    private var currentWaterUsage: String? {
-        status?.attributes.first(where: {
-            $0.__class == "PresetSelectionStateAttribute" && $0.type == "water_grade"
-        })?.value
-    }
-
-    private var currentOperationMode: String? {
-        status?.attributes.first(where: {
-            $0.__class == "PresetSelectionStateAttribute" && $0.type == "operation_mode"
-        })?.value
-    }
-
-    // Dock capabilities
-    @State private var hasAutoEmptyTrigger = DebugConfig.showAllCapabilities
-    @State private var hasMopDockClean = DebugConfig.showAllCapabilities
-    @State private var hasMopDockDry = DebugConfig.showAllCapabilities
-
-    // Clean Route
-    @State private var hasCleanRoute = DebugConfig.showAllCapabilities
-    @State private var currentCleanRoute = ""
-    @State private var cleanRouteOptions: [String] = ["normal", "quick", "intensive", "deep"]
-
-    // Events
-    @State private var events: [ValetudoEvent] = []
-    @State private var hasObstacleImages = DebugConfig.showAllCapabilities
-    @State private var obstacleEntities: [(id: String, label: String?)] = []
-
-    // Update check
-    @State private var currentVersion: String?
-    @State private var latestVersion: String?
-    @State private var updateUrl: String?
-    @State private var updaterState: UpdaterState?
-    @State private var isUpdating = false
     @State private var showUpdateWarning = false
-    @State private var updateInProgress = false
 
-    // Statistics
-    @State private var lastCleaningStats: [StatisticEntry] = []
-    @State private var totalStats: [StatisticEntry] = []
-
-    // Live stats polling
-    @State private var statsPollingTask: Task<Void, Never>?
-
-    private var status: RobotStatus? {
-        robotManager.robotStates[robot.id]
-    }
-
-    private var isCleaning: Bool {
-        status?.statusValue?.lowercased() == "cleaning"
-    }
-
-    private var api: ValetudoAPI? {
-        robotManager.getAPI(for: robot.id)
+    init(robot: RobotConfig, robotManager: RobotManager) {
+        _viewModel = StateObject(wrappedValue: RobotDetailViewModel(robot: robot, robotManager: robotManager))
     }
 
     var body: some View {
         List {
             // Update in progress banner (shown after update started)
-            if updateInProgress {
+            if viewModel.updateInProgress {
                 Section {
                     VStack(spacing: 12) {
                         ProgressView()
@@ -102,7 +31,7 @@ struct RobotDetailView: View {
                 }
             }
             // Update available banner
-            else if let state = updaterState {
+            else if let state = viewModel.updaterState {
                 if state.isUpdateAvailable, let version = state.version {
                     Section {
                         VStack(alignment: .leading, spacing: 8) {
@@ -113,14 +42,14 @@ struct RobotDetailView: View {
                                     Text(String(localized: "update.available"))
                                         .font(.subheadline)
                                         .fontWeight(.medium)
-                                    Text("\(currentVersion ?? state.currentVersion ?? "?") → \(version)")
+                                    Text("\(viewModel.currentVersion ?? state.currentVersion ?? "?") → \(version)")
                                         .font(.caption)
                                         .foregroundStyle(.secondary)
                                 }
                                 Spacer()
 
                                 // GitHub release link
-                                if let url = updateUrl, let releaseURL = URL(string: url) {
+                                if let url = viewModel.updateUrl, let releaseURL = URL(string: url) {
                                     Link(destination: releaseURL) {
                                         Image(systemName: "arrow.up.forward.square")
                                             .foregroundStyle(.secondary)
@@ -170,8 +99,8 @@ struct RobotDetailView: View {
                         }
                     }
                 }
-            } else if let currentVersion = currentVersion, let latestVersion = latestVersion,
-                      currentVersion != latestVersion, let updateUrl = updateUrl {
+            } else if let currentVersion = viewModel.currentVersion, let latestVersion = viewModel.latestVersion,
+                      currentVersion != latestVersion, let updateUrl = viewModel.updateUrl {
                 // Fallback: GitHub-based update check (if Valetudo updater not available)
                 Section {
                     Link(destination: URL(string: updateUrl)!) {
@@ -199,8 +128,8 @@ struct RobotDetailView: View {
                 compactStatusHeader
                     .listRowSeparator(.hidden)
 
-                if status?.isOnline == true {
-                    MapPreviewView(robot: robot, showFullMap: $showFullMap)
+                if viewModel.status?.isOnline == true {
+                    MapPreviewView(robot: viewModel.robot, showFullMap: $showFullMap)
                         .listRowSeparator(.hidden)
 
                     // Attachments (left) + Stats chip (right) in one row
@@ -221,7 +150,7 @@ struct RobotDetailView: View {
             }
 
             // Control Section
-            if status?.isOnline == true {
+            if viewModel.status?.isOnline == true {
                 controlSection
 
                 // Rooms (moved up)
@@ -233,49 +162,40 @@ struct RobotDetailView: View {
                 // Statistics (Accordion)
                 statisticsSection
 
-                // Clean Route (Capability-gated)
-                cleanRouteSection
-
-                // Events Section
-                eventsSection
-
-                // Obstacle Images (Capability-gated)
-                obstacleImagesSection
-
                 // Settings Section
                 Section {
                     // Roboter (Robot Settings)
                     NavigationLink {
-                        RobotSettingsView(robot: robot)
+                        RobotSettingsView(robot: viewModel.robot, robotManager: viewModel.robotManager)
                     } label: {
                         Label(String(localized: "settings.section_robot"), systemImage: "poweroutlet.type.b")
                     }
 
                     // Station (Dock Settings)
                     NavigationLink {
-                        StationSettingsView(robot: robot)
+                        StationSettingsView(robot: viewModel.robot)
                     } label: {
                         Label(String(localized: "settings.section_station"), systemImage: "dock.rectangle")
                     }
 
                     // Timer
                     NavigationLink {
-                        TimersView(robot: robot)
+                        TimersView(robot: viewModel.robot)
                     } label: {
                         Label(String(localized: "timers.title"), systemImage: "clock")
                     }
 
                     // Nicht stören (DND)
                     NavigationLink {
-                        DoNotDisturbView(robot: robot)
+                        DoNotDisturbView(robot: viewModel.robot)
                     } label: {
                         Label(String(localized: "dnd.title"), systemImage: "moon.fill")
                     }
 
                     // Manual Control (if available)
-                    if hasManualControl {
+                    if viewModel.hasManualControl {
                         NavigationLink {
-                            ManualControlView(robot: robot)
+                            ManualControlView(robot: viewModel.robot)
                         } label: {
                             Label(String(localized: "manual.title"), systemImage: "dpad")
                         }
@@ -285,56 +205,39 @@ struct RobotDetailView: View {
                 }
             }
         }
-        .navigationTitle(robot.name)
+        .navigationTitle(viewModel.robot.name)
         .sheet(isPresented: $showFullMap) {
-            MapView(robot: robot)
+            MapView(robot: viewModel.robot)
         }
         .alert(String(localized: "update.warning_title"), isPresented: $showUpdateWarning) {
             Button(String(localized: "update.cancel"), role: .cancel) { }
             Button(String(localized: "update.confirm"), role: .destructive) {
-                Task { await performUpdate() }
+                Task { await viewModel.startUpdate() }
             }
         } message: {
             Text(String(localized: "update.warning_message"))
         }
         .task {
-            await loadData()
+            await viewModel.loadData()
         }
         .refreshable {
-            await robotManager.refreshRobot(robot.id)
-            await loadData()
+            await viewModel.refreshData()
         }
-        .onChange(of: isCleaning) { _, newValue in
+        .onChange(of: viewModel.isCleaning) { _, newValue in
             if newValue {
-                startStatsPolling()
+                viewModel.startStatsPolling()
             } else {
-                stopStatsPolling()
+                viewModel.stopStatsPolling()
             }
         }
         .onAppear {
-            if isCleaning {
-                startStatsPolling()
+            if viewModel.isCleaning {
+                viewModel.startStatsPolling()
             }
         }
         .onDisappear {
-            stopStatsPolling()
+            viewModel.stopStatsPolling()
         }
-    }
-
-    // MARK: - Stats Polling
-    private func startStatsPolling() {
-        stopStatsPolling()
-        statsPollingTask = Task {
-            while !Task.isCancelled {
-                await loadLastCleaningStats()
-                try? await Task.sleep(for: .seconds(5))
-            }
-        }
-    }
-
-    private func stopStatsPolling() {
-        statsPollingTask?.cancel()
-        statsPollingTask = nil
     }
 
     // MARK: - Compact Status Header
@@ -343,11 +246,11 @@ struct RobotDetailView: View {
         HStack(spacing: 8) {
             // Status indicator
             Circle()
-                .fill(status?.isOnline == true ? Color.green : Color.red)
+                .fill(viewModel.status?.isOnline == true ? Color.green : Color.red)
                 .frame(width: 8, height: 8)
 
             // Status text
-            if let statusValue = status?.statusValue {
+            if let statusValue = viewModel.status?.statusValue {
                 Text(localizedStatus(statusValue))
                     .font(.subheadline)
                     .fontWeight(.medium)
@@ -360,7 +263,7 @@ struct RobotDetailView: View {
             }
 
             // Model name (after status)
-            if let model = status?.info?.modelName {
+            if let model = viewModel.status?.info?.modelName {
                 Text("·")
                     .foregroundStyle(.secondary)
                 Text(model)
@@ -373,16 +276,16 @@ struct RobotDetailView: View {
             Spacer()
 
             // Consumable warning
-            if hasConsumableWarning {
+            if viewModel.hasConsumableWarning {
                 Image(systemName: "exclamationmark.triangle.fill")
                     .font(.caption)
                     .foregroundStyle(.orange)
             }
 
             // Locate button (compact, before battery)
-            if status?.isOnline == true {
+            if viewModel.status?.isOnline == true {
                 Button {
-                    Task { await locate() }
+                    Task { await viewModel.locate() }
                 } label: {
                     Image(systemName: "waveform")
                         .font(.caption)
@@ -396,9 +299,9 @@ struct RobotDetailView: View {
             }
 
             // Battery pill (rightmost)
-            if let battery = status?.batteryLevel {
+            if let battery = viewModel.status?.batteryLevel {
                 HStack(spacing: 4) {
-                    Image(systemName: batteryIcon(level: battery, charging: status?.batteryStatus == "charging"))
+                    Image(systemName: batteryIcon(level: battery, charging: viewModel.status?.batteryStatus == "charging"))
                         .font(.caption)
                     Text("\(battery)%")
                         .font(.caption)
@@ -456,48 +359,39 @@ struct RobotDetailView: View {
     }
 
     // MARK: - Control Section
-    private var isPaused: Bool {
-        status?.statusValue?.lowercased() == "paused"
-    }
-
-    private var isRunning: Bool {
-        let s = status?.statusValue?.lowercased() ?? ""
-        return s == "cleaning" || s == "returning" || s == "moving"
-    }
-
     @ViewBuilder
     private var controlSection: some View {
         Section {
             // Main control buttons - 3 buttons: Start/Pause (toggle), Stop, Home
             HStack(spacing: 12) {
                 // Start/Pause toggle button
-                if isRunning {
+                if viewModel.isRunning {
                     // Show Pause when robot is running
                     ControlButton(
                         title: String(localized: "action.pause"),
                         icon: "pause.fill",
                         color: .orange
                     ) {
-                        await performAction(.pause)
+                        await viewModel.performAction(.pause)
                     }
                     .buttonStyle(.plain)
                 } else {
                     // Show Start/Resume when idle or paused
                     ControlButton(
-                        title: isPaused ? String(localized: "action.resume") : String(localized: "action.start"),
+                        title: viewModel.isPaused ? String(localized: "action.resume") : String(localized: "action.start"),
                         icon: "play.fill",
                         color: .green,
-                        badge: "\(selectedIterations)×"
+                        badge: "\(viewModel.selectedIterations)×"
                     ) {
-                        await performAction(.start)
+                        await viewModel.performAction(.start)
                     } menu: {
                         ForEach(1...3, id: \.self) { count in
                             Button {
-                                selectedIterations = count
+                                viewModel.selectedIterations = count
                             } label: {
                                 HStack {
                                     Text(count == 1 ? String(localized: "iterations.single") : String(localized: "iterations.multiple \(count)"))
-                                    if selectedIterations == count {
+                                    if viewModel.selectedIterations == count {
                                         Image(systemName: "checkmark")
                                     }
                                 }
@@ -508,33 +402,33 @@ struct RobotDetailView: View {
                 }
 
                 ControlButton(title: String(localized: "action.stop"), icon: "stop.fill", color: .red) {
-                    await performAction(.stop)
+                    await viewModel.performAction(.stop)
                 }
                 .buttonStyle(.plain)
 
                 ControlButton(title: String(localized: "action.home"), icon: "house.fill", color: .blue) {
-                    await performAction(.home)
+                    await viewModel.performAction(.home)
                 }
                 .buttonStyle(.plain)
             }
             .alignmentGuide(.listRowSeparatorLeading) { _ in 0 }
 
             // Intensity Controls (Operation Mode, Fan Speed, Water Usage) - Always Centered
-            if !fanSpeedPresets.isEmpty || !waterUsagePresets.isEmpty || !operationModePresets.isEmpty {
+            if !viewModel.fanSpeedPresets.isEmpty || !viewModel.waterUsagePresets.isEmpty || !viewModel.operationModePresets.isEmpty {
                 HStack(spacing: 8) {
                     Spacer()
 
                     // Operation Mode
-                    if !operationModePresets.isEmpty {
+                    if !viewModel.operationModePresets.isEmpty {
                         Menu {
-                            ForEach(operationModePresets, id: \.self) { preset in
+                            ForEach(viewModel.operationModePresets, id: \.self) { preset in
                                 Button {
-                                    Task { await setOperationMode(preset) }
+                                    Task { await viewModel.setOperationMode(preset) }
                                 } label: {
                                     HStack {
                                         Image(systemName: iconForOperationMode(preset))
                                         Text(displayNameForOperationMode(preset))
-                                        if currentOperationMode == preset {
+                                        if viewModel.currentOperationMode == preset {
                                             Image(systemName: "checkmark")
                                         }
                                     }
@@ -542,9 +436,9 @@ struct RobotDetailView: View {
                             }
                         } label: {
                             HStack(spacing: 4) {
-                                Image(systemName: currentOperationMode.map { iconForOperationMode($0) } ?? "gearshape")
+                                Image(systemName: viewModel.currentOperationMode.map { iconForOperationMode($0) } ?? "gearshape")
                                     .font(.caption)
-                                Text(currentOperationMode.map { displayNameForOperationMode($0) } ?? "-")
+                                Text(viewModel.currentOperationMode.map { displayNameForOperationMode($0) } ?? "-")
                                     .font(.caption)
                                     .fontWeight(.medium)
                                 Image(systemName: "chevron.up.chevron.down")
@@ -559,15 +453,15 @@ struct RobotDetailView: View {
                     }
 
                     // Fan Speed
-                    if !fanSpeedPresets.isEmpty {
+                    if !viewModel.fanSpeedPresets.isEmpty {
                         Menu {
-                            ForEach(fanSpeedPresets, id: \.self) { preset in
+                            ForEach(viewModel.fanSpeedPresets, id: \.self) { preset in
                                 Button {
-                                    Task { await setFanSpeed(preset) }
+                                    Task { await viewModel.setFanSpeed(preset) }
                                 } label: {
                                     HStack {
                                         Text(PresetHelpers.displayName(for: preset))
-                                        if currentFanSpeed == preset {
+                                        if viewModel.currentFanSpeed == preset {
                                             Image(systemName: "checkmark")
                                         }
                                     }
@@ -577,7 +471,7 @@ struct RobotDetailView: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "fan")
                                     .font(.caption)
-                                Text(currentFanSpeed.map { PresetHelpers.displayName(for: $0) } ?? "-")
+                                Text(viewModel.currentFanSpeed.map { PresetHelpers.displayName(for: $0) } ?? "-")
                                     .font(.caption)
                                     .fontWeight(.medium)
                                 Image(systemName: "chevron.up.chevron.down")
@@ -592,15 +486,15 @@ struct RobotDetailView: View {
                     }
 
                     // Water Usage
-                    if !waterUsagePresets.isEmpty {
+                    if !viewModel.waterUsagePresets.isEmpty {
                         Menu {
-                            ForEach(waterUsagePresets, id: \.self) { preset in
+                            ForEach(viewModel.waterUsagePresets, id: \.self) { preset in
                                 Button {
-                                    Task { await setWaterUsage(preset) }
+                                    Task { await viewModel.setWaterUsage(preset) }
                                 } label: {
                                     HStack {
                                         Text(PresetHelpers.displayName(for: preset))
-                                        if currentWaterUsage == preset {
+                                        if viewModel.currentWaterUsage == preset {
                                             Image(systemName: "checkmark")
                                         }
                                     }
@@ -610,7 +504,7 @@ struct RobotDetailView: View {
                             HStack(spacing: 4) {
                                 Image(systemName: "drop.fill")
                                     .font(.caption)
-                                Text(currentWaterUsage.map { PresetHelpers.displayName(for: $0) } ?? "-")
+                                Text(viewModel.currentWaterUsage.map { PresetHelpers.displayName(for: $0) } ?? "-")
                                     .font(.caption)
                                     .fontWeight(.medium)
                                 Image(systemName: "chevron.up.chevron.down")
@@ -631,21 +525,21 @@ struct RobotDetailView: View {
             }
 
             // Dock Actions (if available)
-            if hasAutoEmptyTrigger || hasMopDockClean || hasMopDockDry {
+            if viewModel.hasAutoEmptyTrigger || viewModel.hasMopDockClean || viewModel.hasMopDockDry {
                 HStack(spacing: 12) {
-                    if hasAutoEmptyTrigger {
+                    if viewModel.hasAutoEmptyTrigger {
                         DockActionButton(title: String(localized: "dock.empty"), icon: "arrow.up.bin", color: .purple) {
-                            await triggerAutoEmpty()
+                            await viewModel.triggerAutoEmpty()
                         }
                     }
-                    if hasMopDockClean {
+                    if viewModel.hasMopDockClean {
                         DockActionButton(title: String(localized: "dock.clean"), icon: "drop.triangle", color: .blue) {
-                            await triggerMopClean()
+                            await viewModel.triggerMopDockClean()
                         }
                     }
-                    if hasMopDockDry {
+                    if viewModel.hasMopDockDry {
                         DockActionButton(title: String(localized: "dock.dry"), icon: "wind", color: .cyan) {
-                            await triggerMopDry()
+                            await viewModel.triggerMopDockDry()
                         }
                     }
                 }
@@ -656,17 +550,12 @@ struct RobotDetailView: View {
         }
     }
 
-    // Helper: Check if any consumable needs attention
-    private var hasConsumableWarning: Bool {
-        consumables.contains { $0.remainingPercent < 20 }
-    }
-
     // MARK: - Live Stats Chip (under map, right aligned - battery style)
     @ViewBuilder
     private var liveStatsChip: some View {
-        let isCleaning = status?.statusValue?.lowercased() == "cleaning"
-        let timeStat = lastCleaningStats.first(where: { $0.statType == .time })
-        let areaStat = lastCleaningStats.first(where: { $0.statType == .area })
+        let isCleaning = viewModel.status?.statusValue?.lowercased() == "cleaning"
+        let timeStat = viewModel.lastCleaningStats.first(where: { $0.statType == .time })
+        let areaStat = viewModel.lastCleaningStats.first(where: { $0.statType == .area })
 
         HStack(spacing: 4) {
             // Live indicator when cleaning
@@ -731,14 +620,14 @@ extension RobotDetailView {
 
     // MARK: - Attachment Status
     private var hasAnyAttachmentInfo: Bool {
-        DebugConfig.showAllCapabilities || status?.dustbinAttached != nil || status?.mopAttached != nil || status?.waterTankAttached != nil
+        DebugConfig.showAllCapabilities || viewModel.status?.dustbinAttached != nil || viewModel.status?.mopAttached != nil || viewModel.status?.waterTankAttached != nil
     }
 
     // MARK: - Attachment Chips (battery style: colored content, matte background)
     @ViewBuilder
     private var attachmentChips: some View {
         // Dust bin
-        let dustbinAttached = status?.dustbinAttached ?? (DebugConfig.showAllCapabilities ? true : nil)
+        let dustbinAttached = viewModel.status?.dustbinAttached ?? (DebugConfig.showAllCapabilities ? true : nil)
         if let attached = dustbinAttached {
             attachmentChip(
                 icon: "trash.fill",
@@ -748,7 +637,7 @@ extension RobotDetailView {
         }
 
         // Water tank
-        let waterTankAttached = status?.waterTankAttached ?? (DebugConfig.showAllCapabilities ? true : nil)
+        let waterTankAttached = viewModel.status?.waterTankAttached ?? (DebugConfig.showAllCapabilities ? true : nil)
         if let attached = waterTankAttached {
             attachmentChip(
                 icon: "drop.fill",
@@ -758,7 +647,7 @@ extension RobotDetailView {
         }
 
         // Mop
-        let mopAttached = status?.mopAttached ?? (DebugConfig.showAllCapabilities ? false : nil)
+        let mopAttached = viewModel.status?.mopAttached ?? (DebugConfig.showAllCapabilities ? false : nil)
         if let attached = mopAttached {
             attachmentChip(
                 icon: "rectangle.portrait.bottomhalf.filled",
@@ -788,10 +677,10 @@ extension RobotDetailView {
     // MARK: - Consumables Section (Accordion)
     @ViewBuilder
     private var consumablesPreviewSection: some View {
-        if !consumables.isEmpty {
+        if !viewModel.consumables.isEmpty {
             Section {
                 DisclosureGroup {
-                    ForEach(consumables) { consumable in
+                    ForEach(viewModel.consumables) { consumable in
                         HStack(spacing: 12) {
                             // Icon
                             ZStack {
@@ -830,7 +719,7 @@ extension RobotDetailView {
 
                             // Reset button
                             Button {
-                                Task { await resetConsumable(consumable) }
+                                Task { await viewModel.resetConsumable(consumable) }
                             } label: {
                                 Image(systemName: "arrow.counterclockwise")
                                     .font(.caption)
@@ -847,7 +736,7 @@ extension RobotDetailView {
                     HStack {
                         Label(String(localized: "consumables.title"), systemImage: "wrench.and.screwdriver")
                         Spacer()
-                        if consumables.contains(where: { $0.remainingPercent < 20 }) {
+                        if viewModel.consumables.contains(where: { $0.remainingPercent < 20 }) {
                             Image(systemName: "exclamationmark.triangle.fill")
                                 .foregroundStyle(.orange)
                         }
@@ -863,31 +752,31 @@ extension RobotDetailView {
         Section {
             DisclosureGroup {
                 // Last/Current cleaning stats
-                if !lastCleaningStats.isEmpty {
+                if !viewModel.lastCleaningStats.isEmpty {
                     Text(String(localized: "stats.current"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .padding(.top, 4)
 
-                    ForEach(lastCleaningStats) { stat in
+                    ForEach(viewModel.lastCleaningStats) { stat in
                         statisticRow(stat: stat)
                     }
                 }
 
                 // Total stats
-                if !totalStats.isEmpty {
+                if !viewModel.totalStats.isEmpty {
                     Text(String(localized: "stats.total"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .padding(.top, 8)
 
-                    ForEach(totalStats) { stat in
+                    ForEach(viewModel.totalStats) { stat in
                         statisticRow(stat: stat)
                     }
                 }
 
                 // Debug fallback when no stats
-                if lastCleaningStats.isEmpty && totalStats.isEmpty && DebugConfig.showAllCapabilities {
+                if viewModel.lastCleaningStats.isEmpty && viewModel.totalStats.isEmpty && DebugConfig.showAllCapabilities {
                     Text(String(localized: "stats.current"))
                         .font(.caption)
                         .foregroundStyle(.secondary)
@@ -1003,101 +892,21 @@ extension RobotDetailView {
         }
     }
 
-    // MARK: - Clean Route Section
-    @ViewBuilder
-    private var cleanRouteSection: some View {
-        if hasCleanRoute {
-            Section {
-                Picker(String(localized: "detail.clean_route"), selection: Binding(
-                    get: { currentCleanRoute },
-                    set: { newValue in
-                        currentCleanRoute = newValue
-                        Task {
-                            guard let api = robotManager.getAPI(for: robot.id) else { return }
-                            do {
-                                try await api.setCleanRoute(route: newValue)
-                            } catch {
-                                errorRouter.show(error)
-                            }
-                        }
-                    }
-                )) {
-                    Text(String(localized: "cleanroute.normal")).tag("normal")
-                    Text(String(localized: "cleanroute.quick")).tag("quick")
-                    Text(String(localized: "cleanroute.intensive")).tag("intensive")
-                    Text(String(localized: "cleanroute.deep")).tag("deep")
-                }
-            }
-        }
-    }
-
-    // MARK: - Events Section
-    @ViewBuilder
-    private var eventsSection: some View {
-        if !events.isEmpty {
-            Section(header: Text(String(localized: "detail.events"))) {
-                ForEach(events.prefix(10)) { event in
-                    HStack {
-                        Image(systemName: event.iconName)
-                            .foregroundStyle(event.__class.contains("Error") ? .red : .secondary)
-                            .frame(width: 24)
-                        VStack(alignment: .leading, spacing: 2) {
-                            Text(event.displayName)
-                                .font(.subheadline)
-                            if let message = event.message {
-                                Text(message)
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                            Text(event.timestamp)
-                                .font(.caption2)
-                                .foregroundStyle(.tertiary)
-                        }
-                        Spacer()
-                        if !event.processed {
-                            Circle()
-                                .fill(.blue)
-                                .frame(width: 8, height: 8)
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    // MARK: - Obstacle Images Section
-    @ViewBuilder
-    private var obstacleImagesSection: some View {
-        if hasObstacleImages, let api = api {
-            if !obstacleEntities.isEmpty {
-                Section(header: Text(String(localized: "detail.obstacle_images"))) {
-                    ForEach(obstacleEntities, id: \.id) { obstacle in
-                        NavigationLink {
-                            ObstaclePhotoView(obstacleId: obstacle.id, label: obstacle.label, api: api)
-                        } label: {
-                            Label(obstacle.label ?? obstacle.id, systemImage: "camera.viewfinder")
-                        }
-                    }
-                }
-            }
-        }
-    }
-
     // MARK: - Rooms Section (Accordion)
     @ViewBuilder
     private var roomsSection: some View {
-        if !segments.isEmpty {
+        if !viewModel.segments.isEmpty {
             Section {
                 DisclosureGroup {
-                    ForEach(segments) { segment in
+                    ForEach(viewModel.segments) { segment in
                         Button {
-                            toggleSegment(segment.id)
+                            viewModel.toggleSegment(segment.id)
                         } label: {
                             HStack {
                                 Text(segment.displayName)
                                     .foregroundStyle(.primary)
                                 Spacer()
-                                if selectedSegments.contains(segment.id) {
+                                if viewModel.selectedSegments.contains(segment.id) {
                                     Image(systemName: "checkmark.circle.fill")
                                         .foregroundStyle(.blue)
                                 } else {
@@ -1111,8 +920,8 @@ extension RobotDetailView {
                     HStack {
                         Label(String(localized: "rooms.title"), systemImage: "square.grid.2x2")
                         Spacer()
-                        if !selectedSegments.isEmpty {
-                            Text("\(selectedSegments.count)")
+                        if !viewModel.selectedSegments.isEmpty {
+                            Text("\(viewModel.selectedSegments.count)")
                                 .font(.caption)
                                 .padding(.horizontal, 8)
                                 .padding(.vertical, 2)
@@ -1124,11 +933,11 @@ extension RobotDetailView {
                 }
 
                 // Clean button with iterations picker - visible when rooms are selected
-                if !selectedSegments.isEmpty {
+                if !viewModel.selectedSegments.isEmpty {
                     HStack(spacing: 8) {
                         // Clean button
                         Button {
-                            Task { await cleanSelectedRooms() }
+                            Task { await viewModel.cleanSelectedRooms() }
                         } label: {
                             HStack {
                                 Image(systemName: "play.fill")
@@ -1141,11 +950,11 @@ extension RobotDetailView {
                         Menu {
                             ForEach(1...3, id: \.self) { count in
                                 Button {
-                                    selectedIterations = count
+                                    viewModel.selectedIterations = count
                                 } label: {
                                     HStack {
                                         Text("\(count)×")
-                                        if selectedIterations == count {
+                                        if viewModel.selectedIterations == count {
                                             Image(systemName: "checkmark")
                                         }
                                     }
@@ -1155,7 +964,7 @@ extension RobotDetailView {
                             HStack(spacing: 4) {
                                 Image(systemName: "repeat")
                                     .font(.caption)
-                                Text("\(selectedIterations)×")
+                                Text("\(viewModel.selectedIterations)×")
                                     .font(.subheadline)
                                     .fontWeight(.semibold)
                             }
@@ -1169,7 +978,7 @@ extension RobotDetailView {
                         Spacer()
 
                         // Room count badge
-                        Text("\(selectedSegments.count)")
+                        Text("\(viewModel.selectedSegments.count)")
                             .font(.caption)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 2)
@@ -1177,301 +986,9 @@ extension RobotDetailView {
                             .foregroundStyle(.green)
                             .clipShape(Capsule())
                     }
-                    .disabled(isLoading)
+                    .disabled(viewModel.isLoading)
                 }
             }
-        }
-    }
-
-    // MARK: - Actions
-    private func performAction(_ action: BasicAction) async {
-        guard let api = api else { return }
-        isLoading = true
-        defer { isLoading = false }
-
-        do {
-            try await api.basicControl(action: action)
-            await robotManager.refreshRobot(robot.id)
-        } catch {
-            print("Action failed: \(error)")
-        }
-    }
-
-    private func locate() async {
-        guard let api = api else { return }
-        try? await api.locate()
-    }
-
-    private func loadData() async {
-        guard api != nil else { return }
-        async let segmentsTask: () = loadSegments()
-        async let consumablesTask: () = loadConsumables()
-        async let capabilitiesTask: () = loadCapabilities()
-        async let fanSpeedTask: () = loadFanSpeedPresets()
-        async let updateTask: () = checkForUpdate()
-        async let statsTask: () = loadLastCleaningStats()
-        async let eventsTask: () = loadEvents()
-        _ = await (segmentsTask, consumablesTask, capabilitiesTask, fanSpeedTask, updateTask, statsTask, eventsTask)
-    }
-
-    private func loadLastCleaningStats() async {
-        guard let api = api else { return }
-
-        // Load current/last cleaning stats
-        do {
-            let stats = try await api.getCurrentStatistics()
-            await MainActor.run { self.lastCleaningStats = stats }
-        } catch {
-            // Silently fail - not all robots support this
-        }
-
-        // Load total stats
-        do {
-            let stats = try await api.getTotalStatistics()
-            await MainActor.run { self.totalStats = stats }
-        } catch {
-            // Silently fail - not all robots support this
-        }
-    }
-
-    private func checkForUpdate() async {
-        guard let api = api else { return }
-        do {
-            // Get current version from Valetudo info
-            if let version = try? await api.getValetudoVersion() {
-                await MainActor.run {
-                    self.currentVersion = version.release
-                }
-            }
-
-            // Trigger a check for updates
-            try? await api.checkForUpdates()
-
-            // Then get the updater state
-            let state = try await api.getUpdaterState()
-            await MainActor.run {
-                self.updaterState = state
-            }
-
-            // Also fetch GitHub release as fallback
-            let url = URL(string: "https://api.github.com/repos/Hypfer/Valetudo/releases/latest")!
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let release = try JSONDecoder().decode(GitHubRelease.self, from: data)
-            await MainActor.run {
-                latestVersion = release.tag_name
-                updateUrl = release.html_url
-            }
-        } catch {
-            print("Failed to check for updates: \(error)")
-        }
-    }
-
-    private func performUpdate() async {
-        guard let api = api else { return }
-
-        // Check if we need to download or apply
-        let needsDownload = updaterState?.isUpdateAvailable == true && updaterState?.isReadyToApply != true
-        let needsApply = updaterState?.isReadyToApply == true
-
-        // Set progress state - this hides the update button
-        await MainActor.run {
-            updateInProgress = true
-        }
-
-        do {
-            if needsDownload {
-                // Download first
-                try await api.downloadUpdate()
-
-                // Poll for download completion
-                var downloadComplete = false
-                for _ in 0..<60 { // Max 5 minutes
-                    try? await Task.sleep(for: .seconds(5))
-                    let state = try await api.getUpdaterState()
-                    await MainActor.run { self.updaterState = state }
-
-                    if state.isReadyToApply {
-                        downloadComplete = true
-                        break
-                    }
-                    if !state.isDownloading && !state.isReadyToApply {
-                        // Download failed or was cancelled
-                        break
-                    }
-                }
-
-                if !downloadComplete {
-                    await MainActor.run { updateInProgress = false }
-                    return
-                }
-            }
-
-            if needsApply || needsDownload {
-                // Apply the update - robot will restart
-                try await api.applyUpdate()
-                // Keep showing progress - robot will be offline
-            }
-        } catch {
-            print("Update failed: \(error)")
-            await MainActor.run { updateInProgress = false }
-        }
-    }
-
-    private func loadCapabilities() async {
-        guard let api = api else { return }
-        do {
-            let capabilities = try await api.getCapabilities()
-            await MainActor.run {
-                hasManualControl = DebugConfig.showAllCapabilities || capabilities.contains("HighResolutionManualControlCapability")
-                hasAutoEmptyTrigger = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockManualTriggerCapability")
-                hasMopDockClean = DebugConfig.showAllCapabilities || capabilities.contains("MopDockCleanManualTriggerCapability")
-                hasMopDockDry = DebugConfig.showAllCapabilities || capabilities.contains("MopDockDryManualTriggerCapability")
-                hasCleanRoute = DebugConfig.showAllCapabilities || capabilities.contains("CleanRouteControlCapability")
-                hasObstacleImages = DebugConfig.showAllCapabilities || capabilities.contains("ObstacleImagesCapability")
-            }
-            if hasCleanRoute {
-                do {
-                    let routeState = try await api.getCleanRoute()
-                    await MainActor.run {
-                        currentCleanRoute = routeState.route
-                    }
-                } catch {
-                    // Silently ignore — robot may not support this
-                }
-            }
-            if hasObstacleImages {
-                do {
-                    let map = try await api.getMap()
-                    let obstacles = (map.entities ?? []).compactMap { entity -> (id: String, label: String?)? in
-                        guard let id = entity.metaData?.id else { return nil }
-                        return (id: id, label: entity.metaData?.label)
-                    }
-                    await MainActor.run {
-                        obstacleEntities = obstacles
-                    }
-                } catch {
-                    // Silently ignore — obstacle photos are optional
-                }
-            }
-        } catch {
-            print("Failed to load capabilities: \(error)")
-        }
-    }
-
-    private func loadEvents() async {
-        guard let api = api else { return }
-        do {
-            let fetchedEvents = try await api.getEvents()
-            await MainActor.run {
-                events = fetchedEvents
-            }
-        } catch {
-            // Silently ignore — events endpoint may not be available
-        }
-    }
-
-    private func loadSegments() async {
-        guard let api = api else { return }
-        do {
-            segments = try await api.getSegments()
-        } catch {
-            print("Failed to load segments: \(error)")
-        }
-    }
-
-    private func loadConsumables() async {
-        guard let api = api else { return }
-        do {
-            consumables = try await api.getConsumables()
-        } catch {
-            print("Failed to load consumables: \(error)")
-        }
-    }
-
-    private func toggleSegment(_ id: String) {
-        if selectedSegments.contains(id) {
-            selectedSegments.remove(id)
-        } else {
-            selectedSegments.insert(id)
-        }
-    }
-
-    private func cleanSelectedRooms() async {
-        guard let api = api, !selectedSegments.isEmpty else { return }
-        isLoading = true
-        defer { isLoading = false }
-
-        do {
-            try await api.cleanSegments(ids: Array(selectedSegments), iterations: selectedIterations)
-            selectedSegments.removeAll()
-            selectedIterations = 1  // Reset to default
-            await robotManager.refreshRobot(robot.id)
-        } catch {
-            print("Clean failed: \(error)")
-        }
-    }
-
-    // MARK: - Intensity Functions
-    private func loadFanSpeedPresets() async {
-        guard let api = api else { return }
-        // Load fan speed presets
-        do {
-            fanSpeedPresets = try await api.getFanSpeedPresets()
-        } catch {
-            print("Fan speed not supported: \(error)")
-            if DebugConfig.showAllCapabilities && fanSpeedPresets.isEmpty {
-                fanSpeedPresets = ["low", "medium", "high", "max"]
-            }
-        }
-
-        // Load water usage presets
-        do {
-            waterUsagePresets = try await api.getWaterUsagePresets()
-        } catch {
-            print("Water usage not supported: \(error)")
-            if DebugConfig.showAllCapabilities && waterUsagePresets.isEmpty {
-                waterUsagePresets = ["low", "medium", "high"]
-            }
-        }
-
-        // Load operation mode presets
-        do {
-            operationModePresets = try await api.getOperationModePresets()
-        } catch {
-            print("Operation mode not supported: \(error)")
-            if DebugConfig.showAllCapabilities && operationModePresets.isEmpty {
-                operationModePresets = ["vacuum", "mop", "vacuum_and_mop"]
-            }
-        }
-    }
-
-    private func setFanSpeed(_ preset: String) async {
-        guard let api = api else { return }
-        do {
-            try await api.setFanSpeed(preset: preset)
-            await robotManager.refreshRobot(robot.id)
-        } catch {
-            print("Failed to set fan speed: \(error)")
-        }
-    }
-
-    private func setWaterUsage(_ preset: String) async {
-        guard let api = api else { return }
-        do {
-            try await api.setWaterUsage(preset: preset)
-            await robotManager.refreshRobot(robot.id)
-        } catch {
-            print("Failed to set water usage: \(error)")
-        }
-    }
-
-    private func setOperationMode(_ preset: String) async {
-        guard let api = api else { return }
-        do {
-            try await api.setOperationMode(preset: preset)
-            await robotManager.refreshRobot(robot.id)
-        } catch {
-            print("Failed to set operation mode: \(error)")
         }
     }
 
@@ -1491,52 +1008,6 @@ extension RobotDetailView {
         case "mop": return "drop.fill"
         case "vacuum_and_mop", "vacuum_then_mop": return "sparkles"
         default: return "gearshape"
-        }
-    }
-
-
-    // MARK: - Dock Functions
-    private func triggerAutoEmpty() async {
-        guard let api = api else { return }
-        isLoading = true
-        defer { isLoading = false }
-        do {
-            try await api.triggerAutoEmptyDock()
-        } catch {
-            print("Failed to trigger auto empty: \(error)")
-        }
-    }
-
-    private func triggerMopClean() async {
-        guard let api = api else { return }
-        isLoading = true
-        defer { isLoading = false }
-        do {
-            try await api.triggerMopDockClean()
-        } catch {
-            print("Failed to trigger mop clean: \(error)")
-        }
-    }
-
-    private func triggerMopDry() async {
-        guard let api = api else { return }
-        isLoading = true
-        defer { isLoading = false }
-        do {
-            try await api.triggerMopDockDry()
-        } catch {
-            print("Failed to trigger mop dry: \(error)")
-        }
-    }
-
-    // MARK: - Consumable Reset
-    private func resetConsumable(_ consumable: Consumable) async {
-        guard let api = api else { return }
-        do {
-            try await api.resetConsumable(type: consumable.type, subType: consumable.subType)
-            await loadConsumables()
-        } catch {
-            print("Failed to reset consumable: \(error)")
         }
     }
 }
@@ -1652,8 +1123,6 @@ struct DockActionButton: View {
 
 #Preview {
     NavigationStack {
-        RobotDetailView(robot: RobotConfig(name: "Test Robot", host: "192.168.0.35"))
-            .environmentObject(RobotManager())
-            .environmentObject(ErrorRouter())
+        RobotDetailView(robot: RobotConfig(name: "Test Robot", host: "192.168.0.35"), robotManager: RobotManager())
     }
 }

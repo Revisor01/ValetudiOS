@@ -4,6 +4,7 @@ struct RobotListView: View {
     @EnvironmentObject var robotManager: RobotManager
     @Binding var selectedRobotId: UUID?
     @State private var showAddRobot = false
+    @State private var navigateToRobot: RobotConfig?
 
     var body: some View {
         List {
@@ -15,22 +16,29 @@ struct RobotListView: View {
                 )
             } else {
                 ForEach(robotManager.robots) { robot in
-                    NavigationLink(value: robot) {
+                    Button {
+                        selectedRobotId = robot.id
+                        navigateToRobot = robot
+                    } label: {
                         RobotRowView(
                             robot: robot,
                             status: robotManager.robotStates[robot.id],
                             hasUpdate: robotManager.robotUpdateAvailable[robot.id] ?? false
                         )
                     }
+                    .buttonStyle(.plain)
                 }
                 .onDelete(perform: deleteRobots)
             }
         }
-        .navigationDestination(for: RobotConfig.self) { robot in
-            RobotDetailView(robot: robot)
-                .onAppear {
-                    selectedRobotId = robot.id
-                }
+        .navigationDestination(item: $navigateToRobot) { robot in
+            RobotDetailView(robot: robot, robotManager: robotManager)
+        }
+        .onChange(of: navigateToRobot) { oldValue, newValue in
+            // Only clear selection when navigating BACK from detail view (not when switching tabs)
+            if oldValue != nil && newValue == nil {
+                selectedRobotId = nil
+            }
         }
         .navigationTitle(String(localized: "robots.title"))
         .toolbar {

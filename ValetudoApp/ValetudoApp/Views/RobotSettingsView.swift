@@ -3,94 +3,47 @@ import SwiftUI
 struct RobotSettingsView: View {
     let robot: RobotConfig
     @EnvironmentObject var robotManager: RobotManager
-    @EnvironmentObject var errorRouter: ErrorRouter
+    @StateObject private var viewModel: RobotSettingsViewModel
 
-    @State private var volume: Double = 80
-    @State private var carpetMode = false
-    @State private var persistentMap = false
-    @State private var keyLock = false
-    @State private var obstacleAvoidance = false
-    @State private var petObstacleAvoidance = false
-    @State private var isLoading = false
-    @State private var isInitialLoad = true
-
-    // Capabilities (default to DebugConfig.showAllCapabilities for testing)
-    @State private var hasVolumeControl = DebugConfig.showAllCapabilities
-    @State private var hasSpeakerTest = DebugConfig.showAllCapabilities
-    @State private var hasCarpetMode = DebugConfig.showAllCapabilities
-    @State private var hasPersistentMap = DebugConfig.showAllCapabilities
-    @State private var hasMappingPass = DebugConfig.showAllCapabilities
-    @State private var hasAutoEmptyDock = DebugConfig.showAllCapabilities
-    @State private var hasQuirks = DebugConfig.showAllCapabilities
-    @State private var hasWifiConfig = DebugConfig.showAllCapabilities
-    @State private var hasWifiScan = DebugConfig.showAllCapabilities
-    @State private var hasKeyLock = DebugConfig.showAllCapabilities
-    @State private var hasObstacleAvoidance = DebugConfig.showAllCapabilities
-    @State private var hasPetObstacleAvoidance = DebugConfig.showAllCapabilities
-    @State private var hasCarpetSensorMode = DebugConfig.showAllCapabilities
-    @State private var hasMapReset = DebugConfig.showAllCapabilities
-    @State private var hasCollisionAvoidance = DebugConfig.showAllCapabilities
-    @State private var hasMopDockAutoDrying = DebugConfig.showAllCapabilities
-    @State private var hasMopDockWashTemperature = DebugConfig.showAllCapabilities
-    @State private var hasFloorMaterialNavigation = DebugConfig.showAllCapabilities
-    @State private var hasMapSnapshot = false
-    @State private var hasPendingMapChange = false
-
-    // Map Snapshot & Pending Map Change state
-    @State private var mapSnapshots: [MapSnapshot] = []
-    @State private var pendingMapChangeEnabled = false
-    @State private var isRestoringSnapshot = false
-    @State private var isHandlingMapChange = false
-
-    // Carpet sensor mode
-    @State private var carpetSensorMode: String = ""
-    @State private var carpetSensorModePresets: [String] = []
-
-    // New capability states
-    @State private var collisionAvoidance = false
-    @State private var mopDockAutoDrying = false
-    @State private var mopDockWashTemperaturePresets: [String] = []
-    @State private var currentWashTemperature: String = ""
-    @State private var floorMaterialNavigation = false
-
-    @State private var volumeChanged = false
+    // Pure UI presentation state (alert toggles only)
     @State private var showMappingAlert = false
     @State private var showMapResetAlert = false
 
-    private var api: ValetudoAPI? {
-        robotManager.getAPI(for: robot.id)
+    init(robot: RobotConfig, robotManager: RobotManager) {
+        self.robot = robot
+        _viewModel = StateObject(wrappedValue: RobotSettingsViewModel(robot: robot, robotManager: robotManager))
     }
 
     var body: some View {
         List {
             // Speaker Section
-            if hasVolumeControl || hasSpeakerTest {
+            if viewModel.hasVolumeControl || viewModel.hasSpeakerTest {
                 Section {
-                    if hasVolumeControl {
+                    if viewModel.hasVolumeControl {
                         VStack(alignment: .leading, spacing: 8) {
                             HStack {
                                 Image(systemName: volumeIcon)
                                     .foregroundStyle(.blue)
                                 Text(String(localized: "settings.volume"))
                                 Spacer()
-                                Text("\(Int(volume))%")
+                                Text("\(Int(viewModel.volume))%")
                                     .foregroundStyle(.secondary)
                             }
 
-                            Slider(value: $volume, in: 0...100, step: 10) {
+                            Slider(value: $viewModel.volume, in: 0...100, step: 10) {
                                 Text("Volume")
                             } onEditingChanged: { editing in
                                 if !editing {
-                                    volumeChanged = true
-                                    Task { await setVolume() }
+                                    viewModel.volumeChanged = true
+                                    Task { await viewModel.setVolume() }
                                 }
                             }
                         }
                     }
 
-                    if hasSpeakerTest {
+                    if viewModel.hasSpeakerTest {
                         Button {
-                            Task { await testSpeaker() }
+                            Task { await viewModel.testSpeaker() }
                         } label: {
                             HStack {
                                 Image(systemName: "play.circle")
@@ -99,7 +52,7 @@ struct RobotSettingsView: View {
                                     .foregroundStyle(.primary)
                             }
                         }
-                        .disabled(isLoading)
+                        .disabled(viewModel.isLoading)
                     }
                 } header: {
                     Label(String(localized: "settings.speaker"), systemImage: "speaker.wave.2")
@@ -107,81 +60,81 @@ struct RobotSettingsView: View {
             }
 
             // Cleaning Settings Section
-            if hasCarpetMode || hasObstacleAvoidance || hasPetObstacleAvoidance || hasCollisionAvoidance || hasCarpetSensorMode || hasFloorMaterialNavigation {
+            if viewModel.hasCarpetMode || viewModel.hasObstacleAvoidance || viewModel.hasPetObstacleAvoidance || viewModel.hasCollisionAvoidance || viewModel.hasCarpetSensorMode || viewModel.hasFloorMaterialNavigation {
                 Section {
-                    if hasCarpetMode {
-                        Toggle(isOn: $carpetMode) {
+                    if viewModel.hasCarpetMode {
+                        Toggle(isOn: $viewModel.carpetMode) {
                             HStack {
                                 Image(systemName: "square.grid.3x3")
                                     .foregroundStyle(.orange)
                                 Text(String(localized: "settings.carpet_mode"))
                             }
                         }
-                        .onChange(of: carpetMode) { _, newValue in
-                            guard !isInitialLoad else { return }
-                            Task { await setCarpetMode(newValue) }
+                        .onChange(of: viewModel.carpetMode) { _, newValue in
+                            guard !viewModel.isInitialLoad else { return }
+                            Task { await viewModel.setCarpetMode(newValue) }
                         }
                     }
 
-                    if hasObstacleAvoidance {
-                        Toggle(isOn: $obstacleAvoidance) {
+                    if viewModel.hasObstacleAvoidance {
+                        Toggle(isOn: $viewModel.obstacleAvoidance) {
                             HStack {
                                 Image(systemName: "eye.trianglebadge.exclamationmark")
                                     .foregroundStyle(.purple)
                                 Text(String(localized: "settings.obstacle_avoidance"))
                             }
                         }
-                        .onChange(of: obstacleAvoidance) { _, newValue in
-                            guard !isInitialLoad else { return }
-                            Task { await setObstacleAvoidance(newValue) }
+                        .onChange(of: viewModel.obstacleAvoidance) { _, newValue in
+                            guard !viewModel.isInitialLoad else { return }
+                            Task { await viewModel.setObstacleAvoidance(newValue) }
                         }
                     }
 
-                    if hasPetObstacleAvoidance {
-                        Toggle(isOn: $petObstacleAvoidance) {
+                    if viewModel.hasPetObstacleAvoidance {
+                        Toggle(isOn: $viewModel.petObstacleAvoidance) {
                             HStack {
                                 Image(systemName: "pawprint.fill")
                                     .foregroundStyle(.brown)
                                 Text(String(localized: "settings.pet_obstacle_avoidance"))
                             }
                         }
-                        .onChange(of: petObstacleAvoidance) { _, newValue in
-                            guard !isInitialLoad else { return }
-                            Task { await setPetObstacleAvoidance(newValue) }
+                        .onChange(of: viewModel.petObstacleAvoidance) { _, newValue in
+                            guard !viewModel.isInitialLoad else { return }
+                            Task { await viewModel.setPetObstacleAvoidance(newValue) }
                         }
                     }
 
-                    if hasCollisionAvoidance {
-                        Toggle(isOn: $collisionAvoidance) {
+                    if viewModel.hasCollisionAvoidance {
+                        Toggle(isOn: $viewModel.collisionAvoidance) {
                             HStack {
                                 Image(systemName: "exclamationmark.triangle")
                                     .foregroundStyle(.yellow)
                                 Text(String(localized: "settings.collision_avoidance"))
                             }
                         }
-                        .onChange(of: collisionAvoidance) { _, newValue in
-                            guard !isInitialLoad else { return }
-                            Task { await setCollisionAvoidance(newValue) }
+                        .onChange(of: viewModel.collisionAvoidance) { _, newValue in
+                            guard !viewModel.isInitialLoad else { return }
+                            Task { await viewModel.setCollisionAvoidance(newValue) }
                         }
                     }
 
-                    if hasFloorMaterialNavigation {
-                        Toggle(isOn: $floorMaterialNavigation) {
+                    if viewModel.hasFloorMaterialNavigation {
+                        Toggle(isOn: $viewModel.floorMaterialNavigation) {
                             HStack {
                                 Image(systemName: "arrow.left.and.right")
                                     .foregroundStyle(.cyan)
                                 Text(String(localized: "settings.floor_material_navigation"))
                             }
                         }
-                        .onChange(of: floorMaterialNavigation) { _, newValue in
-                            guard !isInitialLoad else { return }
-                            Task { await setFloorMaterialNavigation(newValue) }
+                        .onChange(of: viewModel.floorMaterialNavigation) { _, newValue in
+                            guard !viewModel.isInitialLoad else { return }
+                            Task { await viewModel.setFloorMaterialNavigation(newValue) }
                         }
                     }
 
-                    if hasCarpetSensorMode && !carpetSensorModePresets.isEmpty {
-                        Picker(selection: $carpetSensorMode) {
-                            ForEach(carpetSensorModePresets, id: \.self) { preset in
+                    if viewModel.hasCarpetSensorMode && !viewModel.carpetSensorModePresets.isEmpty {
+                        Picker(selection: $viewModel.carpetSensorMode) {
+                            ForEach(viewModel.carpetSensorModePresets, id: \.self) { preset in
                                 Text(displayNameForCarpetSensorMode(preset)).tag(preset)
                             }
                         } label: {
@@ -191,9 +144,9 @@ struct RobotSettingsView: View {
                                 Text(String(localized: "settings.carpet_sensor_mode"))
                             }
                         }
-                        .onChange(of: carpetSensorMode) { _, newValue in
-                            guard !isInitialLoad && !newValue.isEmpty else { return }
-                            Task { await setCarpetSensorMode(newValue) }
+                        .onChange(of: viewModel.carpetSensorMode) { _, newValue in
+                            guard !viewModel.isInitialLoad && !newValue.isEmpty else { return }
+                            Task { await viewModel.setCarpetSensorMode(newValue) }
                         }
                     }
                 } header: {
@@ -202,18 +155,18 @@ struct RobotSettingsView: View {
             }
 
             // Device Lock Section
-            if hasKeyLock {
+            if viewModel.hasKeyLock {
                 Section {
-                    Toggle(isOn: $keyLock) {
+                    Toggle(isOn: $viewModel.keyLock) {
                         HStack {
                             Image(systemName: "lock.fill")
                                 .foregroundStyle(.red)
                             Text(String(localized: "settings.key_lock"))
                         }
                     }
-                    .onChange(of: keyLock) { _, newValue in
-                        guard !isInitialLoad else { return }
-                        Task { await setKeyLock(newValue) }
+                    .onChange(of: viewModel.keyLock) { _, newValue in
+                        guard !viewModel.isInitialLoad else { return }
+                        Task { await viewModel.setKeyLock(newValue) }
                     }
                 } header: {
                     Label(String(localized: "settings.device"), systemImage: "gearshape")
@@ -223,23 +176,23 @@ struct RobotSettingsView: View {
             }
 
             // Map Settings Section
-            if hasPersistentMap || hasMappingPass || hasMapReset {
+            if viewModel.hasPersistentMap || viewModel.hasMappingPass || viewModel.hasMapReset {
                 Section {
-                    if hasPersistentMap {
-                        Toggle(isOn: $persistentMap) {
+                    if viewModel.hasPersistentMap {
+                        Toggle(isOn: $viewModel.persistentMap) {
                             HStack {
                                 Image(systemName: "map")
                                     .foregroundStyle(.green)
                                 Text(String(localized: "settings.persistent_map"))
                             }
                         }
-                        .onChange(of: persistentMap) { _, newValue in
-                            guard !isInitialLoad else { return }
-                            Task { await setPersistentMap(newValue) }
+                        .onChange(of: viewModel.persistentMap) { _, newValue in
+                            guard !viewModel.isInitialLoad else { return }
+                            Task { await viewModel.setPersistentMap(newValue) }
                         }
                     }
 
-                    if hasMappingPass {
+                    if viewModel.hasMappingPass {
                         Button {
                             showMappingAlert = true
                         } label: {
@@ -250,10 +203,10 @@ struct RobotSettingsView: View {
                                     .foregroundStyle(.primary)
                             }
                         }
-                        .disabled(isLoading)
+                        .disabled(viewModel.isLoading)
                     }
 
-                    if hasMapReset {
+                    if viewModel.hasMapReset {
                         Button(role: .destructive) {
                             showMapResetAlert = true
                         } label: {
@@ -264,109 +217,23 @@ struct RobotSettingsView: View {
                                     .foregroundStyle(.red)
                             }
                         }
-                        .disabled(isLoading)
+                        .disabled(viewModel.isLoading)
                     }
                 } header: {
                     Label(String(localized: "settings.map"), systemImage: "map")
                 } footer: {
-                    if hasPersistentMap && hasMappingPass {
+                    if viewModel.hasPersistentMap && viewModel.hasMappingPass {
                         Text(String(localized: "settings.persistent_map_desc"))
-                    } else if hasPersistentMap {
+                    } else if viewModel.hasPersistentMap {
                         Text(String(localized: "settings.persistent_map_desc"))
-                    } else if hasMappingPass {
+                    } else if viewModel.hasMappingPass {
                         Text(String(localized: "settings.start_mapping_desc"))
                     }
                 }
             }
 
-            // MARK: - Map Snapshots
-            if hasMapSnapshot {
-                Section(header: Text(String(localized: "settings.map_snapshots"))) {
-                    if mapSnapshots.isEmpty {
-                        Text(String(localized: "settings.no_snapshots"))
-                            .foregroundStyle(.secondary)
-                    } else {
-                        ForEach(mapSnapshots) { snapshot in
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text(snapshot.id)
-                                        .font(.footnote)
-                                        .lineLimit(1)
-                                }
-                                Spacer()
-                                Button {
-                                    Task {
-                                        guard let api = robotManager.getAPI(for: robot.id) else { return }
-                                        isRestoringSnapshot = true
-                                        do {
-                                            try await api.restoreMapSnapshot(id: snapshot.id)
-                                        } catch {
-                                            errorRouter.show(error)
-                                        }
-                                        isRestoringSnapshot = false
-                                    }
-                                } label: {
-                                    if isRestoringSnapshot {
-                                        ProgressView()
-                                    } else {
-                                        Text(String(localized: "settings.restore"))
-                                    }
-                                }
-                                .disabled(isRestoringSnapshot)
-                            }
-                        }
-                    }
-                }
-            }
-
-            // MARK: - Pending Map Change
-            if hasPendingMapChange && pendingMapChangeEnabled {
-                Section(header: Text(String(localized: "settings.pending_map_change"))) {
-                    Text(String(localized: "settings.pending_map_change.description"))
-                        .font(.footnote)
-                        .foregroundStyle(.secondary)
-                    HStack {
-                        Button {
-                            Task {
-                                guard let api = robotManager.getAPI(for: robot.id) else { return }
-                                isHandlingMapChange = true
-                                do {
-                                    try await api.handlePendingMapChange(action: "accept")
-                                    pendingMapChangeEnabled = false
-                                } catch {
-                                    errorRouter.show(error)
-                                }
-                                isHandlingMapChange = false
-                            }
-                        } label: {
-                            Label(String(localized: "settings.accept"), systemImage: "checkmark.circle.fill")
-                        }
-                        .disabled(isHandlingMapChange)
-
-                        Spacer()
-
-                        Button(role: .destructive) {
-                            Task {
-                                guard let api = robotManager.getAPI(for: robot.id) else { return }
-                                isHandlingMapChange = true
-                                do {
-                                    try await api.handlePendingMapChange(action: "reject")
-                                    pendingMapChangeEnabled = false
-                                } catch {
-                                    errorRouter.show(error)
-                                }
-                                isHandlingMapChange = false
-                            }
-                        } label: {
-                            Label(String(localized: "settings.reject"), systemImage: "xmark.circle.fill")
-                        }
-                        .disabled(isHandlingMapChange)
-                    }
-                }
-            }
-
             // Quirks Section
-            if hasQuirks {
+            if viewModel.hasQuirks {
                 Section {
                     NavigationLink {
                         QuirksView(robot: robot)
@@ -387,7 +254,7 @@ struct RobotSettingsView: View {
             // Valetudo System Section
             Section {
                 // WiFi Settings
-                if hasWifiConfig || hasWifiScan {
+                if viewModel.hasWifiConfig || viewModel.hasWifiScan {
                     NavigationLink {
                         WifiSettingsView(robot: robot)
                     } label: {
@@ -436,7 +303,7 @@ struct RobotSettingsView: View {
             }
 
             // No settings available
-            if !hasVolumeControl && !hasSpeakerTest && !hasCarpetMode && !hasPersistentMap && !hasMappingPass && !hasAutoEmptyDock && !hasMopDockAutoDrying && !hasMopDockWashTemperature && !hasQuirks && !isLoading {
+            if !viewModel.hasVolumeControl && !viewModel.hasSpeakerTest && !viewModel.hasCarpetMode && !viewModel.hasPersistentMap && !viewModel.hasMappingPass && !viewModel.hasAutoEmptyDock && !viewModel.hasMopDockAutoDrying && !viewModel.hasMopDockWashTemperature && !viewModel.hasQuirks && !viewModel.isLoading {
                 Section {
                     Text(String(localized: "settings.robot_no_settings"))
                         .foregroundStyle(.secondary)
@@ -445,13 +312,13 @@ struct RobotSettingsView: View {
         }
         .navigationTitle(String(localized: "settings.section_robot"))
         .task {
-            await loadSettings()
+            await viewModel.loadSettings()
         }
         .refreshable {
-            await loadSettings()
+            await viewModel.loadSettings()
         }
         .overlay {
-            if isLoading && !hasVolumeControl && !hasCarpetMode && !hasPersistentMap && !hasMappingPass {
+            if viewModel.isLoading && !viewModel.hasVolumeControl && !viewModel.hasCarpetMode && !viewModel.hasPersistentMap && !viewModel.hasMappingPass {
                 ProgressView()
             }
         }
@@ -461,7 +328,7 @@ struct RobotSettingsView: View {
         ) {
             Button(String(localized: "settings.cancel"), role: .cancel) { }
             Button(String(localized: "settings.mapping_start"), role: .destructive) {
-                Task { await startMappingPass() }
+                Task { await viewModel.startMappingPass() }
             }
         } message: {
             Text(String(localized: "settings.mapping_warning_message"))
@@ -472,7 +339,7 @@ struct RobotSettingsView: View {
         ) {
             Button(String(localized: "settings.cancel"), role: .cancel) { }
             Button(String(localized: "settings.map_reset_confirm"), role: .destructive) {
-                Task { await resetMap() }
+                Task { await viewModel.resetMap() }
             }
         } message: {
             Text(String(localized: "settings.map_reset_warning_message"))
@@ -480,9 +347,9 @@ struct RobotSettingsView: View {
     }
 
     private var volumeIcon: String {
-        if volume == 0 { return "speaker.slash" }
-        if volume < 33 { return "speaker.wave.1" }
-        if volume < 66 { return "speaker.wave.2" }
+        if viewModel.volume == 0 { return "speaker.slash" }
+        if viewModel.volume < 33 { return "speaker.wave.1" }
+        if viewModel.volume < 66 { return "speaker.wave.2" }
         return "speaker.wave.3"
     }
 
@@ -509,347 +376,6 @@ struct RobotSettingsView: View {
         }
     }
 
-    // MARK: - Data Loading
-    private func loadSettings() async {
-        guard let api = api else { return }
-        isLoading = true
-        defer { isLoading = false }
-
-        // Load speaker volume
-        do {
-            volume = Double(try await api.getSpeakerVolume())
-        } catch {
-            if !DebugConfig.showAllCapabilities { hasVolumeControl = false }
-        }
-
-        // Check speaker test capability (just mark as available if volume works)
-        // We'll test it when the user presses the button
-
-        // Load carpet mode
-        do {
-            carpetMode = try await api.getCarpetMode()
-        } catch {
-            if !DebugConfig.showAllCapabilities { hasCarpetMode = false }
-        }
-
-        // Load persistent map
-        do {
-            persistentMap = try await api.getPersistentMap()
-        } catch {
-            if !DebugConfig.showAllCapabilities { hasPersistentMap = false }
-        }
-
-        // Check capabilities
-        do {
-            let capabilities = try await api.getCapabilities()
-            hasMappingPass = DebugConfig.showAllCapabilities || capabilities.contains("MappingPassCapability")
-            hasAutoEmptyDock = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockAutoEmptyIntervalControlCapability")
-            hasQuirks = DebugConfig.showAllCapabilities || capabilities.contains("QuirksCapability")
-            hasWifiConfig = DebugConfig.showAllCapabilities || capabilities.contains("WifiConfigurationCapability")
-            hasWifiScan = DebugConfig.showAllCapabilities || capabilities.contains("WifiScanCapability")
-            hasKeyLock = DebugConfig.showAllCapabilities || capabilities.contains("KeyLockCapability")
-            hasObstacleAvoidance = DebugConfig.showAllCapabilities || capabilities.contains("ObstacleAvoidanceControlCapability")
-            hasPetObstacleAvoidance = DebugConfig.showAllCapabilities || capabilities.contains("PetObstacleAvoidanceControlCapability")
-            hasCarpetSensorMode = DebugConfig.showAllCapabilities || capabilities.contains("CarpetSensorModeControlCapability")
-            hasMapReset = DebugConfig.showAllCapabilities || capabilities.contains("MapResetCapability")
-            hasCollisionAvoidance = DebugConfig.showAllCapabilities || capabilities.contains("CollisionAvoidantNavigationControlCapability")
-            hasMopDockAutoDrying = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopAutoDryingControlCapability")
-            hasMopDockWashTemperature = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopWashTemperatureControlCapability")
-            hasFloorMaterialNavigation = DebugConfig.showAllCapabilities || capabilities.contains("FloorMaterialDirectionAwareNavigationControlCapability")
-            hasMapSnapshot = DebugConfig.showAllCapabilities || capabilities.contains("MapSnapshotCapability")
-            hasPendingMapChange = DebugConfig.showAllCapabilities || capabilities.contains("PendingMapChangeHandlingCapability")
-        } catch {
-            hasMappingPass = DebugConfig.showAllCapabilities
-        }
-
-        // Load new capability states
-        if hasKeyLock {
-            do {
-                keyLock = try await api.getKeyLock()
-            } catch {
-                if !DebugConfig.showAllCapabilities { hasKeyLock = false }
-            }
-        }
-
-        if hasObstacleAvoidance {
-            do {
-                obstacleAvoidance = try await api.getObstacleAvoidance()
-            } catch {
-                if !DebugConfig.showAllCapabilities { hasObstacleAvoidance = false }
-            }
-        }
-
-        if hasPetObstacleAvoidance {
-            do {
-                petObstacleAvoidance = try await api.getPetObstacleAvoidance()
-            } catch {
-                if !DebugConfig.showAllCapabilities { hasPetObstacleAvoidance = false }
-            }
-        }
-
-        // Load carpet sensor mode presets
-        if hasCarpetSensorMode {
-            do {
-                carpetSensorModePresets = try await api.getCarpetSensorModePresets()
-                if !carpetSensorModePresets.isEmpty {
-                    carpetSensorMode = try await api.getCarpetSensorMode()
-                }
-            } catch {
-                if !DebugConfig.showAllCapabilities {
-                    hasCarpetSensorMode = false
-                }
-                carpetSensorModePresets = []
-            }
-        }
-
-        // Load collision avoidance
-        if hasCollisionAvoidance {
-            do {
-                collisionAvoidance = try await api.getCollisionAvoidantNavigation()
-            } catch {
-                if !DebugConfig.showAllCapabilities { hasCollisionAvoidance = false }
-            }
-        }
-
-        // Load floor material navigation
-        if hasFloorMaterialNavigation {
-            do {
-                floorMaterialNavigation = try await api.getFloorMaterialNavigation()
-            } catch {
-                if !DebugConfig.showAllCapabilities { hasFloorMaterialNavigation = false }
-            }
-        }
-
-        // Load mop dock auto drying
-        if hasMopDockAutoDrying {
-            do {
-                mopDockAutoDrying = try await api.getMopDockAutoDrying()
-            } catch {
-                if !DebugConfig.showAllCapabilities { hasMopDockAutoDrying = false }
-            }
-        }
-
-        // Load mop dock wash temperature presets
-        if hasMopDockWashTemperature {
-            do {
-                mopDockWashTemperaturePresets = try await api.getMopDockWashTemperaturePresets()
-                // Get current value from robot state
-                if let tempAttr = robotManager.robotStates[robot.id]?.attributes.first(where: {
-                    $0.__class == "PresetSelectionStateAttribute" && $0.type == "mop_dock_mop_cleaning_water_temperature"
-                }) {
-                    currentWashTemperature = tempAttr.value ?? ""
-                }
-            } catch {
-                if !DebugConfig.showAllCapabilities { hasMopDockWashTemperature = false }
-                mopDockWashTemperaturePresets = []
-            }
-        }
-
-        // Load map snapshots if capability exists
-        if hasMapSnapshot {
-            do {
-                mapSnapshots = try await api.getMapSnapshots()
-            } catch {
-                // Silently ignore — not critical
-            }
-        }
-
-        // Check pending map change
-        if hasPendingMapChange {
-            do {
-                let state = try await api.getPendingMapChange()
-                pendingMapChangeEnabled = state.enabled
-            } catch {
-                // Silently ignore
-            }
-        }
-
-        // Mark initial load as complete to enable onChange handlers
-        isInitialLoad = false
-    }
-
-    // MARK: - Actions
-    private func setVolume() async {
-        guard let api = api else { return }
-
-        do {
-            try await api.setSpeakerVolume(Int(volume))
-        } catch {
-            print("Failed to set volume: \(error)")
-        }
-    }
-
-    private func testSpeaker() async {
-        guard let api = api else { return }
-        isLoading = true
-        defer { isLoading = false }
-
-        do {
-            try await api.testSpeaker()
-        } catch {
-            hasSpeakerTest = false
-            print("Speaker test not supported: \(error)")
-        }
-    }
-
-    private func setCarpetMode(_ enabled: Bool) async {
-        guard let api = api else { return }
-
-        do {
-            try await api.setCarpetMode(enabled: enabled)
-        } catch {
-            print("Failed to set carpet mode: \(error)")
-            // Revert on failure
-            carpetMode = !enabled
-        }
-    }
-
-    private func setPersistentMap(_ enabled: Bool) async {
-        guard let api = api else { return }
-
-        do {
-            try await api.setPersistentMap(enabled: enabled)
-        } catch {
-            print("Failed to set persistent map: \(error)")
-            // Revert on failure
-            persistentMap = !enabled
-        }
-    }
-
-    private func setKeyLock(_ enabled: Bool) async {
-        guard let api = api else { return }
-
-        do {
-            try await api.setKeyLock(enabled: enabled)
-        } catch {
-            print("Failed to set key lock: \(error)")
-            keyLock = !enabled
-        }
-    }
-
-    private func setObstacleAvoidance(_ enabled: Bool) async {
-        guard let api = api else { return }
-
-        do {
-            try await api.setObstacleAvoidance(enabled: enabled)
-        } catch {
-            print("Failed to set obstacle avoidance: \(error)")
-            obstacleAvoidance = !enabled
-        }
-    }
-
-    private func setPetObstacleAvoidance(_ enabled: Bool) async {
-        guard let api = api else { return }
-
-        do {
-            try await api.setPetObstacleAvoidance(enabled: enabled)
-        } catch {
-            print("Failed to set pet obstacle avoidance: \(error)")
-            petObstacleAvoidance = !enabled
-        }
-    }
-
-    private func setCarpetSensorMode(_ mode: String) async {
-        guard let api = api else { return }
-
-        do {
-            try await api.setCarpetSensorMode(mode: mode)
-        } catch {
-            print("Failed to set carpet sensor mode: \(error)")
-            // Revert to previous value on failure
-            await loadCarpetSensorMode()
-        }
-    }
-
-    private func loadCarpetSensorMode() async {
-        guard let api = api else { return }
-        do {
-            carpetSensorMode = try await api.getCarpetSensorMode()
-        } catch {
-            // Ignore errors
-        }
-    }
-
-    private func resetMap() async {
-        guard let api = api else { return }
-        isLoading = true
-        defer { isLoading = false }
-
-        do {
-            try await api.resetMap()
-        } catch {
-            print("Failed to reset map: \(error)")
-        }
-    }
-
-    private func startMappingPass() async {
-        guard let api = api else { return }
-        isLoading = true
-        defer { isLoading = false }
-
-        do {
-            try await api.startMappingPass()
-        } catch {
-            print("Failed to start mapping pass: \(error)")
-            hasMappingPass = false
-        }
-    }
-
-    private func setCollisionAvoidance(_ enabled: Bool) async {
-        guard let api = api else { return }
-
-        do {
-            try await api.setCollisionAvoidantNavigation(enabled: enabled)
-        } catch {
-            print("Failed to set collision avoidance: \(error)")
-            collisionAvoidance = !enabled
-        }
-    }
-
-    private func setFloorMaterialNavigation(_ enabled: Bool) async {
-        guard let api = api else { return }
-
-        do {
-            try await api.setFloorMaterialNavigation(enabled: enabled)
-        } catch {
-            print("Failed to set floor material navigation: \(error)")
-            floorMaterialNavigation = !enabled
-        }
-    }
-
-    private func setMopDockAutoDrying(_ enabled: Bool) async {
-        guard let api = api else { return }
-
-        do {
-            try await api.setMopDockAutoDrying(enabled: enabled)
-        } catch {
-            print("Failed to set mop dock auto drying: \(error)")
-            mopDockAutoDrying = !enabled
-        }
-    }
-
-    private func setWashTemperature(_ preset: String) async {
-        guard let api = api else { return }
-
-        do {
-            try await api.setMopDockWashTemperature(preset: preset)
-        } catch {
-            print("Failed to set wash temperature: \(error)")
-        }
-    }
-
-    private func displayNameForWashTemperature(_ preset: String) -> String {
-        switch preset.lowercased() {
-        case "cold":
-            return String(localized: "settings.wash_temp.cold")
-        case "warm":
-            return String(localized: "settings.wash_temp.warm")
-        case "hot":
-            return String(localized: "settings.wash_temp.hot")
-        default:
-            return preset.capitalized.replacingOccurrences(of: "_", with: " ")
-        }
-    }
 }
 
 // MARK: - Auto Empty Dock Settings View
@@ -2032,8 +1558,9 @@ struct StationSettingsView: View {
 }
 
 #Preview {
+    let robotManager = RobotManager()
     NavigationStack {
-        RobotSettingsView(robot: RobotConfig(name: "Test Robot", host: "192.168.0.35"))
-            .environmentObject(RobotManager())
+        RobotSettingsView(robot: RobotConfig(name: "Test Robot", host: "192.168.0.35"), robotManager: robotManager)
+            .environmentObject(robotManager)
     }
 }
