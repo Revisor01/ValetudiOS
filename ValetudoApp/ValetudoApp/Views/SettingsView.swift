@@ -171,7 +171,7 @@ struct EditRobotView: View {
         _host = State(initialValue: robot.host)
         _useAuthentication = State(initialValue: robot.username != nil && !robot.username!.isEmpty)
         _username = State(initialValue: robot.username ?? "")
-        _password = State(initialValue: robot.password ?? "")
+        _password = State(initialValue: KeychainStore.password(for: robot.id) ?? "")
     }
 
     var body: some View {

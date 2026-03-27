@@ -37,10 +37,12 @@
 		FFECCF69B6C0CE99DDF1E747 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85C9582AEC53718BC544A5F /* SettingsView.swift */; };
 		HELPER001A2B3C4D5E6F7A8B /* PresetHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = HELPER001A2B3C4D5E6F7A8C /* PresetHelpers.swift */; };
 		HELPER002A2B3C4D5E6F7A8B /* DebugConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = HELPER002A2B3C4D5E6F7A8C /* DebugConfig.swift */; };
+		KC001A2B3C4D5E6F7A8B9C0D /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = KC001A2B3C4D5E6F7A8B9C0E /* KeychainStore.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		004F5A0A2815A8D95949878D /* ValetudoAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValetudoAPI.swift; sourceTree = "<group>"; };
+		KC001A2B3C4D5E6F7A8B9C0E /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		048B373C4CE7F9EF571625D6 /* NetworkScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkScanner.swift; sourceTree = "<group>"; };
 		075F2DE6ED60C5F11921459D /* RoomsManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomsManagementView.swift; sourceTree = "<group>"; };
 		0A1B2C3D4E5F6A7B8C9D0E10 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
@@ -147,6 +149,7 @@
 		CADCB8BE5F841BD0A6673297 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				KC001A2B3C4D5E6F7A8B9C0E /* KeychainStore.swift */,
 				048B373C4CE7F9EF571625D6 /* NetworkScanner.swift */,
 				4C082534D8ADAC8160B2405F /* NotificationService.swift */,
 				4BE7F0D27E21AAB984042AF4 /* RobotManager.swift */,
@@ -248,6 +251,7 @@
 			files = (
 				DDD26A60B887E1133DD2E18B /* AddRobotView.swift in Sources */,
 				HELPER002A2B3C4D5E6F7A8B /* DebugConfig.swift in Sources */,
+				KC001A2B3C4D5E6F7A8B9C0D /* KeychainStore.swift in Sources */,
 				HELPER001A2B3C4D5E6F7A8B /* PresetHelpers.swift in Sources */,
 				4F1CBBF41038293EA0F80B16 /* Consumable.swift in Sources */,
 				EF03FC536C8B10A814C55E48 /* ConsumablesView.swift in Sources */,

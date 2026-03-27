@@ -32,6 +32,9 @@ class RobotManager: ObservableObject {
     // MARK: - Robot Management
     func addRobot(_ config: RobotConfig) {
         robots.append(config)
+        if let pw = config.password, !pw.isEmpty {
+            KeychainStore.save(password: pw, for: config.id)
+        }
         apis[config.id] = ValetudoAPI(config: config)
         saveRobots()
         Task { await refreshRobot(config.id) }
@@ -40,6 +43,9 @@ class RobotManager: ObservableObject {
     func updateRobot(_ config: RobotConfig) {
         if let index = robots.firstIndex(where: { $0.id == config.id }) {
             robots[index] = config
+            if let pw = config.password, !pw.isEmpty {
+                KeychainStore.save(password: pw, for: config.id)
+            }
             apis[config.id] = ValetudoAPI(config: config)
             saveRobots()
             Task { await refreshRobot(config.id) }
@@ -47,6 +53,7 @@ class RobotManager: ObservableObject {
     }
 
     func removeRobot(_ id: UUID) {
+        KeychainStore.delete(for: id)
         robots.removeAll { $0.id == id }
         apis.removeValue(forKey: id)
         robotStates.removeValue(forKey: id)
@@ -194,13 +201,33 @@ class RobotManager: ObservableObject {
 
     // MARK: - Persistence
     private func loadRobots() {
-        if let data = UserDefaults.standard.data(forKey: storageKey),
-           let decoded = try? JSONDecoder().decode([RobotConfig].self, from: data) {
-            robots = decoded
-            for robot in robots {
-                apis[robot.id] = ValetudoAPI(config: robot)
+        guard let data = UserDefaults.standard.data(forKey: storageKey),
+              let decoded = try? JSONDecoder().decode([RobotConfig].self, from: data) else { return }
+
+        var migratedRobots = decoded
+        var migrationOccurred = false
+
+        for (index, robot) in decoded.enumerated() {
+            // Skip if already in Keychain
+            guard KeychainStore.password(for: robot.id) == nil else {
+                apis[robot.id] = ValetudoAPI(config: migratedRobots[index])
+                continue
             }
+
+            // Migrate password from UserDefaults JSON blob to Keychain
+            if let legacyPassword = robot.password, !legacyPassword.isEmpty {
+                let saved = KeychainStore.save(password: legacyPassword, for: robot.id)
+                // Read-back verification — only mark migration if verified in Keychain
+                if saved, KeychainStore.password(for: robot.id) != nil {
+                    migratedRobots[index].password = nil
+                    migrationOccurred = true
+                }
+            }
+            apis[robot.id] = ValetudoAPI(config: migratedRobots[index])
         }
+
+        robots = migratedRobots
+        if migrationOccurred { saveRobots() } // Re-save without passwords in blob
     }
 
     private func saveRobots() {

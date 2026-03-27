@@ -69,7 +69,8 @@ extension ValetudoAPI {
         request.httpMethod = method
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        if let username = config.username, let password = config.password, !username.isEmpty {
+        if let username = config.username, !username.isEmpty,
+           let password = KeychainStore.password(for: config.id) {
             let credentials = "\(username):\(password)"
             if let data = credentials.data(using: .utf8) {
                 request.setValue("Basic \(data.base64EncodedString())", forHTTPHeaderField: "Authorization")
@@ -114,7 +115,8 @@ extension ValetudoAPI {
         }
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
-        if let username = config.username, let password = config.password, !username.isEmpty {
+        if let username = config.username, !username.isEmpty,
+           let password = KeychainStore.password(for: config.id) {
             let credentials = "\(username):\(password)"
             if let data = credentials.data(using: .utf8) {
                 request.setValue("Basic \(data.base64EncodedString())", forHTTPHeaderField: "Authorization")
