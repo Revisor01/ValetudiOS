@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: planning
-stopped_at: Phase 1 context gathered
-last_updated: "2026-03-27T16:15:56.690Z"
-last_activity: 2026-03-27 — Roadmap erstellt, Milestone v1.2.0 initialisiert
+status: executing
+stopped_at: Completed 01-foundation-01-02-PLAN.md
+last_updated: "2026-03-27T16:37:35.143Z"
+last_activity: 2026-03-27
 progress:
   total_phases: 4
   completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_plans: 3
+  completed_plans: 1
   percent: 0
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-27)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 1 — Foundation
+**Current focus:** Phase 01 — Foundation
 
 ## Current Position
 
-Phase: 1 of 4 (Foundation)
-Plan: 0 of TBD in current phase
-Status: Ready to plan
-Last activity: 2026-03-27 — Roadmap erstellt, Milestone v1.2.0 initialisiert
+Phase: 01 (Foundation) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
+Last activity: 2026-03-27
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -47,6 +47,7 @@ Progress: [░░░░░░░░░░] 0%
 | - | - | - | - |
 
 *Updated after each plan completion*
+| Phase 01-foundation P02 | 12 | 2 tasks | 6 files |
 
 ## Accumulated Context
 
@@ -61,6 +62,8 @@ Recent decisions affecting current work:
 - Roadmap: @StateObject für alle neuen ViewModels, nie @ObservedObject wenn im View erstellt (Pitfall 1)
 - Codebase mapped: .planning/codebase/ (7 documents, 2026-03-27)
 - Previous releases: v1.0 (App Store), v1.1.0 (Touchpad steering, floor materials)
+- [Phase 01-foundation]: selectedRobotId set in onAppear only — Map tab stays visible for last-viewed robot, no false onDisappear triggers
+- [Phase 01-foundation]: withErrorAlert(router:) applied at WindowGroup root for single alert source of truth
 
 ### Pending Todos
 
@@ -73,6 +76,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T16:15:56.683Z
-Stopped at: Phase 1 context gathered
-Resume file: .planning/phases/01-foundation/01-CONTEXT.md
+Last session: 2026-03-27T16:37:35.140Z
+Stopped at: Completed 01-foundation-01-02-PLAN.md
+Resume file: None
