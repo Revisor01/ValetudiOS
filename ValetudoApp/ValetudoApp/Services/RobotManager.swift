@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import os
 
 @MainActor
 class RobotManager: ObservableObject {
@@ -7,6 +8,7 @@ class RobotManager: ObservableObject {
     @Published var robotStates: [UUID: RobotStatus] = [:]
     @Published var robotUpdateAvailable: [UUID: Bool] = [:]
 
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "RobotManager")
     private var apis: [UUID: ValetudoAPI] = [:]
     private var refreshTask: Task<Void, Never>?
     private var previousStates: [UUID: RobotStatus] = [:]

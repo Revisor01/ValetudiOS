@@ -1,4 +1,5 @@
 import Foundation
+import os
 
 enum APIError: LocalizedError {
     case invalidURL
@@ -21,6 +22,7 @@ enum APIError: LocalizedError {
 actor ValetudoAPI {
     private let config: RobotConfig
     private let session: URLSession
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "API")
     private let decoder: JSONDecoder
     private let sessionDelegate: SSLSessionDelegate?
 
@@ -109,9 +111,9 @@ extension ValetudoAPI {
         request.httpMethod = method
 
         // Debug: Log the request
-        print("[API DEBUG] \(method) \(url.absoluteString)")
+        logger.debug("Request: \(method, privacy: .public) \(url.path, privacy: .public)")
         if let body = body, let bodyString = String(data: body, encoding: .utf8) {
-            print("[API DEBUG] Body: \(bodyString)")
+            logger.debug("Request body: \(bodyString, privacy: .private)")
         }
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 

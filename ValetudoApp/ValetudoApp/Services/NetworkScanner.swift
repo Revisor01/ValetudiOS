@@ -1,5 +1,6 @@
 import Foundation
 import Network
+import os
 
 struct DiscoveredRobot: Identifiable, Hashable {
     let id = UUID()
@@ -18,6 +19,7 @@ class NetworkScanner: ObservableObject {
     @Published var isScanning = false
     @Published var progress: Double = 0
 
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "NetworkScanner")
     private var scanTask: Task<Void, Never>?
 
     func startScan() {
@@ -41,12 +43,12 @@ class NetworkScanner: ObservableObject {
     private func scanNetwork() async {
         // Get local IP to determine subnet
         guard let localIP = getLocalIPAddress() else {
-            print("Could not determine local IP address")
+            logger.warning("Could not determine local IP address")
             return
         }
 
         let subnet = getSubnet(from: localIP)
-        print("Scanning subnet: \(subnet).x")
+        logger.debug("Scanning subnet: \(subnet, privacy: .private).x")
 
         // Scan common IP ranges (1-254)
         let totalHosts = 254

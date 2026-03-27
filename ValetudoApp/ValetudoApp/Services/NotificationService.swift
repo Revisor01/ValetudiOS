@@ -1,12 +1,14 @@
 import Foundation
 import UserNotifications
 import SwiftUI
+import os
 
 @MainActor
 class NotificationService: ObservableObject {
     static let shared = NotificationService()
 
     @Published var isAuthorized = false
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "Notifications")
 
     // User preferences - synced with AppStorage in NotificationSettingsView
     @AppStorage("notify_cleaning_complete") private var notifyCleaningComplete = true
@@ -28,7 +30,7 @@ class NotificationService: ObservableObject {
                 .requestAuthorization(options: [.alert, .sound, .badge])
             isAuthorized = granted
         } catch {
-            print("Notification authorization failed: \(error)")
+            logger.error("Notification authorization failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -114,9 +116,9 @@ class NotificationService: ObservableObject {
             trigger: nil  // Immediate
         )
 
-        UNUserNotificationCenter.current().add(request) { error in
+        UNUserNotificationCenter.current().add(request) { [logger] error in
             if let error = error {
-                print("Failed to schedule notification: \(error)")
+                logger.error("Failed to schedule notification: \(error.localizedDescription, privacy: .public)")
             }
         }
     }
