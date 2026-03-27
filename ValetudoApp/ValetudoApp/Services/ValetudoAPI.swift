@@ -25,6 +25,22 @@ actor ValetudoAPI {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "API")
     private let decoder: JSONDecoder
     private let sessionDelegate: SSLSessionDelegate?
+    private var _sseSession: URLSession?
+
+    private var sseSession: URLSession {
+        if let existing = _sseSession { return existing }
+        let sseConfig = URLSessionConfiguration.default
+        sseConfig.timeoutIntervalForRequest = .infinity
+        sseConfig.timeoutIntervalForResource = .infinity
+        let newSession: URLSession
+        if let delegate = sessionDelegate {
+            newSession = URLSession(configuration: sseConfig, delegate: delegate, delegateQueue: nil)
+        } else {
+            newSession = URLSession(configuration: sseConfig)
+        }
+        _sseSession = newSession
+        return newSession
+    }
 
     init(config: RobotConfig) {
         self.config = config
@@ -574,6 +590,67 @@ extension ValetudoAPI {
     func applyUpdate() async throws {
         let body = try JSONEncoder().encode(["action": "apply"])
         try await requestVoid("/updater", body: body)
+    }
+
+    // MARK: - SSE Streaming
+    func streamStateLines() async throws -> URLSession.AsyncBytes {
+        guard let baseURL = config.baseURL,
+              let url = URL(string: "/api/v2/robot/state/attributes/sse", relativeTo: baseURL) else {
+            throw APIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let username = config.username, !username.isEmpty,
+           let password = KeychainStore.password(for: config.id) {
+            let credentials = "\(username):\(password)"
+            if let data = credentials.data(using: .utf8) {
+                request.setValue("Basic \(data.base64EncodedString())", forHTTPHeaderField: "Authorization")
+            }
+        }
+
+        let (bytes, response) = try await sseSession.bytes(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            throw APIError.httpError(httpResponse.statusCode)
+        }
+
+        return bytes
+    }
+
+    func streamMapLines() async throws -> URLSession.AsyncBytes {
+        guard let baseURL = config.baseURL,
+              let url = URL(string: "/api/v2/robot/state/map/sse", relativeTo: baseURL) else {
+            throw APIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let username = config.username, !username.isEmpty,
+           let password = KeychainStore.password(for: config.id) {
+            let credentials = "\(username):\(password)"
+            if let data = credentials.data(using: .utf8) {
+                request.setValue("Basic \(data.base64EncodedString())", forHTTPHeaderField: "Authorization")
+            }
+        }
+
+        let (bytes, response) = try await sseSession.bytes(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+
+        guard httpResponse.statusCode == 200 else {
+            throw APIError.httpError(httpResponse.statusCode)
+        }
+
+        return bytes
     }
 
     // MARK: - Connection Check
