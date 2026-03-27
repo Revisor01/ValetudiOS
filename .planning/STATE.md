@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: executing
-stopped_at: Completed 03-api-completeness 03-01-PLAN.md
-last_updated: "2026-03-27T22:40:29.553Z"
+stopped_at: Completed 03-api-completeness 03-02-PLAN.md
+last_updated: "2026-03-27T22:45:37.662Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 4
   completed_phases: 2
   total_plans: 9
-  completed_plans: 7
+  completed_plans: 8
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-27)
 ## Current Position
 
 Phase: 03 (api-completeness) — EXECUTING
-Plan: 2 of 3
+Plan: 3 of 3
 Status: Ready to execute
 Last activity: 2026-03-27
 
@@ -54,6 +54,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 02-network-layer P01 | 15m | 2 tasks | 4 files |
 | Phase 02-network-layer P03 | 10min | 2 tasks | 2 files |
 | Phase 03-api-completeness P01 | 8min | 2 tasks | 3 files |
+| Phase 03-api-completeness P02 | 2min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -84,6 +85,9 @@ Recent decisions affecting current work:
 - [Phase 02-network-layer]: Map-SSE lifecycle bounded to MapContentView open/close via refreshTask — SSEConnectionManager handles attributes-SSE only, not map-SSE
 - [Phase 03-api-completeness]: getEvents() dict-first then array fallback — API spec ambiguous, defensive decoding avoids runtime crashes across Valetudo versions
 - [Phase 03-api-completeness]: getObstacleImage uses raw URLSession.data (not request<T: Decodable>) — binary image data cannot be JSON-decoded
+- [Phase 03-api-completeness]: Static weak var robotManagerRef on NotificationService set via onAppear — avoids singleton coupling while staying MainActor-safe
+- [Phase 03-api-completeness]: completionHandler() called immediately in didReceive, Task runs independently — UNNotificationCenterDelegate pitfall 6 compliance
+- [Phase 03-api-completeness]: No Map Snapshot create button — snapshots created automatically by firmware (pitfall 3)
 
 ### Pending Todos
 
@@ -96,6 +100,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T22:40:29.551Z
-Stopped at: Completed 03-api-completeness 03-01-PLAN.md
+Last session: 2026-03-27T22:45:37.660Z
+Stopped at: Completed 03-api-completeness 03-02-PLAN.md
 Resume file: None

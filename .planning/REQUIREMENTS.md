@@ -11,7 +11,7 @@ Requirements for milestone v1.2.0: Quality & API Completeness.
 
 - [x] **UX-01**: Robot-Zeile in der Liste ist vollständig klickbar
 - [x] **UX-02**: Benutzer sieht Fehlermeldungen bei fehlgeschlagenen Aktionen (statt stiller Fehler)
-- [ ] **UX-03**: Notification-Actions GO_HOME und LOCATE führen die jeweilige Aktion aus
+- [x] **UX-03**: Notification-Actions GO_HOME und LOCATE führen die jeweilige Aktion aus
 - [x] **UX-04**: Benutzer kann Valetudo Events einsehen (DustBinFull, MopReminder, Errors etc.)
 
 ### Netzwerk
@@ -66,7 +66,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 |-------------|-------|--------|
 | UX-01 | Phase 1 | Complete |
 | UX-02 | Phase 1 | Complete |
-| UX-03 | Phase 3 | Pending |
+| UX-03 | Phase 3 | Complete |
 | UX-04 | Phase 3 | Complete |
 | NET-01 | Phase 2 | Complete |
 | NET-02 | Phase 2 | Complete |
