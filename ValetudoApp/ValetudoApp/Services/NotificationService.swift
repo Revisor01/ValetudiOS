@@ -123,6 +123,39 @@ class NotificationService: ObservableObject {
         }
     }
 
+    // MARK: - Notification Response Handler
+    func handleNotificationResponse(actionIdentifier: String) async {
+        guard let robotManager = NotificationService.robotManagerRef else {
+            logger.warning("No RobotManager reference available for notification action")
+            return
+        }
+
+        // Per D-07: ersten verfuegbaren Roboter verwenden
+        let robotId = robotManager.robots.first?.id
+        guard let id = robotId, let api = robotManager.getAPI(for: id) else {
+            logger.warning("No robot available for notification action \(actionIdentifier, privacy: .public)")
+            return
+        }
+
+        do {
+            switch actionIdentifier {
+            case "GO_HOME":
+                logger.info("Notification action: sending robot home")
+                try await api.basicControl(action: .home)
+            case "LOCATE":
+                logger.info("Notification action: locating robot")
+                try await api.locate()
+            default:
+                break
+            }
+        } catch {
+            logger.error("Notification action \(actionIdentifier, privacy: .public) failed: \(error.localizedDescription, privacy: .public)")
+        }
+    }
+
+    // Static weak reference to RobotManager — set from ValetudoApp.swift onAppear
+    static weak var robotManagerRef: RobotManager?
+
     // MARK: - Setup Categories
     func setupCategories() {
         let goHomeAction = UNNotificationAction(
