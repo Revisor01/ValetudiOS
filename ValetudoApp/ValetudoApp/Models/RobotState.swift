@@ -771,6 +771,61 @@ struct GoToPreset: Codable, Identifiable, Equatable {
     }
 }
 
+// MARK: - Map Snapshots
+struct MapSnapshot: Codable, Identifiable {
+    let id: String
+}
+
+// MARK: - Pending Map Change
+struct PendingMapChangeState: Codable {
+    let enabled: Bool
+}
+
+// MARK: - Clean Route
+struct CleanRouteState: Codable {
+    let route: String
+}
+
+// MARK: - Valetudo Events
+struct ValetudoEvent: Codable, Identifiable {
+    let __class: String
+    let id: String
+    let timestamp: String
+    let processed: Bool
+    let type: String?
+    let subType: String?
+    let message: String?
+
+    enum CodingKeys: String, CodingKey {
+        case __class = "__class"
+        case id, timestamp, processed, type, subType, message
+    }
+
+    var displayName: String {
+        switch __class {
+        case "DustBinFullValetudoEvent": return String(localized: "event.dustbin_full")
+        case "ConsumableDepletedValetudoEvent": return String(localized: "event.consumable_depleted")
+        case "MopAttachmentReminderValetudoEvent": return String(localized: "event.mop_reminder")
+        case "ErrorStateValetudoEvent": return String(localized: "event.error")
+        case "MissingResourceValetudoEvent": return String(localized: "event.missing_resource")
+        case "PendingMapChangeValetudoEvent": return String(localized: "event.pending_map_change")
+        default: return __class
+        }
+    }
+
+    var iconName: String {
+        switch __class {
+        case "DustBinFullValetudoEvent": return "trash.fill"
+        case "ConsumableDepletedValetudoEvent": return "wrench.fill"
+        case "MopAttachmentReminderValetudoEvent": return "drop.fill"
+        case "ErrorStateValetudoEvent": return "exclamationmark.triangle.fill"
+        case "MissingResourceValetudoEvent": return "questionmark.circle.fill"
+        case "PendingMapChangeValetudoEvent": return "map.fill"
+        default: return "bell.fill"
+        }
+    }
+}
+
 @MainActor
 class GoToPresetStore: ObservableObject {
     @Published var presets: [GoToPreset] = []

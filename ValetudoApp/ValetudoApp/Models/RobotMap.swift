@@ -142,6 +142,8 @@ struct MapEntity: Codable {
 
 struct EntityMetaData: Codable {
     let angle: Int?
+    let id: String?       // UUID fuer ObstacleImagesCapability/img/{id}
+    let label: String?    // z.B. "Pedestal (89%)"
 }
 
 // MARK: - Map Layer Types
