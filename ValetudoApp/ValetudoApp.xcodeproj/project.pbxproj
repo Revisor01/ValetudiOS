@@ -13,7 +13,6 @@
 		143326E22353048B7A54418D /* PresetHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489C5B4217131AFAA714813 /* PresetHelpers.swift */; };
 		1932127BBDCC8FBE2645FC31 /* RobotSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 698C8F9BC11A4FCCF9D99923 /* RobotSettingsView.swift */; };
 		26187F76B128067478E11E35 /* RobotDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DD7833558396395DCA7D32 /* RobotDetailView.swift */; };
-		5AC8DC8FDF9A485180374DC9 /* ObstaclePhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A4B057E6983548828E2840DF /* ObstaclePhotoView.swift */; };
 		268751822B3D802C519CE03C /* SSEConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9841E9A11C0D78ACE274994 /* SSEConnectionManager.swift */; };
 		48E82472B522893504594AC9 /* RobotState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602023483884AA7FC99EE28A /* RobotState.swift */; };
 		4F1CBBF41038293EA0F80B16 /* Consumable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B313EE35A432692658D58220 /* Consumable.swift */; };
@@ -21,6 +20,7 @@
 		5AEEB82CA45C29C587696C1B /* RobotIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A18570DE687AB149DC4A37C /* RobotIntents.swift */; };
 		5CA62D98CD706CA8FD0A0737 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F02071A0C637423ED754AC4 /* StatisticsView.swift */; };
 		6FD4E58AD099B5D5DEC67AA2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6102D935A16D6758543ADC2 /* ContentView.swift */; };
+		7287C4B56D6A0CE743D38B28 /* ConsumableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */; };
 		7B4C873365DACB44A3E2AD41 /* RobotMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6096D4E41E9DA4B4A7CB36A /* RobotMap.swift */; };
 		7DA66DFFA501849A09C40000 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D4B8AD3F113C1AD37B4E5BBA /* Localizable.xcstrings */; };
 		812642A8D77C6E37764AC03D /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB9C50A27756E4D5EDFB505 /* MapView.swift */; };
@@ -30,10 +30,12 @@
 		A2F93F458EDD354944B50689 /* ManualControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B35122CA897ECE8B3B52014 /* ManualControlView.swift */; };
 		B5ACCE16A7996B790BBF09CA /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8827C015A536153957BA6AC /* Timer.swift */; };
 		B9C7BC253C6ABA4DAA4D41C9 /* ValetudoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4727F8CABE30473DD20C391 /* ValetudoApp.swift */; };
+		BDECD717380DC7168DFC0ED7 /* ObstaclePhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A30679F5032173015E8B86 /* ObstaclePhotoView.swift */; };
 		C51D8291FD9CFE191FA9557D /* NetworkScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048B373C4CE7F9EF571625D6 /* NetworkScanner.swift */; };
 		D20FA57F529017D6027F3C71 /* RoomsManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075F2DE6ED60C5F11921459D /* RoomsManagementView.swift */; };
 		D4ACB8D36AF5B70E720588DE /* TimersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74E6E7081C7AE4DA22B562 /* TimersView.swift */; };
 		D692854F2D2227501DA43AF6 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BF56FF46BA4144DBD73CA4 /* KeychainStore.swift */; };
+		D919418DE4EA629CDA129AFA /* TimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29662D61BFED0893E6E573CB /* TimerTests.swift */; };
 		DA136B4862BD6BD33702E71A /* IntensityControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172B1FB7678A953A4655A3EE /* IntensityControlView.swift */; };
 		DB3194EBB4566F919E12A364 /* NWBrowserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65C57A11EEEF91115F0C845 /* NWBrowserService.swift */; };
 		DDD26A60B887E1133DD2E18B /* AddRobotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BEF0FC2A1B164BA6099BBC /* AddRobotView.swift */; };
@@ -42,6 +44,16 @@
 		F1406BFE3F7724B3D7729D73 /* ValetudoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004F5A0A2815A8D95949878D /* ValetudoAPI.swift */; };
 		FFECCF69B6C0CE99DDF1E747 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85C9582AEC53718BC544A5F /* SettingsView.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5FB6B7FF4836895BEED5C4F3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2127E299588E4EC8D4C24FE7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B2971D6203E36800C370817D;
+			remoteInfo = ValetudoApp;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		004F5A0A2815A8D95949878D /* ValetudoAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValetudoAPI.swift; sourceTree = "<group>"; };
@@ -52,9 +64,10 @@
 		1A18570DE687AB149DC4A37C /* RobotIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotIntents.swift; sourceTree = "<group>"; };
 		1B5589AF6019A8A237268523 /* RobotConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotConfig.swift; sourceTree = "<group>"; };
 		21BF56FF46BA4144DBD73CA4 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		28A30679F5032173015E8B86 /* ObstaclePhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObstaclePhotoView.swift; sourceTree = "<group>"; };
+		29662D61BFED0893E6E573CB /* TimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerTests.swift; sourceTree = "<group>"; };
 		2F02071A0C637423ED754AC4 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		34DD7833558396395DCA7D32 /* RobotDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailView.swift; sourceTree = "<group>"; };
-		A4B057E6983548828E2840DF /* ObstaclePhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObstaclePhotoView.swift; sourceTree = "<group>"; };
 		44002D9750AED2C37546A796 /* ValetudoApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ValetudoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BE7F0D27E21AAB984042AF4 /* RobotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotManager.swift; sourceTree = "<group>"; };
 		4C082534D8ADAC8160B2405F /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
@@ -64,12 +77,14 @@
 		698C8F9BC11A4FCCF9D99923 /* RobotSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotSettingsView.swift; sourceTree = "<group>"; };
 		8489C5B4217131AFAA714813 /* PresetHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetHelpers.swift; sourceTree = "<group>"; };
 		8B35122CA897ECE8B3B52014 /* ManualControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualControlView.swift; sourceTree = "<group>"; };
+		9D2944F811E75D2A18C7A192 /* ValetudoAppTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ValetudoAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A85C9582AEC53718BC544A5F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		B313EE35A432692658D58220 /* Consumable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Consumable.swift; sourceTree = "<group>"; };
 		B65C57A11EEEF91115F0C845 /* NWBrowserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWBrowserService.swift; sourceTree = "<group>"; };
 		C3BEF0FC2A1B164BA6099BBC /* AddRobotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRobotView.swift; sourceTree = "<group>"; };
 		CB4E4824159FC4CC51EB9AC8 /* ErrorRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorRouter.swift; sourceTree = "<group>"; };
+		D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumableTests.swift; sourceTree = "<group>"; };
 		D4B8AD3F113C1AD37B4E5BBA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D8827C015A536153957BA6AC /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
 		E0B69520E1BFEDF5824964BC /* DebugConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugConfig.swift; sourceTree = "<group>"; };
@@ -106,7 +121,7 @@
 				172B1FB7678A953A4655A3EE /* IntensityControlView.swift */,
 				8B35122CA897ECE8B3B52014 /* ManualControlView.swift */,
 				0EB9C50A27756E4D5EDFB505 /* MapView.swift */,
-				A4B057E6983548828E2840DF /* ObstaclePhotoView.swift */,
+				28A30679F5032173015E8B86 /* ObstaclePhotoView.swift */,
 				B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */,
 				34DD7833558396395DCA7D32 /* RobotDetailView.swift */,
 				5713E6238AD5A3F2420EE02B /* RobotListView.swift */,
@@ -123,6 +138,7 @@
 			isa = PBXGroup;
 			children = (
 				44002D9750AED2C37546A796 /* ValetudoApp.app */,
+				9D2944F811E75D2A18C7A192 /* ValetudoAppTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -131,6 +147,7 @@
 			isa = PBXGroup;
 			children = (
 				0E61845B1FBBABA715253E03 /* ValetudoApp */,
+				DF83A2C88499866699E76EA9 /* ValetudoAppTests */,
 				5A0E541CC39DC062D0BDC717 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -169,6 +186,15 @@
 			path = Intents;
 			sourceTree = "<group>";
 		};
+		DF83A2C88499866699E76EA9 /* ValetudoAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */,
+				29662D61BFED0893E6E573CB /* TimerTests.swift */,
+			);
+			path = ValetudoAppTests;
+			sourceTree = "<group>";
+		};
 		E5107C61D378D549A904B8CD /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
@@ -190,6 +216,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		54E7A0E12B6491E95C754063 /* ValetudoAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A56610287917A8309E972BC1 /* Build configuration list for PBXNativeTarget "ValetudoAppTests" */;
+			buildPhases = (
+				248816EAAB50D7E342772852 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BA9E2CA97C98EF56B9AE16D2 /* PBXTargetDependency */,
+			);
+			name = ValetudoAppTests;
+			packageProductDependencies = (
+			);
+			productName = ValetudoAppTests;
+			productReference = 9D2944F811E75D2A18C7A192 /* ValetudoAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		B2971D6203E36800C370817D /* ValetudoApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1F22DE0C66E037B207879993 /* Build configuration list for PBXNativeTarget "ValetudoApp" */;
@@ -217,6 +261,9 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					54E7A0E12B6491E95C754063 = {
+						DevelopmentTeam = J459G9CJT5;
+					};
 					B2971D6203E36800C370817D = {
 						DevelopmentTeam = J459G9CJT5;
 					};
@@ -238,6 +285,7 @@
 			projectRoot = "";
 			targets = (
 				B2971D6203E36800C370817D /* ValetudoApp */,
+				54E7A0E12B6491E95C754063 /* ValetudoAppTests */,
 			);
 		};
 /* End PBXProject section */
@@ -254,6 +302,15 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		248816EAAB50D7E342772852 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7287C4B56D6A0CE743D38B28 /* ConsumableTests.swift in Sources */,
+				D919418DE4EA629CDA129AFA /* TimerTests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9AFDFDF71D7794B80EF495C0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -269,10 +326,10 @@
 				D692854F2D2227501DA43AF6 /* KeychainStore.swift in Sources */,
 				A2F93F458EDD354944B50689 /* ManualControlView.swift in Sources */,
 				812642A8D77C6E37764AC03D /* MapView.swift in Sources */,
-				5AC8DC8FDF9A485180374DC9 /* ObstaclePhotoView.swift in Sources */,
 				DB3194EBB4566F919E12A364 /* NWBrowserService.swift in Sources */,
 				C51D8291FD9CFE191FA9557D /* NetworkScanner.swift in Sources */,
 				583401D717322CA5AE6527B8 /* NotificationService.swift in Sources */,
+				BDECD717380DC7168DFC0ED7 /* ObstaclePhotoView.swift in Sources */,
 				12E1CB26BDC7E310A9C141EB /* OnboardingView.swift in Sources */,
 				143326E22353048B7A54418D /* PresetHelpers.swift in Sources */,
 				8F8EB3702AA2ADAC6889DC0D /* RobotConfig.swift in Sources */,
@@ -295,6 +352,14 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BA9E2CA97C98EF56B9AE16D2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B2971D6203E36800C370817D /* ValetudoApp */;
+			targetProxy = 5FB6B7FF4836895BEED5C4F3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1566EBC02CAC15BD406025DD /* Debug */ = {
@@ -386,6 +451,40 @@
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		781F813199893E3729136BD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudoAppTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ValetudoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ValetudoApp";
+			};
+			name = Debug;
+		};
+		9C59C9CD1E07AA42AD18D089 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudoAppTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ValetudoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ValetudoApp";
+			};
+			name = Release;
 		};
 		A300FE29E9806349871AD5B1 /* Release */ = {
 			isa = XCBuildConfiguration;
@@ -487,6 +586,15 @@
 			buildConfigurations = (
 				1566EBC02CAC15BD406025DD /* Debug */,
 				AE5711E12CE23CEF63D8F934 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		A56610287917A8309E972BC1 /* Build configuration list for PBXNativeTarget "ValetudoAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				781F813199893E3729136BD1 /* Debug */,
+				9C59C9CD1E07AA42AD18D089 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

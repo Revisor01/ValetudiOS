@@ -30,3 +30,27 @@ targets:
         INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
         INFOPLIST_KEY_NSLocalNetworkUsageDescription: "Access local network to communicate with Valetudo robots"
         INFOPLIST_KEY_NSBonjourServices: "_valetudo._tcp"
+
+  ValetudoAppTests:
+    type: bundle.unit-test
+    platform: iOS
+    sources:
+      - ValetudoAppTests
+    dependencies:
+      - target: ValetudoApp
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: de.simonluthe.ValetudoAppTests
+        TEST_HOST: "$(BUILT_PRODUCTS_DIR)/ValetudoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ValetudoApp"
+        BUNDLE_LOADER: "$(TEST_HOST)"
+        GENERATE_INFOPLIST_FILE: YES
+
+schemes:
+  ValetudoApp:
+    build:
+      targets:
+        ValetudoApp: all
+        ValetudoAppTests: [test]
+    test:
+      targets:
+        - ValetudoAppTests
