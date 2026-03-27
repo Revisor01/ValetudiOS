@@ -38,6 +38,7 @@
 		HELPER001A2B3C4D5E6F7A8B /* PresetHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = HELPER001A2B3C4D5E6F7A8C /* PresetHelpers.swift */; };
 		HELPER002A2B3C4D5E6F7A8B /* DebugConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = HELPER002A2B3C4D5E6F7A8C /* DebugConfig.swift */; };
 		KC001A2B3C4D5E6F7A8B9C0D /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = KC001A2B3C4D5E6F7A8B9C0E /* KeychainStore.swift */; };
+		HELPER003A2B3C4D5E6F7A8B /* ErrorRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = HELPER003A2B3C4D5E6F7A8C /* ErrorRouter.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -73,6 +74,7 @@
 		F87A9FA92EF61BDB009A0D9D /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		HELPER001A2B3C4D5E6F7A8C /* PresetHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetHelpers.swift; sourceTree = "<group>"; };
 		HELPER002A2B3C4D5E6F7A8C /* DebugConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugConfig.swift; sourceTree = "<group>"; };
+		HELPER003A2B3C4D5E6F7A8C /* ErrorRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorRouter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -88,6 +90,7 @@
 			isa = PBXGroup;
 			children = (
 				HELPER002A2B3C4D5E6F7A8C /* DebugConfig.swift */,
+				HELPER003A2B3C4D5E6F7A8C /* ErrorRouter.swift */,
 				HELPER001A2B3C4D5E6F7A8C /* PresetHelpers.swift */,
 			);
 			path = Helpers;
@@ -252,6 +255,7 @@
 				DDD26A60B887E1133DD2E18B /* AddRobotView.swift in Sources */,
 				HELPER002A2B3C4D5E6F7A8B /* DebugConfig.swift in Sources */,
 				KC001A2B3C4D5E6F7A8B9C0D /* KeychainStore.swift in Sources */,
+				HELPER003A2B3C4D5E6F7A8B /* ErrorRouter.swift in Sources */,
 				HELPER001A2B3C4D5E6F7A8B /* PresetHelpers.swift in Sources */,
 				4F1CBBF41038293EA0F80B16 /* Consumable.swift in Sources */,
 				EF03FC536C8B10A814C55E48 /* ConsumablesView.swift in Sources */,
