@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: executing
-stopped_at: Completed 04-view-refactoring-tests 04-04-PLAN.md
-last_updated: "2026-03-27T23:42:45.006Z"
+status: verifying
+stopped_at: Completed 04-view-refactoring-tests 04-01-PLAN.md
+last_updated: "2026-03-27T23:47:04.486Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 4
-  completed_phases: 3
+  completed_phases: 4
   total_plans: 13
-  completed_plans: 12
+  completed_plans: 13
   percent: 0
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-03-27)
 
 Phase: 04 (view-refactoring-tests) — EXECUTING
 Plan: 4 of 4
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-03-27
 
 Progress: [░░░░░░░░░░] 0%
@@ -58,6 +58,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 04-view-refactoring-tests P03 | 9min | 2 tasks | 4 files |
 | Phase 04-view-refactoring-tests P02 | 15min | 2 tasks | 4 files |
 | Phase 04-view-refactoring-tests P04 | 25min | 2 tasks | 3 files |
+| Phase 04-view-refactoring-tests P01 | 20min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -96,6 +97,10 @@ Recent decisions affecting current work:
 - [Phase 04-view-refactoring-tests]: RobotDetailView reduced from 30+ @State to 2 UI-only @State (showFullMap, showUpdateWarning) after ViewModel extraction
 - [Phase 04-view-refactoring-tests]: @StateObject initialized in MapContentView init(robot:robotManager:isFullscreen:) — robotManager passed explicitly to avoid @EnvironmentObject capture issues in non-view context
 - [Phase 04-view-refactoring-tests]: Gesture/drawing state (scale, offset, currentDrawStart/End) kept View-local in MapContentView — frame-dependent, tied to SwiftUI render loop
+- [Phase 04-view-refactoring-tests]: XcodeGen used for all project changes to avoid hand-editing project.pbxproj
+- [Phase 04-view-refactoring-tests]: Timer tests use round-trip invariant (localToUTC(utcToLocal(h,m))==(h,m)) instead of hardcoded UTC offsets for timezone-independence
+- [Phase 04-view-refactoring-tests]: MapLayerTests use JSONDecoder to construct structs — avoids fileprivate init and matches production data flow
+- [Phase 04-view-refactoring-tests]: KeychainStoreTests use unique UUID per test + tearDown cleanup to prevent cross-test Keychain pollution
 
 ### Pending Todos
 
@@ -108,6 +113,6 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-03-27T23:42:44.979Z
-Stopped at: Completed 04-view-refactoring-tests 04-04-PLAN.md
+Last session: 2026-03-27T23:47:04.479Z
+Stopped at: Completed 04-view-refactoring-tests 04-01-PLAN.md
 Resume file: None

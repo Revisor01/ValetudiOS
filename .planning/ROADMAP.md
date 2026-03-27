@@ -17,7 +17,7 @@
 - [x] **Phase 1: Foundation** - Keychain, ErrorRouter, os.Logger — Infrastruktur-Grundlage und Fehlerbehandlung (completed 2026-03-27)
 - [x] **Phase 2: Network Layer** - SSE-Streaming, mDNS-Discovery, Map-Pixel-Cache (completed 2026-03-27)
 - [x] **Phase 3: API Completeness** - Neue Valetudo-Capabilities und Notification Actions (completed 2026-03-28)
-- [ ] **Phase 4: View Refactoring & Tests** - ViewModel-Extraktion und XCTest-Coverage
+- [x] **Phase 4: View Refactoring & Tests** - ViewModel-Extraktion und XCTest-Coverage (completed 2026-03-27)
 
 ## Phase Details
 
@@ -82,7 +82,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 04-01-PLAN.md — XCTest-Target und Unit-Tests: Timer-Konvertierung, Consumable-Prozente, MapLayer-RLE, Keychain-Round-Trip
+- [x] 04-01-PLAN.md — XCTest-Target und Unit-Tests: Timer-Konvertierung, Consumable-Prozente, MapLayer-RLE, Keychain-Round-Trip
 - [x] 04-02-PLAN.md — RobotDetailViewModel-Extraktion: State und Logik aus RobotDetailView in ViewModel
 - [x] 04-03-PLAN.md — RobotSettingsViewModel-Extraktion: State und Logik aus RobotSettingsView in ViewModel
 - [x] 04-04-PLAN.md — MapViewModel-Extraktion: State und Logik aus MapContentView in ViewModel
@@ -97,4 +97,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation | 3/3 | Complete   | 2026-03-27 |
 | 2. Network Layer | 3/3 | Complete   | 2026-03-27 |
 | 3. API Completeness | 3/3 | Complete   | 2026-03-28 |
-| 4. View Refactoring & Tests | 3/4 | In Progress|  |
+| 4. View Refactoring & Tests | 4/4 | Complete   | 2026-03-27 |
