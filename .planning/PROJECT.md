@@ -12,6 +12,10 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 
 ### Validated
 
+- Keychain-Credential-Speicher: Passwörter sicher im iOS Keychain -- Phase 1
+- ErrorRouter: Zentrales Error-Handling mit .alert-basierter Fehlermeldung -- Phase 1
+- Robot-Zeile klickbar: Gesamte Zeile navigiert zur Detailansicht -- Phase 1
+- Strukturiertes Logging: os.Logger statt print() in allen Services -- Phase 1
 - Robot-Management: Hinzufügen, Konfigurieren, Entfernen von Robotern via LAN
 - Live-Karte: Interaktive Kartenansicht mit Zoom/Pan, Raumanzeige, Zonen
 - Raumreinigung: Einzelne Räume auswählen und reinigen
@@ -29,12 +33,12 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 
 ### Active
 
-- [ ] Alle technischen Concerns bearbeiten (Credentials, Caching, ViewModels, Error-Handling, Debug-Prints)
 - [ ] Valetudo API vollständig integrieren (fehlende Capabilities)
-- [ ] Robot-Liste: Gesamte Zeile klickbar
 - [ ] mDNS/Bonjour statt IP-Brute-Force
-- [ ] Adaptive Polling / SSE
+- [ ] SSE Real-Time Updates
+- [ ] Map-Pixel-Caching
 - [ ] Notification-Actions implementieren
+- [ ] ViewModel-Extraktion (MapView, RobotDetailView, RobotSettingsView)
 - [ ] Test-Coverage aufbauen
 
 ### Out of Scope
@@ -99,4 +103,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-27 after milestone v1.2.0 initialization*
+*Last updated: 2026-03-27 after Phase 1 Foundation completion*
