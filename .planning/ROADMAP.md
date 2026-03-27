@@ -79,7 +79,13 @@ Plans:
   1. MapView, RobotDetailView und RobotSettingsView delegieren ihre Logik an dedizierte @MainActor ViewModels; die Views selbst sind rein deklarative Shells
   2. Ein XCTest-Target existiert mit Tests für Timer-Konvertierung, Consumable-Prozente, Map-RLE-Dekompression und Keychain-Round-Trip
   3. Alle neuen ViewModels nutzen @StateObject (nicht @ObservedObject), sodass kein ViewModel bei Parent-Re-Renders neu erstellt wird
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 04-01-PLAN.md — XCTest-Target und Unit-Tests: Timer-Konvertierung, Consumable-Prozente, MapLayer-RLE, Keychain-Round-Trip
+- [ ] 04-02-PLAN.md — RobotDetailViewModel-Extraktion: State und Logik aus RobotDetailView in ViewModel
+- [ ] 04-03-PLAN.md — RobotSettingsViewModel-Extraktion: State und Logik aus RobotSettingsView in ViewModel
+- [ ] 04-04-PLAN.md — MapViewModel-Extraktion: State und Logik aus MapContentView in ViewModel
 
 ## Progress
 
@@ -91,4 +97,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 | 1. Foundation | 3/3 | Complete   | 2026-03-27 |
 | 2. Network Layer | 3/3 | Complete   | 2026-03-27 |
 | 3. API Completeness | 3/3 | Complete   | 2026-03-28 |
-| 4. View Refactoring & Tests | 0/TBD | Not started | - |
+| 4. View Refactoring & Tests | 0/4 | Not started | - |
