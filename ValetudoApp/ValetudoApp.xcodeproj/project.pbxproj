@@ -12,6 +12,7 @@
 		12E1CB26BDC7E310A9C141EB /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */; };
 		143326E22353048B7A54418D /* PresetHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489C5B4217131AFAA714813 /* PresetHelpers.swift */; };
 		1932127BBDCC8FBE2645FC31 /* RobotSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 698C8F9BC11A4FCCF9D99923 /* RobotSettingsView.swift */; };
+		1F0534502B3DB53D433509DD /* KeychainStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06AD3C1B9A930E3DFF22B33 /* KeychainStoreTests.swift */; };
 		26187F76B128067478E11E35 /* RobotDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DD7833558396395DCA7D32 /* RobotDetailView.swift */; };
 		268751822B3D802C519CE03C /* SSEConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9841E9A11C0D78ACE274994 /* SSEConnectionManager.swift */; };
 		48E82472B522893504594AC9 /* RobotState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602023483884AA7FC99EE28A /* RobotState.swift */; };
@@ -30,6 +31,7 @@
 		A2F93F458EDD354944B50689 /* ManualControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B35122CA897ECE8B3B52014 /* ManualControlView.swift */; };
 		B5ACCE16A7996B790BBF09CA /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8827C015A536153957BA6AC /* Timer.swift */; };
 		B9C7BC253C6ABA4DAA4D41C9 /* ValetudoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4727F8CABE30473DD20C391 /* ValetudoApp.swift */; };
+		BD5D356EA599C51A65452FA2 /* MapLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFE1B37CB17CC446C036D73 /* MapLayerTests.swift */; };
 		BDECD717380DC7168DFC0ED7 /* ObstaclePhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A30679F5032173015E8B86 /* ObstaclePhotoView.swift */; };
 		C51D8291FD9CFE191FA9557D /* NetworkScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048B373C4CE7F9EF571625D6 /* NetworkScanner.swift */; };
 		D20FA57F529017D6027F3C71 /* RoomsManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075F2DE6ED60C5F11921459D /* RoomsManagementView.swift */; };
@@ -82,6 +84,8 @@
 		B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		B313EE35A432692658D58220 /* Consumable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Consumable.swift; sourceTree = "<group>"; };
 		B65C57A11EEEF91115F0C845 /* NWBrowserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWBrowserService.swift; sourceTree = "<group>"; };
+		BDFE1B37CB17CC446C036D73 /* MapLayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapLayerTests.swift; sourceTree = "<group>"; };
+		C06AD3C1B9A930E3DFF22B33 /* KeychainStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStoreTests.swift; sourceTree = "<group>"; };
 		C3BEF0FC2A1B164BA6099BBC /* AddRobotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRobotView.swift; sourceTree = "<group>"; };
 		CB4E4824159FC4CC51EB9AC8 /* ErrorRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorRouter.swift; sourceTree = "<group>"; };
 		D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumableTests.swift; sourceTree = "<group>"; };
@@ -190,6 +194,8 @@
 			isa = PBXGroup;
 			children = (
 				D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */,
+				C06AD3C1B9A930E3DFF22B33 /* KeychainStoreTests.swift */,
+				BDFE1B37CB17CC446C036D73 /* MapLayerTests.swift */,
 				29662D61BFED0893E6E573CB /* TimerTests.swift */,
 			);
 			path = ValetudoAppTests;
@@ -307,6 +313,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				7287C4B56D6A0CE743D38B28 /* ConsumableTests.swift in Sources */,
+				1F0534502B3DB53D433509DD /* KeychainStoreTests.swift in Sources */,
+				BD5D356EA599C51A65452FA2 /* MapLayerTests.swift in Sources */,
 				D919418DE4EA629CDA129AFA /* TimerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
