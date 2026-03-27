@@ -64,27 +64,27 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UX-01 | — | Pending |
-| UX-02 | — | Pending |
-| UX-03 | — | Pending |
-| UX-04 | — | Pending |
-| NET-01 | — | Pending |
-| NET-02 | — | Pending |
-| NET-03 | — | Pending |
-| API-01 | — | Pending |
-| API-02 | — | Pending |
-| API-03 | — | Pending |
-| API-04 | — | Pending |
-| DEBT-01 | — | Pending |
-| DEBT-02 | — | Pending |
-| DEBT-03 | — | Pending |
-| DEBT-04 | — | Pending |
+| UX-01 | Phase 1 | Pending |
+| UX-02 | Phase 1 | Pending |
+| UX-03 | Phase 3 | Pending |
+| UX-04 | Phase 3 | Pending |
+| NET-01 | Phase 2 | Pending |
+| NET-02 | Phase 2 | Pending |
+| NET-03 | Phase 1 | Pending |
+| API-01 | Phase 3 | Pending |
+| API-02 | Phase 3 | Pending |
+| API-03 | Phase 3 | Pending |
+| API-04 | Phase 3 | Pending |
+| DEBT-01 | Phase 1 | Pending |
+| DEBT-02 | Phase 4 | Pending |
+| DEBT-03 | Phase 2 | Pending |
+| DEBT-04 | Phase 4 | Pending |
 
 **Coverage:**
 - v1.2.0 requirements: 15 total
-- Mapped to phases: 0
-- Unmapped: 15
+- Mapped to phases: 15
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-27*
-*Last updated: 2026-03-27 after initial definition*
+*Last updated: 2026-03-27 after roadmap creation — all 15 requirements mapped*
