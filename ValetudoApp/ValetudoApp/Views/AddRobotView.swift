@@ -161,6 +161,30 @@ struct NetworkScannerView: View {
     @Environment(\.dismiss) var dismiss
     let onSelect: (DiscoveredRobot) -> Void
 
+    // mDNS results first, then IP scan; alphabetical within each group
+    private var sortedRobots: [DiscoveredRobot] {
+        scanner.discoveredRobots.sorted { lhs, rhs in
+            if lhs.discoveredVia == rhs.discoveredVia {
+                return lhs.displayName < rhs.displayName
+            }
+            return lhs.discoveredVia == .mdns
+        }
+    }
+
+    @ViewBuilder
+    private func discoveryBadge(for robot: DiscoveredRobot) -> some View {
+        switch robot.discoveredVia {
+        case .mdns:
+            Label("Bonjour", systemImage: "antenna.radiowaves.left.and.right")
+                .font(.caption2)
+                .foregroundStyle(.blue)
+        case .ipScan:
+            Label("IP Scan", systemImage: "network")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
+        }
+    }
+
     var body: some View {
         NavigationStack {
             List {
@@ -188,7 +212,7 @@ struct NetworkScannerView: View {
                 // Found Robots Section
                 if !scanner.discoveredRobots.isEmpty {
                     Section(String(localized: "scan.found_robots")) {
-                        ForEach(scanner.discoveredRobots) { robot in
+                        ForEach(sortedRobots) { robot in
                             Button {
                                 onSelect(robot)
                             } label: {
@@ -197,6 +221,13 @@ struct NetworkScannerView: View {
                                         Text(robot.displayName)
                                             .font(.body)
                                             .foregroundStyle(.primary)
+
+                                        if let model = robot.model, robot.discoveredVia == .mdns {
+                                            Text(model)
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+
                                         Text(robot.host)
                                             .font(.caption)
                                             .foregroundStyle(.secondary)
@@ -204,9 +235,13 @@ struct NetworkScannerView: View {
 
                                     Spacer()
 
-                                    Image(systemName: "chevron.right")
-                                        .font(.caption)
-                                        .foregroundStyle(.secondary)
+                                    VStack(alignment: .trailing, spacing: 4) {
+                                        Image(systemName: "chevron.right")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+
+                                        discoveryBadge(for: robot)
+                                    }
                                 }
                             }
                         }
