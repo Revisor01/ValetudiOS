@@ -30,7 +30,12 @@
   2. Fehlgeschlagene Aktionen zeigen dem Benutzer eine lesbare Fehlermeldung (kein stilles Versagen)
   3. Tapping auf eine beliebige Stelle der Robot-Zeile navigiert zur Detailansicht
   4. Alle print()-Aufrufe sind durch os.Logger ersetzt und Debug-Output erscheint nur in DEBUG-Builds
-**Plans**: TBD
+**Plans**: 3 plans
+
+Plans:
+- [ ] 01-01-PLAN.md — Keychain-Migration: KeychainStore Service, RobotConfig CodingKeys-Exclusion, Migration in RobotManager, ValetudoAPI/Intents Credential-Umstellung
+- [ ] 01-02-PLAN.md — ErrorRouter fuer sichtbare Fehlermeldungen + NavigationLink-Fix fuer klickbare Robot-Zeilen
+- [ ] 01-03-PLAN.md — os.Logger-Migration: print() durch strukturiertes Logging in allen Service-Dateien ersetzen
 
 ### Phase 2: Network Layer
 **Goal**: Roboterstatus-Updates kommen in Echtzeit via SSE, Roboter werden via mDNS entdeckt, Map-Dekompression wird gecacht
@@ -74,7 +79,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 0/TBD | Not started | - |
+| 1. Foundation | 0/3 | Planned | - |
 | 2. Network Layer | 0/TBD | Not started | - |
 | 3. API Completeness | 0/TBD | Not started | - |
 | 4. View Refactoring & Tests | 0/TBD | Not started | - |
