@@ -14,7 +14,7 @@
 - Integer phases (1, 2, 3): Planned milestone work
 - Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
 
-- [ ] **Phase 1: Foundation** - Keychain, ErrorRouter, os.Logger — Infrastruktur-Grundlage und Fehlerbehandlung
+- [x] **Phase 1: Foundation** - Keychain, ErrorRouter, os.Logger — Infrastruktur-Grundlage und Fehlerbehandlung (completed 2026-03-27)
 - [x] **Phase 2: Network Layer** - SSE-Streaming, mDNS-Discovery, Map-Pixel-Cache (completed 2026-03-27)
 - [ ] **Phase 3: API Completeness** - Neue Valetudo-Capabilities und Notification Actions
 - [ ] **Phase 4: View Refactoring & Tests** - ViewModel-Extraktion und XCTest-Coverage
@@ -83,7 +83,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 2/3 | In Progress|  |
+| 1. Foundation | 3/3 | Complete   | 2026-03-27 |
 | 2. Network Layer | 3/3 | Complete   | 2026-03-27 |
 | 3. API Completeness | 0/TBD | Not started | - |
 | 4. View Refactoring & Tests | 0/TBD | Not started | - |
