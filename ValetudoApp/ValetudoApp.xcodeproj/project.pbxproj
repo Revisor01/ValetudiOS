@@ -34,6 +34,7 @@
 		D4ACB8D36AF5B70E720588DE /* TimersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74E6E7081C7AE4DA22B562 /* TimersView.swift */; };
 		D692854F2D2227501DA43AF6 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BF56FF46BA4144DBD73CA4 /* KeychainStore.swift */; };
 		DA136B4862BD6BD33702E71A /* IntensityControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172B1FB7678A953A4655A3EE /* IntensityControlView.swift */; };
+		DB3194EBB4566F919E12A364 /* NWBrowserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65C57A11EEEF91115F0C845 /* NWBrowserService.swift */; };
 		DDD26A60B887E1133DD2E18B /* AddRobotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BEF0FC2A1B164BA6099BBC /* AddRobotView.swift */; };
 		E3B89B8282E352373120510B /* RobotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE7F0D27E21AAB984042AF4 /* RobotManager.swift */; };
 		EF03FC536C8B10A814C55E48 /* ConsumablesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24988119F831BB0A8B779FA /* ConsumablesView.swift */; };
@@ -64,6 +65,7 @@
 		A85C9582AEC53718BC544A5F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		B313EE35A432692658D58220 /* Consumable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Consumable.swift; sourceTree = "<group>"; };
+		B65C57A11EEEF91115F0C845 /* NWBrowserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWBrowserService.swift; sourceTree = "<group>"; };
 		C3BEF0FC2A1B164BA6099BBC /* AddRobotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRobotView.swift; sourceTree = "<group>"; };
 		CB4E4824159FC4CC51EB9AC8 /* ErrorRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorRouter.swift; sourceTree = "<group>"; };
 		D4B8AD3F113C1AD37B4E5BBA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -136,6 +138,7 @@
 				21BF56FF46BA4144DBD73CA4 /* KeychainStore.swift */,
 				048B373C4CE7F9EF571625D6 /* NetworkScanner.swift */,
 				4C082534D8ADAC8160B2405F /* NotificationService.swift */,
+				B65C57A11EEEF91115F0C845 /* NWBrowserService.swift */,
 				4BE7F0D27E21AAB984042AF4 /* RobotManager.swift */,
 				F9841E9A11C0D78ACE274994 /* SSEConnectionManager.swift */,
 				004F5A0A2815A8D95949878D /* ValetudoAPI.swift */,
@@ -263,6 +266,7 @@
 				D692854F2D2227501DA43AF6 /* KeychainStore.swift in Sources */,
 				A2F93F458EDD354944B50689 /* ManualControlView.swift in Sources */,
 				812642A8D77C6E37764AC03D /* MapView.swift in Sources */,
+				DB3194EBB4566F919E12A364 /* NWBrowserService.swift in Sources */,
 				C51D8291FD9CFE191FA9557D /* NetworkScanner.swift in Sources */,
 				583401D717322CA5AE6527B8 /* NotificationService.swift in Sources */,
 				12E1CB26BDC7E310A9C141EB /* OnboardingView.swift in Sources */,

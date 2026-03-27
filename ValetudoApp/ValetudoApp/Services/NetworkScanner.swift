@@ -7,9 +7,24 @@ struct DiscoveredRobot: Identifiable, Hashable {
     let host: String
     let name: String?
     let model: String?
+    let discoveredVia: DiscoveryMethod
+
+    enum DiscoveryMethod: Hashable {
+        case mdns
+        case ipScan
+    }
 
     var displayName: String {
         name ?? model ?? host
+    }
+
+    // Hashable conformance based on host (not UUID) so duplicate filtering works
+    func hash(into hasher: inout Hasher) {
+        hasher.combine(host)
+    }
+
+    static func == (lhs: DiscoveredRobot, rhs: DiscoveredRobot) -> Bool {
+        lhs.host == rhs.host
     }
 }
 
@@ -21,6 +36,7 @@ class NetworkScanner: ObservableObject {
 
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "NetworkScanner")
     private var scanTask: Task<Void, Never>?
+    private let browserService = NWBrowserService()
 
     func startScan() {
         stopScan()
@@ -28,9 +44,26 @@ class NetworkScanner: ObservableObject {
         isScanning = true
         progress = 0
 
+        // Start mDNS immediately
+        browserService.startBrowsing()
+
         scanTask = Task {
+            // Wait 3 seconds for mDNS to collect results
+            try? await Task.sleep(for: .seconds(3))
+
+            guard !Task.isCancelled else { return }
+
+            // Merge mDNS results before starting IP scan
+            mergeMDNSResults()
+
+            // Always run IP scan for full coverage (as fallback and supplement)
             await scanNetwork()
+
+            // Final merge after IP scan
+            mergeMDNSResults()
+
             isScanning = false
+            browserService.stopBrowsing()
         }
     }
 
@@ -38,10 +71,28 @@ class NetworkScanner: ObservableObject {
         scanTask?.cancel()
         scanTask = nil
         isScanning = false
+        browserService.stopBrowsing()
+    }
+
+    // Merges mDNS results into discoveredRobots, preferring mDNS over IP scan for duplicates
+    private func mergeMDNSResults() {
+        let mdnsRobots = browserService.discovered
+        let existingHosts = Set(discoveredRobots.map(\.host))
+
+        // Add new mDNS robots not already in list
+        for robot in mdnsRobots where !existingHosts.contains(robot.host) {
+            discoveredRobots.insert(robot, at: 0)
+        }
+
+        // Replace IP-scan entries if mDNS found same host (mDNS has better metadata)
+        for mdnsRobot in mdnsRobots {
+            if let idx = discoveredRobots.firstIndex(where: { $0.host == mdnsRobot.host && $0.discoveredVia == .ipScan }) {
+                discoveredRobots[idx] = mdnsRobot
+            }
+        }
     }
 
     private func scanNetwork() async {
-        // Get local IP to determine subnet
         guard let localIP = getLocalIPAddress() else {
             logger.warning("Could not determine local IP address")
             return
@@ -50,11 +101,9 @@ class NetworkScanner: ObservableObject {
         let subnet = getSubnet(from: localIP)
         logger.debug("Scanning subnet: \(subnet, privacy: .private).x")
 
-        // Scan common IP ranges (1-254)
         let totalHosts = 254
         var scannedHosts = 0
 
-        // Use concurrent scanning for speed
         await withTaskGroup(of: DiscoveredRobot?.self) { group in
             for i in 1...254 {
                 let host = "\(subnet).\(i)"
@@ -63,7 +112,6 @@ class NetworkScanner: ObservableObject {
                     await self.checkHost(host)
                 }
 
-                // Limit concurrent connections
                 if i % 20 == 0 {
                     for await result in group {
                         scannedHosts += 1
@@ -72,14 +120,16 @@ class NetworkScanner: ObservableObject {
                         }
                         if let robot = result {
                             await MainActor.run {
-                                self.discoveredRobots.append(robot)
+                                // Only add if not already discovered via mDNS
+                                if !self.discoveredRobots.contains(where: { $0.host == robot.host }) {
+                                    self.discoveredRobots.append(robot)
+                                }
                             }
                         }
                     }
                 }
             }
 
-            // Collect remaining results
             for await result in group {
                 scannedHosts += 1
                 await MainActor.run {
@@ -87,7 +137,9 @@ class NetworkScanner: ObservableObject {
                 }
                 if let robot = result {
                     await MainActor.run {
-                        self.discoveredRobots.append(robot)
+                        if !self.discoveredRobots.contains(where: { $0.host == robot.host }) {
+                            self.discoveredRobots.append(robot)
+                        }
                     }
                 }
             }
@@ -99,10 +151,9 @@ class NetworkScanner: ObservableObject {
     }
 
     private func checkHost(_ host: String) async -> DiscoveredRobot? {
-        // Quick check if port 80 is open and it's a Valetudo instance
         let url = URL(string: "http://\(host)/api/v2/robot")!
         var request = URLRequest(url: url)
-        request.timeoutInterval = 1.5 // Short timeout for scanning
+        request.timeoutInterval = 1.5
 
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
@@ -112,18 +163,17 @@ class NetworkScanner: ObservableObject {
                 return nil
             }
 
-            // Try to decode robot info
             let decoder = JSONDecoder()
             if let robotInfo = try? decoder.decode(RobotInfo.self, from: data) {
                 return DiscoveredRobot(
                     host: host,
                     name: nil,
-                    model: robotInfo.modelName ?? robotInfo.manufacturer
+                    model: robotInfo.modelName ?? robotInfo.manufacturer,
+                    discoveredVia: .ipScan
                 )
             }
 
-            // If decoding fails but we got 200, it's still likely a Valetudo instance
-            return DiscoveredRobot(host: host, name: nil, model: "Valetudo")
+            return DiscoveredRobot(host: host, name: nil, model: "Valetudo", discoveredVia: .ipScan)
         } catch {
             return nil
         }
@@ -146,7 +196,6 @@ class NetworkScanner: ObservableObject {
             if addrFamily == UInt8(AF_INET) {
                 let name = String(cString: interface.ifa_name)
 
-                // Look for WiFi or Ethernet interface
                 if name == "en0" || name == "en1" {
                     var hostname = [CChar](repeating: 0, count: Int(NI_MAXHOST))
                     getnameinfo(
