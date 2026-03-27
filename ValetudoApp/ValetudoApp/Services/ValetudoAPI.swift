@@ -653,6 +653,79 @@ extension ValetudoAPI {
         return bytes
     }
 
+    // MARK: - Map Snapshots
+    func getMapSnapshots() async throws -> [MapSnapshot] {
+        try await request("/robot/capabilities/MapSnapshotCapability")
+    }
+
+    func restoreMapSnapshot(id: String) async throws {
+        let body = try JSONEncoder().encode(["action": "restore", "id": id])
+        try await requestVoid("/robot/capabilities/MapSnapshotCapability", body: body)
+    }
+
+    // MARK: - Pending Map Change
+    func getPendingMapChange() async throws -> PendingMapChangeState {
+        try await request("/robot/capabilities/PendingMapChangeHandlingCapability")
+    }
+
+    func handlePendingMapChange(action: String) async throws {
+        let body = try JSONEncoder().encode(["action": action])
+        try await requestVoid("/robot/capabilities/PendingMapChangeHandlingCapability", body: body)
+    }
+
+    // MARK: - Clean Route Control
+    func getCleanRoute() async throws -> CleanRouteState {
+        try await request("/robot/capabilities/CleanRouteControlCapability")
+    }
+
+    func setCleanRoute(route: String) async throws {
+        let body = try JSONEncoder().encode(["route": route])
+        try await requestVoid("/robot/capabilities/CleanRouteControlCapability", body: body)
+    }
+
+    // MARK: - Valetudo Events
+    func getEvents() async throws -> [ValetudoEvent] {
+        // Events API may return dictionary {id: event} or array — try dict first
+        do {
+            let dict: [String: ValetudoEvent] = try await request("/valetudo/events")
+            return Array(dict.values).sorted { $0.timestamp > $1.timestamp }
+        } catch {
+            // Fallback: try as array
+            return try await request("/valetudo/events")
+        }
+    }
+
+    // MARK: - Obstacle Images
+    func getObstacleImage(id: String) async throws -> Data {
+        guard let baseURL = config.baseURL,
+              let url = URL(string: "/api/v2/robot/capabilities/ObstacleImagesCapability/img/\(id)", relativeTo: baseURL) else {
+            throw APIError.invalidURL
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+
+        if let username = config.username, !username.isEmpty,
+           let password = KeychainStore.password(for: config.id) {
+            let credentials = "\(username):\(password)"
+            if let data = credentials.data(using: .utf8) {
+                request.setValue("Basic \(data.base64EncodedString())", forHTTPHeaderField: "Authorization")
+            }
+        }
+
+        let (data, response) = try await session.data(for: request)
+
+        guard let httpResponse = response as? HTTPURLResponse else {
+            throw APIError.invalidResponse
+        }
+
+        guard (200...299).contains(httpResponse.statusCode) else {
+            throw APIError.httpError(httpResponse.statusCode)
+        }
+
+        return data
+    }
+
     // MARK: - Connection Check
     func checkConnection() async -> Bool {
         do {
