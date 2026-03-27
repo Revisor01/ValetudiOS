@@ -63,8 +63,13 @@ Plans:
   4. Benutzer kann Fotos von erkannten Hindernissen im Reinigungsprotokoll ansehen (sofern Roboter AI-Kamera hat)
   5. Benutzer sieht Valetudo Events (DustBinFull, MopReminder, Errors) in einer dedizierten Ansicht
   6. Notification-Actions GO_HOME und LOCATE schicken den Roboter nach Hause bzw. lassen ihn piepen
-**Plans**: TBD
+**Plans**: 3 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 03-01-PLAN.md — API-Methoden und Model-Structs fuer MapSnapshot, PendingMapChange, CleanRoute, Events, ObstacleImages
+- [ ] 03-02-PLAN.md — Map-Snapshot/Pending-Map-Change UI in RobotSettingsView + Notification-Actions (GO_HOME, LOCATE) via AppDelegate
+- [ ] 03-03-PLAN.md — Events-Section und CleanRoute-Picker in RobotDetailView + ObstaclePhotoView
 
 ### Phase 4: View Refactoring & Tests
 **Goal**: Die drei monolithischen Views sind in ViewModels + Sub-Views aufgeteilt und ein XCTest-Target validiert kritische Logik
@@ -85,5 +90,5 @@ Phases execute in numeric order: 1 → 2 → 3 → 4
 |-------|----------------|--------|-----------|
 | 1. Foundation | 3/3 | Complete   | 2026-03-27 |
 | 2. Network Layer | 3/3 | Complete   | 2026-03-27 |
-| 3. API Completeness | 0/TBD | Not started | - |
+| 3. API Completeness | 0/3 | Not started | - |
 | 4. View Refactoring & Tests | 0/TBD | Not started | - |
