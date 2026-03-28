@@ -4,7 +4,7 @@
 
 - [x] **v1.2.0 Quality & API Completeness** - Phases 1-4 (completed 2026-03-28)
 - [x] **v1.3.0 Polish & Full API Coverage** - Phases 5-8 (completed 2026-03-28)
-- [ ] **v1.4.0 Code Quality & Robustness** - Phases 9-11
+- [x] **v1.4.0 Code Quality & Robustness** - Phases 9-11 (completed 2026-03-29)
 
 ## Phases
 
