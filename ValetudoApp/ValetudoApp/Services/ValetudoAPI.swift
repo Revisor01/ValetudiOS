@@ -377,6 +377,15 @@ extension ValetudoAPI {
         try await requestVoid("/robot/capabilities/AutoEmptyDockAutoEmptyIntervalControlCapability/preset", body: body)
     }
 
+    func getAutoEmptyDockDurationPresets() async throws -> [String] {
+        try await request("/robot/capabilities/AutoEmptyDockAutoEmptyDurationControlCapability/presets")
+    }
+
+    func setAutoEmptyDockDuration(preset: String) async throws {
+        let body = try JSONEncoder().encode(PresetControlRequest(name: preset))
+        try await requestVoid("/robot/capabilities/AutoEmptyDockAutoEmptyDurationControlCapability/preset", body: body)
+    }
+
     func triggerAutoEmptyDock() async throws {
         let body = try JSONEncoder().encode(ActionRequest(action: "trigger"))
         try await requestVoid("/robot/capabilities/AutoEmptyDockManualTriggerCapability", body: body)
