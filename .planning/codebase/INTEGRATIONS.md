@@ -4,152 +4,190 @@
 
 ## APIs & External Services
 
-**Valetudo REST API:**
-- Protocol: HTTP/HTTPS
-- Base Path: `/api/v2` (relative to robot's baseURL)
-- Authentication: Basic Auth (username:password)
-- Purpose: Full robot control, status updates, configuration management
-  - SDK/Client: Custom `ValetudoAPI` actor at `ValetudoApp/Services/ValetudoAPI.swift`
-  - Endpoints handled:
-    - `/status` - Robot status (battery, mode, state)
-    - `/segments` - Room/zone definitions
-    - `/consumables` - Filter, brush, sensor wear
-    - `/timers` - Scheduled cleaning
-    - `/map` - Current cleaning map
-    - `/capabilities` - Robot feature detection
-    - `/statistics` - Cleaning statistics
-    - `/dnd` - Do-Not-Disturb configuration
-    - `/preferences` - Fan speed, water usage presets
-    - Control actions: `/action` (clean, pause, stop, home)
-    - Advanced: `/clean/segment`, `/go/to` (GoTo), `/locate`, `/speaker`
+**Valetudo Robot API:**
+- Service: Valetudo 2024.06.0+ (local network vacuum robot)
+- What it's used for: Robot control, status polling, consumable tracking, map rendering
+  - SDK/Client: Custom `ValetudoAPI` actor in `Services/ValetudoAPI.swift`
+  - Base endpoint: `/api/v2/*` (REST API)
+  - Auth: Basic HTTP authentication (optional)
+    - Credentials stored in Keychain, retrieved per-request
+    - Header: `Authorization: Basic <base64(username:password)>`
+  - Protocol: HTTP/HTTPS with self-signed certificate support via `SSLSessionDelegate`
+  - Session configuration:
+    - Standard requests: 10s timeout (request), 30s timeout (resource)
+    - SSE requests: infinite timeout for streaming
 
-**Server-Sent Events (SSE):**
-- Endpoint: `/api/v2/status/stream` (GET)
-- Purpose: Real-time robot state updates (attributes streaming)
-- Implementation: `SSEConnectionManager` actor at `ValetudoApp/Services/SSEConnectionManager.swift`
-- Data format: `data: [RobotAttribute]` JSON lines
-- Connection: Infinite timeout URLSession, auto-reconnect with exponential backoff
-- Delivers to: `onAttributesUpdate` callback for state mutations
+**Valetudo Robot Streaming:**
+- Service: Valetudo SSE endpoint
+- What it's used for: Real-time robot state updates via Server-Sent Events
+  - Endpoint: `/api/v2/robot/state/stream`
+  - Manager: `SSEConnectionManager` actor in `Services/SSEConnectionManager.swift`
+  - Connection handling: Per-robot task management with auto-reconnect
+  - Backoff strategy: Exponential retry with maximum of 5 attempts
+  - Decoding: JSON events parsed as `[RobotAttribute]` updates
+  - State: Tracks connection per robot via `isConnected[UUID]` dictionary
 
 ## Data Storage
 
+**Databases:**
+- None — app is stateless for runtime data
+- All configuration stored locally on device (see below)
+
+**File Storage:**
+- Local filesystem only — no cloud storage
+- Uses iOS sandbox directory structure
+
 **Local Storage:**
-- **Type:** On-device only (no cloud)
-- **Robots Config:** Persisted in JSON via `UserDefaults` (key: `valetudo_robots`)
-  - Each robot: UUID, name, hostname/IP, port, SSL setting, username
-  - Location: `RobotManager.loadRobots()` / `saveRobots()` in `ValetudoApp/Services/RobotManager.swift`
+- **Configuration:**
+  - Robot configs: Stored as JSON in UserDefaults under key `valetudo_robots`
+    - Structure: Array of `RobotConfig` (id, name, host, username, useSSL, ignoreCertificateErrors)
+    - Persistence handled by `RobotManager` in `Services/RobotManager.swift`
 
-- **Credentials:** iOS Keychain (Security framework)
-  - Service ID: `com.valetudio.robot.password`
-  - Stored by robot UUID
-  - Location: `KeychainStore.swift`
-  - Access level: `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`
+- **Credentials:**
+  - Passwords: iOS Keychain via `Services/KeychainStore.swift`
+    - Service: `com.valetudio.robot.password`
+    - Account: Robot UUID string
+    - Accessibility: `.whenUnlockedThisDeviceOnly`
 
-- **User Preferences:** SwiftUI AppStorage
-  - Settings keys: `hasCompletedOnboarding`, `notify_cleaning_complete`, `notify_robot_error`, `notify_robot_stuck`, `notify_consumable_low`, `notify_robot_offline`
-  - Backed by iOS UserDefaults
+- **User Preferences:**
+  - Notification settings (via @AppStorage):
+    - `notify_cleaning_complete`, `notify_robot_error`, `notify_robot_stuck`, `notify_consumable_low`, `notify_robot_offline`
+  - Onboarding state: `hasCompletedOnboarding`
+  - Support tracking: `supportReminderShown`, `hasSupported`, `appLaunchCount`
+
+**Caching:**
+- In-memory: Robot states cached in `RobotManager.robotStates[UUID: RobotStatus]`
+- In-memory: Last consumable check timestamps in `lastConsumableCheck[UUID: Date]`
+- No persistent cache — data refreshed on next connection
 
 ## Authentication & Identity
 
-**Auth Type:** Basic Authentication (HTTP)
+**Auth Provider:**
+- Custom — HTTP Basic Auth (optional, robot-configured)
+  - Implementation: Per-request credentials in `ValetudoAPI.request()` method
+  - Credentials retrieved from Keychain if username provided
+  - Robot can be configured with or without authentication
 
-**Implementation:**
-- Username + password per robot
-- Location: `ValetudoAPI.swift` lines 90-96 (request headers)
-- Password retrieval: `KeychainStore.password(for: config.id)`
-- Header format: `Authorization: Basic base64(username:password)`
-
-**SSL/TLS:**
-- Custom SSLSessionDelegate at `ValetudoApp/Services/ValetudoAPI.swift` lines 65-75
-- Accepts self-signed certificates when `config.ignoreCertificateErrors = true`
-- URLSession delegates certificate validation bypass for development/local networks
-
-## Network Discovery
-
-**mDNS/Bonjour:**
-- Service Type: `_valetudo._tcp.local.`
-- Browser: `NWBrowserService` at `ValetudoApp/Services/NWBrowserService.swift`
-- TXT Record Keys Parsed:
-  - `friendlyName` - Display name for robot
-  - `model` - Hardware model identifier
-- Framework: Network.framework (NWBrowser)
-- Usage: Automatic robot discovery on local network during onboarding
-
-## Notifications
-
-**Push Notification Categories:**
-
-1. `CLEANING_COMPLETE` - Task completed actions
-2. `ROBOT_ERROR` - Critical error alerts
-3. `ROBOT_STUCK` - Robot stuck notifications
-4. `CONSUMABLE_LOW` - Maintenance warnings
-5. `ROBOT_OFFLINE` - Connectivity loss alerts
-
-**Implementation:** `NotificationService` at `ValetudoApp/Services/NotificationService.swift`
-- Framework: UserNotifications (UNUserNotificationCenter)
-- Content: Title, body, sound, badges
-- User opt-in: Preference toggles in app settings (AppStorage-backed)
-- Permissions: Requested at app launch
+**No Third-Party Authentication:**
+- No OAuth, no external identity providers
+- All auth is robot-to-app only (local network only)
 
 ## Monitoring & Observability
 
 **Error Tracking:**
-- Manual error handling via `ErrorRouter` at `ValetudoApp/Helpers/ErrorRouter.swift`
-- Display via `.withErrorAlert()` view modifier (custom SwiftUI extension)
-- No external error service (e.g., Sentry, Firebase Crashlytics)
+- None — no external error reporting service
+- Errors handled locally in error handling views and services
 
-**Logs:**
-- Framework: os.Logger (Apple unified logging)
-- Subsystem: Bundle identifier (e.g., `com.valetudio`)
-- Categories: "API", "SSE", "mDNS", "RobotManager", "Notifications"
-- Visibility: Console + Console.app on device
-- No external logging pipeline
+**Logging:**
+- Native os.Logger framework
+  - Subsystem: `Bundle.main.bundleIdentifier` (e.g., `com.valetudio`)
+  - Categories: `API`, `SSE`, `mDNS`, `Notifications`, `RobotManager`
+  - Levels: info, warning, error configured per logger instance
+  - Examples: `Services/ValetudoAPI.swift`, `Services/SSEConnectionManager.swift`
 
-## Siri Shortcuts & Intents
-
-**Shortcuts Support:**
-- Intents defined at `ValetudoApp/Intents/RobotIntents.swift`
-- Custom Siri commands for robot actions
-- Deep linking to app views with parameters
+**Debug Support:**
+- `Helpers/DebugConfig.swift` - Debug configuration and logging control
+- Console logging available in Xcode debugger
 
 ## CI/CD & Deployment
 
 **Hosting:**
-- App Store (planned, not yet live)
-- Ad-hoc builds via Xcode
-
-**Build System:**
-- XcodeGen generates .xcodeproj from `project.yml`
-- Target: ValetudoApp + ValetudoAppTests
-- Code signing: Team ID J459G9CJT5 (Simon Luthe's Apple Developer account)
-- Bundle ID: `de.simonluthe.ValetudiOS` (released), `de.simonluthe.ValetudoApp` (development)
+- App Store (iOS App Store distribution)
+- Bundle ID: `de.simonluthe.ValetudiOS`
+- Requires Xcode Cloud or manual signing
 
 **CI Pipeline:**
-- Xcode Cloud (detected in recent commits: ci/xcode-cloud configuration)
-- Automatic code signing via Xcode Cloud
-- Test target: ValetudoAppTests
+- Xcode Cloud integration present (CI configuration files modified in recent commits)
+- Automatic code signing configured in Xcode project
+- Test target configured for archive export
+
+**Code Signing:**
+- Automatic signing enabled
+- Development team: Apple Developer account holder
+- Certificates: Managed by Xcode/Apple
+
+## Entitlements
+
+**Required Capabilities:**
+- Local Network access (for mDNS robot discovery)
+  - Usage description: "Access local network to communicate with Valetudo robots"
+  - Required Info.plist key: `NSLocalNetworkUsageDescription`
+- Keychain access (implicit for password storage)
 
 ## Environment Configuration
 
 **Required env vars:**
-- None hardcoded. All configuration via in-app UI:
-  - Robot IP/hostname: User input in `AddRobotView.swift`
-  - Port: User input (default 80 for HTTP, 443 for HTTPS)
-  - Username/Password: User input with Keychain encryption
-  - SSL toggle: User choice in robot settings
+- None — app is fully self-contained
+- All configuration happens in-app via UI
 
-**App Settings Persisted:**
-- Notification preferences (AppStorage)
-- Completed onboarding flag
-- Robot list + metadata
+**Secrets location:**
+- iOS Keychain (secure enclave-backed on supported devices)
+- No .env files, no hardcoded secrets
 
 ## Webhooks & Callbacks
 
-**Incoming:** None (pull-based architecture via REST + SSE)
+**Incoming:**
+- None — app is client-only, receives no inbound connections
 
-**Outgoing:** 
-- Siri Shortcuts (app can be invoked with custom parameters)
-- Local notifications to device (no external callbacks)
+**Outgoing:**
+- None — app does not initiate callbacks to external servers
+- Only outbound connections: To Valetudo robots on local network
+
+## Push Notifications
+
+**Local Notifications Only:**
+- Service: UserNotifications (local device only)
+- Triggers: Robot state changes detected by `SSEConnectionManager` and `RobotManager`
+- Categories:
+  - `CLEANING_COMPLETE` - Cleaning finished
+  - `ROBOT_ERROR` - Robot error state
+  - `ROBOT_STUCK` - Robot stuck detected
+  - `CONSUMABLE_LOW` - Consumable below threshold
+  - `ROBOT_OFFLINE` - Robot connection lost
+- Implementation: `Services/NotificationService.swift`
+- User preferences control each notification type via @AppStorage
+
+## In-App Purchase (StoreKit 2)
+
+**Support Donations:**
+- Provider: Apple App Store
+- Products:
+  - `de.godsapp.valetudoapp.support.small` — €0.99 (coffee)
+  - `de.godsapp.valetudoapp.support.medium` — €2.99 (gift)
+  - `de.godsapp.valetudoapp.support.large` — €5.99 (sparkles)
+- Handling: `Services/SupportManager.swift`
+  - Product fetching: `Product.products(for: productIds)`
+  - Purchase flow: `product.purchase()` with verification
+  - Transaction finishing: Verified transactions marked as `.finish()`
+- UI: `Views/SupportView.swift`, `Views/SupportReminderView.swift`
+- Tracking: @AppStorage flags (`hasSupported`, `appLaunchCount`)
+
+## Siri Shortcuts Integration
+
+**Framework:**
+- Intents Framework (`Intents/RobotIntents.swift`)
+- App Intents API for Siri command execution
+
+**Supported Shortcuts:**
+- Robot control intents for common actions (start, stop, home, etc.)
+- Implemented as donatable user activities
+
+## Network Discovery
+
+**mDNS Service Discovery:**
+- Service Type: `_valetudo._tcp` on `.local` domain
+- Browsing: `NWBrowser` from Network Framework in `Services/NWBrowserService.swift`
+- TXT Record Parsing:
+  - `friendlyName` - Robot display name
+  - `model` - Robot model identifier
+- Discovery Result: `DiscoveredRobot` struct with host resolution to `<name>.local`
+
+## Third-Party Dependencies
+
+**None Detected:**
+- Project uses exclusively native iOS frameworks
+- No CocoaPods, SPM, or other package managers configured
+- All dependencies are built-in to iOS 17.0+
 
 ---
 

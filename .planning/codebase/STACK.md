@@ -5,82 +5,129 @@
 ## Languages
 
 **Primary:**
-- Swift 5.9+ - All source code, app logic, views, services, models
+- Swift 5.9+ - All application code, UI, services, and tests
 
 ## Runtime
 
 **Environment:**
 - iOS 17.0+ (minimum deployment target)
-- Xcode 15.0+
+- Xcode 15.0+ (required to build)
 
-**Package Manager:**
-- None (native iOS development, no external package dependencies)
-- Build system: XcodeGen (project.yml) + native Xcode project
+**Platform:**
+- Apple iOS / iPadOS (native SwiftUI app)
 
 ## Frameworks
 
-**Core UI:**
-- SwiftUI - All UI views and components
-- UIKit (minimal) - UIApplicationDelegate for notification handling via AppDelegate
+**Core Framework:**
+- SwiftUI - UI framework for all views (`ValetudoApp/Views/*.swift`, `ValetudoApp/ContentView.swift`)
+- Foundation - Core data types, networking, codable support
+- Combine - Reactive data flow via `@Published` and `ObservableObject`
 
 **Networking:**
-- Foundation URLSession - HTTP requests to Valetudo API
-- Network Framework - mDNS/Bonjour discovery via NWBrowser
+- URLSession - HTTP/HTTPS requests with custom SSL handling
+  - Custom `SSLSessionDelegate` in `Services/ValetudoAPI.swift` for self-signed certificate support
+  - Separate configuration for SSE with infinite timeout (`Services/SSEConnectionManager.swift`)
 
-**System Frameworks:**
-- UserNotifications - Push notifications and notification categories
-- Security - Keychain access for credential storage
+**Network Discovery:**
+- Network Framework - mDNS browsing for robot discovery
+  - `NWBrowser` for `_valetudo._tcp` service discovery in `Services/NWBrowserService.swift`
+  - Bonjour TXT record parsing for robot metadata
 
-**Build/Dev:**
-- XcodeGen - Project generation from YAML configuration
-- Swift Concurrency (async/await) - Async API calls and background tasks
+**Local Storage:**
+- AppKit/Security - Keychain integration via `Services/KeychainStore.swift`
+  - Stores robot passwords with service: `com.valetudo.robot.password`
+  - Per-robot UUID-based accounts with device-only accessibility
+- UserDefaults (via @AppStorage) - App preferences and state
 
-## Key Dependencies
+**Notifications:**
+- UserNotifications - Local push notifications for robot events
+  - Cleaning completion, errors, stuck state, consumable warnings, offline alerts
+  - Custom notification categories in `Services/NotificationService.swift`
 
-**Critical:**
-- URLSession with custom SSL handling - Communication with Valetudo robots (HTTP & HTTPS with self-signed cert support)
-- NWBrowser (Network.framework) - Local network discovery via mDNS _valetudo._tcp service
-- UNUserNotificationCenter - Push notifications for cleaning status, errors, consumables
+**App Store & Monetization:**
+- StoreKit 2 (`import StoreKit`) - In-app purchases for support donations
+  - Product IDs: `de.godsapp.valetudoapp.support.{small,medium,large}`
+  - Verified transaction handling in `Services/SupportManager.swift`
 
-**Infrastructure:**
-- AppStorage - Local user preferences and app settings persistence
-- Keychain (Security framework) - Secure password storage for robot credentials
+**System Integration:**
+- UserNotifications (UNUserNotificationCenter) - Local notification handling
+- os.Logger - Unified logging with subsystem `com.valetudio` across services
+
+**Testing:**
+- XCTest - Native testing framework
+  - 57 unit tests in `ValetudoAppTests/` covering API, models, ViewModels, and utilities
+
+## Build System
+
+**Build Tool:**
+- Xcode 15+ with `.pbxproj` project format
+- Test target: `ValetudoAppTests` (bundle ID: `de.simonluthe.ValetudiOS.Tests`)
+
+**Code Generation:**
+- Localizable.xcstrings for multi-language support (German/English)
+- Media.xcassets for app icon and image resources
 
 ## Configuration
 
 **Environment:**
-- App configuration via SwiftUI AppStorage for user settings
-- Robot credentials encrypted in iOS Keychain
-- No environment files or secrets; all local storage
+- No .env files — configuration injected via `RobotConfig` struct passed to APIs
+- Bundle identifier: `de.simonluthe.ValetudiOS`
+- Deployment target: iOS 17.0
 
-**Build:**
-- `project.yml` - XcodeGen configuration (deployment target, Swift version, bundle identifiers)
-- Auto-generated Info.plist with Bonjour service declaration (_valetudo._tcp)
+**Build Configurations:**
+- Debug - Development builds with logging enabled
+- Release - App Store builds with code optimization
+
+**Entitlements:**
+- Local Network access (for mDNS robot discovery)
+- Keychain access (for credential storage)
+
+## Key Dependencies
+
+**Critical Built-in Frameworks:**
+- SwiftUI - UI rendering and state management
+- Foundation - JSON decoding, URL handling, data structures
+- Network - mDNS service discovery
+- Security - Keychain password storage
+- UserNotifications - Push notification delivery
+- StoreKit - App Store in-app purchases
+
+**No Third-Party Package Dependencies:** Project uses only native iOS frameworks
 
 ## Platform Requirements
 
 **Development:**
-- macOS with Xcode 15.0+
-- Swift 5.9 support
-- iOS 17.0+ SDK
+- macOS 11.0+ with Xcode 15+
+- Swift 5.9+ compiler
+- Target device: iPhone with iOS 17.0+
 
 **Production:**
-- iPhone/iPad running iOS 17.0+
-- Local network connectivity to Valetudo robots
-- Valetudo firmware 2024.06.0+
+- iOS 17.0+ (iPhone models supporting iOS 17)
+- Valetudo 2024.06.0+ vacuum robot firmware
+- Local network connectivity to robot
 
-## Network Protocols
+**Network:**
+- TCP/IP connectivity to robot on local network
+- HTTP or HTTPS (with optional self-signed certificate support)
+- Server-Sent Events (SSE) stream for real-time updates
 
-**Robot Communication:**
-- REST API via HTTP/HTTPS (URLSession)
-- Server-Sent Events (SSE) for real-time state streaming via URLSession with infinite timeout
-- Basic Authentication (username:password in base64)
-- Self-signed SSL certificate support via custom URLSessionDelegate
+## Notable Architectural Patterns
 
-**Local Network Discovery:**
-- mDNS browsing (_valetudo._tcp domain)
-- Bonjour TXT record parsing for robot metadata (friendlyName, model)
-- Network.framework NWBrowser for service discovery
+**Actor-based concurrency:**
+- `ValetudoAPI` uses `actor` keyword for thread-safe API calls
+- `SSEConnectionManager` is an `actor` for managing concurrent robot streams
+- `@MainActor` for UI-bound classes like `RobotManager`, `NWBrowserService`
+
+**SwiftUI Patterns:**
+- `@StateObject` for lifecycle-managed observables (`robotManager`, `errorRouter`)
+- `@EnvironmentObject` for view hierarchy distribution
+- `@AppStorage` for UserDefaults persistence
+- `@Published` properties for reactive state
+
+**Async/Await:**
+- Structured concurrency throughout (Foundation-based)
+- URLSession with async/await wrapper
+- Task-based lifecycle management in services
 
 ---
 
