@@ -30,7 +30,7 @@
 
 - [x] **Phase 9: Logger Migration** - print() durch os.Logger in allen Views und Services ersetzen, DispatchQueue auf structured concurrency migrieren (completed 2026-03-28)
 - [x] **Phase 10: Safety Fixes** - Force-Unwrap und Keychain-Fehlerbehandlung reparieren, hardcoded URLs/ProductIDs in Constants extrahieren (completed 2026-03-28)
-- [ ] **Phase 11: View Decomposition** - MapView, RobotSettingsView und RobotDetailView in logische Sub-Views aufbrechen
+- [x] **Phase 11: View Decomposition** - MapView, RobotSettingsView und RobotDetailView in logische Sub-Views aufbrechen (completed 2026-03-28)
 
 ## Phase Details
 
@@ -209,7 +209,7 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 11-01-PLAN.md — MapView-Dekomposition: MiniMapView, InteractiveMapView, MapControlBarsView, MapSheetsView
+- [x] 11-01-PLAN.md — MapView-Dekomposition: MiniMapView, InteractiveMapView, MapControlBarsView, MapSheetsView
 - [x] 11-02-PLAN.md — RobotSettingsView-Dekomposition: RobotSettingsSections.swift mit 7 eigenstaendigen Sub-Views
 - [x] 11-03-PLAN.md — RobotDetailView-Dekomposition: RobotDetailSections.swift mit ControlButton, DockActionButton, PulseAnimationView
 
@@ -232,4 +232,4 @@ v1.4.0: 9 → 10 → 11
 | 8. Test Coverage | 2/2 | Complete   | 2026-03-28 |
 | 9. Logger Migration | 3/3 | Complete   | 2026-03-28 |
 | 10. Safety Fixes | 1/1 | Complete    | 2026-03-28 |
-| 11. View Decomposition | 2/3 | In Progress|  |
+| 11. View Decomposition | 3/3 | Complete   | 2026-03-28 |

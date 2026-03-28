@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: executing
-last_updated: "2026-03-28T23:16:06.042Z"
+status: verifying
+last_updated: "2026-03-28T23:17:13.533Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 11
-  completed_phases: 9
+  completed_phases: 10
   total_plans: 32
-  completed_plans: 30
+  completed_plans: 31
 ---
 
 # Project State
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 
 Phase: 11 (view-decomposition) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-03-28
 
 ```
@@ -53,6 +53,7 @@ Recent decisions affecting current work:
 - [Phase 11-view-decomposition]: PulseAnimation ist ViewModifier (nicht View-Struct) — korrekte Benennung aus tatsaechlichem Code uebernommen
 - [Phase 11-view-decomposition]: sectionsLogger fuer RobotSettingsSections.swift als file-top-level Logger, konsistent mit settingsLogger-Pattern
 - [Phase 11-view-decomposition]: WifiSettingsView Struct-Name beibehalten (camelCase, nicht WiFiSettingsView) — passt zur bestehenden Call-Site
+- [Phase 11]: Control Bars als MapContentView extension statt eigenstaendige Structs -- vermeidet 10+ Parameter fuer State-Zugriff
 
 ### Pending Todos
 

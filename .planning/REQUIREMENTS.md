@@ -22,7 +22,7 @@ Requirements for milestone v1.4.0: Code Quality & Robustness.
 ### Code Organization
 
 - [x] **ORG-01**: Hardcoded GitHub-API-URLs in RobotDetailViewModel und RobotSettingsView in zentrale Constants extrahieren
-- [ ] **ORG-02**: MapView (2532 Zeilen) in logische Sub-Views aufbrechen (MiniMap, Controls, Drawing-Helpers)
+- [x] **ORG-02**: MapView (2532 Zeilen) in logische Sub-Views aufbrechen (MiniMap, Controls, Drawing-Helpers)
 - [x] **ORG-03**: RobotSettingsView (1801 Zeilen) in Section-Views aufbrechen
 - [x] **ORG-04**: RobotDetailView (1253 Zeilen) in Section-Views aufbrechen
 
@@ -109,7 +109,7 @@ Requirements for milestone v1.4.0: Code Quality & Robustness.
 | SAFE-01 | Phase 10 | Complete |
 | SAFE-02 | Phase 10 | Complete |
 | ORG-01 | Phase 10 | Complete |
-| ORG-02 | Phase 11 | Pending |
+| ORG-02 | Phase 11 | Complete |
 | ORG-03 | Phase 11 | Complete |
 | ORG-04 | Phase 11 | Complete |
 
