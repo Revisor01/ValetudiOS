@@ -16,6 +16,7 @@
 		26187F76B128067478E11E35 /* RobotDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DD7833558396395DCA7D32 /* RobotDetailView.swift */; };
 		268751822B3D802C519CE03C /* SSEConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9841E9A11C0D78ACE274994 /* SSEConnectionManager.swift */; };
 		296A3B5821E1A4916CB23FB8 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD244AAC28A5D50E6DF9E55 /* MapViewModel.swift */; };
+		29FB72FF2B66844A54364021 /* RobotDetailSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8B03A26DDEE040E1800C512 /* RobotDetailSections.swift */; };
 		2F9C24F46ECB55001E3C6191 /* ValetudoAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67E063E08AD679C61BFC04E6 /* ValetudoAPITests.swift */; };
 		48E82472B522893504594AC9 /* RobotState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602023483884AA7FC99EE28A /* RobotState.swift */; };
 		4F1CBBF41038293EA0F80B16 /* Consumable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B313EE35A432692658D58220 /* Consumable.swift */; };
@@ -106,6 +107,7 @@
 		BDFE1B37CB17CC446C036D73 /* MapLayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapLayerTests.swift; sourceTree = "<group>"; };
 		C06AD3C1B9A930E3DFF22B33 /* KeychainStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStoreTests.swift; sourceTree = "<group>"; };
 		C3BEF0FC2A1B164BA6099BBC /* AddRobotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRobotView.swift; sourceTree = "<group>"; };
+		C8B03A26DDEE040E1800C512 /* RobotDetailSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailSections.swift; sourceTree = "<group>"; };
 		CB4E4824159FC4CC51EB9AC8 /* ErrorRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorRouter.swift; sourceTree = "<group>"; };
 		D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumableTests.swift; sourceTree = "<group>"; };
 		D4B8AD3F113C1AD37B4E5BBA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -151,6 +153,7 @@
 				0EB9C50A27756E4D5EDFB505 /* MapView.swift */,
 				28A30679F5032173015E8B86 /* ObstaclePhotoView.swift */,
 				B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */,
+				C8B03A26DDEE040E1800C512 /* RobotDetailSections.swift */,
 				34DD7833558396395DCA7D32 /* RobotDetailView.swift */,
 				5713E6238AD5A3F2420EE02B /* RobotListView.swift */,
 				698C8F9BC11A4FCCF9D99923 /* RobotSettingsView.swift */,
@@ -396,6 +399,7 @@
 				12E1CB26BDC7E310A9C141EB /* OnboardingView.swift in Sources */,
 				143326E22353048B7A54418D /* PresetHelpers.swift in Sources */,
 				8F8EB3702AA2ADAC6889DC0D /* RobotConfig.swift in Sources */,
+				29FB72FF2B66844A54364021 /* RobotDetailSections.swift in Sources */,
 				26187F76B128067478E11E35 /* RobotDetailView.swift in Sources */,
 				6BE4BC052593841E0B70FE6F /* RobotDetailViewModel.swift in Sources */,
 				5AEEB82CA45C29C587696C1B /* RobotIntents.swift in Sources */,
