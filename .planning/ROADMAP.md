@@ -210,7 +210,7 @@ Plans:
 
 Plans:
 - [ ] 11-01-PLAN.md — MapView-Dekomposition: MiniMapView, InteractiveMapView, MapControlBarsView, MapSheetsView
-- [ ] 11-02-PLAN.md — RobotSettingsView-Dekomposition: RobotSettingsSections.swift mit 7 eigenstaendigen Sub-Views
+- [x] 11-02-PLAN.md — RobotSettingsView-Dekomposition: RobotSettingsSections.swift mit 7 eigenstaendigen Sub-Views
 - [x] 11-03-PLAN.md — RobotDetailView-Dekomposition: RobotDetailSections.swift mit ControlButton, DockActionButton, PulseAnimationView
 
 ## Progress
@@ -232,4 +232,4 @@ v1.4.0: 9 → 10 → 11
 | 8. Test Coverage | 2/2 | Complete   | 2026-03-28 |
 | 9. Logger Migration | 3/3 | Complete   | 2026-03-28 |
 | 10. Safety Fixes | 1/1 | Complete    | 2026-03-28 |
-| 11. View Decomposition | 1/3 | In Progress|  |
+| 11. View Decomposition | 2/3 | In Progress|  |
