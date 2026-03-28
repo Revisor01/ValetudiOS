@@ -1,4 +1,5 @@
 import SwiftUI
+import os
 
 enum MapEditMode: Equatable {
     case none
@@ -63,6 +64,8 @@ struct MapPreviewView: View {
     @State private var isLoading = true
     @State private var refreshTask: Task<Void, Never>?
     @Binding var showFullMap: Bool
+
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "MapView")
 
     private var api: ValetudoAPI? {
         robotManager.getAPI(for: robot.id)
@@ -153,7 +156,7 @@ struct MapPreviewView: View {
             map = try await mapTask
             restrictions = try? await restrictionsTask
         } catch {
-            print("Failed to load map preview: \(error)")
+            logger.error("Failed to load map preview: \(error.localizedDescription, privacy: .public)")
         }
         isLoading = false
     }

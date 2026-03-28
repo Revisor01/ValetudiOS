@@ -1,6 +1,8 @@
 import SwiftUI
+import os
 
 struct IntensityControlView: View {
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "IntensityControlView")
     let robot: RobotConfig
     @EnvironmentObject var robotManager: RobotManager
 
@@ -142,7 +144,7 @@ struct IntensityControlView: View {
                 currentFanSpeed = fanSpeedAttr.value
             }
         } catch {
-            print("Fan speed not supported: \(error)")
+            logger.error("Fan speed not supported: \(error.localizedDescription, privacy: .public)")
         }
 
         // Load water usage presets
@@ -155,7 +157,7 @@ struct IntensityControlView: View {
                 currentWaterUsage = waterAttr.value
             }
         } catch {
-            print("Water usage not supported: \(error)")
+            logger.error("Water usage not supported: \(error.localizedDescription, privacy: .public)")
         }
 
         // Load operation mode presets
@@ -168,7 +170,7 @@ struct IntensityControlView: View {
                 currentOperationMode = modeAttr.value
             }
         } catch {
-            print("Operation mode not supported: \(error)")
+            logger.error("Operation mode not supported: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -183,7 +185,7 @@ struct IntensityControlView: View {
             currentFanSpeed = preset
             await robotManager.refreshRobot(robot.id)
         } catch {
-            print("Failed to set fan speed: \(error)")
+            logger.error("Failed to set fan speed: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -197,7 +199,7 @@ struct IntensityControlView: View {
             currentWaterUsage = preset
             await robotManager.refreshRobot(robot.id)
         } catch {
-            print("Failed to set water usage: \(error)")
+            logger.error("Failed to set water usage: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -211,7 +213,7 @@ struct IntensityControlView: View {
             currentOperationMode = preset
             await robotManager.refreshRobot(robot.id)
         } catch {
-            print("Failed to set operation mode: \(error)")
+            logger.error("Failed to set operation mode: \(error.localizedDescription, privacy: .public)")
         }
     }
 
