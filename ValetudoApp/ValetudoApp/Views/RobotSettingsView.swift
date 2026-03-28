@@ -235,6 +235,92 @@ struct RobotSettingsView: View {
                 }
             }
 
+            // Map Snapshots Section
+            if viewModel.hasMapSnapshots {
+                Section {
+                    if viewModel.mapSnapshots.isEmpty {
+                        Text(String(localized: "snapshots.empty"))
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(viewModel.mapSnapshots) { snapshot in
+                            HStack {
+                                Image(systemName: "map")
+                                    .foregroundStyle(.blue)
+                                    .frame(width: 24)
+                                Text(snapshot.id)
+                                    .font(.subheadline)
+                                    .lineLimit(1)
+                                Spacer()
+                                Button {
+                                    Task { await viewModel.restoreMapSnapshot(snapshot) }
+                                } label: {
+                                    if viewModel.isRestoringSnapshot {
+                                        ProgressView()
+                                            .controlSize(.small)
+                                    } else {
+                                        Text(String(localized: "snapshots.restore"))
+                                            .font(.caption)
+                                    }
+                                }
+                                .disabled(viewModel.isRestoringSnapshot)
+                            }
+                        }
+                    }
+                } header: {
+                    Text(String(localized: "snapshots.title"))
+                } footer: {
+                    Text(String(localized: "snapshots.footer"))
+                }
+            }
+
+            // Pending Map Change Section
+            if viewModel.hasPendingMapChange && viewModel.pendingMapChangeEnabled {
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Image(systemName: "map.fill")
+                                .foregroundStyle(.orange)
+                            Text(String(localized: "pending_map.description"))
+                                .font(.subheadline)
+                        }
+
+                        HStack(spacing: 12) {
+                            Button {
+                                Task { await viewModel.acceptPendingMapChange() }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "checkmark")
+                                    Text(String(localized: "pending_map.accept"))
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 8)
+                                .background(Color.green)
+                                .foregroundStyle(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+
+                            Button {
+                                Task { await viewModel.rejectPendingMapChange() }
+                            } label: {
+                                HStack {
+                                    Image(systemName: "xmark")
+                                    Text(String(localized: "pending_map.reject"))
+                                }
+                                .frame(maxWidth: .infinity)
+                                .padding(.vertical, 8)
+                                .background(Color.red)
+                                .foregroundStyle(.white)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                        }
+                        .disabled(viewModel.isHandlingMapChange)
+                    }
+                } header: {
+                    Text(String(localized: "pending_map.title"))
+                }
+            }
+
             // Quirks Section
             if viewModel.hasQuirks {
                 Section {
