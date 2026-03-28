@@ -40,10 +40,20 @@ final class RobotSettingsViewModel: ObservableObject {
     @Published var hasMopDockAutoDrying = DebugConfig.showAllCapabilities
     @Published var hasMopDockWashTemperature = DebugConfig.showAllCapabilities
     @Published var hasFloorMaterialNavigation = DebugConfig.showAllCapabilities
+    @Published var hasMapSnapshots = DebugConfig.showAllCapabilities
+    @Published var hasPendingMapChange = DebugConfig.showAllCapabilities
 
     // MARK: - Presets
     @Published var carpetSensorModePresets: [String] = []
     @Published var mopDockWashTemperaturePresets: [String] = []
+
+    // MARK: - Map Snapshots state
+    @Published var mapSnapshots: [MapSnapshot] = []
+    @Published var isRestoringSnapshot = false
+
+    // MARK: - Pending Map Change state
+    @Published var pendingMapChangeEnabled = false
+    @Published var isHandlingMapChange = false
 
     // MARK: - UI state
     @Published var isLoading = false
@@ -105,6 +115,8 @@ final class RobotSettingsViewModel: ObservableObject {
             hasMopDockAutoDrying = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopAutoDryingControlCapability")
             hasMopDockWashTemperature = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopWashTemperatureControlCapability")
             hasFloorMaterialNavigation = DebugConfig.showAllCapabilities || capabilities.contains("FloorMaterialDirectionAwareNavigationControlCapability")
+            hasMapSnapshots = DebugConfig.showAllCapabilities || capabilities.contains("MapSnapshotCapability")
+            hasPendingMapChange = DebugConfig.showAllCapabilities || capabilities.contains("PendingMapChangeHandlingCapability")
         } catch {
             hasMappingPass = DebugConfig.showAllCapabilities
         }
@@ -190,6 +202,27 @@ final class RobotSettingsViewModel: ObservableObject {
             } catch {
                 if !DebugConfig.showAllCapabilities { hasMopDockWashTemperature = false }
                 mopDockWashTemperaturePresets = []
+            }
+        }
+
+        // Load map snapshots
+        if hasMapSnapshots {
+            do {
+                mapSnapshots = try await api.getMapSnapshots()
+            } catch {
+                if !DebugConfig.showAllCapabilities { hasMapSnapshots = false }
+                logger.debug("Map snapshots not supported: \(error, privacy: .public)")
+            }
+        }
+
+        // Load pending map change
+        if hasPendingMapChange {
+            do {
+                let state = try await api.getPendingMapChange()
+                pendingMapChangeEnabled = state.enabled
+            } catch {
+                if !DebugConfig.showAllCapabilities { hasPendingMapChange = false }
+                logger.debug("Pending map change not supported: \(error, privacy: .public)")
             }
         }
 
@@ -361,6 +394,47 @@ final class RobotSettingsViewModel: ObservableObject {
             try await api.setMopDockWashTemperature(preset: preset)
         } catch {
             logger.error("Failed to set wash temperature: \(error, privacy: .public)")
+        }
+    }
+
+    // MARK: - Map Snapshots
+    func restoreMapSnapshot(_ snapshot: MapSnapshot) async {
+        guard let api = api else { return }
+        isRestoringSnapshot = true
+        defer { isRestoringSnapshot = false }
+        do {
+            try await api.restoreMapSnapshot(id: snapshot.id)
+            mapSnapshots = (try? await api.getMapSnapshots()) ?? mapSnapshots
+            logger.info("Restored map snapshot: \(snapshot.id, privacy: .public)")
+        } catch {
+            logger.error("Failed to restore snapshot: \(error, privacy: .public)")
+        }
+    }
+
+    // MARK: - Pending Map Change
+    func acceptPendingMapChange() async {
+        guard let api = api else { return }
+        isHandlingMapChange = true
+        defer { isHandlingMapChange = false }
+        do {
+            try await api.handlePendingMapChange(action: "accept")
+            pendingMapChangeEnabled = false
+            logger.info("Accepted pending map change")
+        } catch {
+            logger.error("Failed to accept map change: \(error, privacy: .public)")
+        }
+    }
+
+    func rejectPendingMapChange() async {
+        guard let api = api else { return }
+        isHandlingMapChange = true
+        defer { isHandlingMapChange = false }
+        do {
+            try await api.handlePendingMapChange(action: "reject")
+            pendingMapChangeEnabled = false
+            logger.info("Rejected pending map change")
+        } catch {
+            logger.error("Failed to reject map change: \(error, privacy: .public)")
         }
     }
 }
