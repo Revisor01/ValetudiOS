@@ -118,8 +118,14 @@ Plans:
   2. Benutzer kann die Absaugdauer der Auto-Empty-Station über einen Picker steuern (Werte laut API-Enum)
   3. Benutzer kann die Trocknungszeit der Mop-Station über einen Picker steuern (Werte laut API-Enum)
   4. Benutzer sieht Modell, Firmware-Version und Seriennummer des Roboters in einer dedizierten Properties-Ansicht
-**Plans**: TBD
+**Plans**: 4 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 06-01-PLAN.md — VoicePack: API-Methoden + VoicePack/VoicePackState Structs + ViewModel-State + Picker-Section in RobotSettingsView
+- [ ] 06-02-PLAN.md — AutoEmptyDockDuration: API-Methoden + ViewModel-State + Preset-Picker in Auto-Empty-Section
+- [ ] 06-03-PLAN.md — MopDockDryingTime: API-Methoden + ViewModel-State + Preset-Picker in Mop-Dock-Section
+- [ ] 06-04-PLAN.md — RobotProperties: getRobotProperties() API + RobotProperties Struct + Properties-Section in RobotDetailView
 
 ### Phase 7: Bugfixes & Robustness
 **Goal**: Keine Force-unwraps, keine stillen Fehler, SSE-Reconnect mit Backoff und korrekte Koordinaten-Transformation in der Karte
@@ -155,6 +161,6 @@ v1.3.0: 5 → 6 → 7 → 8
 | 3. API Completeness | 3/3 | Complete | 2026-03-28 |
 | 4. View Refactoring & Tests | 4/4 | Complete | 2026-03-27 |
 | 5. UI Restore | 2/2 | Complete   | 2026-03-28 |
-| 6. New Capabilities | 0/TBD | Not started | - |
+| 6. New Capabilities | 0/4 | Not started | - |
 | 7. Bugfixes & Robustness | 0/TBD | Not started | - |
 | 8. Test Coverage | 0/TBD | Not started | - |
