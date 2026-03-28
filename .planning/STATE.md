@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2.0
-milestone_name: Quality & API Completeness
-status: verifying
-stopped_at: Completed 04-view-refactoring-tests 04-01-PLAN.md
-last_updated: "2026-03-28T00:03:49.963Z"
+milestone: v1.3.0
+milestone_name: Polish & Full API Coverage
+status: defining
+stopped_at: null
+last_updated: "2026-03-28"
 last_activity: 2026-03-28
 progress:
-  total_phases: 4
-  completed_phases: 4
-  total_plans: 13
-  completed_plans: 13
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
   percent: 0
 ---
 
@@ -18,17 +18,17 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-27)
+See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 04 — view-refactoring-tests
+**Current focus:** Defining requirements for v1.3.0
 
 ## Current Position
 
-Phase: 04
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-03-28
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-28 — Milestone v1.3.0 started
 
 Progress: [░░░░░░░░░░] 0%
 

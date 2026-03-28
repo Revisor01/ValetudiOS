@@ -50,22 +50,22 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 - Cloud-Anbindung -- Lokale Kommunikation ist Core Value
 - Android-Version -- Nur iOS
 
-## Current Milestone: v1.2.0 Quality & API Completeness
+## Current Milestone: v1.3.0 Polish & Full API Coverage
 
-**Goal:** Technische Schulden abbauen, Valetudo API vollständig integrieren, UX-Verbesserungen
+**Goal:** Phase-3-UI wiederherstellen, fehlende Valetudo-Capabilities nachrüsten, Concerns beheben, Test-Coverage erweitern
 
 **Target features:**
-- Alle Concerns aus Codebase-Analyse bearbeiten
-- Neueste Valetudo API-Definition abrufen und fehlende Capabilities einbauen
-- Robot-Liste: gesamte Zeile klickbar machen
-- Notification-Actions implementieren (GO_HOME, LOCATE)
-- mDNS/Bonjour statt IP-Brute-Force-Scan
-- Adaptive Polling / SSE
+- Phase-3 UI-Features in ViewModels wiederherstellen (Events, CleanRoute, Snapshots, Notifications, Obstacles)
+- Fehlende Capabilities: VoicePack, AutoEmptyDuration, MopDockDrying, Robot Properties
+- Concerns: Force-unwraps, stille Fehler mit ErrorRouter, SSE Exponential Backoff
+- Koordinaten-Bug in MapView (Float→Int Rundung)
+- Test-Coverage: ViewModels und API-Layer
+- Valetudo API vollständig capability-gated abdecken
 
 ## Context
 
 - **Stack:** Swift 5.9, SwiftUI, iOS 17+, Zero externe Dependencies
-- **Architektur:** MVVM-lite mit zentralem RobotManager als ObservableObject
+- **Architektur:** MVVM mit ViewModels (@MainActor ObservableObject) + zentralem RobotManager
 - **API:** Valetudo REST API v2, Basic Auth, optionales SSL
 - **Persistenz:** UserDefaults + Keychain (Credentials), kein CoreData
 - **Tests:** Keine vorhanden
@@ -106,4 +106,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-28 after Phase 3 API Completeness completion*
+*Last updated: 2026-03-28 — Milestone v1.3.0 started*
