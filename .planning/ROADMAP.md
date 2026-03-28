@@ -4,6 +4,7 @@
 
 - [x] **v1.2.0 Quality & API Completeness** - Phases 1-4 (completed 2026-03-28)
 - [x] **v1.3.0 Polish & Full API Coverage** - Phases 5-8 (completed 2026-03-28)
+- [ ] **v1.4.0 Code Quality & Robustness** - Phases 9-11
 
 ## Phases
 
@@ -14,7 +15,7 @@
 - [x] **Phase 3: API Completeness** - Neue Valetudo-Capabilities und Notification Actions (completed 2026-03-28)
 - [x] **Phase 4: View Refactoring & Tests** - ViewModel-Extraktion und XCTest-Coverage (completed 2026-03-27)
 
-### v1.3.0 Polish & Full API Coverage (In Progress)
+### v1.3.0 Polish & Full API Coverage (Completed)
 
 **Milestone Goal:** Phase-3-UI in ViewModels wiederherstellen, fehlende Valetudo-Capabilities nachrüsten, Robustness-Concerns beheben, Test-Coverage erweitern.
 
@@ -22,6 +23,14 @@
 - [x] **Phase 6: New Capabilities** - VoicePack, AutoEmptyDuration, MopDryingTime und Robot Properties (completed 2026-03-28)
 - [x] **Phase 7: Bugfixes & Robustness** - Force-unwraps, stille Fehler, SSE Backoff, Koordinaten-Fix (completed 2026-03-28)
 - [x] **Phase 8: Test Coverage** - ViewModel- und API-Layer-Tests aufbauen (completed 2026-03-28)
+
+### v1.4.0 Code Quality & Robustness
+
+**Milestone Goal:** Codebase sauber machen — alle print()-Reste, Force-Unwraps, fehlende Logger, inkonsistente Concurrency-Patterns, Keychain-Fehlerbehandlung, und View-Decomposition.
+
+- [ ] **Phase 9: Logger Migration** - print() durch os.Logger in allen Views und Services ersetzen, DispatchQueue auf structured concurrency migrieren
+- [ ] **Phase 10: Safety Fixes** - Force-Unwrap und Keychain-Fehlerbehandlung reparieren, hardcoded URLs/ProductIDs in Constants extrahieren
+- [ ] **Phase 11: View Decomposition** - MapView, RobotSettingsView und RobotDetailView in logische Sub-Views aufbrechen
 
 ## Phase Details
 
@@ -158,11 +167,45 @@ Plans:
 - [x] 08-01-PLAN.md — ViewModel-Tests: RobotDetailViewModel, RobotSettingsViewModel und MapViewModel State-Transitions ohne API-Mocking
 - [x] 08-02-PLAN.md — API-Tests: APIError-Enum, RobotConfig.baseURL und JSON-Decoding der Kernmodelle
 
+### Phase 9: Logger Migration
+**Goal**: Kein einziger print()-Aufruf verbleibt in Views oder Services; alle Concurrency-Patterns folgen Swift Structured Concurrency
+**Depends on**: Nothing (first phase of new milestone)
+**Requirements**: LOG-01, LOG-02, LOG-03, SAFE-03
+**Success Criteria** (what must be TRUE):
+  1. Suche nach `print(` in Views und Services liefert null Treffer; stattdessen erscheint strukturierter Output im Xcode-Log via os.Logger
+  2. Jede View-Datei mit Log-Output hat eine private `let logger = Logger(...)` Property mit passendem subsystem und category
+  3. SupportReminderView nutzt `Task { try await Task.sleep(...) }` statt `DispatchQueue.main.asyncAfter`; kein DispatchQueue-Import nötig
+  4. Log-Einträge aus Views sind nach subsystem/category in der Console.app filterbar
+**Plans**: TBD
+
+### Phase 10: Safety Fixes
+**Goal**: Kein Force-Unwrap gefährdet die App-Stabilität, Keychain-Fehler werden sichtbar geloggt, und alle Magic-Strings sind zentralisiert
+**Depends on**: Phase 9
+**Requirements**: SAFE-01, SAFE-02, ORG-01
+**Success Criteria** (what must be TRUE):
+  1. SettingsView enthält keinen `!`-Force-Unwrap mehr; nil-Fälle werden durch optional binding oder nil-coalescing behandelt
+  2. KeychainStore loggt jeden fehlgeschlagenen SecItemDelete/SecItemAdd-Call mit dem OSStatus-Fehlercode; kein Fehler wird mehr stillschweigend ignoriert
+  3. GitHub-API-URLs und In-App-Purchase-ProductIDs sind in einer zentralen Constants-Datei definiert; kein Literal-String ist doppelt vorhanden
+**Plans**: TBD
+
+### Phase 11: View Decomposition
+**Goal**: Die drei größten Views sind in überschaubare Sub-Views aufgeteilt; keine einzelne View-Datei überschreitet eine handhabbare Größe
+**Depends on**: Phase 10
+**Requirements**: ORG-02, ORG-03, ORG-04
+**Success Criteria** (what must be TRUE):
+  1. MapView (bisher 2532 Zeilen) ist in eigenständige Sub-Views aufgeteilt (MiniMap, Controls, Drawing-Helpers); die Haupt-Datei delegiert an diese
+  2. RobotSettingsView (bisher 1801 Zeilen) ist in Section-Views aufgeteilt; jede Section ist eine eigene View-Struct
+  3. RobotDetailView (bisher 1253 Zeilen) ist in Section-Views aufgeteilt; jede Section ist eine eigene View-Struct
+  4. Alle Sub-Views kompilieren fehlerfrei und zeigen in der Xcode-Preview dieselben Inhalte wie zuvor
+**Plans**: TBD
+**UI hint**: yes
+
 ## Progress
 
 **Execution Order:**
 v1.2.0: 1 → 2 → 3 → 4 (completed)
-v1.3.0: 5 → 6 → 7 → 8
+v1.3.0: 5 → 6 → 7 → 8 (completed)
+v1.4.0: 9 → 10 → 11
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -174,3 +217,6 @@ v1.3.0: 5 → 6 → 7 → 8
 | 6. New Capabilities | 4/4 | Complete | 2026-03-28 |
 | 7. Bugfixes & Robustness | 4/4 | Complete | 2026-03-28 |
 | 8. Test Coverage | 2/2 | Complete   | 2026-03-28 |
+| 9. Logger Migration | 0/? | Not started | - |
+| 10. Safety Fixes | 0/? | Not started | - |
+| 11. View Decomposition | 0/? | Not started | - |

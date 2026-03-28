@@ -102,22 +102,22 @@ Requirements for milestone v1.4.0: Code Quality & Robustness.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LOG-01 | TBD | Pending |
-| LOG-02 | TBD | Pending |
-| LOG-03 | TBD | Pending |
-| SAFE-01 | TBD | Pending |
-| SAFE-02 | TBD | Pending |
-| SAFE-03 | TBD | Pending |
-| ORG-01 | TBD | Pending |
-| ORG-02 | TBD | Pending |
-| ORG-03 | TBD | Pending |
-| ORG-04 | TBD | Pending |
+| LOG-01 | Phase 9 | Pending |
+| LOG-02 | Phase 9 | Pending |
+| LOG-03 | Phase 9 | Pending |
+| SAFE-03 | Phase 9 | Pending |
+| SAFE-01 | Phase 10 | Pending |
+| SAFE-02 | Phase 10 | Pending |
+| ORG-01 | Phase 10 | Pending |
+| ORG-02 | Phase 11 | Pending |
+| ORG-03 | Phase 11 | Pending |
+| ORG-04 | Phase 11 | Pending |
 
 **Coverage:**
 - v1.4.0 requirements: 10 total
-- Mapped to phases: 0
-- Unmapped: 10 ⚠️
+- Mapped to phases: 10
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-28*
-*Last updated: 2026-03-28 after milestone v1.4.0 definition*
+*Last updated: 2026-03-28 after roadmap v1.4.0 creation*
