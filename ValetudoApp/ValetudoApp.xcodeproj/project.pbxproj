@@ -85,7 +85,7 @@
 		698C8F9BC11A4FCCF9D99923 /* RobotSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotSettingsView.swift; sourceTree = "<group>"; };
 		8489C5B4217131AFAA714813 /* PresetHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetHelpers.swift; sourceTree = "<group>"; };
 		8B35122CA897ECE8B3B52014 /* ManualControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualControlView.swift; sourceTree = "<group>"; };
-		9D2944F811E75D2A18C7A192 /* ValetudoAppTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ValetudoAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9D2944F811E75D2A18C7A192 /* ValetudoAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ValetudoAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A85C9582AEC53718BC544A5F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		B313EE35A432692658D58220 /* Consumable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Consumable.swift; sourceTree = "<group>"; };
@@ -284,9 +284,6 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
-					54E7A0E12B6491E95C754063 = {
-						DevelopmentTeam = J459G9CJT5;
-					};
 					B2971D6203E36800C370817D = {
 						DevelopmentTeam = J459G9CJT5;
 					};
@@ -485,7 +482,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = J459G9CJT5;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -493,6 +492,7 @@
 					"@loader_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudiOS.Tests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ValetudoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ValetudoApp";
@@ -503,7 +503,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "-";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = J459G9CJT5;
 				GENERATE_INFOPLIST_FILE = YES;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -511,6 +513,7 @@
 					"@loader_path/Frameworks",
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudiOS.Tests;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = iphoneos;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ValetudoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ValetudoApp";
