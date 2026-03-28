@@ -123,7 +123,7 @@ Plans:
 
 Plans:
 - [x] 06-01-PLAN.md — VoicePack: API-Methoden + VoicePack/VoicePackState Structs + ViewModel-State + Picker-Section in RobotSettingsView
-- [ ] 06-02-PLAN.md — AutoEmptyDockDuration: API-Methoden + ViewModel-State + Preset-Picker in Auto-Empty-Section
+- [x] 06-02-PLAN.md — AutoEmptyDockDuration: API-Methoden + ViewModel-State + Preset-Picker in Auto-Empty-Section
 - [ ] 06-03-PLAN.md — MopDockDryingTime: API-Methoden + ViewModel-State + Preset-Picker in Mop-Dock-Section
 - [ ] 06-04-PLAN.md — RobotProperties: getRobotProperties() API + RobotProperties Struct + Properties-Section in RobotDetailView
 
@@ -161,6 +161,6 @@ v1.3.0: 5 → 6 → 7 → 8
 | 3. API Completeness | 3/3 | Complete | 2026-03-28 |
 | 4. View Refactoring & Tests | 4/4 | Complete | 2026-03-27 |
 | 5. UI Restore | 2/2 | Complete   | 2026-03-28 |
-| 6. New Capabilities | 0/4 | Not started | - |
+| 6. New Capabilities | 2/4 | In Progress|  |
 | 7. Bugfixes & Robustness | 0/TBD | Not started | - |
 | 8. Test Coverage | 0/TBD | Not started | - |

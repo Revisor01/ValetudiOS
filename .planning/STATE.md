@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.3.0
 milestone_name: Polish & Full API Coverage
 status: executing
-stopped_at: Completed 06-new-capabilities 06-01-PLAN.md
-last_updated: "2026-03-28T14:49:55.533Z"
+stopped_at: Completed 06-new-capabilities 06-02-PLAN.md
+last_updated: "2026-03-28T14:56:16.315Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 8
   completed_phases: 5
   total_plans: 19
-  completed_plans: 16
+  completed_plans: 17
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 ## Current Position
 
 Phase: 06 (new-capabilities) — EXECUTING
-Plan: 2 of 4
+Plan: 3 of 4
 Status: Ready to execute
 Last activity: 2026-03-28
 
@@ -62,6 +62,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 05-ui-restore P02 | 15min | 2 tasks | 3 files |
 | Phase 05-ui-restore P01 | 3min | 2 tasks | 4 files |
 | Phase 06-new-capabilities P01 | 8min | 2 tasks | 4 files |
+| Phase 06-new-capabilities P02 | 7min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -109,6 +110,8 @@ Recent decisions affecting current work:
 - [Phase 05-ui-restore]: loadObstacles() uses api.getMap() directly — RobotManager has no mapData dict
 - [Phase 05-ui-restore]: Events always available (hasEvents = true) — no Valetudo capability gate for /valetudo/events
 - [Phase 06-new-capabilities]: VoicePack Structs am Ende der ValetudoAPI.swift definiert; setVoicePack() laedt Zustand bei Fehler automatisch neu; Section doppelt gated (hasVoicePack AND !voicePacks.isEmpty)
+- [Phase 06-new-capabilities]: StationSettingsView nutzt lokale @State statt RobotSettingsViewModel — Duration-Picker in StationSettingsView mit lokalen State-Properties implementiert
+- [Phase 06-new-capabilities]: displayNameForAutoEmptyDockDuration() nutzt preset.* l10n-Keys statt eigenem Enum
 
 ### v1.3.0 Context
 
@@ -128,6 +131,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-28T14:49:55.530Z
-Stopped at: Completed 06-new-capabilities 06-01-PLAN.md
+Last session: 2026-03-28T14:56:16.312Z
+Stopped at: Completed 06-new-capabilities 06-02-PLAN.md
 Resume file: None
