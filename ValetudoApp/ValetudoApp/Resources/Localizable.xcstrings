@@ -865,6 +865,40 @@
         }
       }
     },
+    "detail.obstacles" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Erkannte Hindernisse"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Detected Obstacles"
+          }
+        }
+      }
+    },
+    "obstacle.unknown" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unbekanntes Hindernis"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Unknown Obstacle"
+          }
+        }
+      }
+    },
     "dnd.active_period" : {
       "extractionState" : "stale",
       "localizations" : {

@@ -153,11 +153,20 @@ struct RobotDetailView: View {
             if viewModel.status?.isOnline == true {
                 controlSection
 
+                // Clean Route Picker (capability-gated)
+                cleanRouteSection
+
                 // Rooms (moved up)
                 roomsSection
 
                 // Consumables (moved down)
                 consumablesPreviewSection
+
+                // Events Section (capability-gated)
+                eventsSection
+
+                // Obstacle Photos Section (capability-gated)
+                obstaclesSection
 
                 // Statistics (Accordion)
                 statisticsSection
@@ -988,6 +997,94 @@ extension RobotDetailView {
                     }
                     .disabled(viewModel.isLoading)
                 }
+            }
+        }
+    }
+
+    // MARK: - Events Section
+    @ViewBuilder
+    private var eventsSection: some View {
+        if viewModel.hasEvents && !viewModel.events.isEmpty {
+            Section {
+                ForEach(viewModel.events) { event in
+                    HStack {
+                        Image(systemName: event.iconName)
+                            .foregroundStyle(.orange)
+                            .frame(width: 24)
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(event.displayName)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            if let message = event.message {
+                                Text(message)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Text(event.timestamp)
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                        Spacer()
+                        if !event.processed {
+                            Button {
+                                Task { await viewModel.dismissEvent(event) }
+                            } label: {
+                                Image(systemName: "xmark.circle.fill")
+                                    .foregroundStyle(.secondary)
+                            }
+                            .buttonStyle(.plain)
+                        }
+                    }
+                }
+            } header: {
+                Text(String(localized: "detail.events"))
+            }
+        }
+    }
+
+    // MARK: - Clean Route Section
+    @ViewBuilder
+    private var cleanRouteSection: some View {
+        if viewModel.hasCleanRoute && !viewModel.cleanRoutePresets.isEmpty {
+            Section {
+                Picker(String(localized: "detail.clean_route"), selection: Binding(
+                    get: { viewModel.currentCleanRoute },
+                    set: { newValue in
+                        Task { await viewModel.setCleanRoute(newValue) }
+                    }
+                )) {
+                    ForEach(viewModel.cleanRoutePresets, id: \.self) { preset in
+                        Text(preset.capitalized).tag(preset)
+                    }
+                }
+            } header: {
+                Text(String(localized: "detail.clean_route"))
+            }
+        }
+    }
+
+    // MARK: - Obstacles Section
+    @ViewBuilder
+    private var obstaclesSection: some View {
+        if viewModel.hasObstacleImages && !viewModel.obstacles.isEmpty {
+            Section {
+                ForEach(viewModel.obstacles, id: \.id) { obstacle in
+                    NavigationLink {
+                        if let api = viewModel.api {
+                            ObstaclePhotoView(obstacleId: obstacle.id, label: obstacle.label, api: api)
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "camera.viewfinder")
+                                .foregroundStyle(.blue)
+                                .frame(width: 24)
+                            Text(obstacle.label ?? String(localized: "obstacle.unknown"))
+                                .font(.subheadline)
+                        }
+                    }
+                }
+            } header: {
+                Text(String(localized: "detail.obstacles"))
             }
         }
     }
