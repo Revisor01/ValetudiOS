@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.3.0
 milestone_name: Polish & Full API Coverage
 status: executing
-stopped_at: Completed 06-new-capabilities 06-02-PLAN.md
-last_updated: "2026-03-28T14:56:16.315Z"
+stopped_at: Completed 06-new-capabilities 06-03-PLAN.md
+last_updated: "2026-03-28T15:01:38.018Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 8
   completed_phases: 5
   total_plans: 19
-  completed_plans: 17
+  completed_plans: 18
   percent: 0
 ---
 
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 ## Current Position
 
 Phase: 06 (new-capabilities) — EXECUTING
-Plan: 3 of 4
+Plan: 4 of 4
 Status: Ready to execute
 Last activity: 2026-03-28
 
@@ -63,6 +63,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 05-ui-restore P01 | 3min | 2 tasks | 4 files |
 | Phase 06-new-capabilities P01 | 8min | 2 tasks | 4 files |
 | Phase 06-new-capabilities P02 | 7min | 2 tasks | 4 files |
+| Phase 06-new-capabilities P03 | 5min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -112,6 +113,7 @@ Recent decisions affecting current work:
 - [Phase 06-new-capabilities]: VoicePack Structs am Ende der ValetudoAPI.swift definiert; setVoicePack() laedt Zustand bei Fehler automatisch neu; Section doppelt gated (hasVoicePack AND !voicePacks.isEmpty)
 - [Phase 06-new-capabilities]: StationSettingsView nutzt lokale @State statt RobotSettingsViewModel — Duration-Picker in StationSettingsView mit lokalen State-Properties implementiert
 - [Phase 06-new-capabilities]: displayNameForAutoEmptyDockDuration() nutzt preset.* l10n-Keys statt eigenem Enum
+- [Phase 06-new-capabilities]: settingsLogger used in StationSettingsView (local view) for drying time error, matching existing pattern
 
 ### v1.3.0 Context
 
@@ -131,6 +133,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-28T14:56:16.312Z
-Stopped at: Completed 06-new-capabilities 06-02-PLAN.md
+Last session: 2026-03-28T15:01:38.015Z
+Stopped at: Completed 06-new-capabilities 06-03-PLAN.md
 Resume file: None
