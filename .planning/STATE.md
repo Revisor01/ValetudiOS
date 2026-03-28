@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: executing
-last_updated: "2026-03-28T22:46:09.096Z"
+status: verifying
+last_updated: "2026-03-28T22:46:54.992Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 9
-  completed_phases: 7
+  completed_phases: 8
   total_plans: 28
-  completed_plans: 26
+  completed_plans: 27
 ---
 
 # Project State
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 
 Phase: 09 (logger-migration) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-03-28
 
 ```
@@ -47,6 +47,7 @@ Recent decisions affecting current work:
 - Phase 11 is the largest structural change (3 big views decomposed)
 - [Phase 09-logger-migration]: try? (nicht try) fuer Task.sleep in SupportReminderView: CancellationError wird ignoriert damit Animation nicht bricht
 - [Phase 09-logger-migration]: Logger-Property in MapPreviewView platziert (nicht file-top-level), da dort der print()-Aufruf liegt
+- [Phase 09-logger-migration]: Sub-Structs in derselben Datei erhalten eigene Logger-Property mit gleicher category wie Haupt-View
 
 ### Pending Todos
 
