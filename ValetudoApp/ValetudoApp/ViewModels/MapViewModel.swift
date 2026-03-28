@@ -329,10 +329,10 @@ final class MapViewModel: ObservableObject {
         let adjustedEndX = (end.x - gestureOffset.width) / gestureScale
         let adjustedEndY = (end.y - gestureOffset.height) / gestureScale
 
-        let pixelAX = Int((adjustedStartX - offsetX) / mapScale)
-        let pixelAY = Int((adjustedStartY - offsetY) / mapScale)
-        let pixelBX = Int((adjustedEndX - offsetX) / mapScale)
-        let pixelBY = Int((adjustedEndY - offsetY) / mapScale)
+        let pixelAX = Int(((adjustedStartX - offsetX) / mapScale).rounded())
+        let pixelAY = Int(((adjustedStartY - offsetY) / mapScale).rounded())
+        let pixelBX = Int(((adjustedEndX - offsetX) / mapScale).rounded())
+        let pixelBY = Int(((adjustedEndY - offsetY) / mapScale).rounded())
 
         let pointA = ZonePoint(x: pixelAX * pixelSize, y: pixelAY * pixelSize)
         let pointB = ZonePoint(x: pixelBX * pixelSize, y: pixelBY * pixelSize)
