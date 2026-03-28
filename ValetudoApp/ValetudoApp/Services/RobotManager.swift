@@ -194,7 +194,7 @@ class RobotManager: ObservableObject {
                 self.robotUpdateAvailable[id] = updaterState.isUpdateAvailable
             }
         } catch {
-            // Silently ignore - not all robots support this
+            logger.warning("checkUpdaterState: Not supported or failed for robot \(id, privacy: .public): \(error.localizedDescription, privacy: .public)")
         }
     }
 
