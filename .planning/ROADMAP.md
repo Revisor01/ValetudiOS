@@ -156,7 +156,7 @@ Plans:
 
 Plans:
 - [ ] 08-01-PLAN.md — ViewModel-Tests: RobotDetailViewModel, RobotSettingsViewModel und MapViewModel State-Transitions ohne API-Mocking
-- [ ] 08-02-PLAN.md — API-Tests: APIError-Enum, RobotConfig.baseURL und JSON-Decoding der Kernmodelle
+- [x] 08-02-PLAN.md — API-Tests: APIError-Enum, RobotConfig.baseURL und JSON-Decoding der Kernmodelle
 
 ## Progress
 
@@ -173,4 +173,4 @@ v1.3.0: 5 → 6 → 7 → 8
 | 5. UI Restore | 2/2 | Complete   | 2026-03-28 |
 | 6. New Capabilities | 3/4 | In Progress|  |
 | 7. Bugfixes & Robustness | 3/4 | In Progress|  |
-| 8. Test Coverage | 0/2 | Not started | - |
+| 8. Test Coverage | 1/2 | In Progress|  |

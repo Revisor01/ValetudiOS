@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.3.0
 milestone_name: Polish & Full API Coverage
 status: executing
-stopped_at: Completed 07-bugfixes-robustness 07-02-PLAN.md
-last_updated: "2026-03-28T15:23:13.981Z"
+stopped_at: Completed 08-test-coverage 08-02-PLAN.md
+last_updated: "2026-03-28T15:32:57.576Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 8
   completed_phases: 6
-  total_plans: 23
-  completed_plans: 22
+  total_plans: 25
+  completed_plans: 23
   percent: 0
 ---
 
@@ -21,12 +21,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 07 — bugfixes-robustness
+**Current focus:** Phase 08 — test-coverage
 
 ## Current Position
 
-Phase: 8
-Plan: Not started
+Phase: 08 (test-coverage) — EXECUTING
+Plan: 2 of 2
 Status: Ready to execute
 Last activity: 2026-03-28
 
@@ -66,6 +66,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 06-new-capabilities P04 | 5min | 2 tasks | 4 files |
 | Phase 07-bugfixes-robustness P03 | 2min | 1 tasks | 1 files |
 | Phase 07-bugfixes-robustness P02 | 8min | 2 tasks | 2 files |
+| Phase 08-test-coverage P02 | 1min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -120,6 +121,7 @@ Recent decisions affecting current work:
 - [Phase 07-bugfixes-robustness]: [Phase 07-bugfixes-robustness]: SSE backoff uses retryCount-based switch (1s/5s/30s) — retryCount reset to 0 after successful connect; each retry attempt logged with count and delay
 - [Phase 07-bugfixes-robustness]: MapViewModel uses @Published errorMessage for cleanSelectedRooms failures — not ErrorRouter.shared — consistent with established ViewModel pattern
 - [Phase 07-bugfixes-robustness]: checkUpdaterState failure uses logger.warning only — not user-facing, not actionable by user
+- [Phase 08-test-coverage]: ValetudoAPI actor private URLSession: test APIError, RobotConfig.baseURL, and JSON decoding without session injection
 
 ### v1.3.0 Context
 
@@ -139,6 +141,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-28T15:20:25.804Z
-Stopped at: Completed 07-bugfixes-robustness 07-02-PLAN.md
+Last session: 2026-03-28T15:32:57.573Z
+Stopped at: Completed 08-test-coverage 08-02-PLAN.md
 Resume file: None
