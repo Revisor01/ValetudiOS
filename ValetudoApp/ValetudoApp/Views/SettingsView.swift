@@ -185,7 +185,7 @@ struct EditRobotView: View {
         self.robot = robot
         _name = State(initialValue: robot.name)
         _host = State(initialValue: robot.host)
-        _useAuthentication = State(initialValue: robot.username != nil && !robot.username!.isEmpty)
+        _useAuthentication = State(initialValue: !(robot.username?.isEmpty ?? true))
         _username = State(initialValue: robot.username ?? "")
         _password = State(initialValue: KeychainStore.password(for: robot.id) ?? "")
     }
