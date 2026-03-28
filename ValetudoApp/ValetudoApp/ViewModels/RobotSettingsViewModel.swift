@@ -42,10 +42,16 @@ final class RobotSettingsViewModel: ObservableObject {
     @Published var hasFloorMaterialNavigation = DebugConfig.showAllCapabilities
     @Published var hasMapSnapshots = DebugConfig.showAllCapabilities
     @Published var hasPendingMapChange = DebugConfig.showAllCapabilities
+    @Published var hasVoicePack = DebugConfig.showAllCapabilities
 
     // MARK: - Presets
     @Published var carpetSensorModePresets: [String] = []
     @Published var mopDockWashTemperaturePresets: [String] = []
+
+    // MARK: - Voice Pack state
+    @Published var voicePacks: [VoicePack] = []
+    @Published var currentVoicePackId: String = ""
+    @Published var isSettingVoicePack = false
 
     // MARK: - Map Snapshots state
     @Published var mapSnapshots: [MapSnapshot] = []
@@ -117,6 +123,7 @@ final class RobotSettingsViewModel: ObservableObject {
             hasFloorMaterialNavigation = DebugConfig.showAllCapabilities || capabilities.contains("FloorMaterialDirectionAwareNavigationControlCapability")
             hasMapSnapshots = DebugConfig.showAllCapabilities || capabilities.contains("MapSnapshotCapability")
             hasPendingMapChange = DebugConfig.showAllCapabilities || capabilities.contains("PendingMapChangeHandlingCapability")
+            hasVoicePack = DebugConfig.showAllCapabilities || capabilities.contains("VoicePackManagementCapability")
         } catch {
             hasMappingPass = DebugConfig.showAllCapabilities
         }
@@ -223,6 +230,18 @@ final class RobotSettingsViewModel: ObservableObject {
             } catch {
                 if !DebugConfig.showAllCapabilities { hasPendingMapChange = false }
                 logger.debug("Pending map change not supported: \(error, privacy: .public)")
+            }
+        }
+
+        // Load voice packs
+        if hasVoicePack {
+            do {
+                let state = try await api.getVoicePackState()
+                voicePacks = state.supportedLanguages
+                currentVoicePackId = state.currentLanguage.id
+            } catch {
+                if !DebugConfig.showAllCapabilities { hasVoicePack = false }
+                logger.debug("Voice pack not supported: \(error, privacy: .public)")
             }
         }
 
@@ -394,6 +413,22 @@ final class RobotSettingsViewModel: ObservableObject {
             try await api.setMopDockWashTemperature(preset: preset)
         } catch {
             logger.error("Failed to set wash temperature: \(error, privacy: .public)")
+        }
+    }
+
+    func setVoicePack(_ id: String) async {
+        guard let api = api else { return }
+        isSettingVoicePack = true
+        defer { isSettingVoicePack = false }
+        do {
+            try await api.setVoicePack(id: id)
+            logger.info("Voice pack set to: \(id, privacy: .public)")
+        } catch {
+            logger.error("Failed to set voice pack: \(error, privacy: .public)")
+            // Reload current state on error
+            if let state = try? await api.getVoicePackState() {
+                currentVoicePackId = state.currentLanguage.id
+            }
         }
     }
 

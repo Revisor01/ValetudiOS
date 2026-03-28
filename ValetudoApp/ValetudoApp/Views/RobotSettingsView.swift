@@ -321,6 +321,32 @@ struct RobotSettingsView: View {
                 }
             }
 
+            // Voice Pack Section
+            if viewModel.hasVoicePack && !viewModel.voicePacks.isEmpty {
+                Section {
+                    Picker(selection: $viewModel.currentVoicePackId) {
+                        ForEach(viewModel.voicePacks) { pack in
+                            Text(pack.name).tag(pack.id)
+                        }
+                    } label: {
+                        HStack {
+                            Image(systemName: "speaker.wave.2.bubble")
+                                .foregroundStyle(.indigo)
+                            Text(String(localized: "voice_pack.label"))
+                        }
+                    }
+                    .onChange(of: viewModel.currentVoicePackId) { _, newValue in
+                        guard !viewModel.isInitialLoad && !newValue.isEmpty else { return }
+                        Task { await viewModel.setVoicePack(newValue) }
+                    }
+                    .disabled(viewModel.isSettingVoicePack)
+                } header: {
+                    Label(String(localized: "voice_pack.title"), systemImage: "speaker.wave.2.bubble")
+                } footer: {
+                    Text(String(localized: "voice_pack.footer"))
+                }
+            }
+
             // Quirks Section
             if viewModel.hasQuirks {
                 Section {
