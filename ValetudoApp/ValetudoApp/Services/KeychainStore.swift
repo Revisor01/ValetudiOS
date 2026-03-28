@@ -1,8 +1,10 @@
 import Foundation
+import OSLog
 import Security
 
 struct KeychainStore {
     private static let service = "com.valetudio.robot.password"
+    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "KeychainStore")
 
     static func password(for robotId: UUID) -> String? {
         let query: [CFString: Any] = [
@@ -25,7 +27,10 @@ struct KeychainStore {
             kSecAttrService: service,
             kSecAttrAccount: robotId.uuidString
         ]
-        SecItemDelete(deleteQuery as CFDictionary) // errSecItemNotFound is OK
+        let deleteStatus = SecItemDelete(deleteQuery as CFDictionary)
+        if deleteStatus != errSecSuccess && deleteStatus != errSecItemNotFound {
+            logger.error("SecItemDelete (save) failed: \(deleteStatus, privacy: .public)")
+        }
 
         let addQuery: [CFString: Any] = [
             kSecClass: kSecClassGenericPassword,
@@ -43,6 +48,9 @@ struct KeychainStore {
             kSecAttrService: service,
             kSecAttrAccount: robotId.uuidString
         ]
-        SecItemDelete(query as CFDictionary)
+        let deleteStatus = SecItemDelete(query as CFDictionary)
+        if deleteStatus != errSecSuccess && deleteStatus != errSecItemNotFound {
+            logger.error("SecItemDelete (delete) failed: \(deleteStatus, privacy: .public)")
+        }
     }
 }
