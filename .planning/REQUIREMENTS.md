@@ -81,19 +81,19 @@ Requirements for milestone v1.3.0: Polish & Full API Coverage.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UIR-01 | TBD | Pending |
-| UIR-02 | TBD | Pending |
-| UIR-03 | TBD | Pending |
-| UIR-04 | TBD | Pending |
-| UIR-05 | TBD | Pending |
-| UIR-06 | TBD | Pending |
-| CAP-01 | TBD | Pending |
-| CAP-02 | TBD | Pending |
-| CAP-03 | TBD | Pending |
-| CAP-04 | TBD | Pending |
-| FIX-01 | TBD | Pending |
-| FIX-02 | TBD | Pending |
-| FIX-03 | TBD | Pending |
-| FIX-04 | TBD | Pending |
-| TEST-01 | TBD | Pending |
-| TEST-02 | TBD | Pending |
+| UIR-01 | Phase 5 | Pending |
+| UIR-02 | Phase 5 | Pending |
+| UIR-03 | Phase 5 | Pending |
+| UIR-04 | Phase 5 | Pending |
+| UIR-05 | Phase 5 | Pending |
+| UIR-06 | Phase 5 | Pending |
+| CAP-01 | Phase 6 | Pending |
+| CAP-02 | Phase 6 | Pending |
+| CAP-03 | Phase 6 | Pending |
+| CAP-04 | Phase 6 | Pending |
+| FIX-01 | Phase 7 | Pending |
+| FIX-02 | Phase 7 | Pending |
+| FIX-03 | Phase 7 | Pending |
+| FIX-04 | Phase 7 | Pending |
+| TEST-01 | Phase 8 | Pending |
+| TEST-02 | Phase 8 | Pending |

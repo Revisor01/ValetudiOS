@@ -2,22 +2,26 @@
 
 ## Milestones
 
-- 🚧 **v1.2.0 Quality & API Completeness** - Phases 1-4 (in progress)
+- [x] **v1.2.0 Quality & API Completeness** - Phases 1-4 (completed 2026-03-28)
+- 🚧 **v1.3.0 Polish & Full API Coverage** - Phases 5-8 (in progress)
 
 ## Phases
 
-### 🚧 v1.2.0 Quality & API Completeness (In Progress)
-
-**Milestone Goal:** Technische Schulden abbauen, Valetudo API vollständig integrieren, UX-Verbesserungen — ohne externe Dependencies.
-
-**Phase Numbering:**
-- Integer phases (1, 2, 3): Planned milestone work
-- Decimal phases (2.1, 2.2): Urgent insertions (marked with INSERTED)
+### v1.2.0 Quality & API Completeness (Completed)
 
 - [x] **Phase 1: Foundation** - Keychain, ErrorRouter, os.Logger — Infrastruktur-Grundlage und Fehlerbehandlung (completed 2026-03-27)
 - [x] **Phase 2: Network Layer** - SSE-Streaming, mDNS-Discovery, Map-Pixel-Cache (completed 2026-03-27)
 - [x] **Phase 3: API Completeness** - Neue Valetudo-Capabilities und Notification Actions (completed 2026-03-28)
 - [x] **Phase 4: View Refactoring & Tests** - ViewModel-Extraktion und XCTest-Coverage (completed 2026-03-27)
+
+### v1.3.0 Polish & Full API Coverage (In Progress)
+
+**Milestone Goal:** Phase-3-UI in ViewModels wiederherstellen, fehlende Valetudo-Capabilities nachrüsten, Robustness-Concerns beheben, Test-Coverage erweitern.
+
+- [ ] **Phase 5: UI Restore** - Events, CleanRoute, Snapshots, Obstacles und Notifications in ViewModels und Views verdrahten
+- [ ] **Phase 6: New Capabilities** - VoicePack, AutoEmptyDuration, MopDryingTime und Robot Properties vollständig integrieren
+- [ ] **Phase 7: Bugfixes & Robustness** - Force-unwraps, stille Fehler, SSE Backoff, Koordinaten-Transformation beheben
+- [ ] **Phase 8: Test Coverage** - ViewModel- und API-Layer-Tests aufbauen
 
 ## Phase Details
 
@@ -69,7 +73,7 @@ Plans:
 Plans:
 - [x] 03-01-PLAN.md — API-Methoden und Model-Structs fuer MapSnapshot, PendingMapChange, CleanRoute, Events, ObstacleImages
 - [x] 03-02-PLAN.md — Map-Snapshot/Pending-Map-Change UI in RobotSettingsView + Notification-Actions (GO_HOME, LOCATE) via AppDelegate
-- [ ] 03-03-PLAN.md — Events-Section und CleanRoute-Picker in RobotDetailView + ObstaclePhotoView
+- [x] 03-03-PLAN.md — Events-Section und CleanRoute-Picker in RobotDetailView + ObstaclePhotoView
 
 ### Phase 4: View Refactoring & Tests
 **Goal**: Die drei monolithischen Views sind in ViewModels + Sub-Views aufgeteilt und ein XCTest-Target validiert kritische Logik
@@ -87,14 +91,66 @@ Plans:
 - [x] 04-03-PLAN.md — RobotSettingsViewModel-Extraktion: State und Logik aus RobotSettingsView in ViewModel
 - [x] 04-04-PLAN.md — MapViewModel-Extraktion: State und Logik aus MapContentView in ViewModel
 
+### Phase 5: UI Restore
+**Goal**: Alle in Phase 3 implementierten API-Capabilities sind vollständig in den neuen ViewModels verdrahtet und für den Benutzer nutzbar
+**Depends on**: Phase 4
+**Requirements**: UIR-01, UIR-02, UIR-03, UIR-04, UIR-05, UIR-06
+**Success Criteria** (what must be TRUE):
+  1. Benutzer sieht in RobotDetailView eine chronologische Events-Liste mit Dismiss-Button (sofern Roboter Events liefert)
+  2. Benutzer kann die Reinigungsroute über einen Picker in RobotDetailView wählen; Picker erscheint nur wenn der Roboter die Capability meldet
+  3. Benutzer kann in RobotSettingsView gespeicherte Map-Snapshots sehen und einen davon wiederherstellen; Sektion ist capability-gated
+  4. Benutzer kann in RobotSettingsView ausstehende Kartenänderungen akzeptieren oder ablehnen; Sektion ist capability-gated
+  5. Benutzer kann in RobotDetailView Obstacle-Fotos aufrufen und die Detailansicht (ObstaclePhotoView) öffnen; Sektion ist capability-gated
+  6. Notification-Actions GO_HOME und LOCATE lösen die jeweilige API-Aktion aus, wenn der Benutzer die Notification-Aktion antippt
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 6: New Capabilities
+**Goal**: Benutzer kann vier zusätzliche Roboter-Capabilities steuern, die bislang nicht in der App erreichbar waren
+**Depends on**: Phase 5
+**Requirements**: CAP-01, CAP-02, CAP-03, CAP-04
+**Success Criteria** (what must be TRUE):
+  1. Benutzer kann installierten Voice Pack sehen und ein anderes Sprachpaket aus der Liste auswählen und aktivieren
+  2. Benutzer kann die Absaugdauer der Auto-Empty-Station über einen Picker steuern (Werte laut API-Enum)
+  3. Benutzer kann die Trocknungszeit der Mop-Station über einen Picker steuern (Werte laut API-Enum)
+  4. Benutzer sieht Modell, Firmware-Version und Seriennummer des Roboters in einer dedizierten Properties-Ansicht
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 7: Bugfixes & Robustness
+**Goal**: Keine Force-unwraps, keine stillen Fehler, SSE-Reconnect mit Backoff und korrekte Koordinaten-Transformation in der Karte
+**Depends on**: Phase 5
+**Requirements**: FIX-01, FIX-02, FIX-03, FIX-04
+**Success Criteria** (what must be TRUE):
+  1. Ungültige URLs in NetworkScanner und RobotDetailView führen zu einem geloggten Fehler statt zu einem Crash
+  2. Fehlgeschlagene API-Calls in ViewModels und Services zeigen dem Benutzer eine ErrorRouter-Alert oder einen Logger-Warning-Eintrag; kein Fehler wird mehr lautlos verworfen
+  3. SSE-Verbindung re-connectet nach 1s, 5s und dann 30s statt sofort mit 30s; Backoff ist im Logger nachvollziehbar
+  4. Zonen und GoTo-Marker werden auf der Karte an der richtigen Position gerendert (kein systematischer Versatz durch Float-zu-Int-Rundung)
+**Plans**: TBD
+
+### Phase 8: Test Coverage
+**Goal**: Kritische ViewModel-Logik und der API-Layer sind durch automatisierte Tests abgedeckt und regressionssicher
+**Depends on**: Phase 7
+**Requirements**: TEST-01, TEST-02
+**Success Criteria** (what must be TRUE):
+  1. XCTest-Suite enthält Tests für RobotDetailViewModel, RobotSettingsViewModel und MapViewModel State-Transitions (z.B. Laden, Fehlerfall, Capability-Check)
+  2. XCTest-Suite enthält Tests für ValetudoAPI Request/Response Encoding, Error-Handling und HTTP-Statuscode-Interpretation (4xx, 5xx)
+  3. Alle Tests laufen grün in Xcode und im Xcode Cloud CI-Build
+**Plans**: TBD
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4
+v1.2.0: 1 → 2 → 3 → 4 (completed)
+v1.3.0: 5 → 6 → 7 → 8
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation | 3/3 | Complete   | 2026-03-27 |
-| 2. Network Layer | 3/3 | Complete   | 2026-03-27 |
-| 3. API Completeness | 3/3 | Complete   | 2026-03-28 |
-| 4. View Refactoring & Tests | 4/4 | Complete   | 2026-03-27 |
+| 1. Foundation | 3/3 | Complete | 2026-03-27 |
+| 2. Network Layer | 3/3 | Complete | 2026-03-27 |
+| 3. API Completeness | 3/3 | Complete | 2026-03-28 |
+| 4. View Refactoring & Tests | 4/4 | Complete | 2026-03-27 |
+| 5. UI Restore | 0/TBD | Not started | - |
+| 6. New Capabilities | 0/TBD | Not started | - |
+| 7. Bugfixes & Robustness | 0/TBD | Not started | - |
+| 8. Test Coverage | 0/TBD | Not started | - |

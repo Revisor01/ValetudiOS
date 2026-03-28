@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.3.0
 milestone_name: Polish & Full API Coverage
-status: defining
+status: roadmapped
 stopped_at: null
 last_updated: "2026-03-28"
 last_activity: 2026-03-28
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -21,44 +21,44 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Defining requirements for v1.3.0
+**Current focus:** Phase 5 — UI Restore (v1.3.0 start)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-03-28 — Milestone v1.3.0 started
+Phase: 5 — UI Restore
+Plan: Not started
+Status: Roadmap defined, ready for planning
+Last activity: 2026-03-28 — v1.3.0 roadmap created (Phases 5-8)
 
 Progress: [░░░░░░░░░░] 0%
 
 ## Performance Metrics
 
-**Velocity:**
+**Velocity (v1.2.0 reference):**
 
-- Total plans completed: 0
-- Average duration: —
-- Total execution time: —
+- Total plans completed: 13
+- Average duration: ~12 min/plan
+- Total execution time: ~2.5h
 
-**By Phase:**
+**By Phase (v1.2.0):**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 01-foundation | 3 | ~31min | ~10min |
+| 02-network-layer | 3 | ~33min | ~11min |
+| 03-api-completeness | 3 | ~10min | ~3min |
+| 04-view-refactoring-tests | 4 | ~69min | ~17min |
+
+**By Phase (v1.3.0):**
+
+| Phase | Plans | Total | Avg/Plan |
+|-------|-------|-------|----------|
+| 05-ui-restore | TBD | - | - |
+| 06-new-capabilities | TBD | - | - |
+| 07-bugfixes-robustness | TBD | - | - |
+| 08-test-coverage | TBD | - | - |
 
 *Updated after each plan completion*
-| Phase 01-foundation P02 | 12 | 2 tasks | 6 files |
-| Phase 01-foundation P01 | 15 | 2 tasks | 6 files |
-| Phase 01-foundation P03 | 4 | 1 tasks | 4 files |
-| Phase 02-network-layer P02 | 8min | 2 tasks | 4 files |
-| Phase 02-network-layer P01 | 15m | 2 tasks | 4 files |
-| Phase 02-network-layer P03 | 10min | 2 tasks | 2 files |
-| Phase 03-api-completeness P01 | 8min | 2 tasks | 3 files |
-| Phase 03-api-completeness P02 | 2min | 2 tasks | 3 files |
-| Phase 04-view-refactoring-tests P03 | 9min | 2 tasks | 4 files |
-| Phase 04-view-refactoring-tests P02 | 15min | 2 tasks | 4 files |
-| Phase 04-view-refactoring-tests P04 | 25min | 2 tasks | 3 files |
-| Phase 04-view-refactoring-tests P01 | 20min | 2 tasks | 7 files |
 
 ## Accumulated Context
 
@@ -102,17 +102,24 @@ Recent decisions affecting current work:
 - [Phase 04-view-refactoring-tests]: MapLayerTests use JSONDecoder to construct structs — avoids fileprivate init and matches production data flow
 - [Phase 04-view-refactoring-tests]: KeychainStoreTests use unique UUID per test + tearDown cleanup to prevent cross-test Keychain pollution
 
+### v1.3.0 Context
+
+- Phase 5 (UI Restore): API-Methoden und Modelle aus Phase 3 existieren bereits. Nur ViewModel/View-Verdrahtung fehlt.
+- Phase 6 (New Capabilities): Neue API-Methoden + Modelle + UI erforderlich. Capability-IDs in Valetudo-Doku prüfen.
+- Phase 7 (Bugfixes): FIX-04 (Koordinaten) betrifft MapViewModel — nach Float-to-CGFloat-Analyse im Codebase-Doc vorgehen.
+- Phase 8 (Tests): @MainActor-Isolation in XCTest — einzelne Test-Methoden annotieren, nicht die Klasse (bekanntes Pitfall).
+
 ### Pending Todos
 
-None yet.
+None.
 
 ### Blockers/Concerns
 
-- Phase 2 (SSE): Valetudo 5-Client-SSE-Limit — SSEConnectionManager muss eine geteilte Verbindung pro Roboter erzwingen. Mit attributes-SSE starten, map-SSE conditional in MapView hinzufügen.
-- Phase 4 (Tests): @MainActor-Isolation in XCTest — einzelne Test-Methoden annotieren, nicht die Klasse.
+- Phase 5: UIR-06 (Notification-Actions) — AppDelegate-Handler muss nach ViewModel-Extraktion korrekt verdrahtet sein; robotManagerRef-Pattern aus Phase 3 als Vorlage nutzen.
+- Phase 8: @MainActor-Isolation in XCTest — einzelne Test-Methoden annotieren, nicht die Klasse.
 
 ## Session Continuity
 
-Last session: 2026-03-27T23:47:04.479Z
-Stopped at: Completed 04-view-refactoring-tests 04-01-PLAN.md
+Last session: 2026-03-28
+Stopped at: v1.3.0 Roadmap created (Phases 5-8)
 Resume file: None
