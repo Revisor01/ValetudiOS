@@ -528,6 +528,15 @@ extension ValetudoAPI {
         try await requestVoid("/robot/capabilities/MopDockMopWashTemperatureControlCapability/preset", body: body)
     }
 
+    func getMopDockDryingTimePresets() async throws -> [String] {
+        try await request("/robot/capabilities/MopDockMopDryingTimeControlCapability/presets")
+    }
+
+    func setMopDockDryingTime(preset: String) async throws {
+        let body = try JSONEncoder().encode(PresetControlRequest(name: preset))
+        try await requestVoid("/robot/capabilities/MopDockMopDryingTimeControlCapability/preset", body: body)
+    }
+
     // MARK: - Map Segment Material Control
     func getSegmentMaterialProperties() async throws -> SegmentMaterialProperties {
         try await request("/robot/capabilities/MapSegmentMaterialControlCapability/properties")
