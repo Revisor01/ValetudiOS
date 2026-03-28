@@ -9,15 +9,15 @@ Requirements for milestone v1.4.0: Code Quality & Robustness.
 
 ### Logging & Diagnostics
 
-- [ ] **LOG-01**: Alle print()-Aufrufe in View-Dateien sind durch os.Logger ersetzt (DoNotDisturbView, StatisticsView, IntensityControlView, MapView, ManualControlView, RoomsManagementView, TimersView)
-- [ ] **LOG-02**: SupportManager.swift print() durch os.Logger ersetzen
-- [ ] **LOG-03**: Alle Views mit print()-Aufrufen haben eine private Logger-Property
+- [x] **LOG-01**: Alle print()-Aufrufe in View-Dateien sind durch os.Logger ersetzt (DoNotDisturbView, StatisticsView, IntensityControlView, MapView, ManualControlView, RoomsManagementView, TimersView)
+- [x] **LOG-02**: SupportManager.swift print() durch os.Logger ersetzen
+- [x] **LOG-03**: Alle Views mit print()-Aufrufen haben eine private Logger-Property
 
 ### Safety & Error Handling
 
 - [ ] **SAFE-01**: Force-Unwrap in SettingsView.swift eliminiert durch nil-coalescing/optional binding
 - [ ] **SAFE-02**: KeychainStore.swift prüft SecItemDelete/SecItemAdd Return-Status und loggt Fehler
-- [ ] **SAFE-03**: SupportReminderView nutzt Task.sleep statt DispatchQueue.main.asyncAfter
+- [x] **SAFE-03**: SupportReminderView nutzt Task.sleep statt DispatchQueue.main.asyncAfter
 
 ### Code Organization
 
@@ -102,10 +102,10 @@ Requirements for milestone v1.4.0: Code Quality & Robustness.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LOG-01 | Phase 9 | Pending |
-| LOG-02 | Phase 9 | Pending |
-| LOG-03 | Phase 9 | Pending |
-| SAFE-03 | Phase 9 | Pending |
+| LOG-01 | Phase 9 | Complete |
+| LOG-02 | Phase 9 | Complete |
+| LOG-03 | Phase 9 | Complete |
+| SAFE-03 | Phase 9 | Complete |
 | SAFE-01 | Phase 10 | Pending |
 | SAFE-02 | Phase 10 | Pending |
 | ORG-01 | Phase 10 | Pending |

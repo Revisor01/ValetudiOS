@@ -179,7 +179,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 09-01-PLAN.md — Logger-Migration Views (Batch 1): DoNotDisturbView, StatisticsView, IntensityControlView, MapView (11 print()-Stellen)
+- [x] 09-01-PLAN.md — Logger-Migration Views (Batch 1): DoNotDisturbView, StatisticsView, IntensityControlView, MapView (11 print()-Stellen)
 - [ ] 09-02-PLAN.md — Logger-Migration Views (Batch 2): ManualControlView, RoomsManagementView, TimersView (17 print()-Stellen)
 - [x] 09-03-PLAN.md — Logger-Migration SupportManager + DispatchQueue→Task.sleep in SupportReminderView
 
@@ -222,6 +222,6 @@ v1.4.0: 9 → 10 → 11
 | 6. New Capabilities | 4/4 | Complete | 2026-03-28 |
 | 7. Bugfixes & Robustness | 4/4 | Complete | 2026-03-28 |
 | 8. Test Coverage | 2/2 | Complete   | 2026-03-28 |
-| 9. Logger Migration | 1/3 | In Progress|  |
+| 9. Logger Migration | 2/3 | In Progress|  |
 | 10. Safety Fixes | 0/? | Not started | - |
 | 11. View Decomposition | 0/? | Not started | - |
