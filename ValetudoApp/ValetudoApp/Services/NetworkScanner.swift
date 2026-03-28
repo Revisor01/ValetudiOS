@@ -151,7 +151,10 @@ class NetworkScanner: ObservableObject {
     }
 
     private func checkHost(_ host: String) async -> DiscoveredRobot? {
-        let url = URL(string: "http://\(host)/api/v2/robot")!
+        guard let url = URL(string: "http://\(host)/api/v2/robot") else {
+            logger.error("checkHost: Invalid URL for host \(host, privacy: .public)")
+            return nil
+        }
         var request = URLRequest(url: url)
         request.timeoutInterval = 1.5
 
