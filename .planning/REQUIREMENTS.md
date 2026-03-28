@@ -89,11 +89,11 @@ Requirements for milestone v1.3.0: Polish & Full API Coverage.
 | UIR-06 | Phase 5 | Complete |
 | CAP-01 | Phase 6 | Complete |
 | CAP-02 | Phase 6 | Complete |
-| CAP-03 | Phase 6 | Pending |
+| CAP-03 | Phase 6 | Complete |
 | CAP-04 | Phase 6 | Complete |
-| FIX-01 | Phase 7 | Pending |
+| FIX-01 | Phase 7 | Complete |
 | FIX-02 | Phase 7 | Complete |
 | FIX-03 | Phase 7 | Complete |
-| FIX-04 | Phase 7 | Pending |
+| FIX-04 | Phase 7 | Complete |
 | TEST-01 | Phase 8 | Complete |
 | TEST-02 | Phase 8 | Complete |
