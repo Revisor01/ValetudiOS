@@ -66,6 +66,12 @@ final class MapViewModel: ObservableObject {
     // MARK: - UI State
     @Published var showRoomLabels: Bool = true
 
+    // MARK: - Error State
+    @Published var errorMessage: String? = nil
+
+    // MARK: - Logging
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "de.simonluthe.ValetudiOS", category: "MapViewModel")
+
     // MARK: - Task Management
     private var refreshTask: Task<Void, Never>?
 
@@ -103,7 +109,7 @@ final class MapViewModel: ObservableObject {
             hasSegmentRename = capabilities.contains("MapSegmentRenameCapability")
             hasSegmentEdit = capabilities.contains("MapSegmentEditCapability")
         } catch {
-            // Silently ignore capability check failures
+            logger.warning("loadMap: Capability check failed: \(error.localizedDescription, privacy: .public)")
         }
 
         if hasVirtualRestrictions {
@@ -169,7 +175,8 @@ final class MapViewModel: ObservableObject {
             selectedIterations = 1
             await robotManager.refreshRobot(robot.id)
         } catch {
-            // Silently ignore clean failures
+            logger.error("cleanSelectedRooms FAILED: \(error.localizedDescription, privacy: .public)")
+            errorMessage = error.localizedDescription
         }
     }
 
