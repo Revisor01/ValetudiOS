@@ -165,6 +165,10 @@ extension ValetudoAPI {
         try await request("/robot/capabilities")
     }
 
+    func getRobotProperties() async throws -> RobotProperties {
+        try await request("/robot/properties")
+    }
+
     // MARK: - State
     func getAttributes() async throws -> [RobotAttribute] {
         try await request("/robot/state/attributes")
@@ -772,6 +776,25 @@ extension ValetudoAPI {
             return false
         }
     }
+}
+
+// MARK: - Robot Properties Models
+struct RobotProperties: Codable {
+    let firmwareVersion: String?
+    let model: String?
+    let manufacturer: String?
+    let metaData: RobotPropertiesMetaData?
+
+    enum CodingKeys: String, CodingKey {
+        case firmwareVersion
+        case model
+        case manufacturer
+        case metaData
+    }
+}
+
+struct RobotPropertiesMetaData: Codable {
+    let manufacturerSerialNumber: String?
 }
 
 // MARK: - Voice Pack Models
