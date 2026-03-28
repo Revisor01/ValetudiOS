@@ -103,21 +103,23 @@ struct RobotDetailView: View {
                       currentVersion != latestVersion, let updateUrl = viewModel.updateUrl {
                 // Fallback: GitHub-based update check (if Valetudo updater not available)
                 Section {
-                    Link(destination: URL(string: updateUrl)!) {
-                        HStack {
-                            Image(systemName: "arrow.down.circle.fill")
-                                .foregroundStyle(.orange)
-                            VStack(alignment: .leading) {
-                                Text(String(localized: "update.available"))
-                                    .font(.subheadline)
-                                    .fontWeight(.medium)
-                                Text("\(currentVersion) → \(latestVersion)")
-                                    .font(.caption)
+                    if let url = URL(string: updateUrl) {
+                        Link(destination: url) {
+                            HStack {
+                                Image(systemName: "arrow.down.circle.fill")
+                                    .foregroundStyle(.orange)
+                                VStack(alignment: .leading) {
+                                    Text(String(localized: "update.available"))
+                                        .font(.subheadline)
+                                        .fontWeight(.medium)
+                                    Text("\(currentVersion) → \(latestVersion)")
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                                Image(systemName: "arrow.up.forward.square")
                                     .foregroundStyle(.secondary)
                             }
-                            Spacer()
-                            Image(systemName: "arrow.up.forward.square")
-                                .foregroundStyle(.secondary)
                         }
                     }
                 }
