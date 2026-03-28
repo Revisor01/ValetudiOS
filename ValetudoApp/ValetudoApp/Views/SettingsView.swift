@@ -135,15 +135,16 @@ struct SettingsView: View {
                         Text("settings.license_footer")
                         HStack(spacing: 4) {
                             Text("Made with")
-                            Image(systemName: "heart.fill")
-                                .foregroundStyle(.pink)
+                            Image(systemName: "dove.fill")
+                                .foregroundStyle(.secondary)
                             Text("in Hennstedt")
                         }
                         .font(.caption)
                         .foregroundStyle(.secondary)
                         .padding(.top, 8)
-                        Text("settings.branding.subtitle")
+                        Text("Friede. Schalom. Salam.")
                             .font(.caption2)
+                            .italic()
                             .foregroundStyle(.tertiary)
                     }
                 }
