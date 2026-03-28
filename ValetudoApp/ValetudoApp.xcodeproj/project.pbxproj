@@ -45,6 +45,14 @@
 		NEW00100000000000000006 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000006 /* MapViewModel.swift */; };
 		NEW00100000000000000007 /* RobotDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000007 /* RobotDetailViewModel.swift */; };
 		NEW00100000000000000008 /* RobotSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000008 /* RobotSettingsViewModel.swift */; };
+		TEST0010000000000000001 /* ConsumableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000001 /* ConsumableTests.swift */; };
+		TEST0010000000000000002 /* KeychainStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000002 /* KeychainStoreTests.swift */; };
+		TEST0010000000000000003 /* MapLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000003 /* MapLayerTests.swift */; };
+		TEST0010000000000000004 /* TimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000004 /* TimerTests.swift */; };
+		TEST0010000000000000005 /* MapViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000005 /* MapViewModelTests.swift */; };
+		TEST0010000000000000006 /* RobotDetailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000006 /* RobotDetailViewModelTests.swift */; };
+		TEST0010000000000000007 /* RobotSettingsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000007 /* RobotSettingsViewModelTests.swift */; };
+		TEST0010000000000000008 /* ValetudoAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000008 /* ValetudoAPITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -87,6 +95,15 @@
 		NEW00200000000000000006 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		NEW00200000000000000007 /* RobotDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailViewModel.swift; sourceTree = "<group>"; };
 		NEW00200000000000000008 /* RobotSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotSettingsViewModel.swift; sourceTree = "<group>"; };
+		TEST0020000000000000001 /* ConsumableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumableTests.swift; sourceTree = "<group>"; };
+		TEST0020000000000000002 /* KeychainStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStoreTests.swift; sourceTree = "<group>"; };
+		TEST0020000000000000003 /* MapLayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapLayerTests.swift; sourceTree = "<group>"; };
+		TEST0020000000000000004 /* TimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerTests.swift; sourceTree = "<group>"; };
+		TEST0020000000000000005 /* MapViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModelTests.swift; sourceTree = "<group>"; };
+		TEST0020000000000000006 /* RobotDetailViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailViewModelTests.swift; sourceTree = "<group>"; };
+		TEST0020000000000000007 /* RobotSettingsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotSettingsViewModelTests.swift; sourceTree = "<group>"; };
+		TEST0020000000000000008 /* ValetudoAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValetudoAPITests.swift; sourceTree = "<group>"; };
+		TEST0030000000000000000 /* ValetudoAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ValetudoAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -150,8 +167,24 @@
 			isa = PBXGroup;
 			children = (
 				44002D9750AED2C37546A796 /* ValetudoApp.app */,
+				TEST0030000000000000000 /* ValetudoAppTests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		TEST0040000000000000000 /* ValetudoAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				TEST0020000000000000001 /* ConsumableTests.swift */,
+				TEST0020000000000000002 /* KeychainStoreTests.swift */,
+				TEST0020000000000000003 /* MapLayerTests.swift */,
+				TEST0020000000000000005 /* MapViewModelTests.swift */,
+				TEST0020000000000000006 /* RobotDetailViewModelTests.swift */,
+				TEST0020000000000000007 /* RobotSettingsViewModelTests.swift */,
+				TEST0020000000000000004 /* TimerTests.swift */,
+				TEST0020000000000000008 /* ValetudoAPITests.swift */,
+			);
+			path = ValetudoAppTests;
 			sourceTree = "<group>";
 		};
 		706B5E1B783986C1BAAA5737 = {
@@ -159,6 +192,7 @@
 			children = (
 				F87A9FA92EF61BDB009A0D9D /* Media.xcassets */,
 				0E61845B1FBBABA715253E03 /* ValetudoApp */,
+				TEST0040000000000000000 /* ValetudoAppTests */,
 				5A0E541CC39DC062D0BDC717 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -228,7 +262,43 @@
 			productReference = 44002D9750AED2C37546A796 /* ValetudoApp.app */;
 			productType = "com.apple.product-type.application";
 		};
+		TEST0050000000000000000 /* ValetudoAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = TEST0080000000000000000 /* Build configuration list for PBXNativeTarget "ValetudoAppTests" */;
+			buildPhases = (
+				TEST0060000000000000000 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				TEST00A0000000000000000 /* PBXTargetDependency */,
+			);
+			name = ValetudoAppTests;
+			packageProductDependencies = (
+			);
+			productName = ValetudoAppTests;
+			productReference = TEST0030000000000000000 /* ValetudoAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 /* End PBXNativeTarget section */
+
+/* Begin PBXContainerItemProxy section */
+		TEST0090000000000000000 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2127E299588E4EC8D4C24FE7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B2971D6203E36800C370817D;
+			remoteInfo = ValetudoApp;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		TEST00A0000000000000000 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B2971D6203E36800C370817D /* ValetudoApp */;
+			targetProxy = TEST0090000000000000000 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXProject section */
 		2127E299588E4EC8D4C24FE7 /* Project object */ = {
@@ -257,6 +327,7 @@
 			projectRoot = "";
 			targets = (
 				B2971D6203E36800C370817D /* ValetudoApp */,
+				TEST0050000000000000000 /* ValetudoAppTests */,
 			);
 		};
 /* End PBXProject section */
@@ -314,6 +385,21 @@
 				NEW00100000000000000006 /* MapViewModel.swift in Sources */,
 				NEW00100000000000000007 /* RobotDetailViewModel.swift in Sources */,
 				NEW00100000000000000008 /* RobotSettingsViewModel.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		TEST0060000000000000000 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				TEST0010000000000000001 /* ConsumableTests.swift in Sources */,
+				TEST0010000000000000002 /* KeychainStoreTests.swift in Sources */,
+				TEST0010000000000000003 /* MapLayerTests.swift in Sources */,
+				TEST0010000000000000004 /* TimerTests.swift in Sources */,
+				TEST0010000000000000005 /* MapViewModelTests.swift in Sources */,
+				TEST0010000000000000006 /* RobotDetailViewModelTests.swift in Sources */,
+				TEST0010000000000000007 /* RobotSettingsViewModelTests.swift in Sources */,
+				TEST0010000000000000008 /* ValetudoAPITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -507,6 +593,48 @@
 			};
 			name = Release;
 		};
+		TEST0070000000000000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = J459G9CJT5;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudiOS.Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ValetudoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ValetudoApp";
+			};
+			name = Debug;
+		};
+		TEST0070000000000000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
+				DEVELOPMENT_TEAM = J459G9CJT5;
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudiOS.Tests;
+				SDKROOT = iphoneos;
+				SKIP_INSTALL = YES;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ValetudoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ValetudoApp";
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -524,6 +652,15 @@
 			buildConfigurations = (
 				1566EBC02CAC15BD406025DD /* Debug */,
 				AE5711E12CE23CEF63D8F934 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Debug;
+		};
+		TEST0080000000000000000 /* Build configuration list for PBXNativeTarget "ValetudoAppTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				TEST0070000000000000001 /* Debug */,
+				TEST0070000000000000002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

@@ -4,8 +4,7 @@
    version = "1.7">
    <BuildAction
       parallelizeBuildables = "YES"
-      buildImplicitDependencies = "YES"
-      runPostActionsOnFailure = "NO">
+      buildImplicitDependencies = "YES">
       <BuildActionEntries>
          <BuildActionEntry
             buildForTesting = "YES"
@@ -21,20 +20,6 @@
                ReferencedContainer = "container:ValetudoApp.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
-         <BuildActionEntry
-            buildForTesting = "YES"
-            buildForRunning = "NO"
-            buildForProfiling = "NO"
-            buildForArchiving = "NO"
-            buildForAnalyzing = "NO">
-            <BuildableReference
-               BuildableIdentifier = "primary"
-               BlueprintIdentifier = "54E7A0E12B6491E95C754063"
-               BuildableName = "ValetudoAppTests.xctest"
-               BlueprintName = "ValetudoAppTests"
-               ReferencedContainer = "container:ValetudoApp.xcodeproj">
-            </BuildableReference>
-         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -42,31 +27,19 @@
       selectedDebuggerIdentifier = "Xcode.DebuggerFoundation.Debugger.LLDB"
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       shouldUseLaunchSchemeArgsEnv = "YES"
-      onlyGenerateCoverageForSpecifiedTargets = "NO">
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "B2971D6203E36800C370817D"
-            BuildableName = "ValetudoApp.app"
-            BlueprintName = "ValetudoApp"
-            ReferencedContainer = "container:ValetudoApp.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
+      shouldAutocreateTestPlan = "YES">
       <Testables>
          <TestableReference
-            skipped = "NO"
-            parallelizable = "NO">
+            skipped = "NO">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "54E7A0E12B6491E95C754063"
+               BlueprintIdentifier = "TEST0050000000000000000"
                BuildableName = "ValetudoAppTests.xctest"
                BlueprintName = "ValetudoAppTests"
                ReferencedContainer = "container:ValetudoApp.xcodeproj">
             </BuildableReference>
          </TestableReference>
       </Testables>
-      <CommandLineArguments>
-      </CommandLineArguments>
    </TestAction>
    <LaunchAction
       buildConfiguration = "Debug"
@@ -79,7 +52,7 @@
       debugServiceExtension = "internal"
       allowLocationSimulation = "YES">
       <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+         reuseRunningServiceExtension = "YES">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B2971D6203E36800C370817D"
@@ -96,7 +69,7 @@
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
       <BuildableProductRunnable
-         runnableDebuggingMode = "0">
+         reuseRunningServiceExtension = "YES">
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "B2971D6203E36800C370817D"
@@ -106,9 +79,6 @@
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
-   <AnalyzeAction
-      buildConfiguration = "Debug">
-   </AnalyzeAction>
    <ArchiveAction
       buildConfiguration = "Release"
       revealArchiveInOrganizer = "YES">
