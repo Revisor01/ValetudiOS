@@ -1,90 +1,99 @@
 # Requirements: ValetudiOS
 
-**Defined:** 2026-03-27
+**Defined:** 2026-03-28
 **Core Value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
 
-## v1.2.0 Requirements
+## v1.3.0 Requirements
 
-Requirements for milestone v1.2.0: Quality & API Completeness.
+Requirements for milestone v1.3.0: Polish & Full API Coverage.
+
+### UI Restore
+
+- [ ] **UIR-01**: Events-Section in RobotDetailView zeigt Valetudo-Events chronologisch mit Dismiss-Button
+- [ ] **UIR-02**: CleanRoute-Picker in RobotDetailView erlaubt Auswahl der Reinigungsroute (capability-gated)
+- [ ] **UIR-03**: Map-Snapshots Section in RobotSettingsView zeigt Liste und ermöglicht Restore (capability-gated)
+- [ ] **UIR-04**: Pending-Map-Change Section in RobotSettingsView erlaubt Accept/Reject (capability-gated)
+- [ ] **UIR-05**: Obstacle-Photos Section in RobotDetailView mit Navigation zu ObstaclePhotoView (capability-gated)
+- [ ] **UIR-06**: Notification-Actions GO_HOME und LOCATE funktionieren (AppDelegate + Handler)
+
+### Neue Capabilities
+
+- [ ] **CAP-01**: Benutzer kann Sprachpakete des Roboters verwalten (VoicePackManagementCapability)
+- [ ] **CAP-02**: Benutzer kann Absaugdauer der Auto-Empty-Station steuern (AutoEmptyDockAutoEmptyDurationControlCapability)
+- [ ] **CAP-03**: Benutzer kann Trocknungszeit der Mop-Station steuern (MopDockMopDryingTimeControlCapability)
+- [ ] **CAP-04**: Benutzer sieht Robot-Properties (Modell, Firmware, Seriennummer) via /api/v2/robot/properties
+
+### Bugfixes & Robustness
+
+- [ ] **FIX-01**: Force-unwrap URLs durch sichere optionale Bindung ersetzen (NetworkScanner, RobotDetailView)
+- [ ] **FIX-02**: Stille Fehler in ViewModels/Services durch ErrorRouter-Alerts oder Logger-Warnungen ersetzen
+- [ ] **FIX-03**: SSE-Reconnect mit Exponential Backoff (1s → 5s → 30s) statt fester 30s-Wartezeit
+- [ ] **FIX-04**: Koordinaten-Transformation in MapView (Float→Int Rundungsfehler bei Zonen/GoTo) beheben
+
+### Test Coverage
+
+- [ ] **TEST-01**: ViewModel-Unit-Tests (RobotDetailViewModel, RobotSettingsViewModel, MapViewModel State-Transitions)
+- [ ] **TEST-02**: ValetudoAPI-Tests (Request/Response Encoding, Error-Handling, HTTP-Statuscodes)
+
+## v1.2.0 Requirements (Completed)
 
 ### UX
-
 - [x] **UX-01**: Robot-Zeile in der Liste ist vollständig klickbar
-- [x] **UX-02**: Benutzer sieht Fehlermeldungen bei fehlgeschlagenen Aktionen (statt stiller Fehler)
+- [x] **UX-02**: Benutzer sieht Fehlermeldungen bei fehlgeschlagenen Aktionen
 - [x] **UX-03**: Notification-Actions GO_HOME und LOCATE führen die jeweilige Aktion aus
-- [x] **UX-04**: Benutzer kann Valetudo Events einsehen (DustBinFull, MopReminder, Errors etc.)
+- [x] **UX-04**: Benutzer kann Valetudo Events einsehen
 
 ### Netzwerk
-
-- [x] **NET-01**: App nutzt SSE-Streams für Echtzeit-State-Updates statt 5s-Polling
-- [x] **NET-02**: App findet Roboter via mDNS/Bonjour (mit IP-Scan-Fallback)
-- [x] **NET-03**: Credentials werden im iOS Keychain gespeichert (Migration aus UserDefaults)
+- [x] **NET-01**: App nutzt SSE-Streams für Echtzeit-State-Updates
+- [x] **NET-02**: App findet Roboter via mDNS/Bonjour
+- [x] **NET-03**: Credentials werden im iOS Keychain gespeichert
 
 ### API Capabilities
-
 - [x] **API-01**: Benutzer kann Map-Snapshots erstellen und wiederherstellen
 - [x] **API-02**: Benutzer kann ausstehende Kartenänderungen akzeptieren/ablehnen
-- [x] **API-03**: Benutzer kann Reinigungsroute wählen (Standard, Bow-Tie, Spiral etc.)
+- [x] **API-03**: Benutzer kann Reinigungsroute wählen
 - [x] **API-04**: Benutzer kann Fotos erkannter Hindernisse ansehen
 
 ### Tech Debt
+- [x] **DEBT-01**: Alle print()-Aufrufe durch os.Logger ersetzt
+- [x] **DEBT-02**: MapView, RobotDetailView, RobotSettingsView in ViewModels aufgeteilt
+- [x] **DEBT-03**: Map-Pixel-Dekompression wird gecacht
+- [x] **DEBT-04**: XCTest-Target mit Unit-Tests
 
-- [x] **DEBT-01**: Alle print()-Aufrufe durch os.Logger ersetzt, Debug-Output nur in DEBUG-Builds
-- [x] **DEBT-02**: MapView, RobotDetailView, RobotSettingsView in ViewModels + Sub-Views aufgeteilt
-- [x] **DEBT-03**: Map-Pixel-Dekompression wird gecacht statt bei jedem Render neu berechnet
-- [x] **DEBT-04**: XCTest-Target mit Tests für Timer, Consumable, MapLayer
+## v2 Requirements (Deferred)
 
-## v2 Requirements
-
-Deferred to future release. Tracked but not in current roadmap.
-
-### Extended Capabilities
-
-- **EXT-01**: VoicePackManagement (Sprachpakete herunterladen/ändern)
-- **EXT-02**: AutoEmptyDock Duration Control
-- **EXT-03**: MopDock Drying Time Control
-- **EXT-04**: Robot Properties Endpoint anzeigen (Modelldetails, Quirk-Info)
-- **EXT-05**: Background-Monitoring via BGAppRefreshTask
-- **EXT-06**: WiFi-Rekonfiguration in-App
+- **EXT-01**: Background-Monitoring via BGAppRefreshTask
+- **EXT-02**: WiFi-Rekonfiguration in-App
+- **EXT-03**: Map-Caching auf Disk (Offline-Zugriff)
+- **EXT-04**: @Observable Migration (nach ausreichender Test-Coverage)
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| Multi-Floor Map Management | Valetudo unterstützt dies nicht offiziell, nur Workarounds via SSH |
-| MQTT in-App | Valetudo SSE erreicht dasselbe ohne Broker-Konfiguration |
+| Multi-Floor Map Management | Valetudo unterstützt dies nicht offiziell |
+| MQTT in-App | SSE erreicht dasselbe ohne Broker-Konfiguration |
 | Cloud-Anbindung | Lokale Kommunikation ist Core Value |
 | Android-Version | Nur iOS |
-| Valetudo-Update in-App | Reboot während Update bricht Verbindung; Link zu Web UI stattdessen |
-| @Observable Migration | Zu riskant ohne Test-Coverage; erst nach DEBT-04 evaluieren |
+| Valetudo-Update in-App | Reboot bricht Verbindung; Link zu Web UI |
 
 ## Traceability
 
-Which phases cover which requirements. Updated during roadmap creation.
-
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UX-01 | Phase 1 | Complete |
-| UX-02 | Phase 1 | Complete |
-| UX-03 | Phase 3 | Complete |
-| UX-04 | Phase 3 | Complete |
-| NET-01 | Phase 2 | Complete |
-| NET-02 | Phase 2 | Complete |
-| NET-03 | Phase 1 | Complete |
-| API-01 | Phase 3 | Complete |
-| API-02 | Phase 3 | Complete |
-| API-03 | Phase 3 | Complete |
-| API-04 | Phase 3 | Complete |
-| DEBT-01 | Phase 1 | Complete |
-| DEBT-02 | Phase 4 | Complete |
-| DEBT-03 | Phase 2 | Complete |
-| DEBT-04 | Phase 4 | Complete |
-
-**Coverage:**
-- v1.2.0 requirements: 15 total
-- Mapped to phases: 15
-- Unmapped: 0
-
----
-*Requirements defined: 2026-03-27*
-*Last updated: 2026-03-27 after roadmap creation — all 15 requirements mapped*
+| UIR-01 | TBD | Pending |
+| UIR-02 | TBD | Pending |
+| UIR-03 | TBD | Pending |
+| UIR-04 | TBD | Pending |
+| UIR-05 | TBD | Pending |
+| UIR-06 | TBD | Pending |
+| CAP-01 | TBD | Pending |
+| CAP-02 | TBD | Pending |
+| CAP-03 | TBD | Pending |
+| CAP-04 | TBD | Pending |
+| FIX-01 | TBD | Pending |
+| FIX-02 | TBD | Pending |
+| FIX-03 | TBD | Pending |
+| FIX-04 | TBD | Pending |
+| TEST-01 | TBD | Pending |
+| TEST-02 | TBD | Pending |
