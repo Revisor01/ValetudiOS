@@ -43,10 +43,13 @@ final class RobotSettingsViewModel: ObservableObject {
     @Published var hasMapSnapshots = DebugConfig.showAllCapabilities
     @Published var hasPendingMapChange = DebugConfig.showAllCapabilities
     @Published var hasVoicePack = DebugConfig.showAllCapabilities
+    @Published var hasAutoEmptyDockDuration = DebugConfig.showAllCapabilities
 
     // MARK: - Presets
     @Published var carpetSensorModePresets: [String] = []
     @Published var mopDockWashTemperaturePresets: [String] = []
+    @Published var autoEmptyDockDurationPresets: [String] = []
+    @Published var currentAutoEmptyDockDuration: String = ""
 
     // MARK: - Voice Pack state
     @Published var voicePacks: [VoicePack] = []
@@ -124,6 +127,7 @@ final class RobotSettingsViewModel: ObservableObject {
             hasMapSnapshots = DebugConfig.showAllCapabilities || capabilities.contains("MapSnapshotCapability")
             hasPendingMapChange = DebugConfig.showAllCapabilities || capabilities.contains("PendingMapChangeHandlingCapability")
             hasVoicePack = DebugConfig.showAllCapabilities || capabilities.contains("VoicePackManagementCapability")
+            hasAutoEmptyDockDuration = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockAutoEmptyDurationControlCapability")
         } catch {
             hasMappingPass = DebugConfig.showAllCapabilities
         }
@@ -242,6 +246,25 @@ final class RobotSettingsViewModel: ObservableObject {
             } catch {
                 if !DebugConfig.showAllCapabilities { hasVoicePack = false }
                 logger.debug("Voice pack not supported: \(error, privacy: .public)")
+            }
+        }
+
+        // Load auto empty dock duration presets
+        if hasAutoEmptyDockDuration {
+            do {
+                autoEmptyDockDurationPresets = try await api.getAutoEmptyDockDurationPresets()
+                if let attr = robotManager.robotStates[robot.id]?.attributes.first(where: {
+                    $0.__class == "PresetSelectionStateAttribute" && $0.type == "auto_empty_dock_auto_empty_duration"
+                }) {
+                    currentAutoEmptyDockDuration = attr.value ?? ""
+                }
+                if currentAutoEmptyDockDuration.isEmpty, let first = autoEmptyDockDurationPresets.first {
+                    currentAutoEmptyDockDuration = first
+                }
+            } catch {
+                if !DebugConfig.showAllCapabilities { hasAutoEmptyDockDuration = false }
+                autoEmptyDockDurationPresets = []
+                logger.debug("Auto empty dock duration not supported: \(error, privacy: .public)")
             }
         }
 
@@ -413,6 +436,16 @@ final class RobotSettingsViewModel: ObservableObject {
             try await api.setMopDockWashTemperature(preset: preset)
         } catch {
             logger.error("Failed to set wash temperature: \(error, privacy: .public)")
+        }
+    }
+
+    func setAutoEmptyDockDuration(_ preset: String) async {
+        guard let api = api else { return }
+        do {
+            try await api.setAutoEmptyDockDuration(preset: preset)
+            logger.info("Auto empty dock duration set to: \(preset, privacy: .public)")
+        } catch {
+            logger.error("Failed to set auto empty dock duration: \(error, privacy: .public)")
         }
     }
 

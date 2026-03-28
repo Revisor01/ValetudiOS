@@ -300,6 +300,23 @@
         }
       }
     },
+    "auto_empty.duration_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Absaugdauer"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Suction Duration"
+          }
+        }
+      }
+    },
     "cleanroute.deep" : {
       "extractionState" : "stale",
       "localizations" : {

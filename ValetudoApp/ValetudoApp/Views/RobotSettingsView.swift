@@ -1495,6 +1495,7 @@ struct StationSettingsView: View {
 
     // Capabilities
     @State private var hasAutoEmptyDock = DebugConfig.showAllCapabilities
+    @State private var hasAutoEmptyDockDuration = DebugConfig.showAllCapabilities
     @State private var hasMopDockAutoDrying = DebugConfig.showAllCapabilities
     @State private var hasMopDockWashTemperature = DebugConfig.showAllCapabilities
 
@@ -1502,6 +1503,8 @@ struct StationSettingsView: View {
     @State private var mopDockAutoDrying = false
     @State private var mopDockWashTemperaturePresets: [String] = []
     @State private var currentWashTemperature: String = ""
+    @State private var autoEmptyDockDurationPresets: [String] = []
+    @State private var currentAutoEmptyDockDuration: String = ""
 
     private var api: ValetudoAPI? {
         robotManager.getAPI(for: robot.id)
@@ -1510,15 +1513,35 @@ struct StationSettingsView: View {
     var body: some View {
         List {
             // Auto Empty Dock Settings
-            if hasAutoEmptyDock {
+            if hasAutoEmptyDock || hasAutoEmptyDockDuration {
                 Section {
-                    NavigationLink {
-                        AutoEmptyDockSettingsView(robot: robot)
-                    } label: {
-                        HStack {
-                            Image(systemName: "arrow.up.bin")
-                                .foregroundStyle(.purple)
-                            Text(String(localized: "settings.auto_empty_interval"))
+                    if hasAutoEmptyDock {
+                        NavigationLink {
+                            AutoEmptyDockSettingsView(robot: robot)
+                        } label: {
+                            HStack {
+                                Image(systemName: "arrow.up.bin")
+                                    .foregroundStyle(.purple)
+                                Text(String(localized: "settings.auto_empty_interval"))
+                            }
+                        }
+                    }
+
+                    if hasAutoEmptyDockDuration && !autoEmptyDockDurationPresets.isEmpty {
+                        Picker(selection: $currentAutoEmptyDockDuration) {
+                            ForEach(autoEmptyDockDurationPresets, id: \.self) { preset in
+                                Text(displayNameForAutoEmptyDockDuration(preset)).tag(preset)
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "timer")
+                                    .foregroundStyle(.purple)
+                                Text(String(localized: "auto_empty.duration_label"))
+                            }
+                        }
+                        .onChange(of: currentAutoEmptyDockDuration) { _, newValue in
+                            guard !isInitialLoad && !newValue.isEmpty else { return }
+                            Task { await setAutoEmptyDockDuration(newValue) }
                         }
                     }
                 } header: {
@@ -1570,7 +1593,7 @@ struct StationSettingsView: View {
             }
 
             // No settings available
-            if !hasAutoEmptyDock && !hasMopDockAutoDrying && !hasMopDockWashTemperature && !isLoading {
+            if !hasAutoEmptyDock && !hasAutoEmptyDockDuration && !hasMopDockAutoDrying && !hasMopDockWashTemperature && !isLoading {
                 Section {
                     Text(String(localized: "settings.no_station_settings"))
                         .foregroundStyle(.secondary)
@@ -1585,7 +1608,7 @@ struct StationSettingsView: View {
             await loadSettings()
         }
         .overlay {
-            if isLoading && !hasAutoEmptyDock && !hasMopDockAutoDrying && !hasMopDockWashTemperature {
+            if isLoading && !hasAutoEmptyDock && !hasAutoEmptyDockDuration && !hasMopDockAutoDrying && !hasMopDockWashTemperature {
                 ProgressView()
             }
         }
@@ -1600,6 +1623,7 @@ struct StationSettingsView: View {
         do {
             let capabilities = try await api.getCapabilities()
             hasAutoEmptyDock = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockAutoEmptyIntervalControlCapability")
+            hasAutoEmptyDockDuration = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockAutoEmptyDurationControlCapability")
             hasMopDockAutoDrying = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopAutoDryingControlCapability")
             hasMopDockWashTemperature = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopWashTemperatureControlCapability")
         } catch {
@@ -1631,6 +1655,25 @@ struct StationSettingsView: View {
                     mopDockWashTemperaturePresets = ["cold", "warm", "hot"]
                     currentWashTemperature = "warm"
                 }
+            }
+        }
+
+        // Load auto empty dock duration presets
+        if hasAutoEmptyDockDuration {
+            do {
+                autoEmptyDockDurationPresets = try await api.getAutoEmptyDockDurationPresets()
+                if let attr = robotManager.robotStates[robot.id]?.attributes.first(where: {
+                    $0.__class == "PresetSelectionStateAttribute" && $0.type == "auto_empty_dock_auto_empty_duration"
+                }) {
+                    currentAutoEmptyDockDuration = attr.value ?? ""
+                }
+                if currentAutoEmptyDockDuration.isEmpty, let first = autoEmptyDockDurationPresets.first {
+                    currentAutoEmptyDockDuration = first
+                }
+            } catch {
+                if !DebugConfig.showAllCapabilities { hasAutoEmptyDockDuration = false }
+                autoEmptyDockDurationPresets = []
+                settingsLogger.debug("Auto empty dock duration not supported: \(error, privacy: .public)")
             }
         }
 
@@ -1666,6 +1709,32 @@ struct StationSettingsView: View {
             return String(localized: "settings.wash_temp.warm")
         case "hot":
             return String(localized: "settings.wash_temp.hot")
+        default:
+            return preset.capitalized.replacingOccurrences(of: "_", with: " ")
+        }
+    }
+
+    private func setAutoEmptyDockDuration(_ preset: String) async {
+        guard let api = api else { return }
+        do {
+            try await api.setAutoEmptyDockDuration(preset: preset)
+        } catch {
+            settingsLogger.error("Failed to set auto empty dock duration: \(error, privacy: .public)")
+        }
+    }
+
+    private func displayNameForAutoEmptyDockDuration(_ preset: String) -> String {
+        switch preset.lowercased() {
+        case "min", "minimum":
+            return String(localized: "preset.min")
+        case "low":
+            return String(localized: "preset.low")
+        case "medium":
+            return String(localized: "preset.medium")
+        case "high":
+            return String(localized: "preset.high")
+        case "max", "maximum":
+            return String(localized: "preset.max")
         default:
             return preset.capitalized.replacingOccurrences(of: "_", with: " ")
         }
