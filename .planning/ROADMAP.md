@@ -29,7 +29,7 @@
 **Milestone Goal:** Codebase sauber machen — alle print()-Reste, Force-Unwraps, fehlende Logger, inkonsistente Concurrency-Patterns, Keychain-Fehlerbehandlung, und View-Decomposition.
 
 - [x] **Phase 9: Logger Migration** - print() durch os.Logger in allen Views und Services ersetzen, DispatchQueue auf structured concurrency migrieren (completed 2026-03-28)
-- [ ] **Phase 10: Safety Fixes** - Force-Unwrap und Keychain-Fehlerbehandlung reparieren, hardcoded URLs/ProductIDs in Constants extrahieren
+- [x] **Phase 10: Safety Fixes** - Force-Unwrap und Keychain-Fehlerbehandlung reparieren, hardcoded URLs/ProductIDs in Constants extrahieren (completed 2026-03-28)
 - [ ] **Phase 11: View Decomposition** - MapView, RobotSettingsView und RobotDetailView in logische Sub-Views aufbrechen
 
 ## Phase Details
@@ -194,7 +194,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 10-01-PLAN.md — SAFE-01/02/ORG-01: Force-Unwrap fix, Keychain-Fehlerlogger, Constants.swift mit URLs und ProductIDs
+- [x] 10-01-PLAN.md — SAFE-01/02/ORG-01: Force-Unwrap fix, Keychain-Fehlerlogger, Constants.swift mit URLs und ProductIDs
 
 ### Phase 11: View Decomposition
 **Goal**: Die drei größten Views sind in überschaubare Sub-Views aufgeteilt; keine einzelne View-Datei überschreitet eine handhabbare Größe
@@ -226,5 +226,5 @@ v1.4.0: 9 → 10 → 11
 | 7. Bugfixes & Robustness | 4/4 | Complete | 2026-03-28 |
 | 8. Test Coverage | 2/2 | Complete   | 2026-03-28 |
 | 9. Logger Migration | 3/3 | Complete   | 2026-03-28 |
-| 10. Safety Fixes | 0/1 | Not started | - |
+| 10. Safety Fixes | 1/1 | Complete   | 2026-03-28 |
 | 11. View Decomposition | 0/? | Not started | - |

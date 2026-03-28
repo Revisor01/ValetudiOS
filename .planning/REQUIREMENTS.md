@@ -15,13 +15,13 @@ Requirements for milestone v1.4.0: Code Quality & Robustness.
 
 ### Safety & Error Handling
 
-- [ ] **SAFE-01**: Force-Unwrap in SettingsView.swift eliminiert durch nil-coalescing/optional binding
-- [ ] **SAFE-02**: KeychainStore.swift prüft SecItemDelete/SecItemAdd Return-Status und loggt Fehler
+- [x] **SAFE-01**: Force-Unwrap in SettingsView.swift eliminiert durch nil-coalescing/optional binding
+- [x] **SAFE-02**: KeychainStore.swift prüft SecItemDelete/SecItemAdd Return-Status und loggt Fehler
 - [x] **SAFE-03**: SupportReminderView nutzt Task.sleep statt DispatchQueue.main.asyncAfter
 
 ### Code Organization
 
-- [ ] **ORG-01**: Hardcoded GitHub-API-URLs in RobotDetailViewModel und RobotSettingsView in zentrale Constants extrahieren
+- [x] **ORG-01**: Hardcoded GitHub-API-URLs in RobotDetailViewModel und RobotSettingsView in zentrale Constants extrahieren
 - [ ] **ORG-02**: MapView (2532 Zeilen) in logische Sub-Views aufbrechen (MiniMap, Controls, Drawing-Helpers)
 - [ ] **ORG-03**: RobotSettingsView (1801 Zeilen) in Section-Views aufbrechen
 - [ ] **ORG-04**: RobotDetailView (1253 Zeilen) in Section-Views aufbrechen
@@ -106,9 +106,9 @@ Requirements for milestone v1.4.0: Code Quality & Robustness.
 | LOG-02 | Phase 9 | Complete |
 | LOG-03 | Phase 9 | Complete |
 | SAFE-03 | Phase 9 | Complete |
-| SAFE-01 | Phase 10 | Pending |
-| SAFE-02 | Phase 10 | Pending |
-| ORG-01 | Phase 10 | Pending |
+| SAFE-01 | Phase 10 | Complete |
+| SAFE-02 | Phase 10 | Complete |
+| ORG-01 | Phase 10 | Complete |
 | ORG-02 | Phase 11 | Pending |
 | ORG-03 | Phase 11 | Pending |
 | ORG-04 | Phase 11 | Pending |

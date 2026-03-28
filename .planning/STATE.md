@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: verifying
-last_updated: "2026-03-28T22:49:33.861Z"
+last_updated: "2026-03-28T22:59:39.490Z"
 last_activity: 2026-03-28
 progress:
-  total_phases: 9
-  completed_phases: 8
-  total_plans: 28
-  completed_plans: 27
+  total_phases: 10
+  completed_phases: 9
+  total_plans: 29
+  completed_plans: 28
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 09 — logger-migration
+**Current focus:** Phase 10 — safety-fixes
 
 ## Current Position
 
-Phase: 09
-Plan: Not started
+Phase: 10 (safety-fixes) — EXECUTING
+Plan: 1 of 1
 Status: Phase complete — ready for verification
 Last activity: 2026-03-28
 
@@ -48,6 +48,8 @@ Recent decisions affecting current work:
 - [Phase 09-logger-migration]: try? (nicht try) fuer Task.sleep in SupportReminderView: CancellationError wird ignoriert damit Animation nicht bricht
 - [Phase 09-logger-migration]: Logger-Property in MapPreviewView platziert (nicht file-top-level), da dort der print()-Aufruf liegt
 - [Phase 09-logger-migration]: Sub-Structs in derselben Datei erhalten eigene Logger-Property mit gleicher category wie Haupt-View
+- [Phase 10-safety-fixes]: Constants als enum — verhindert Instanziierung, reine Namespace-Funktion, Swift-idiomatisch
+- [Phase 10-safety-fixes]: xcodegen generate ausgefuehrt nach Constants.swift-Erstellung — Datei automatisch ins Xcode-Target eingetragen
 
 ### Pending Todos
 
