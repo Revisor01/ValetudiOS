@@ -90,9 +90,12 @@ struct SupportReminderOverlay: ViewModifier {
             .onAppear {
                 supportManager.incrementLaunchCount()
                 if supportManager.shouldShowReminder {
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                        withAnimation(.spring(duration: 0.4)) {
-                            showReminder = true
+                    Task {
+                        try? await Task.sleep(for: .seconds(2))
+                        await MainActor.run {
+                            withAnimation(.spring(duration: 0.4)) {
+                                showReminder = true
+                            }
                         }
                     }
                 }
