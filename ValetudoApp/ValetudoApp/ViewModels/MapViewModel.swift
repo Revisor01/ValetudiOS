@@ -69,9 +69,6 @@ final class MapViewModel: ObservableObject {
     // MARK: - Error State
     @Published var errorMessage: String? = nil
 
-    // MARK: - Logging
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "de.simonluthe.ValetudiOS", category: "MapViewModel")
-
     // MARK: - Task Management
     private var refreshTask: Task<Void, Never>?
 
