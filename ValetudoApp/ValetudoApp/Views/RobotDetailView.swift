@@ -173,9 +173,6 @@ struct RobotDetailView: View {
                 // Statistics (Accordion)
                 statisticsSection
 
-                // Robot Properties Section
-                robotPropertiesSection
-
                 // Settings Section
                 Section {
                     // Roboter (Robot Settings)
@@ -217,6 +214,9 @@ struct RobotDetailView: View {
                 } header: {
                     Text(String(localized: "settings.title"))
                 }
+
+                // Robot Properties (ganz unten)
+                robotPropertiesSection
             }
         }
         .navigationTitle(viewModel.robot.name)
