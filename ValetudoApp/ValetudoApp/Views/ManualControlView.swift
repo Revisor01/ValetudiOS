@@ -1,6 +1,8 @@
 import SwiftUI
+import os
 
 struct ManualControlView: View {
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "ManualControlView")
     let robot: RobotConfig
     @EnvironmentObject var robotManager: RobotManager
 
@@ -149,7 +151,7 @@ struct ManualControlView: View {
             let capabilities = try await api.getCapabilities()
             useHighRes = capabilities.contains("HighResolutionManualControlCapability")
         } catch {
-            print("Failed to check capabilities: \(error)")
+            logger.error("Failed to check capabilities: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -161,7 +163,7 @@ struct ManualControlView: View {
             }
             isEnabled = true
         } catch {
-            print("Failed to enable manual control: \(error)")
+            logger.error("Failed to enable manual control: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -173,7 +175,7 @@ struct ManualControlView: View {
             }
             isEnabled = false
         } catch {
-            print("Failed to disable manual control: \(error)")
+            logger.error("Failed to disable manual control: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -197,7 +199,7 @@ struct ManualControlView: View {
                 try await api.manualControl(action: direction, movementSpeed: 100)
             }
         } catch {
-            print("Movement failed: \(error)")
+            logger.error("Movement failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -211,7 +213,7 @@ struct ManualControlView: View {
                 try await api.manualControl(action: "stop")
             }
         } catch {
-            print("Stop failed: \(error)")
+            logger.error("Stop failed: \(error.localizedDescription, privacy: .public)")
         }
     }
 }
