@@ -27,6 +27,9 @@ final class RobotDetailViewModel: ObservableObject {
     @Published var hasAutoEmptyTrigger = DebugConfig.showAllCapabilities
     @Published var hasMopDockClean = DebugConfig.showAllCapabilities
     @Published var hasMopDockDry = DebugConfig.showAllCapabilities
+    @Published var hasEvents = DebugConfig.showAllCapabilities
+    @Published var hasCleanRoute = DebugConfig.showAllCapabilities
+    @Published var hasObstacleImages = DebugConfig.showAllCapabilities
 
     // Update state
     @Published var currentVersion: String?
@@ -40,6 +43,16 @@ final class RobotDetailViewModel: ObservableObject {
     // Statistics
     @Published var lastCleaningStats: [StatisticEntry] = []
     @Published var totalStats: [StatisticEntry] = []
+
+    // Events
+    @Published var events: [ValetudoEvent] = []
+
+    // Clean Route
+    @Published var cleanRoutePresets: [String] = []
+    @Published var currentCleanRoute: String = ""
+
+    // Obstacles (from map entities)
+    @Published var obstacles: [(id: String, label: String?)] = []
 
     // Live stats polling
     private var statsPollingTask: Task<Void, Never>?
@@ -106,7 +119,10 @@ final class RobotDetailViewModel: ObservableObject {
         async let fanSpeedTask: () = loadFanSpeedPresets()
         async let updateTask: () = checkForUpdate()
         async let statsTask: () = loadLastCleaningStats()
-        _ = await (segmentsTask, consumablesTask, capabilitiesTask, fanSpeedTask, updateTask, statsTask)
+        async let eventsTask: () = loadEvents()
+        async let cleanRouteTask: () = loadCleanRoute()
+        async let obstaclesTask: () = loadObstacles()
+        _ = await (segmentsTask, consumablesTask, capabilitiesTask, fanSpeedTask, updateTask, statsTask, eventsTask, cleanRouteTask, obstaclesTask)
     }
 
     func refreshData() async {
@@ -140,6 +156,9 @@ final class RobotDetailViewModel: ObservableObject {
             hasAutoEmptyTrigger = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockManualTriggerCapability")
             hasMopDockClean = DebugConfig.showAllCapabilities || capabilities.contains("MopDockCleanManualTriggerCapability")
             hasMopDockDry = DebugConfig.showAllCapabilities || capabilities.contains("MopDockDryManualTriggerCapability")
+            hasEvents = true // Events are always available (no capability gate in Valetudo)
+            hasCleanRoute = DebugConfig.showAllCapabilities || capabilities.contains("CleanRouteControlCapability")
+            hasObstacleImages = DebugConfig.showAllCapabilities || capabilities.contains("ObstacleImagesCapability")
         } catch {
             logger.error("Failed to load capabilities: \(error, privacy: .public)")
         }
@@ -188,6 +207,44 @@ final class RobotDetailViewModel: ObservableObject {
             totalStats = stats
         } catch {
             // Silently fail - not all robots support this
+        }
+    }
+
+    private func loadEvents() async {
+        guard let api = api else { return }
+        do {
+            events = try await api.getEvents()
+        } catch {
+            logger.error("Failed to load events: \(error, privacy: .public)")
+            if !DebugConfig.showAllCapabilities { hasEvents = false }
+        }
+    }
+
+    private func loadCleanRoute() async {
+        guard let api = api else { return }
+        do {
+            let state = try await api.getCleanRoute()
+            currentCleanRoute = state.route
+            cleanRoutePresets = try await api.getCleanRoutePresets()
+        } catch {
+            logger.debug("Clean route not supported: \(error, privacy: .public)")
+            if !DebugConfig.showAllCapabilities { hasCleanRoute = false }
+        }
+    }
+
+    private func loadObstacles() async {
+        guard let api = api else { return }
+        do {
+            let mapData = try await api.getMap()
+            let obstacleEntities = (mapData.entities ?? []).filter {
+                $0.metaData?.id != nil
+            }
+            obstacles = obstacleEntities.compactMap { entity in
+                guard let id = entity.metaData?.id else { return nil }
+                return (id: id, label: entity.metaData?.label)
+            }
+        } catch {
+            logger.debug("Failed to load obstacles from map: \(error, privacy: .public)")
         }
     }
 
@@ -347,6 +404,30 @@ final class RobotDetailViewModel: ObservableObject {
             await loadConsumables()
         } catch {
             logger.error("Failed to reset consumable: \(error, privacy: .public)")
+        }
+    }
+
+    // MARK: - Events
+
+    func dismissEvent(_ event: ValetudoEvent) async {
+        guard let api = api else { return }
+        do {
+            try await api.dismissEvent(id: event.id)
+            events.removeAll { $0.id == event.id }
+        } catch {
+            logger.error("Failed to dismiss event: \(error, privacy: .public)")
+        }
+    }
+
+    // MARK: - Clean Route
+
+    func setCleanRoute(_ route: String) async {
+        guard let api = api else { return }
+        do {
+            try await api.setCleanRoute(route: route)
+            currentCleanRoute = route
+        } catch {
+            logger.error("Failed to set clean route: \(error, privacy: .public)")
         }
     }
 

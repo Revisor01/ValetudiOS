@@ -683,7 +683,16 @@ extension ValetudoAPI {
         try await requestVoid("/robot/capabilities/CleanRouteControlCapability", body: body)
     }
 
+    func getCleanRoutePresets() async throws -> [String] {
+        try await request("/robot/capabilities/CleanRouteControlCapability/presets")
+    }
+
     // MARK: - Valetudo Events
+    func dismissEvent(id: String) async throws {
+        let body = try JSONEncoder().encode(["action": "dismiss"])
+        try await requestVoid("/valetudo/events/\(id)", body: body)
+    }
+
     func getEvents() async throws -> [ValetudoEvent] {
         // Events API may return dictionary {id: event} or array — try dict first
         do {
