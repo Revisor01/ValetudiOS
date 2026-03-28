@@ -3,9 +3,30 @@
 **Defined:** 2026-03-28
 **Core Value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
 
-## v1.3.0 Requirements
+## v1.4.0 Requirements
 
-Requirements for milestone v1.3.0: Polish & Full API Coverage.
+Requirements for milestone v1.4.0: Code Quality & Robustness.
+
+### Logging & Diagnostics
+
+- [ ] **LOG-01**: Alle print()-Aufrufe in View-Dateien sind durch os.Logger ersetzt (DoNotDisturbView, StatisticsView, IntensityControlView, MapView, ManualControlView, RoomsManagementView, TimersView)
+- [ ] **LOG-02**: SupportManager.swift print() durch os.Logger ersetzen
+- [ ] **LOG-03**: Alle Views mit print()-Aufrufen haben eine private Logger-Property
+
+### Safety & Error Handling
+
+- [ ] **SAFE-01**: Force-Unwrap in SettingsView.swift eliminiert durch nil-coalescing/optional binding
+- [ ] **SAFE-02**: KeychainStore.swift prüft SecItemDelete/SecItemAdd Return-Status und loggt Fehler
+- [ ] **SAFE-03**: SupportReminderView nutzt Task.sleep statt DispatchQueue.main.asyncAfter
+
+### Code Organization
+
+- [ ] **ORG-01**: Hardcoded GitHub-API-URLs in RobotDetailViewModel und RobotSettingsView in zentrale Constants extrahieren
+- [ ] **ORG-02**: MapView (2532 Zeilen) in logische Sub-Views aufbrechen (MiniMap, Controls, Drawing-Helpers)
+- [ ] **ORG-03**: RobotSettingsView (1801 Zeilen) in Section-Views aufbrechen
+- [ ] **ORG-04**: RobotDetailView (1253 Zeilen) in Section-Views aufbrechen
+
+## v1.3.0 Requirements (Completed)
 
 ### UI Restore
 
@@ -19,21 +40,21 @@ Requirements for milestone v1.3.0: Polish & Full API Coverage.
 ### Neue Capabilities
 
 - [x] **CAP-01**: Benutzer kann Sprachpakete des Roboters verwalten (VoicePackManagementCapability)
-- [x] **CAP-02**: Benutzer kann Absaugdauer der Auto-Empty-Station steuern (AutoEmptyDockAutoEmptyDurationControlCapability)
-- [ ] **CAP-03**: Benutzer kann Trocknungszeit der Mop-Station steuern (MopDockMopDryingTimeControlCapability)
-- [x] **CAP-04**: Benutzer sieht Robot-Properties (Modell, Firmware, Seriennummer) via /api/v2/robot/properties
+- [x] **CAP-02**: Benutzer kann Absaugdauer der Auto-Empty-Station steuern
+- [x] **CAP-03**: Benutzer kann Trocknungszeit der Mop-Station steuern
+- [x] **CAP-04**: Benutzer sieht Robot-Properties (Modell, Firmware, Seriennummer)
 
 ### Bugfixes & Robustness
 
-- [ ] **FIX-01**: Force-unwrap URLs durch sichere optionale Bindung ersetzen (NetworkScanner, RobotDetailView)
-- [x] **FIX-02**: Stille Fehler in ViewModels/Services durch ErrorRouter-Alerts oder Logger-Warnungen ersetzen
-- [x] **FIX-03**: SSE-Reconnect mit Exponential Backoff (1s → 5s → 30s) statt fester 30s-Wartezeit
-- [ ] **FIX-04**: Koordinaten-Transformation in MapView (Float→Int Rundungsfehler bei Zonen/GoTo) beheben
+- [x] **FIX-01**: Force-unwrap URLs durch sichere optionale Bindung ersetzen
+- [x] **FIX-02**: Stille Fehler durch ErrorRouter-Alerts oder Logger-Warnungen ersetzen
+- [x] **FIX-03**: SSE-Reconnect mit Exponential Backoff (1s → 5s → 30s)
+- [x] **FIX-04**: Koordinaten-Transformation in MapView (Rundungsfehler) behoben
 
 ### Test Coverage
 
-- [x] **TEST-01**: ViewModel-Unit-Tests (RobotDetailViewModel, RobotSettingsViewModel, MapViewModel State-Transitions)
-- [x] **TEST-02**: ValetudoAPI-Tests (Request/Response Encoding, Error-Handling, HTTP-Statuscodes)
+- [x] **TEST-01**: ViewModel-Unit-Tests
+- [x] **TEST-02**: ValetudoAPI-Tests
 
 ## v1.2.0 Requirements (Completed)
 
@@ -81,19 +102,22 @@ Requirements for milestone v1.3.0: Polish & Full API Coverage.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| UIR-01 | Phase 5 | Complete |
-| UIR-02 | Phase 5 | Complete |
-| UIR-03 | Phase 5 | Complete |
-| UIR-04 | Phase 5 | Complete |
-| UIR-05 | Phase 5 | Complete |
-| UIR-06 | Phase 5 | Complete |
-| CAP-01 | Phase 6 | Complete |
-| CAP-02 | Phase 6 | Complete |
-| CAP-03 | Phase 6 | Complete |
-| CAP-04 | Phase 6 | Complete |
-| FIX-01 | Phase 7 | Complete |
-| FIX-02 | Phase 7 | Complete |
-| FIX-03 | Phase 7 | Complete |
-| FIX-04 | Phase 7 | Complete |
-| TEST-01 | Phase 8 | Complete |
-| TEST-02 | Phase 8 | Complete |
+| LOG-01 | TBD | Pending |
+| LOG-02 | TBD | Pending |
+| LOG-03 | TBD | Pending |
+| SAFE-01 | TBD | Pending |
+| SAFE-02 | TBD | Pending |
+| SAFE-03 | TBD | Pending |
+| ORG-01 | TBD | Pending |
+| ORG-02 | TBD | Pending |
+| ORG-03 | TBD | Pending |
+| ORG-04 | TBD | Pending |
+
+**Coverage:**
+- v1.4.0 requirements: 10 total
+- Mapped to phases: 0
+- Unmapped: 10 ⚠️
+
+---
+*Requirements defined: 2026-03-28*
+*Last updated: 2026-03-28 after milestone v1.4.0 definition*
