@@ -735,6 +735,16 @@ extension ValetudoAPI {
         return data
     }
 
+    // MARK: - Voice Pack
+    func getVoicePackState() async throws -> VoicePackState {
+        try await request("/robot/capabilities/VoicePackManagementCapability")
+    }
+
+    func setVoicePack(id: String) async throws {
+        let body = try JSONEncoder().encode(["action": "download", "id": id])
+        try await requestVoid("/robot/capabilities/VoicePackManagementCapability", body: body)
+    }
+
     // MARK: - Connection Check
     func checkConnection() async -> Bool {
         do {
@@ -743,5 +753,22 @@ extension ValetudoAPI {
         } catch {
             return false
         }
+    }
+}
+
+// MARK: - Voice Pack Models
+struct VoicePack: Codable, Identifiable {
+    let id: String
+    let name: String
+    let installed: Bool
+}
+
+struct VoicePackState: Codable {
+    let currentLanguage: VoicePack
+    let supportedLanguages: [VoicePack]
+
+    enum CodingKeys: String, CodingKey {
+        case currentLanguage = "current_language"
+        case supportedLanguages = "supported_languages"
     }
 }
