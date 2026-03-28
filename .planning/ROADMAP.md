@@ -181,7 +181,7 @@ Plans:
 Plans:
 - [ ] 09-01-PLAN.md — Logger-Migration Views (Batch 1): DoNotDisturbView, StatisticsView, IntensityControlView, MapView (11 print()-Stellen)
 - [ ] 09-02-PLAN.md — Logger-Migration Views (Batch 2): ManualControlView, RoomsManagementView, TimersView (17 print()-Stellen)
-- [ ] 09-03-PLAN.md — Logger-Migration SupportManager + DispatchQueue→Task.sleep in SupportReminderView
+- [x] 09-03-PLAN.md — Logger-Migration SupportManager + DispatchQueue→Task.sleep in SupportReminderView
 
 ### Phase 10: Safety Fixes
 **Goal**: Kein Force-Unwrap gefährdet die App-Stabilität, Keychain-Fehler werden sichtbar geloggt, und alle Magic-Strings sind zentralisiert
@@ -222,6 +222,6 @@ v1.4.0: 9 → 10 → 11
 | 6. New Capabilities | 4/4 | Complete | 2026-03-28 |
 | 7. Bugfixes & Robustness | 4/4 | Complete | 2026-03-28 |
 | 8. Test Coverage | 2/2 | Complete   | 2026-03-28 |
-| 9. Logger Migration | 0/3 | Not started | - |
+| 9. Logger Migration | 1/3 | In Progress|  |
 | 10. Safety Fixes | 0/? | Not started | - |
 | 11. View Decomposition | 0/? | Not started | - |

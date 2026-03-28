@@ -1,17 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.4.0
-milestone_name: Code Quality & Robustness
-status: ready-to-plan
-stopped_at: Roadmap created — Phase 9 next
-last_updated: "2026-03-28T22:30:00.000Z"
+milestone: v1.2.0
+milestone_name: Quality & API Completeness
+status: executing
+last_updated: "2026-03-28T22:45:27.386Z"
 last_activity: 2026-03-28
 progress:
-  total_phases: 3
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
-  percent: 0
+  total_phases: 9
+  completed_phases: 7
+  total_plans: 28
+  completed_plans: 25
 ---
 
 # Project State
@@ -21,14 +19,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** v1.4.0 Code Quality & Robustness — Phase 9: Logger Migration
+**Current focus:** Phase 09 — logger-migration
 
 ## Current Position
 
-Phase: 9 (Logger Migration) — Not started
-Plan: —
-Status: Roadmap defined, ready for planning
-Last activity: 2026-03-28 — Roadmap v1.4.0 created (Phases 9-11)
+Phase: 09 (logger-migration) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
+Last activity: 2026-03-28
 
 ```
 v1.4.0 progress: [··········] 0% (0/3 phases)
@@ -47,6 +45,7 @@ Recent decisions affecting current work:
 - Phase 9 groups all logging work + SAFE-03 (DispatchQueue → Task.sleep, same concurrency concern)
 - Phase 10 handles remaining safety/organization quick-fixes
 - Phase 11 is the largest structural change (3 big views decomposed)
+- [Phase 09-logger-migration]: try? (nicht try) fuer Task.sleep in SupportReminderView: CancellationError wird ignoriert damit Animation nicht bricht
 
 ### Pending Todos
 
