@@ -54,6 +54,9 @@ final class RobotDetailViewModel: ObservableObject {
     // Obstacles (from map entities)
     @Published var obstacles: [(id: String, label: String?)] = []
 
+    // Robot Properties
+    @Published var robotProperties: RobotProperties?
+
     // Live stats polling
     private var statsPollingTask: Task<Void, Never>?
 
@@ -122,7 +125,8 @@ final class RobotDetailViewModel: ObservableObject {
         async let eventsTask: () = loadEvents()
         async let cleanRouteTask: () = loadCleanRoute()
         async let obstaclesTask: () = loadObstacles()
-        _ = await (segmentsTask, consumablesTask, capabilitiesTask, fanSpeedTask, updateTask, statsTask, eventsTask, cleanRouteTask, obstaclesTask)
+        async let propertiesTask: () = loadRobotProperties()
+        _ = await (segmentsTask, consumablesTask, capabilitiesTask, fanSpeedTask, updateTask, statsTask, eventsTask, cleanRouteTask, obstaclesTask, propertiesTask)
     }
 
     func refreshData() async {
@@ -245,6 +249,16 @@ final class RobotDetailViewModel: ObservableObject {
             }
         } catch {
             logger.debug("Failed to load obstacles from map: \(error, privacy: .public)")
+        }
+    }
+
+    private func loadRobotProperties() async {
+        guard let api = api else { return }
+        do {
+            robotProperties = try await api.getRobotProperties()
+        } catch {
+            logger.debug("Robot properties not available: \(error, privacy: .public)")
+            // Non-fatal: section wird ausgeblendet wenn nil
         }
     }
 
