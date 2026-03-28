@@ -27,7 +27,7 @@ Requirements for milestone v1.3.0: Polish & Full API Coverage.
 
 - [ ] **FIX-01**: Force-unwrap URLs durch sichere optionale Bindung ersetzen (NetworkScanner, RobotDetailView)
 - [ ] **FIX-02**: Stille Fehler in ViewModels/Services durch ErrorRouter-Alerts oder Logger-Warnungen ersetzen
-- [ ] **FIX-03**: SSE-Reconnect mit Exponential Backoff (1s → 5s → 30s) statt fester 30s-Wartezeit
+- [x] **FIX-03**: SSE-Reconnect mit Exponential Backoff (1s → 5s → 30s) statt fester 30s-Wartezeit
 - [ ] **FIX-04**: Koordinaten-Transformation in MapView (Float→Int Rundungsfehler bei Zonen/GoTo) beheben
 
 ### Test Coverage
@@ -93,7 +93,7 @@ Requirements for milestone v1.3.0: Polish & Full API Coverage.
 | CAP-04 | Phase 6 | Complete |
 | FIX-01 | Phase 7 | Pending |
 | FIX-02 | Phase 7 | Pending |
-| FIX-03 | Phase 7 | Pending |
+| FIX-03 | Phase 7 | Complete |
 | FIX-04 | Phase 7 | Pending |
 | TEST-01 | Phase 8 | Pending |
 | TEST-02 | Phase 8 | Pending |

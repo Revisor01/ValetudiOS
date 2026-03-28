@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.3.0
 milestone_name: Polish & Full API Coverage
 status: executing
-stopped_at: Completed 06-new-capabilities 06-04-PLAN.md
-last_updated: "2026-03-28T15:10:32.443Z"
+stopped_at: Completed 07-bugfixes-robustness 07-03-PLAN.md
+last_updated: "2026-03-28T15:19:37.139Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 8
   completed_phases: 6
-  total_plans: 19
-  completed_plans: 19
+  total_plans: 23
+  completed_plans: 20
   percent: 0
 ---
 
@@ -21,12 +21,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 06 — new-capabilities
+**Current focus:** Phase 07 — bugfixes-robustness
 
 ## Current Position
 
-Phase: 7
-Plan: Not started
+Phase: 07 (bugfixes-robustness) — EXECUTING
+Plan: 2 of 4
 Status: Ready to execute
 Last activity: 2026-03-28
 
@@ -64,6 +64,7 @@ Progress: [░░░░░░░░░░] 0%
 | Phase 06-new-capabilities P01 | 8min | 2 tasks | 4 files |
 | Phase 06-new-capabilities P02 | 7min | 2 tasks | 4 files |
 | Phase 06-new-capabilities P04 | 5min | 2 tasks | 4 files |
+| Phase 07-bugfixes-robustness P03 | 2min | 1 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -115,6 +116,7 @@ Recent decisions affecting current work:
 - [Phase 06-new-capabilities]: displayNameForAutoEmptyDockDuration() nutzt preset.* l10n-Keys statt eigenem Enum
 - [Phase 06-new-capabilities]: RobotProperties all fields optional — different Valetudo versions return different fields, optional Codable prevents runtime crashes
 - [Phase 06-new-capabilities]: Properties section nil-gated (if let props = viewModel.robotProperties) — no Capability gate needed since /robot/properties is a base endpoint
+- [Phase 07-bugfixes-robustness]: [Phase 07-bugfixes-robustness]: SSE backoff uses retryCount-based switch (1s/5s/30s) — retryCount reset to 0 after successful connect; each retry attempt logged with count and delay
 
 ### v1.3.0 Context
 
@@ -134,6 +136,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-28T15:03:40.835Z
-Stopped at: Completed 06-new-capabilities 06-04-PLAN.md
+Last session: 2026-03-28T15:19:37.137Z
+Stopped at: Completed 07-bugfixes-robustness 07-03-PLAN.md
 Resume file: None
