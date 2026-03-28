@@ -1,10 +1,13 @@
 import Foundation
+import os
 import StoreKit
 import SwiftUI
 
 @MainActor
 class SupportManager: ObservableObject {
     static let shared = SupportManager()
+
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "SupportManager")
 
     @Published var products: [Product] = []
     @Published var isLoading = false
@@ -33,9 +36,7 @@ class SupportManager: ObservableObject {
             products = try await Product.products(for: productIds)
                 .sorted { $0.price < $1.price }
         } catch {
-            #if DEBUG
-            print("Failed to load products: \(error)")
-            #endif
+            logger.error("Failed to load products: \(error.localizedDescription, privacy: .public)")
         }
     }
 
