@@ -136,7 +136,13 @@ Plans:
   2. Fehlgeschlagene API-Calls in ViewModels und Services zeigen dem Benutzer eine ErrorRouter-Alert oder einen Logger-Warning-Eintrag; kein Fehler wird mehr lautlos verworfen
   3. SSE-Verbindung re-connectet nach 1s, 5s und dann 30s statt sofort mit 30s; Backoff ist im Logger nachvollziehbar
   4. Zonen und GoTo-Marker werden auf der Karte an der richtigen Position gerendert (kein systematischer Versatz durch Float-zu-Int-Rundung)
-**Plans**: TBD
+**Plans**: 4 plans
+
+Plans:
+- [ ] 07-01-PLAN.md — FIX-01: Force-unwrap URLs in NetworkScanner.checkHost() und RobotDetailView.updateUrl ersetzen
+- [ ] 07-02-PLAN.md — FIX-02: Stille catch-Blöcke in MapViewModel und RobotManager durch logger.warning/errorMessage ersetzen
+- [ ] 07-03-PLAN.md — FIX-03: SSE Exponential Backoff (1s → 5s → 30s) in SSEConnectionManager.streamWithReconnect()
+- [ ] 07-04-PLAN.md — FIX-04: Koordinaten-Truncation in MapView.finishDrawing(), GoTo-Drag und MapViewModel.splitRoom() durch .rounded() beheben
 
 ### Phase 8: Test Coverage
 **Goal**: Kritische ViewModel-Logik und der API-Layer sind durch automatisierte Tests abgedeckt und regressionssicher
@@ -162,5 +168,5 @@ v1.3.0: 5 → 6 → 7 → 8
 | 4. View Refactoring & Tests | 4/4 | Complete | 2026-03-27 |
 | 5. UI Restore | 2/2 | Complete   | 2026-03-28 |
 | 6. New Capabilities | 3/4 | In Progress|  |
-| 7. Bugfixes & Robustness | 0/TBD | Not started | - |
+| 7. Bugfixes & Robustness | 0/4 | Not started | - |
 | 8. Test Coverage | 0/TBD | Not started | - |
