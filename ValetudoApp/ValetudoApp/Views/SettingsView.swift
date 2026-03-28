@@ -80,6 +80,16 @@ struct SettingsView: View {
                     }
                 }
 
+                // MARK: - Support Section
+                Section {
+                    NavigationLink {
+                        SupportView()
+                    } label: {
+                        Label(String(localized: "support.title"), systemImage: "heart.fill")
+                            .foregroundStyle(.pink)
+                    }
+                }
+
                 // MARK: - About Section
                 Section {
                     HStack {
@@ -124,12 +134,17 @@ struct SettingsView: View {
                     VStack(spacing: 4) {
                         Text("settings.license_footer")
                         HStack(spacing: 4) {
-                            Text("settings.made_with")
+                            Text("Made with")
                             Image(systemName: "heart.fill")
-                                .foregroundStyle(.red)
-                            Text("settings.made_location")
+                                .foregroundStyle(.pink)
+                            Text("in Hennstedt")
                         }
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                         .padding(.top, 8)
+                        Text("settings.branding.subtitle")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
                     }
                 }
             }

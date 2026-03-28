@@ -37,6 +37,9 @@
 		FFECCF69B6C0CE99DDF1E747 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85C9582AEC53718BC544A5F /* SettingsView.swift */; };
 		HELPER001A2B3C4D5E6F7A8B /* PresetHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = HELPER001A2B3C4D5E6F7A8C /* PresetHelpers.swift */; };
 		HELPER002A2B3C4D5E6F7A8B /* DebugConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = HELPER002A2B3C4D5E6F7A8C /* DebugConfig.swift */; };
+		SUP00100000000000000001 /* SupportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUP00200000000000000001 /* SupportManager.swift */; };
+		SUP00100000000000000002 /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUP00200000000000000002 /* SupportView.swift */; };
+		SUP00100000000000000003 /* SupportReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUP00200000000000000003 /* SupportReminderView.swift */; };
 		NEW00100000000000000001 /* ErrorRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000001 /* ErrorRouter.swift */; };
 		NEW00100000000000000002 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000002 /* KeychainStore.swift */; };
 		NEW00100000000000000003 /* SSEConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000003 /* SSEConnectionManager.swift */; };
@@ -87,6 +90,9 @@
 		F87A9FA92EF61BDB009A0D9D /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
 		HELPER001A2B3C4D5E6F7A8C /* PresetHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetHelpers.swift; sourceTree = "<group>"; };
 		HELPER002A2B3C4D5E6F7A8C /* DebugConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugConfig.swift; sourceTree = "<group>"; };
+		SUP00200000000000000001 /* SupportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportManager.swift; sourceTree = "<group>"; };
+		SUP00200000000000000002 /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
+		SUP00200000000000000003 /* SupportReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportReminderView.swift; sourceTree = "<group>"; };
 		NEW00200000000000000001 /* ErrorRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorRouter.swift; sourceTree = "<group>"; };
 		NEW00200000000000000002 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
 		NEW00200000000000000003 /* SSEConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSEConnectionManager.swift; sourceTree = "<group>"; };
@@ -158,6 +164,8 @@
 				075F2DE6ED60C5F11921459D /* RoomsManagementView.swift */,
 				A85C9582AEC53718BC544A5F /* SettingsView.swift */,
 				2F02071A0C637423ED754AC4 /* StatisticsView.swift */,
+				SUP00200000000000000002 /* SupportView.swift */,
+				SUP00200000000000000003 /* SupportReminderView.swift */,
 				4D74E6E7081C7AE4DA22B562 /* TimersView.swift */,
 			);
 			path = Views;
@@ -206,6 +214,7 @@
 				NEW00200000000000000004 /* NWBrowserService.swift */,
 				4BE7F0D27E21AAB984042AF4 /* RobotManager.swift */,
 				NEW00200000000000000003 /* SSEConnectionManager.swift */,
+				SUP00200000000000000001 /* SupportManager.swift */,
 				004F5A0A2815A8D95949878D /* ValetudoAPI.swift */,
 			);
 			path = Services;
@@ -385,6 +394,9 @@
 				NEW00100000000000000006 /* MapViewModel.swift in Sources */,
 				NEW00100000000000000007 /* RobotDetailViewModel.swift in Sources */,
 				NEW00100000000000000008 /* RobotSettingsViewModel.swift in Sources */,
+				SUP00100000000000000001 /* SupportManager.swift in Sources */,
+				SUP00100000000000000002 /* SupportView.swift in Sources */,
+				SUP00100000000000000003 /* SupportReminderView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
