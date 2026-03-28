@@ -61,11 +61,14 @@ actor SSEConnectionManager {
         onConnectionChange: @escaping @Sendable (Bool) -> Void
     ) async {
         let decoder = JSONDecoder()
+        var retryCount = 0
 
         while !Task.isCancelled {
             do {
                 let bytes = try await api.streamStateLines()
 
+                // Successful connection — reset backoff
+                retryCount = 0
                 isConnected[robotId] = true
                 onConnectionChange(true)
                 logger.info("SSE connected for robot \(robotId, privacy: .public)")
@@ -95,9 +98,18 @@ actor SSEConnectionManager {
                 isConnected[robotId] = false
                 onConnectionChange(false)
 
-                // Wait 30 seconds before reconnecting
+                // Exponential backoff: 1s → 5s → 30s (capped)
+                retryCount += 1
+                let delay: Double
+                switch retryCount {
+                case 1:  delay = 1
+                case 2:  delay = 5
+                default: delay = 30
+                }
+                logger.info("SSE retry \(retryCount, privacy: .public) for robot \(robotId, privacy: .public) — waiting \(delay, privacy: .public)s")
+
                 do {
-                    try await Task.sleep(for: .seconds(30))
+                    try await Task.sleep(for: .seconds(delay))
                 } catch is CancellationError {
                     break
                 } catch {
