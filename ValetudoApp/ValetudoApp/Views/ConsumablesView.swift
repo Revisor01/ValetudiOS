@@ -1,4 +1,7 @@
 import SwiftUI
+import os
+
+private let consumablesLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "ConsumablesView")
 
 struct ConsumablesView: View {
     @EnvironmentObject var robotManager: RobotManager
@@ -66,21 +69,21 @@ struct ConsumablesView: View {
         do {
             consumables = try await api.getConsumables()
         } catch {
-            print("Failed to load consumables: \(error)")
+            consumablesLogger.error("Failed to load consumables: \(error, privacy: .public)")
         }
     }
 
     private func resetConsumable(_ consumable: Consumable) async {
         guard let api = api else { return }
 
-        print("[DEBUG] resetConsumable: type=\(consumable.type), subType=\(String(describing: consumable.subType))")
+        consumablesLogger.debug("resetConsumable: type=\(consumable.type, privacy: .public), subType=\(String(describing: consumable.subType), privacy: .public)")
 
         do {
             try await api.resetConsumable(type: consumable.type, subType: consumable.subType)
-            print("[DEBUG] resetConsumable: Success")
+            consumablesLogger.debug("resetConsumable: Success")
             await loadConsumables()
         } catch {
-            print("[DEBUG] resetConsumable FAILED: \(error)")
+            consumablesLogger.error("resetConsumable FAILED: \(error, privacy: .public)")
         }
     }
 }

@@ -1,8 +1,10 @@
 import Foundation
 import SwiftUI
+import os
 
 @MainActor
 final class RobotDetailViewModel: ObservableObject {
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "RobotDetailViewModel")
 
     // MARK: - Identity
     let robot: RobotConfig
@@ -117,7 +119,7 @@ final class RobotDetailViewModel: ObservableObject {
         do {
             segments = try await api.getSegments()
         } catch {
-            print("Failed to load segments: \(error)")
+            logger.error("Failed to load segments: \(error, privacy: .public)")
         }
     }
 
@@ -126,7 +128,7 @@ final class RobotDetailViewModel: ObservableObject {
         do {
             consumables = try await api.getConsumables()
         } catch {
-            print("Failed to load consumables: \(error)")
+            logger.error("Failed to load consumables: \(error, privacy: .public)")
         }
     }
 
@@ -139,7 +141,7 @@ final class RobotDetailViewModel: ObservableObject {
             hasMopDockClean = DebugConfig.showAllCapabilities || capabilities.contains("MopDockCleanManualTriggerCapability")
             hasMopDockDry = DebugConfig.showAllCapabilities || capabilities.contains("MopDockDryManualTriggerCapability")
         } catch {
-            print("Failed to load capabilities: \(error)")
+            logger.error("Failed to load capabilities: \(error, privacy: .public)")
         }
     }
 
@@ -148,7 +150,7 @@ final class RobotDetailViewModel: ObservableObject {
         do {
             fanSpeedPresets = try await api.getFanSpeedPresets()
         } catch {
-            print("Fan speed not supported: \(error)")
+            logger.debug("Fan speed not supported: \(error, privacy: .public)")
             if DebugConfig.showAllCapabilities && fanSpeedPresets.isEmpty {
                 fanSpeedPresets = ["low", "medium", "high", "max"]
             }
@@ -157,7 +159,7 @@ final class RobotDetailViewModel: ObservableObject {
         do {
             waterUsagePresets = try await api.getWaterUsagePresets()
         } catch {
-            print("Water usage not supported: \(error)")
+            logger.debug("Water usage not supported: \(error, privacy: .public)")
             if DebugConfig.showAllCapabilities && waterUsagePresets.isEmpty {
                 waterUsagePresets = ["low", "medium", "high"]
             }
@@ -166,7 +168,7 @@ final class RobotDetailViewModel: ObservableObject {
         do {
             operationModePresets = try await api.getOperationModePresets()
         } catch {
-            print("Operation mode not supported: \(error)")
+            logger.debug("Operation mode not supported: \(error, privacy: .public)")
             if DebugConfig.showAllCapabilities && operationModePresets.isEmpty {
                 operationModePresets = ["vacuum", "mop", "vacuum_and_mop"]
             }
@@ -207,7 +209,7 @@ final class RobotDetailViewModel: ObservableObject {
             latestVersion = release.tag_name
             updateUrl = release.html_url
         } catch {
-            print("Failed to check for updates: \(error)")
+            logger.error("Failed to check for updates: \(error, privacy: .public)")
         }
     }
 
@@ -238,7 +240,7 @@ final class RobotDetailViewModel: ObservableObject {
             try await api.basicControl(action: action)
             await robotManager.refreshRobot(robot.id)
         } catch {
-            print("Action failed: \(error)")
+            logger.error("Action failed: \(error, privacy: .public)")
         }
     }
 
@@ -257,7 +259,7 @@ final class RobotDetailViewModel: ObservableObject {
             selectedIterations = 1
             await robotManager.refreshRobot(robot.id)
         } catch {
-            print("Clean failed: \(error)")
+            logger.error("Clean failed: \(error, privacy: .public)")
         }
     }
 
@@ -277,7 +279,7 @@ final class RobotDetailViewModel: ObservableObject {
             try await api.setFanSpeed(preset: preset)
             await robotManager.refreshRobot(robot.id)
         } catch {
-            print("Failed to set fan speed: \(error)")
+            logger.error("Failed to set fan speed: \(error, privacy: .public)")
         }
     }
 
@@ -287,7 +289,7 @@ final class RobotDetailViewModel: ObservableObject {
             try await api.setWaterUsage(preset: preset)
             await robotManager.refreshRobot(robot.id)
         } catch {
-            print("Failed to set water usage: \(error)")
+            logger.error("Failed to set water usage: \(error, privacy: .public)")
         }
     }
 
@@ -297,7 +299,7 @@ final class RobotDetailViewModel: ObservableObject {
             try await api.setOperationMode(preset: preset)
             await robotManager.refreshRobot(robot.id)
         } catch {
-            print("Failed to set operation mode: \(error)")
+            logger.error("Failed to set operation mode: \(error, privacy: .public)")
         }
     }
 
@@ -310,7 +312,7 @@ final class RobotDetailViewModel: ObservableObject {
         do {
             try await api.triggerAutoEmptyDock()
         } catch {
-            print("Failed to trigger auto empty: \(error)")
+            logger.error("Failed to trigger auto empty: \(error, privacy: .public)")
         }
     }
 
@@ -321,7 +323,7 @@ final class RobotDetailViewModel: ObservableObject {
         do {
             try await api.triggerMopDockClean()
         } catch {
-            print("Failed to trigger mop clean: \(error)")
+            logger.error("Failed to trigger mop clean: \(error, privacy: .public)")
         }
     }
 
@@ -332,7 +334,7 @@ final class RobotDetailViewModel: ObservableObject {
         do {
             try await api.triggerMopDockDry()
         } catch {
-            print("Failed to trigger mop dry: \(error)")
+            logger.error("Failed to trigger mop dry: \(error, privacy: .public)")
         }
     }
 
@@ -344,7 +346,7 @@ final class RobotDetailViewModel: ObservableObject {
             try await api.resetConsumable(type: consumable.type, subType: consumable.subType)
             await loadConsumables()
         } catch {
-            print("Failed to reset consumable: \(error)")
+            logger.error("Failed to reset consumable: \(error, privacy: .public)")
         }
     }
 
@@ -387,7 +389,7 @@ final class RobotDetailViewModel: ObservableObject {
                 // Keep showing progress - robot will be offline
             }
         } catch {
-            print("Update failed: \(error)")
+            logger.error("Update failed: \(error, privacy: .public)")
             updateInProgress = false
         }
     }

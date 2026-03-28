@@ -1,4 +1,7 @@
 import SwiftUI
+import os
+
+private let settingsLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "RobotSettingsView")
 
 struct RobotSettingsView: View {
     let robot: RobotConfig
@@ -437,7 +440,7 @@ struct AutoEmptyDockSettingsView: View {
         do {
             presets = try await api.getAutoEmptyDockIntervalPresets()
         } catch {
-            print("Failed to load presets: \(error)")
+            settingsLogger.error("Failed to load auto empty dock presets: \(error, privacy: .public)")
         }
     }
 
@@ -450,7 +453,7 @@ struct AutoEmptyDockSettingsView: View {
             try await api.setAutoEmptyDockInterval(preset: preset)
             selectedPreset = preset
         } catch {
-            print("Failed to set preset: \(error)")
+            settingsLogger.error("Failed to set auto empty dock preset: \(error, privacy: .public)")
         }
     }
 }
@@ -526,7 +529,7 @@ struct QuirksView: View {
         do {
             quirks = try await api.getQuirks()
         } catch {
-            print("Failed to load quirks: \(error)")
+            settingsLogger.error("Failed to load quirks: \(error, privacy: .public)")
         }
     }
 
@@ -561,7 +564,7 @@ struct QuirksView: View {
             try await api.setQuirk(id: id, value: value)
             await loadQuirks()
         } catch {
-            print("Failed to set quirk: \(error)")
+            settingsLogger.error("Failed to set quirk: \(error, privacy: .public)")
         }
     }
 }
@@ -749,7 +752,7 @@ struct WifiSettingsView: View {
         do {
             wifiStatus = try await api.getWifiStatus()
         } catch {
-            print("Failed to load WiFi status: \(error)")
+            settingsLogger.error("Failed to load WiFi status: \(error, privacy: .public)")
         }
     }
 
@@ -763,7 +766,7 @@ struct WifiSettingsView: View {
             // Sort by signal strength
             networks.sort { $0.details.signal > $1.details.signal }
         } catch {
-            print("Failed to scan WiFi: \(error)")
+            settingsLogger.error("Failed to scan WiFi: \(error, privacy: .public)")
         }
     }
 
@@ -777,7 +780,7 @@ struct WifiSettingsView: View {
             password = ""
             await loadStatus()
         } catch {
-            print("Failed to connect: \(error)")
+            settingsLogger.error("Failed to connect to WiFi: \(error, privacy: .public)")
         }
     }
 }
@@ -902,16 +905,16 @@ struct MQTTSettingsView: View {
 
     private func loadConfig() async {
         guard let api = api else {
-            print("[MQTT DEBUG] No API available")
+            settingsLogger.error("MQTT: No API available")
             return
         }
         isLoading = true
         defer { isLoading = false }
 
-        print("[MQTT DEBUG] Loading MQTT config...")
+        settingsLogger.debug("Loading MQTT config...")
         do {
             config = try await api.getMQTTConfig()
-            print("[MQTT DEBUG] MQTT config loaded: enabled=\(config?.enabled ?? false), host=\(config?.connection.host ?? "nil")")
+            settingsLogger.debug("MQTT config loaded: enabled=\(config?.enabled ?? false, privacy: .public)")
             if let config = config {
                 enabled = config.enabled
                 host = config.connection.host
@@ -919,7 +922,7 @@ struct MQTTSettingsView: View {
                 // Don't load redacted credentials - leave empty for user to enter new ones
                 let loadedUsername = config.connection.authentication.credentials.username
                 let loadedPassword = config.connection.authentication.credentials.password
-                print("[MQTT DEBUG] Username from API: '\(loadedUsername)', Password: '\(loadedPassword)'")
+                settingsLogger.debug("MQTT username from API: '\(loadedUsername == "<redacted>" ? "<redacted>" : "set", privacy: .public)'")
                 username = loadedUsername == "<redacted>" ? "" : loadedUsername
                 password = loadedPassword == "<redacted>" ? "" : loadedPassword
                 useAuth = config.connection.authentication.credentials.enabled
@@ -929,7 +932,7 @@ struct MQTTSettingsView: View {
                 provideMapData = config.customizations.provideMapData
             }
         } catch {
-            print("[MQTT DEBUG] Failed to load MQTT config: \(error)")
+            settingsLogger.error("Failed to load MQTT config: \(error, privacy: .public)")
         }
     }
 
@@ -953,7 +956,7 @@ struct MQTTSettingsView: View {
             try await api.setMQTTConfig(config)
             self.config = config
         } catch {
-            print("Failed to save MQTT config: \(error)")
+            settingsLogger.error("Failed to save MQTT config: \(error, privacy: .public)")
         }
     }
 }
@@ -1086,21 +1089,21 @@ struct NTPSettingsView: View {
                 port = String(config.port)
             }
         } catch {
-            print("Failed to load NTP config: \(error)")
+            settingsLogger.error("Failed to load NTP config: \(error, privacy: .public)")
         }
     }
 
     private func loadStatus() async {
         guard let api = api else {
-            print("[NTP DEBUG] No API available")
+            settingsLogger.error("NTP: No API available")
             return
         }
-        print("[NTP DEBUG] Loading NTP status...")
+        settingsLogger.debug("Loading NTP status...")
         do {
             status = try await api.getNTPStatus()
-            print("[NTP DEBUG] NTP status loaded: \(String(describing: status))")
+            settingsLogger.debug("NTP status loaded successfully")
         } catch {
-            print("[NTP DEBUG] Failed to load NTP status: \(error)")
+            settingsLogger.error("Failed to load NTP status: \(error, privacy: .public)")
         }
     }
 
@@ -1117,7 +1120,7 @@ struct NTPSettingsView: View {
             try await api.setNTPConfig(config)
             self.config = config
         } catch {
-            print("Failed to save NTP config: \(error)")
+            settingsLogger.error("Failed to save NTP config: \(error, privacy: .public)")
         }
     }
 
@@ -1329,7 +1332,7 @@ struct ValetudoInfoView: View {
             hostInfo = try await api.getSystemHostInfo()
             updaterState = try await api.getUpdaterState()
         } catch {
-            print("Failed to load info: \(error)")
+            settingsLogger.error("Failed to load Valetudo info: \(error, privacy: .public)")
         }
 
         // Check GitHub for latest release
@@ -1343,7 +1346,7 @@ struct ValetudoInfoView: View {
             let (data, _) = try await URLSession.shared.data(from: url)
             latestRelease = try JSONDecoder().decode(GitHubRelease.self, from: data)
         } catch {
-            print("Failed to check for updates: \(error)")
+            settingsLogger.error("Failed to check for updates: \(error, privacy: .public)")
         }
     }
 
@@ -1528,7 +1531,7 @@ struct StationSettingsView: View {
         do {
             try await api.setMopDockAutoDrying(enabled: enabled)
         } catch {
-            print("Failed to set mop dock auto drying: \(error)")
+            settingsLogger.error("Failed to set mop dock auto drying: \(error, privacy: .public)")
             mopDockAutoDrying = !enabled
         }
     }
@@ -1539,7 +1542,7 @@ struct StationSettingsView: View {
         do {
             try await api.setMopDockWashTemperature(preset: preset)
         } catch {
-            print("Failed to set wash temperature: \(error)")
+            settingsLogger.error("Failed to set wash temperature: \(error, privacy: .public)")
         }
     }
 

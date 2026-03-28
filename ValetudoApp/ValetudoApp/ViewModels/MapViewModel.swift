@@ -1,10 +1,12 @@
 import SwiftUI
 import Foundation
+import os
 
 // MARK: - MapViewModel
 
 @MainActor
 final class MapViewModel: ObservableObject {
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "MapViewModel")
     // MARK: - Configuration
     let robot: RobotConfig
     private let robotManager: RobotManager
@@ -109,7 +111,7 @@ final class MapViewModel: ObservableObject {
                 let restrictions = try await api.getVirtualRestrictions()
                 existingRestrictions = restrictions
             } catch {
-                print("Virtual restrictions failed: \(error)")
+                logger.error("Virtual restrictions failed: \(error, privacy: .public)")
             }
         }
 
@@ -119,7 +121,7 @@ final class MapViewModel: ObservableObject {
             do {
                 loadedSegments = try await api.getSegments()
             } catch {
-                print("Segments failed: \(error)")
+                logger.error("Segments failed: \(error, privacy: .public)")
             }
 
             map = loadedMap
@@ -177,20 +179,20 @@ final class MapViewModel: ObservableObject {
             try await api.cleanZones(drawnZones)
             await robotManager.refreshRobot(robot.id)
         } catch {
-            print("[DEBUG] Zone cleaning FAILED: \(error)")
+            logger.error("Zone cleaning FAILED: \(error, privacy: .public)")
         }
     }
 
     // MARK: - GoTo Actions
     func goToPoint(x: Int, y: Int) async {
         guard let api = api else { return }
-        print("[GoTo DEBUG] Sending coordinates: x=\(x), y=\(y)")
+        logger.debug("Sending GoTo coordinates: x=\(x, privacy: .public), y=\(y, privacy: .public)")
         do {
             try await api.goTo(x: x, y: y)
-            print("[GoTo DEBUG] GoTo command sent successfully")
+            logger.debug("GoTo command sent successfully")
             await robotManager.refreshRobot(robot.id)
         } catch {
-            print("[GoTo DEBUG] GoTo failed: \(error)")
+            logger.error("GoTo failed: \(error, privacy: .public)")
         }
         cancelEditMode()
     }
@@ -213,27 +215,27 @@ final class MapViewModel: ObservableObject {
     // MARK: - Room Editing
     func renameRoom(id: String, name: String) async {
         guard let api = api else {
-            print("[DEBUG] renameSegment: No API available")
+            logger.error("renameSegment: No API available")
             return
         }
         guard !name.trimmingCharacters(in: .whitespaces).isEmpty else {
-            print("[DEBUG] renameSegment: Name is empty")
+            logger.debug("renameSegment: Name is empty")
             return
         }
 
         let trimmedName = name.trimmingCharacters(in: .whitespaces)
-        print("[DEBUG] renameSegment: Calling API with segmentId=\(id), name='\(trimmedName)'")
+        logger.debug("renameSegment: Calling API with segmentId=\(id, privacy: .public), name='\(trimmedName, privacy: .public)'")
 
         do {
             try await api.renameSegment(id: id, name: trimmedName)
-            print("[DEBUG] renameSegment: API call successful")
+            logger.debug("renameSegment: API call successful")
 
             // Small delay to let the robot process the rename
             try? await Task.sleep(for: .milliseconds(500))
 
             // Reload segments to get updated names
             let newSegments = try await api.getSegments()
-            print("[DEBUG] renameSegment: Segments reloaded, count=\(newSegments.count)")
+            logger.debug("renameSegment: Segments reloaded, count=\(newSegments.count, privacy: .public)")
 
             segments = newSegments
             mapRefreshId = UUID()
@@ -243,7 +245,7 @@ final class MapViewModel: ObservableObject {
             renameSegmentId = nil
             renameNewName = ""
         } catch {
-            print("[DEBUG] renameSegment FAILED: \(error)")
+            logger.error("renameSegment FAILED: \(error, privacy: .public)")
             showRenameSheet = false
             editMode = .none
             selectedSegmentIds.removeAll()
@@ -254,11 +256,11 @@ final class MapViewModel: ObservableObject {
 
     func joinRooms(ids: [String]) async {
         guard let api = api, ids.count == 2 else { return }
-        print("[DEBUG] joinSelectedSegments: Calling API with segmentA=\(ids[0]), segmentB=\(ids[1])")
+        logger.debug("joinSelectedSegments: Calling API with segmentA=\(ids[0], privacy: .public), segmentB=\(ids[1], privacy: .public)")
 
         do {
             try await api.joinSegments(segmentAId: ids[0], segmentBId: ids[1])
-            print("[DEBUG] joinSelectedSegments: API call successful")
+            logger.debug("joinSelectedSegments: API call successful")
             selectedSegmentIds.removeAll()
 
             if let newMap = try? await api.getMap() {
@@ -266,20 +268,20 @@ final class MapViewModel: ObservableObject {
             }
             if let newSegments = try? await api.getSegments() {
                 self.segments = newSegments
-                print("[DEBUG] joinSelectedSegments: Reloaded \(newSegments.count) segments")
+                logger.debug("joinSelectedSegments: Reloaded \(newSegments.count, privacy: .public) segments")
             }
         } catch {
-            print("[DEBUG] joinSelectedSegments FAILED: \(error)")
+            logger.error("joinSelectedSegments FAILED: \(error, privacy: .public)")
         }
     }
 
     func splitRoom(segmentId: String, start: CGPoint, end: CGPoint, viewSize: CGSize, gestureScale: CGFloat, gestureOffset: CGSize) async {
         guard let api = api else {
-            print("[DEBUG] performSplit: No API available")
+            logger.error("performSplit: No API available")
             return
         }
         guard let map = map, let layers = map.layers else {
-            print("[DEBUG] performSplit: No map or layers")
+            logger.error("performSplit: No map or layers")
             return
         }
 
@@ -328,27 +330,27 @@ final class MapViewModel: ObservableObject {
         let pointA = ZonePoint(x: pixelAX * pixelSize, y: pixelAY * pixelSize)
         let pointB = ZonePoint(x: pixelBX * pixelSize, y: pixelBY * pixelSize)
 
-        print("[DEBUG] performSplit: Pixel coords: A=(\(pixelAX),\(pixelAY)), B=(\(pixelBX),\(pixelBY))")
-        print("[DEBUG] performSplit: API coords (x\(pixelSize)): A=(\(pointA.x),\(pointA.y)), B=(\(pointB.x),\(pointB.y))")
-        print("[DEBUG] performSplit: Calling API with segmentId=\(segmentId)")
+        logger.debug("performSplit: Pixel coords: A=(\(pixelAX, privacy: .public),\(pixelAY, privacy: .public)), B=(\(pixelBX, privacy: .public),\(pixelBY, privacy: .public))")
+        logger.debug("performSplit: API coords (x\(pixelSize, privacy: .public)): A=(\(pointA.x, privacy: .public),\(pointA.y, privacy: .public)), B=(\(pointB.x, privacy: .public),\(pointB.y, privacy: .public))")
+        logger.debug("performSplit: Calling API with segmentId=\(segmentId, privacy: .public)")
 
         do {
             try await api.splitSegment(segmentId: segmentId, pointA: pointA, pointB: pointB)
-            print("[DEBUG] performSplit: API call successful")
+            logger.debug("performSplit: API call successful")
 
             if let newMap = try? await api.getMap() {
                 self.map = newMap
             }
             if let newSegments = try? await api.getSegments() {
                 self.segments = newSegments
-                print("[DEBUG] performSplit: Reloaded \(newSegments.count) segments")
+                logger.debug("performSplit: Reloaded \(newSegments.count, privacy: .public) segments")
             }
 
             splitSegmentId = nil
             selectedSegmentIds.removeAll()
             editMode = .none
         } catch {
-            print("[DEBUG] performSplit FAILED: \(error)")
+            logger.error("performSplit FAILED: \(error, privacy: .public)")
         }
     }
 
@@ -375,7 +377,7 @@ final class MapViewModel: ObservableObject {
             try await api.setVirtualRestrictions(restrictions)
             existingRestrictions = restrictions
         } catch {
-            print("[DEBUG] Delete restriction FAILED: \(error)")
+            logger.error("Delete restriction FAILED: \(error, privacy: .public)")
         }
     }
 
@@ -387,14 +389,14 @@ final class MapViewModel: ObservableObject {
         restrictions.noMopZones.append(contentsOf: drawnNoMopAreas)
         restrictions.virtualWalls.append(contentsOf: drawnVirtualWalls)
 
-        print("[DEBUG] saveRestrictions: zones=\(restrictions.restrictedZones.count), noMop=\(restrictions.noMopZones.count), walls=\(restrictions.virtualWalls.count)")
+        logger.debug("saveRestrictions: zones=\(restrictions.restrictedZones.count, privacy: .public), noMop=\(restrictions.noMopZones.count, privacy: .public), walls=\(restrictions.virtualWalls.count, privacy: .public)")
 
         do {
             try await api.setVirtualRestrictions(restrictions)
-            print("[DEBUG] saveRestrictions: Saved successfully")
+            logger.debug("saveRestrictions: Saved successfully")
             existingRestrictions = restrictions
         } catch {
-            print("[DEBUG] saveRestrictions FAILED: \(error)")
+            logger.error("saveRestrictions FAILED: \(error, privacy: .public)")
         }
     }
 
@@ -411,31 +413,31 @@ final class MapViewModel: ObservableObject {
     }
 
     func confirmEditMode(currentDrawStart: CGPoint?, currentDrawEnd: CGPoint?) async {
-        print("[DEBUG] confirmEditMode called, editMode=\(editMode)")
+        logger.debug("confirmEditMode called, editMode=\(String(describing: self.editMode), privacy: .public)")
 
         guard let api = api else {
-            print("[DEBUG] confirmEditMode: No API available")
+            logger.error("confirmEditMode: No API available")
             return
         }
 
         switch editMode {
         case .zone:
-            print("[DEBUG] confirmEditMode: Zone mode, drawnZones count=\(drawnZones.count)")
+            logger.debug("confirmEditMode: Zone mode, drawnZones count=\(self.drawnZones.count, privacy: .public)")
             if !drawnZones.isEmpty {
                 do {
                     try await api.cleanZones(drawnZones)
-                    print("[DEBUG] confirmEditMode: Zone cleaning started successfully")
+                    logger.debug("confirmEditMode: Zone cleaning started successfully")
                     await robotManager.refreshRobot(robot.id)
                 } catch {
-                    print("[DEBUG] confirmEditMode: Zone cleaning FAILED: \(error)")
+                    logger.error("confirmEditMode: Zone cleaning FAILED: \(error, privacy: .public)")
                 }
             }
 
         case .noGoArea, .noMopArea, .virtualWall:
-            print("[DEBUG] confirmEditMode: Restrictions mode")
-            print("[DEBUG] drawnNoGoAreas: \(drawnNoGoAreas.count)")
-            print("[DEBUG] drawnNoMopAreas: \(drawnNoMopAreas.count)")
-            print("[DEBUG] drawnVirtualWalls: \(drawnVirtualWalls.count)")
+            logger.debug("confirmEditMode: Restrictions mode")
+            logger.debug("drawnNoGoAreas: \(self.drawnNoGoAreas.count, privacy: .public)")
+            logger.debug("drawnNoMopAreas: \(self.drawnNoMopAreas.count, privacy: .public)")
+            logger.debug("drawnVirtualWalls: \(self.drawnVirtualWalls.count, privacy: .public)")
             await saveRestrictions()
 
         case .deleteRestriction:
@@ -460,7 +462,7 @@ final class MapViewModel: ObservableObject {
                     existingRestrictions = restrictions
                     restrictionToDelete = nil
                 } catch {
-                    print("[DEBUG] Delete restriction FAILED: \(error)")
+                    logger.error("Delete restriction FAILED: \(error, privacy: .public)")
                 }
             }
 

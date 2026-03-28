@@ -1,8 +1,10 @@
 import Foundation
 import SwiftUI
+import os
 
 @MainActor
 final class RobotSettingsViewModel: ObservableObject {
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "RobotSettingsViewModel")
     let robot: RobotConfig
     private let robotManager: RobotManager
 
@@ -202,7 +204,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.setSpeakerVolume(Int(volume))
         } catch {
-            print("Failed to set volume: \(error)")
+            logger.error("Failed to set volume: \(error, privacy: .public)")
         }
     }
 
@@ -215,7 +217,7 @@ final class RobotSettingsViewModel: ObservableObject {
             try await api.testSpeaker()
         } catch {
             hasSpeakerTest = false
-            print("Speaker test not supported: \(error)")
+            logger.debug("Speaker test not supported: \(error, privacy: .public)")
         }
     }
 
@@ -225,7 +227,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.setCarpetMode(enabled: enabled)
         } catch {
-            print("Failed to set carpet mode: \(error)")
+            logger.error("Failed to set carpet mode: \(error, privacy: .public)")
             carpetMode = !enabled
         }
     }
@@ -236,7 +238,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.setPersistentMap(enabled: enabled)
         } catch {
-            print("Failed to set persistent map: \(error)")
+            logger.error("Failed to set persistent map: \(error, privacy: .public)")
             persistentMap = !enabled
         }
     }
@@ -247,7 +249,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.setKeyLock(enabled: enabled)
         } catch {
-            print("Failed to set key lock: \(error)")
+            logger.error("Failed to set key lock: \(error, privacy: .public)")
             keyLock = !enabled
         }
     }
@@ -258,7 +260,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.setObstacleAvoidance(enabled: enabled)
         } catch {
-            print("Failed to set obstacle avoidance: \(error)")
+            logger.error("Failed to set obstacle avoidance: \(error, privacy: .public)")
             obstacleAvoidance = !enabled
         }
     }
@@ -269,7 +271,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.setPetObstacleAvoidance(enabled: enabled)
         } catch {
-            print("Failed to set pet obstacle avoidance: \(error)")
+            logger.error("Failed to set pet obstacle avoidance: \(error, privacy: .public)")
             petObstacleAvoidance = !enabled
         }
     }
@@ -280,7 +282,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.setCarpetSensorMode(mode: mode)
         } catch {
-            print("Failed to set carpet sensor mode: \(error)")
+            logger.error("Failed to set carpet sensor mode: \(error, privacy: .public)")
             await loadCarpetSensorMode()
         }
     }
@@ -302,7 +304,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.resetMap()
         } catch {
-            print("Failed to reset map: \(error)")
+            logger.error("Failed to reset map: \(error, privacy: .public)")
         }
     }
 
@@ -314,7 +316,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.startMappingPass()
         } catch {
-            print("Failed to start mapping pass: \(error)")
+            logger.error("Failed to start mapping pass: \(error, privacy: .public)")
             hasMappingPass = false
         }
     }
@@ -325,7 +327,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.setCollisionAvoidantNavigation(enabled: enabled)
         } catch {
-            print("Failed to set collision avoidance: \(error)")
+            logger.error("Failed to set collision avoidance: \(error, privacy: .public)")
             collisionAvoidance = !enabled
         }
     }
@@ -336,7 +338,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.setFloorMaterialNavigation(enabled: enabled)
         } catch {
-            print("Failed to set floor material navigation: \(error)")
+            logger.error("Failed to set floor material navigation: \(error, privacy: .public)")
             floorMaterialNavigation = !enabled
         }
     }
@@ -347,7 +349,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.setMopDockAutoDrying(enabled: enabled)
         } catch {
-            print("Failed to set mop dock auto drying: \(error)")
+            logger.error("Failed to set mop dock auto drying: \(error, privacy: .public)")
             mopDockAutoDrying = !enabled
         }
     }
@@ -358,7 +360,7 @@ final class RobotSettingsViewModel: ObservableObject {
         do {
             try await api.setMopDockWashTemperature(preset: preset)
         } catch {
-            print("Failed to set wash temperature: \(error)")
+            logger.error("Failed to set wash temperature: \(error, privacy: .public)")
         }
     }
 }
