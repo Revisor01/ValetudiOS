@@ -205,8 +205,13 @@ Plans:
   2. RobotSettingsView (bisher 1801 Zeilen) ist in Section-Views aufgeteilt; jede Section ist eine eigene View-Struct
   3. RobotDetailView (bisher 1253 Zeilen) ist in Section-Views aufgeteilt; jede Section ist eine eigene View-Struct
   4. Alle Sub-Views kompilieren fehlerfrei und zeigen in der Xcode-Preview dieselben Inhalte wie zuvor
-**Plans**: TBD
+**Plans**: 3 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 11-01-PLAN.md — MapView-Dekomposition: MiniMapView, InteractiveMapView, MapControlBarsView, MapSheetsView
+- [ ] 11-02-PLAN.md — RobotSettingsView-Dekomposition: RobotSettingsSections.swift mit 7 eigenstaendigen Sub-Views
+- [ ] 11-03-PLAN.md — RobotDetailView-Dekomposition: RobotDetailSections.swift mit ControlButton, DockActionButton, PulseAnimationView
 
 ## Progress
 
