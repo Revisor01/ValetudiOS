@@ -122,7 +122,7 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 06-01-PLAN.md — VoicePack: API-Methoden + VoicePack/VoicePackState Structs + ViewModel-State + Picker-Section in RobotSettingsView
+- [x] 06-01-PLAN.md — VoicePack: API-Methoden + VoicePack/VoicePackState Structs + ViewModel-State + Picker-Section in RobotSettingsView
 - [ ] 06-02-PLAN.md — AutoEmptyDockDuration: API-Methoden + ViewModel-State + Preset-Picker in Auto-Empty-Section
 - [ ] 06-03-PLAN.md — MopDockDryingTime: API-Methoden + ViewModel-State + Preset-Picker in Mop-Dock-Section
 - [ ] 06-04-PLAN.md — RobotProperties: getRobotProperties() API + RobotProperties Struct + Properties-Section in RobotDetailView

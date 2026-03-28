@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.3.0
 milestone_name: Polish & Full API Coverage
-status: verifying
-stopped_at: Completed 05-ui-restore 05-01-PLAN.md
-last_updated: "2026-03-28T14:38:25.333Z"
+status: executing
+stopped_at: Completed 06-new-capabilities 06-01-PLAN.md
+last_updated: "2026-03-28T14:49:55.533Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 8
   completed_phases: 5
-  total_plans: 15
-  completed_plans: 15
+  total_plans: 19
+  completed_plans: 16
   percent: 0
 ---
 
@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 05 — ui-restore
+**Current focus:** Phase 06 — new-capabilities
 
 ## Current Position
 
-Phase: 6
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 06 (new-capabilities) — EXECUTING
+Plan: 2 of 4
+Status: Ready to execute
 Last activity: 2026-03-28
 
 Progress: [░░░░░░░░░░] 0%
@@ -61,6 +61,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 05-ui-restore P02 | 15min | 2 tasks | 3 files |
 | Phase 05-ui-restore P01 | 3min | 2 tasks | 4 files |
+| Phase 06-new-capabilities P01 | 8min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -107,6 +108,7 @@ Recent decisions affecting current work:
 - [Phase 05-ui-restore]: Pending Map Change section is double-gated: hasPendingMapChange AND pendingMapChangeEnabled — hides section when no change is pending
 - [Phase 05-ui-restore]: loadObstacles() uses api.getMap() directly — RobotManager has no mapData dict
 - [Phase 05-ui-restore]: Events always available (hasEvents = true) — no Valetudo capability gate for /valetudo/events
+- [Phase 06-new-capabilities]: VoicePack Structs am Ende der ValetudoAPI.swift definiert; setVoicePack() laedt Zustand bei Fehler automatisch neu; Section doppelt gated (hasVoicePack AND !voicePacks.isEmpty)
 
 ### v1.3.0 Context
 
@@ -126,6 +128,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-28T14:34:50.171Z
-Stopped at: Completed 05-ui-restore 05-01-PLAN.md
+Last session: 2026-03-28T14:49:55.530Z
+Stopped at: Completed 06-new-capabilities 06-01-PLAN.md
 Resume file: None

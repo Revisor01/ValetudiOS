@@ -18,7 +18,7 @@ Requirements for milestone v1.3.0: Polish & Full API Coverage.
 
 ### Neue Capabilities
 
-- [ ] **CAP-01**: Benutzer kann Sprachpakete des Roboters verwalten (VoicePackManagementCapability)
+- [x] **CAP-01**: Benutzer kann Sprachpakete des Roboters verwalten (VoicePackManagementCapability)
 - [ ] **CAP-02**: Benutzer kann Absaugdauer der Auto-Empty-Station steuern (AutoEmptyDockAutoEmptyDurationControlCapability)
 - [ ] **CAP-03**: Benutzer kann Trocknungszeit der Mop-Station steuern (MopDockMopDryingTimeControlCapability)
 - [ ] **CAP-04**: Benutzer sieht Robot-Properties (Modell, Firmware, Seriennummer) via /api/v2/robot/properties
@@ -87,7 +87,7 @@ Requirements for milestone v1.3.0: Polish & Full API Coverage.
 | UIR-04 | Phase 5 | Complete |
 | UIR-05 | Phase 5 | Complete |
 | UIR-06 | Phase 5 | Complete |
-| CAP-01 | Phase 6 | Pending |
+| CAP-01 | Phase 6 | Complete |
 | CAP-02 | Phase 6 | Pending |
 | CAP-03 | Phase 6 | Pending |
 | CAP-04 | Phase 6 | Pending |
