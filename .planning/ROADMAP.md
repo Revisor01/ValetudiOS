@@ -102,8 +102,12 @@ Plans:
   4. Benutzer kann in RobotSettingsView ausstehende Kartenänderungen akzeptieren oder ablehnen; Sektion ist capability-gated
   5. Benutzer kann in RobotDetailView Obstacle-Fotos aufrufen und die Detailansicht (ObstaclePhotoView) öffnen; Sektion ist capability-gated
   6. Notification-Actions GO_HOME und LOCATE lösen die jeweilige API-Aktion aus, wenn der Benutzer die Notification-Aktion antippt
-**Plans**: TBD
+**Plans**: 2 plans
 **UI hint**: yes
+
+Plans:
+- [ ] 05-01-PLAN.md — Events-Section, CleanRoute-Picker und Obstacle-Photos in RobotDetailViewModel/View + API-Erweiterungen
+- [ ] 05-02-PLAN.md — Map-Snapshots und Pending-Map-Change Sections in RobotSettingsViewModel/View
 
 ### Phase 6: New Capabilities
 **Goal**: Benutzer kann vier zusätzliche Roboter-Capabilities steuern, die bislang nicht in der App erreichbar waren
@@ -150,7 +154,7 @@ v1.3.0: 5 → 6 → 7 → 8
 | 2. Network Layer | 3/3 | Complete | 2026-03-27 |
 | 3. API Completeness | 3/3 | Complete | 2026-03-28 |
 | 4. View Refactoring & Tests | 4/4 | Complete | 2026-03-27 |
-| 5. UI Restore | 0/TBD | Not started | - |
+| 5. UI Restore | 0/2 | Not started | - |
 | 6. New Capabilities | 0/TBD | Not started | - |
 | 7. Bugfixes & Robustness | 0/TBD | Not started | - |
 | 8. Test Coverage | 0/TBD | Not started | - |
