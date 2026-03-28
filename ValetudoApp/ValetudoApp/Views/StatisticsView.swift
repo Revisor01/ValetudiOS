@@ -1,6 +1,8 @@
 import SwiftUI
+import os
 
 struct StatisticsView: View {
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "StatisticsView")
     let robot: RobotConfig
     @EnvironmentObject var robotManager: RobotManager
 
@@ -69,7 +71,7 @@ struct StatisticsView: View {
             currentStats = try await api.getCurrentStatistics()
         } catch {
             hasCurrentStats = false
-            print("Current statistics not supported: \(error)")
+            logger.error("Current statistics not supported: \(error.localizedDescription, privacy: .public)")
         }
 
         // Load total statistics
@@ -77,7 +79,7 @@ struct StatisticsView: View {
             totalStats = try await api.getTotalStatistics()
         } catch {
             hasTotalStats = false
-            print("Total statistics not supported: \(error)")
+            logger.error("Total statistics not supported: \(error.localizedDescription, privacy: .public)")
         }
     }
 }

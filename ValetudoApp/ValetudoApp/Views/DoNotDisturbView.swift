@@ -1,6 +1,8 @@
 import SwiftUI
+import os
 
 struct DoNotDisturbView: View {
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "DoNotDisturbView")
     let robot: RobotConfig
     @EnvironmentObject var robotManager: RobotManager
 
@@ -121,7 +123,7 @@ struct DoNotDisturbView: View {
             hasChanges = false
         } catch {
             isSupported = false
-            print("Do Not Disturb not supported: \(error)")
+            logger.error("Do Not Disturb not supported: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -141,7 +143,7 @@ struct DoNotDisturbView: View {
             config = newConfig
             hasChanges = false
         } catch {
-            print("Failed to save Do Not Disturb config: \(error)")
+            logger.error("Failed to save Do Not Disturb config: \(error.localizedDescription, privacy: .public)")
         }
     }
 
