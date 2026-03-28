@@ -191,7 +191,10 @@ Plans:
   1. SettingsView enthält keinen `!`-Force-Unwrap mehr; nil-Fälle werden durch optional binding oder nil-coalescing behandelt
   2. KeychainStore loggt jeden fehlgeschlagenen SecItemDelete/SecItemAdd-Call mit dem OSStatus-Fehlercode; kein Fehler wird mehr stillschweigend ignoriert
   3. GitHub-API-URLs und In-App-Purchase-ProductIDs sind in einer zentralen Constants-Datei definiert; kein Literal-String ist doppelt vorhanden
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 10-01-PLAN.md — SAFE-01/02/ORG-01: Force-Unwrap fix, Keychain-Fehlerlogger, Constants.swift mit URLs und ProductIDs
 
 ### Phase 11: View Decomposition
 **Goal**: Die drei größten Views sind in überschaubare Sub-Views aufgeteilt; keine einzelne View-Datei überschreitet eine handhabbare Größe
@@ -223,5 +226,5 @@ v1.4.0: 9 → 10 → 11
 | 7. Bugfixes & Robustness | 4/4 | Complete | 2026-03-28 |
 | 8. Test Coverage | 2/2 | Complete   | 2026-03-28 |
 | 9. Logger Migration | 3/3 | Complete   | 2026-03-28 |
-| 10. Safety Fixes | 0/? | Not started | - |
+| 10. Safety Fixes | 0/1 | Not started | - |
 | 11. View Decomposition | 0/? | Not started | - |
