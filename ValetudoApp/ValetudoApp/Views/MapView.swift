@@ -566,8 +566,8 @@ struct MapContentView: View {
                                                 let mapPos = screenToMapCoords(value.location, viewSize: geometry.size)
                                                 viewModel.goToMarkerPosition = mapPos
                                                 // Update API coordinates
-                                                let pixelX = Int((mapPos.x - p.offsetX) / p.scale)
-                                                let pixelY = Int((mapPos.y - p.offsetY) / p.scale)
+                                                let pixelX = Int(((mapPos.x - p.offsetX) / p.scale).rounded())
+                                                let pixelY = Int(((mapPos.y - p.offsetY) / p.scale).rounded())
                                                 let apiX = pixelX * pixelSize
                                                 let apiY = pixelY * pixelSize
                                                 viewModel.goToApiCoords = (x: apiX, y: apiY)
@@ -1489,10 +1489,10 @@ struct MapContentView: View {
 
         // start/end are already in map coordinates (from screenToMapCoords in drawingOverlay)
         // We just need to convert from map view coordinates to pixel coordinates
-        let pixelStartX = Int((start.x - params.offsetX) / params.scale)
-        let pixelStartY = Int((start.y - params.offsetY) / params.scale)
-        let pixelEndX = Int((end.x - params.offsetX) / params.scale)
-        let pixelEndY = Int((end.y - params.offsetY) / params.scale)
+        let pixelStartX = Int(((start.x - params.offsetX) / params.scale).rounded())
+        let pixelStartY = Int(((start.y - params.offsetY) / params.scale).rounded())
+        let pixelEndX = Int(((end.x - params.offsetX) / params.scale).rounded())
+        let pixelEndY = Int(((end.y - params.offsetY) / params.scale).rounded())
 
         // API coordinates are pixel coordinates multiplied by pixelSize
         let apiStartX = pixelStartX * pixelSize
