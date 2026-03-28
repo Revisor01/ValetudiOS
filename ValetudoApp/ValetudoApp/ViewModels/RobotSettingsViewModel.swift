@@ -39,6 +39,7 @@ final class RobotSettingsViewModel: ObservableObject {
     @Published var hasCollisionAvoidance = DebugConfig.showAllCapabilities
     @Published var hasMopDockAutoDrying = DebugConfig.showAllCapabilities
     @Published var hasMopDockWashTemperature = DebugConfig.showAllCapabilities
+    @Published var hasMopDockDryingTime = DebugConfig.showAllCapabilities
     @Published var hasFloorMaterialNavigation = DebugConfig.showAllCapabilities
     @Published var hasMapSnapshots = DebugConfig.showAllCapabilities
     @Published var hasPendingMapChange = DebugConfig.showAllCapabilities
@@ -48,6 +49,8 @@ final class RobotSettingsViewModel: ObservableObject {
     // MARK: - Presets
     @Published var carpetSensorModePresets: [String] = []
     @Published var mopDockWashTemperaturePresets: [String] = []
+    @Published var mopDockDryingTimePresets: [String] = []
+    @Published var currentMopDockDryingTime: String = ""
     @Published var autoEmptyDockDurationPresets: [String] = []
     @Published var currentAutoEmptyDockDuration: String = ""
 
@@ -123,6 +126,7 @@ final class RobotSettingsViewModel: ObservableObject {
             hasCollisionAvoidance = DebugConfig.showAllCapabilities || capabilities.contains("CollisionAvoidantNavigationControlCapability")
             hasMopDockAutoDrying = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopAutoDryingControlCapability")
             hasMopDockWashTemperature = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopWashTemperatureControlCapability")
+            hasMopDockDryingTime = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopDryingTimeControlCapability")
             hasFloorMaterialNavigation = DebugConfig.showAllCapabilities || capabilities.contains("FloorMaterialDirectionAwareNavigationControlCapability")
             hasMapSnapshots = DebugConfig.showAllCapabilities || capabilities.contains("MapSnapshotCapability")
             hasPendingMapChange = DebugConfig.showAllCapabilities || capabilities.contains("PendingMapChangeHandlingCapability")
@@ -213,6 +217,25 @@ final class RobotSettingsViewModel: ObservableObject {
             } catch {
                 if !DebugConfig.showAllCapabilities { hasMopDockWashTemperature = false }
                 mopDockWashTemperaturePresets = []
+            }
+        }
+
+        // Load mop dock drying time presets
+        if hasMopDockDryingTime {
+            do {
+                mopDockDryingTimePresets = try await api.getMopDockDryingTimePresets()
+                if let attr = robotManager.robotStates[robot.id]?.attributes.first(where: {
+                    $0.__class == "PresetSelectionStateAttribute" && $0.type == "mop_dock_mop_drying_time"
+                }) {
+                    currentMopDockDryingTime = attr.value ?? ""
+                }
+                if currentMopDockDryingTime.isEmpty, let first = mopDockDryingTimePresets.first {
+                    currentMopDockDryingTime = first
+                }
+            } catch {
+                if !DebugConfig.showAllCapabilities { hasMopDockDryingTime = false }
+                mopDockDryingTimePresets = []
+                logger.debug("Mop dock drying time not supported: \(error, privacy: .public)")
             }
         }
 
@@ -436,6 +459,16 @@ final class RobotSettingsViewModel: ObservableObject {
             try await api.setMopDockWashTemperature(preset: preset)
         } catch {
             logger.error("Failed to set wash temperature: \(error, privacy: .public)")
+        }
+    }
+
+    func setMopDockDryingTime(_ preset: String) async {
+        guard let api = api else { return }
+        do {
+            try await api.setMopDockDryingTime(preset: preset)
+            logger.info("Mop dock drying time set to: \(preset, privacy: .public)")
+        } catch {
+            logger.error("Failed to set mop dock drying time: \(error, privacy: .public)")
         }
     }
 

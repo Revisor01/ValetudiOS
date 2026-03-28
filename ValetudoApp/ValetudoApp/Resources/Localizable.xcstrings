@@ -2347,6 +2347,23 @@
         }
       }
     },
+    "mop_dock.drying_time_label" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trocknungszeit"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Drying Time"
+          }
+        }
+      }
+    },
     "MQTT" : {
 
     },

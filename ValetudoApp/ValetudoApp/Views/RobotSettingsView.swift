@@ -418,7 +418,7 @@ struct RobotSettingsView: View {
             }
 
             // No settings available
-            if !viewModel.hasVolumeControl && !viewModel.hasSpeakerTest && !viewModel.hasCarpetMode && !viewModel.hasPersistentMap && !viewModel.hasMappingPass && !viewModel.hasAutoEmptyDock && !viewModel.hasMopDockAutoDrying && !viewModel.hasMopDockWashTemperature && !viewModel.hasQuirks && !viewModel.isLoading {
+            if !viewModel.hasVolumeControl && !viewModel.hasSpeakerTest && !viewModel.hasCarpetMode && !viewModel.hasPersistentMap && !viewModel.hasMappingPass && !viewModel.hasAutoEmptyDock && !viewModel.hasMopDockAutoDrying && !viewModel.hasMopDockWashTemperature && !viewModel.hasMopDockDryingTime && !viewModel.hasQuirks && !viewModel.isLoading {
                 Section {
                     Text(String(localized: "settings.robot_no_settings"))
                         .foregroundStyle(.secondary)
@@ -1498,11 +1498,14 @@ struct StationSettingsView: View {
     @State private var hasAutoEmptyDockDuration = DebugConfig.showAllCapabilities
     @State private var hasMopDockAutoDrying = DebugConfig.showAllCapabilities
     @State private var hasMopDockWashTemperature = DebugConfig.showAllCapabilities
+    @State private var hasMopDockDryingTime = DebugConfig.showAllCapabilities
 
     // Settings
     @State private var mopDockAutoDrying = false
     @State private var mopDockWashTemperaturePresets: [String] = []
     @State private var currentWashTemperature: String = ""
+    @State private var mopDockDryingTimePresets: [String] = []
+    @State private var currentMopDockDryingTime: String = ""
     @State private var autoEmptyDockDurationPresets: [String] = []
     @State private var currentAutoEmptyDockDuration: String = ""
 
@@ -1552,7 +1555,7 @@ struct StationSettingsView: View {
             }
 
             // Mop Dock Settings
-            if hasMopDockAutoDrying || hasMopDockWashTemperature {
+            if hasMopDockAutoDrying || hasMopDockWashTemperature || hasMopDockDryingTime {
                 Section {
                     if hasMopDockAutoDrying {
                         Toggle(isOn: $mopDockAutoDrying) {
@@ -1585,6 +1588,24 @@ struct StationSettingsView: View {
                             Task { await setWashTemperature(newValue) }
                         }
                     }
+
+                    if hasMopDockDryingTime && !mopDockDryingTimePresets.isEmpty {
+                        Picker(selection: $currentMopDockDryingTime) {
+                            ForEach(mopDockDryingTimePresets, id: \.self) { preset in
+                                Text(preset.capitalized).tag(preset)
+                            }
+                        } label: {
+                            HStack {
+                                Image(systemName: "fan")
+                                    .foregroundStyle(.cyan)
+                                Text(String(localized: "mop_dock.drying_time_label"))
+                            }
+                        }
+                        .onChange(of: currentMopDockDryingTime) { _, newValue in
+                            guard !isInitialLoad && !newValue.isEmpty else { return }
+                            Task { await setDryingTime(newValue) }
+                        }
+                    }
                 } header: {
                     Label(String(localized: "settings.mop_dock"), systemImage: "drop.triangle")
                 } footer: {
@@ -1593,7 +1614,7 @@ struct StationSettingsView: View {
             }
 
             // No settings available
-            if !hasAutoEmptyDock && !hasAutoEmptyDockDuration && !hasMopDockAutoDrying && !hasMopDockWashTemperature && !isLoading {
+            if !hasAutoEmptyDock && !hasAutoEmptyDockDuration && !hasMopDockAutoDrying && !hasMopDockWashTemperature && !hasMopDockDryingTime && !isLoading {
                 Section {
                     Text(String(localized: "settings.no_station_settings"))
                         .foregroundStyle(.secondary)
@@ -1608,7 +1629,7 @@ struct StationSettingsView: View {
             await loadSettings()
         }
         .overlay {
-            if isLoading && !hasAutoEmptyDock && !hasAutoEmptyDockDuration && !hasMopDockAutoDrying && !hasMopDockWashTemperature {
+            if isLoading && !hasAutoEmptyDock && !hasAutoEmptyDockDuration && !hasMopDockAutoDrying && !hasMopDockWashTemperature && !hasMopDockDryingTime {
                 ProgressView()
             }
         }
@@ -1626,6 +1647,7 @@ struct StationSettingsView: View {
             hasAutoEmptyDockDuration = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockAutoEmptyDurationControlCapability")
             hasMopDockAutoDrying = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopAutoDryingControlCapability")
             hasMopDockWashTemperature = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopWashTemperatureControlCapability")
+            hasMopDockDryingTime = DebugConfig.showAllCapabilities || capabilities.contains("MopDockMopDryingTimeControlCapability")
         } catch {
             // Use debug defaults
         }
@@ -1655,6 +1677,25 @@ struct StationSettingsView: View {
                     mopDockWashTemperaturePresets = ["cold", "warm", "hot"]
                     currentWashTemperature = "warm"
                 }
+            }
+        }
+
+        // Load mop dock drying time presets
+        if hasMopDockDryingTime {
+            do {
+                mopDockDryingTimePresets = try await api.getMopDockDryingTimePresets()
+                if let attr = robotManager.robotStates[robot.id]?.attributes.first(where: {
+                    $0.__class == "PresetSelectionStateAttribute" && $0.type == "mop_dock_mop_drying_time"
+                }) {
+                    currentMopDockDryingTime = attr.value ?? ""
+                }
+                if currentMopDockDryingTime.isEmpty, let first = mopDockDryingTimePresets.first {
+                    currentMopDockDryingTime = first
+                }
+            } catch {
+                if !DebugConfig.showAllCapabilities { hasMopDockDryingTime = false }
+                mopDockDryingTimePresets = []
+                settingsLogger.debug("Mop dock drying time not supported: \(error, privacy: .public)")
             }
         }
 
@@ -1698,6 +1739,16 @@ struct StationSettingsView: View {
             try await api.setMopDockWashTemperature(preset: preset)
         } catch {
             settingsLogger.error("Failed to set wash temperature: \(error, privacy: .public)")
+        }
+    }
+
+    private func setDryingTime(_ preset: String) async {
+        guard let api = api else { return }
+
+        do {
+            try await api.setMopDockDryingTime(preset: preset)
+        } catch {
+            settingsLogger.error("Failed to set mop dock drying time: \(error, privacy: .public)")
         }
     }
 
