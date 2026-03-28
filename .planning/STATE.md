@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: verifying
-last_updated: "2026-03-28T23:02:59.422Z"
+status: executing
+last_updated: "2026-03-28T23:11:41.708Z"
 last_activity: 2026-03-28
 progress:
-  total_phases: 10
+  total_phases: 11
   completed_phases: 9
-  total_plans: 29
-  completed_plans: 28
+  total_plans: 32
+  completed_plans: 29
 ---
 
 # Project State
@@ -19,13 +19,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 10 — safety-fixes
+**Current focus:** Phase 11 — view-decomposition
 
 ## Current Position
 
-Phase: 10
-Plan: Not started
-Status: Phase complete — ready for verification
+Phase: 11 (view-decomposition) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
 Last activity: 2026-03-28
 
 ```
@@ -50,6 +50,7 @@ Recent decisions affecting current work:
 - [Phase 09-logger-migration]: Sub-Structs in derselben Datei erhalten eigene Logger-Property mit gleicher category wie Haupt-View
 - [Phase 10-safety-fixes]: Constants als enum — verhindert Instanziierung, reine Namespace-Funktion, Swift-idiomatisch
 - [Phase 10-safety-fixes]: xcodegen generate ausgefuehrt nach Constants.swift-Erstellung — Datei automatisch ins Xcode-Target eingetragen
+- [Phase 11-view-decomposition]: PulseAnimation ist ViewModifier (nicht View-Struct) — korrekte Benennung aus tatsaechlichem Code uebernommen
 
 ### Pending Todos
 
