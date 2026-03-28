@@ -152,7 +152,11 @@ Plans:
   1. XCTest-Suite enthält Tests für RobotDetailViewModel, RobotSettingsViewModel und MapViewModel State-Transitions (z.B. Laden, Fehlerfall, Capability-Check)
   2. XCTest-Suite enthält Tests für ValetudoAPI Request/Response Encoding, Error-Handling und HTTP-Statuscode-Interpretation (4xx, 5xx)
   3. Alle Tests laufen grün in Xcode und im Xcode Cloud CI-Build
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 08-01-PLAN.md — ViewModel-Tests: RobotDetailViewModel, RobotSettingsViewModel und MapViewModel State-Transitions ohne API-Mocking
+- [ ] 08-02-PLAN.md — API-Tests: APIError-Enum, RobotConfig.baseURL und JSON-Decoding der Kernmodelle
 
 ## Progress
 
@@ -169,4 +173,4 @@ v1.3.0: 5 → 6 → 7 → 8
 | 5. UI Restore | 2/2 | Complete   | 2026-03-28 |
 | 6. New Capabilities | 3/4 | In Progress|  |
 | 7. Bugfixes & Robustness | 3/4 | In Progress|  |
-| 8. Test Coverage | 0/TBD | Not started | - |
+| 8. Test Coverage | 0/2 | Not started | - |
