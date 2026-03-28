@@ -36,19 +36,30 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 
 ### Active
 
-- [x] Valetudo API vollständig integrieren (fehlende Capabilities) -- Phase 3
-- [x] mDNS/Bonjour statt IP-Brute-Force -- Phase 2
-- [x] SSE Real-Time Updates -- Phase 2
-- [x] Map-Pixel-Caching -- Phase 2
-- [x] Notification-Actions implementieren -- Phase 3
-- [ ] ViewModel-Extraktion (MapView, RobotDetailView, RobotSettingsView)
-- [ ] Test-Coverage aufbauen
+- [ ] print() → os.Logger in allen Views und Services
+- [ ] Force-Unwrap in SettingsView eliminieren
+- [ ] KeychainStore Fehlerbehandlung verbessern
+- [ ] DispatchQueue → structured concurrency Migration
+- [ ] Hardcoded URLs/ProductIDs → Constants
+- [ ] View-Decomposition: MapView, RobotSettingsView, RobotDetailView aufbrechen
 
 ### Out of Scope
 
 - Multi-Floor-Support -- Valetudo unterstützt dies nicht offiziell, nur Workarounds via SSH
 - Cloud-Anbindung -- Lokale Kommunikation ist Core Value
 - Android-Version -- Nur iOS
+
+## Current Milestone: v1.4.0 Code Quality & Robustness
+
+**Goal:** Codebase sauber machen — alle print()-Reste, Force-Unwraps, fehlende Logger, inkonsistente Concurrency-Patterns, Keychain-Fehlerbehandlung, und View-Decomposition.
+
+**Target features:**
+- print() → os.Logger Migration in allen Views (30 Stellen in 8 Dateien + SupportManager)
+- Force-Unwrap in SettingsView eliminieren
+- KeychainStore: Fehler-Status explizit prüfen statt ignorieren
+- DispatchQueue.main.asyncAfter → Task.sleep in SupportReminderView
+- Hardcoded URLs/ProductIDs → Constants extrahieren
+- Große monolithische Views aufbrechen (MapView 2532, RobotSettingsView 1801, RobotDetailView 1253 Zeilen)
 
 ## Current State
 
@@ -114,4 +125,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-28 — Milestone v1.3.0 completed*
+*Last updated: 2026-03-28 — Milestone v1.4.0 started*
