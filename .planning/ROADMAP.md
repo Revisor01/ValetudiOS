@@ -21,7 +21,7 @@
 - [x] **Phase 5: UI Restore** - Events, CleanRoute, Snapshots, Obstacles und Notifications in ViewModels und Views verdrahten (completed 2026-03-28)
 - [ ] **Phase 6: New Capabilities** - VoicePack, AutoEmptyDuration, MopDryingTime und Robot Properties vollständig integrieren
 - [ ] **Phase 7: Bugfixes & Robustness** - Force-unwraps, stille Fehler, SSE Backoff, Koordinaten-Transformation beheben
-- [ ] **Phase 8: Test Coverage** - ViewModel- und API-Layer-Tests aufbauen
+- [x] **Phase 8: Test Coverage** - ViewModel- und API-Layer-Tests aufbauen (completed 2026-03-28)
 
 ## Phase Details
 
@@ -155,7 +155,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 08-01-PLAN.md — ViewModel-Tests: RobotDetailViewModel, RobotSettingsViewModel und MapViewModel State-Transitions ohne API-Mocking
+- [x] 08-01-PLAN.md — ViewModel-Tests: RobotDetailViewModel, RobotSettingsViewModel und MapViewModel State-Transitions ohne API-Mocking
 - [x] 08-02-PLAN.md — API-Tests: APIError-Enum, RobotConfig.baseURL und JSON-Decoding der Kernmodelle
 
 ## Progress
@@ -173,4 +173,4 @@ v1.3.0: 5 → 6 → 7 → 8
 | 5. UI Restore | 2/2 | Complete   | 2026-03-28 |
 | 6. New Capabilities | 3/4 | In Progress|  |
 | 7. Bugfixes & Robustness | 3/4 | In Progress|  |
-| 8. Test Coverage | 1/2 | In Progress|  |
+| 8. Test Coverage | 2/2 | Complete   | 2026-03-28 |

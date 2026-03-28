@@ -32,7 +32,7 @@ Requirements for milestone v1.3.0: Polish & Full API Coverage.
 
 ### Test Coverage
 
-- [ ] **TEST-01**: ViewModel-Unit-Tests (RobotDetailViewModel, RobotSettingsViewModel, MapViewModel State-Transitions)
+- [x] **TEST-01**: ViewModel-Unit-Tests (RobotDetailViewModel, RobotSettingsViewModel, MapViewModel State-Transitions)
 - [x] **TEST-02**: ValetudoAPI-Tests (Request/Response Encoding, Error-Handling, HTTP-Statuscodes)
 
 ## v1.2.0 Requirements (Completed)
@@ -95,5 +95,5 @@ Requirements for milestone v1.3.0: Polish & Full API Coverage.
 | FIX-02 | Phase 7 | Complete |
 | FIX-03 | Phase 7 | Complete |
 | FIX-04 | Phase 7 | Pending |
-| TEST-01 | Phase 8 | Pending |
+| TEST-01 | Phase 8 | Complete |
 | TEST-02 | Phase 8 | Complete |
