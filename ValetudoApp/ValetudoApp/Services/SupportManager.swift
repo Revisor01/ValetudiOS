@@ -85,29 +85,29 @@ class SupportManager: ObservableObject {
 extension Product {
     var symbolName: String {
         switch id {
-        case "de.godsapp.valetudoapp.support.small": return "cup.and.saucer.fill"
-        case "de.godsapp.valetudoapp.support.medium": return "gift.fill"
-        case "de.godsapp.valetudoapp.support.large": return "sparkles"
+        case Constants.supportSmallId: return "cup.and.saucer.fill"
+        case Constants.supportMediumId: return "gift.fill"
+        case Constants.supportLargeId: return "sparkles"
         default: return "heart.fill"
         }
     }
 
     var tierColor: Color {
         switch id {
-        case "de.godsapp.valetudoapp.support.small": return .blue
-        case "de.godsapp.valetudoapp.support.medium": return .purple
-        case "de.godsapp.valetudoapp.support.large": return .orange
+        case Constants.supportSmallId: return .blue
+        case Constants.supportMediumId: return .purple
+        case Constants.supportLargeId: return .orange
         default: return .accentColor
         }
     }
 
     var supportName: String {
         switch id {
-        case "de.godsapp.valetudoapp.support.small":
+        case Constants.supportSmallId:
             return String(localized: "support.small")
-        case "de.godsapp.valetudoapp.support.medium":
+        case Constants.supportMediumId:
             return String(localized: "support.medium")
-        case "de.godsapp.valetudoapp.support.large":
+        case Constants.supportLargeId:
             return String(localized: "support.large")
         default:
             return displayName

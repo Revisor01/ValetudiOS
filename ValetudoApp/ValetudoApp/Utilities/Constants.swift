@@ -10,9 +10,13 @@ enum Constants {
     static let appGithubUrl = "https://github.com/Revisor01/ValetudiOS"
 
     // MARK: - StoreKit Product IDs
+    static let supportSmallId = "de.godsapp.valetudoapp.support.small"
+    static let supportMediumId = "de.godsapp.valetudoapp.support.medium"
+    static let supportLargeId = "de.godsapp.valetudoapp.support.large"
+
     static let supportProductIds: Set<String> = [
-        "de.godsapp.valetudoapp.support.small",
-        "de.godsapp.valetudoapp.support.medium",
-        "de.godsapp.valetudoapp.support.large"
+        supportSmallId,
+        supportMediumId,
+        supportLargeId
     ]
 }
