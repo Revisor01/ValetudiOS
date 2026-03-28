@@ -11,8 +11,8 @@ Requirements for milestone v1.3.0: Polish & Full API Coverage.
 
 - [ ] **UIR-01**: Events-Section in RobotDetailView zeigt Valetudo-Events chronologisch mit Dismiss-Button
 - [ ] **UIR-02**: CleanRoute-Picker in RobotDetailView erlaubt Auswahl der Reinigungsroute (capability-gated)
-- [ ] **UIR-03**: Map-Snapshots Section in RobotSettingsView zeigt Liste und ermöglicht Restore (capability-gated)
-- [ ] **UIR-04**: Pending-Map-Change Section in RobotSettingsView erlaubt Accept/Reject (capability-gated)
+- [x] **UIR-03**: Map-Snapshots Section in RobotSettingsView zeigt Liste und ermöglicht Restore (capability-gated)
+- [x] **UIR-04**: Pending-Map-Change Section in RobotSettingsView erlaubt Accept/Reject (capability-gated)
 - [ ] **UIR-05**: Obstacle-Photos Section in RobotDetailView mit Navigation zu ObstaclePhotoView (capability-gated)
 - [ ] **UIR-06**: Notification-Actions GO_HOME und LOCATE funktionieren (AppDelegate + Handler)
 
@@ -83,8 +83,8 @@ Requirements for milestone v1.3.0: Polish & Full API Coverage.
 |-------------|-------|--------|
 | UIR-01 | Phase 5 | Pending |
 | UIR-02 | Phase 5 | Pending |
-| UIR-03 | Phase 5 | Pending |
-| UIR-04 | Phase 5 | Pending |
+| UIR-03 | Phase 5 | Complete |
+| UIR-04 | Phase 5 | Complete |
 | UIR-05 | Phase 5 | Pending |
 | UIR-06 | Phase 5 | Pending |
 | CAP-01 | Phase 6 | Pending |

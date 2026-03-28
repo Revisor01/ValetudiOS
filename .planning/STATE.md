@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.3.0
 milestone_name: Polish & Full API Coverage
-status: roadmapped
-stopped_at: null
-last_updated: "2026-03-28"
+status: executing
+stopped_at: Completed 05-ui-restore 05-02-PLAN.md
+last_updated: "2026-03-28T14:33:44.010Z"
 last_activity: 2026-03-28
 progress:
-  total_phases: 4
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_phases: 8
+  completed_phases: 4
+  total_plans: 15
+  completed_plans: 14
   percent: 0
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-28)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 5 — UI Restore (v1.3.0 start)
+**Current focus:** Phase 05 — ui-restore
 
 ## Current Position
 
-Phase: 5 — UI Restore
-Plan: Not started
-Status: Roadmap defined, ready for planning
-Last activity: 2026-03-28 — v1.3.0 roadmap created (Phases 5-8)
+Phase: 05 (ui-restore) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-03-28
 
 Progress: [░░░░░░░░░░] 0%
 
@@ -59,6 +59,7 @@ Progress: [░░░░░░░░░░] 0%
 | 08-test-coverage | TBD | - | - |
 
 *Updated after each plan completion*
+| Phase 05-ui-restore P02 | 15min | 2 tasks | 3 files |
 
 ## Accumulated Context
 
@@ -101,6 +102,8 @@ Recent decisions affecting current work:
 - [Phase 04-view-refactoring-tests]: Timer tests use round-trip invariant (localToUTC(utcToLocal(h,m))==(h,m)) instead of hardcoded UTC offsets for timezone-independence
 - [Phase 04-view-refactoring-tests]: MapLayerTests use JSONDecoder to construct structs — avoids fileprivate init and matches production data flow
 - [Phase 04-view-refactoring-tests]: KeychainStoreTests use unique UUID per test + tearDown cleanup to prevent cross-test Keychain pollution
+- [Phase 05-ui-restore]: restoreMapSnapshot() reloads mapSnapshots after restore using try? fallback — keeps UI consistent without failing if reload errors
+- [Phase 05-ui-restore]: Pending Map Change section is double-gated: hasPendingMapChange AND pendingMapChangeEnabled — hides section when no change is pending
 
 ### v1.3.0 Context
 
@@ -120,6 +123,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-28
-Stopped at: v1.3.0 Roadmap created (Phases 5-8)
+Last session: 2026-03-28T14:33:44.007Z
+Stopped at: Completed 05-ui-restore 05-02-PLAN.md
 Resume file: None
