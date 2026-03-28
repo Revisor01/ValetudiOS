@@ -180,7 +180,7 @@ final class RobotDetailViewModel: ObservableObject {
         }
 
         do {
-            waterUsagePresets = try await api.getWaterUsagePresets()
+            waterUsagePresets = try await api.getWaterUsagePresets().filter { $0.lowercased() != "off" }
         } catch {
             logger.debug("Water usage not supported: \(error, privacy: .public)")
             if DebugConfig.showAllCapabilities && waterUsagePresets.isEmpty {
