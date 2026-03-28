@@ -3,19 +3,33 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 63;
+	objectVersion = 77;
 	objects = {
 
 /* Begin PBXBuildFile section */
-		0A1B2C3D4E5F6A7B8C9D0E1F /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F6A7B8C9D0E10 /* OnboardingView.swift */; };
-		0A1B2C3D4E5F6A7B8C9D0E2F /* RobotIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1B2C3D4E5F6A7B8C9D0E20 /* RobotIntents.swift */; };
+		023B647B98CE0D551626BEB0 /* DebugConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0B69520E1BFEDF5824964BC /* DebugConfig.swift */; };
+		0C6898A2E427A1F4DB944811 /* ErrorRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = CB4E4824159FC4CC51EB9AC8 /* ErrorRouter.swift */; };
+		12E1CB26BDC7E310A9C141EB /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */; };
+		143326E22353048B7A54418D /* PresetHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489C5B4217131AFAA714813 /* PresetHelpers.swift */; };
 		1932127BBDCC8FBE2645FC31 /* RobotSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 698C8F9BC11A4FCCF9D99923 /* RobotSettingsView.swift */; };
+		1F0534502B3DB53D433509DD /* KeychainStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06AD3C1B9A930E3DFF22B33 /* KeychainStoreTests.swift */; };
 		26187F76B128067478E11E35 /* RobotDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DD7833558396395DCA7D32 /* RobotDetailView.swift */; };
+		268751822B3D802C519CE03C /* SSEConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9841E9A11C0D78ACE274994 /* SSEConnectionManager.swift */; };
+		296A3B5821E1A4916CB23FB8 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FD244AAC28A5D50E6DF9E55 /* MapViewModel.swift */; };
+		2F9C24F46ECB55001E3C6191 /* ValetudoAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67E063E08AD679C61BFC04E6 /* ValetudoAPITests.swift */; };
 		48E82472B522893504594AC9 /* RobotState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602023483884AA7FC99EE28A /* RobotState.swift */; };
 		4F1CBBF41038293EA0F80B16 /* Consumable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B313EE35A432692658D58220 /* Consumable.swift */; };
 		583401D717322CA5AE6527B8 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C082534D8ADAC8160B2405F /* NotificationService.swift */; };
+		5AEEB82CA45C29C587696C1B /* RobotIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A18570DE687AB149DC4A37C /* RobotIntents.swift */; };
+		5BC9FCF8C32F80990A5AAAA2 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = EECFDCDDB1ADB346E675933D /* Constants.swift */; };
+		5C0908D7F386F63B7F6FFA1D /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE89B2C234119A62502A7547 /* SupportView.swift */; };
 		5CA62D98CD706CA8FD0A0737 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F02071A0C637423ED754AC4 /* StatisticsView.swift */; };
+		5D3B904354FE1DCBB4A0859B /* MapViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CA75525C383460748ED61C0 /* MapViewModelTests.swift */; };
+		65CDA694BCC22AD6CAD3E629 /* SupportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E86B5858DFF36ABA29E732F /* SupportManager.swift */; };
+		6BE4BC052593841E0B70FE6F /* RobotDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBBA65057AA09088A3B6E843 /* RobotDetailViewModel.swift */; };
 		6FD4E58AD099B5D5DEC67AA2 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E6102D935A16D6758543ADC2 /* ContentView.swift */; };
+		7287C4B56D6A0CE743D38B28 /* ConsumableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */; };
+		745E6057D78374C972BF350C /* SupportReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 135106415AF4ADA72F4D02A2 /* SupportReminderView.swift */; };
 		7B4C873365DACB44A3E2AD41 /* RobotMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6096D4E41E9DA4B4A7CB36A /* RobotMap.swift */; };
 		7DA66DFFA501849A09C40000 /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = D4B8AD3F113C1AD37B4E5BBA /* Localizable.xcstrings */; };
 		812642A8D77C6E37764AC03D /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB9C50A27756E4D5EDFB505 /* MapView.swift */; };
@@ -24,124 +38,103 @@
 		9207AFBD4FCBC7AAFE751181 /* RobotListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5713E6238AD5A3F2420EE02B /* RobotListView.swift */; };
 		A2F93F458EDD354944B50689 /* ManualControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B35122CA897ECE8B3B52014 /* ManualControlView.swift */; };
 		B5ACCE16A7996B790BBF09CA /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8827C015A536153957BA6AC /* Timer.swift */; };
+		B729DD529A0445E3996DD614 /* RobotSettingsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D16364C1588D7F0AEB5FEE /* RobotSettingsViewModelTests.swift */; };
 		B9C7BC253C6ABA4DAA4D41C9 /* ValetudoApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4727F8CABE30473DD20C391 /* ValetudoApp.swift */; };
+		BD5D356EA599C51A65452FA2 /* MapLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = BDFE1B37CB17CC446C036D73 /* MapLayerTests.swift */; };
+		BDECD717380DC7168DFC0ED7 /* ObstaclePhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 28A30679F5032173015E8B86 /* ObstaclePhotoView.swift */; };
 		C51D8291FD9CFE191FA9557D /* NetworkScanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = 048B373C4CE7F9EF571625D6 /* NetworkScanner.swift */; };
 		D20FA57F529017D6027F3C71 /* RoomsManagementView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 075F2DE6ED60C5F11921459D /* RoomsManagementView.swift */; };
 		D4ACB8D36AF5B70E720588DE /* TimersView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D74E6E7081C7AE4DA22B562 /* TimersView.swift */; };
+		D692854F2D2227501DA43AF6 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 21BF56FF46BA4144DBD73CA4 /* KeychainStore.swift */; };
+		D919418DE4EA629CDA129AFA /* TimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 29662D61BFED0893E6E573CB /* TimerTests.swift */; };
 		DA136B4862BD6BD33702E71A /* IntensityControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172B1FB7678A953A4655A3EE /* IntensityControlView.swift */; };
+		DB3194EBB4566F919E12A364 /* NWBrowserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65C57A11EEEF91115F0C845 /* NWBrowserService.swift */; };
 		DDD26A60B887E1133DD2E18B /* AddRobotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BEF0FC2A1B164BA6099BBC /* AddRobotView.swift */; };
 		E3B89B8282E352373120510B /* RobotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE7F0D27E21AAB984042AF4 /* RobotManager.swift */; };
+		E729DF2F6C2B31C596133D84 /* RobotDetailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207A76A1020CA2C1DEB44125 /* RobotDetailViewModelTests.swift */; };
 		EF03FC536C8B10A814C55E48 /* ConsumablesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24988119F831BB0A8B779FA /* ConsumablesView.swift */; };
 		F1406BFE3F7724B3D7729D73 /* ValetudoAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 004F5A0A2815A8D95949878D /* ValetudoAPI.swift */; };
-		F87A9FAA2EF61BDB009A0D9D /* Media.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = F87A9FA92EF61BDB009A0D9D /* Media.xcassets */; };
+		F733B7BBDFCBC3B580936D5B /* RobotSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6AE0002BBCCDB7F2151021 /* RobotSettingsViewModel.swift */; };
 		FFECCF69B6C0CE99DDF1E747 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85C9582AEC53718BC544A5F /* SettingsView.swift */; };
-		HELPER001A2B3C4D5E6F7A8B /* PresetHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = HELPER001A2B3C4D5E6F7A8C /* PresetHelpers.swift */; };
-		HELPER002A2B3C4D5E6F7A8B /* DebugConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = HELPER002A2B3C4D5E6F7A8C /* DebugConfig.swift */; };
-		SUP00100000000000000001 /* SupportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUP00200000000000000001 /* SupportManager.swift */; };
-		SUP00100000000000000002 /* SupportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUP00200000000000000002 /* SupportView.swift */; };
-		SUP00100000000000000003 /* SupportReminderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = SUP00200000000000000003 /* SupportReminderView.swift */; };
-		NEW00100000000000000001 /* ErrorRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000001 /* ErrorRouter.swift */; };
-		NEW00100000000000000002 /* KeychainStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000002 /* KeychainStore.swift */; };
-		NEW00100000000000000003 /* SSEConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000003 /* SSEConnectionManager.swift */; };
-		NEW00100000000000000004 /* NWBrowserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000004 /* NWBrowserService.swift */; };
-		NEW00100000000000000005 /* ObstaclePhotoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000005 /* ObstaclePhotoView.swift */; };
-		NEW00100000000000000006 /* MapViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000006 /* MapViewModel.swift */; };
-		NEW00100000000000000007 /* RobotDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000007 /* RobotDetailViewModel.swift */; };
-		NEW00100000000000000008 /* RobotSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEW00200000000000000008 /* RobotSettingsViewModel.swift */; };
-		TEST0010000000000000001 /* ConsumableTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000001 /* ConsumableTests.swift */; };
-		TEST0010000000000000002 /* KeychainStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000002 /* KeychainStoreTests.swift */; };
-		TEST0010000000000000003 /* MapLayerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000003 /* MapLayerTests.swift */; };
-		TEST0010000000000000004 /* TimerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000004 /* TimerTests.swift */; };
-		TEST0010000000000000005 /* MapViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000005 /* MapViewModelTests.swift */; };
-		TEST0010000000000000006 /* RobotDetailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000006 /* RobotDetailViewModelTests.swift */; };
-		TEST0010000000000000007 /* RobotSettingsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000007 /* RobotSettingsViewModelTests.swift */; };
-		TEST0010000000000000008 /* ValetudoAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = TEST0020000000000000008 /* ValetudoAPITests.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		5FB6B7FF4836895BEED5C4F3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 2127E299588E4EC8D4C24FE7 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = B2971D6203E36800C370817D;
+			remoteInfo = ValetudoApp;
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
 		004F5A0A2815A8D95949878D /* ValetudoAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValetudoAPI.swift; sourceTree = "<group>"; };
+		01D16364C1588D7F0AEB5FEE /* RobotSettingsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotSettingsViewModelTests.swift; sourceTree = "<group>"; };
 		048B373C4CE7F9EF571625D6 /* NetworkScanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkScanner.swift; sourceTree = "<group>"; };
 		075F2DE6ED60C5F11921459D /* RoomsManagementView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RoomsManagementView.swift; sourceTree = "<group>"; };
-		0A1B2C3D4E5F6A7B8C9D0E10 /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
-		0A1B2C3D4E5F6A7B8C9D0E20 /* RobotIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotIntents.swift; sourceTree = "<group>"; };
 		0EB9C50A27756E4D5EDFB505 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
+		135106415AF4ADA72F4D02A2 /* SupportReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportReminderView.swift; sourceTree = "<group>"; };
 		172B1FB7678A953A4655A3EE /* IntensityControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntensityControlView.swift; sourceTree = "<group>"; };
+		1A18570DE687AB149DC4A37C /* RobotIntents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotIntents.swift; sourceTree = "<group>"; };
 		1B5589AF6019A8A237268523 /* RobotConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotConfig.swift; sourceTree = "<group>"; };
+		207A76A1020CA2C1DEB44125 /* RobotDetailViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailViewModelTests.swift; sourceTree = "<group>"; };
+		21BF56FF46BA4144DBD73CA4 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		28A30679F5032173015E8B86 /* ObstaclePhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObstaclePhotoView.swift; sourceTree = "<group>"; };
+		29662D61BFED0893E6E573CB /* TimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerTests.swift; sourceTree = "<group>"; };
 		2F02071A0C637423ED754AC4 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		34DD7833558396395DCA7D32 /* RobotDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailView.swift; sourceTree = "<group>"; };
-		44002D9750AED2C37546A796 /* ValetudoApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = ValetudoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		44002D9750AED2C37546A796 /* ValetudoApp.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = ValetudoApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4BE7F0D27E21AAB984042AF4 /* RobotManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotManager.swift; sourceTree = "<group>"; };
 		4C082534D8ADAC8160B2405F /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		4D6AE0002BBCCDB7F2151021 /* RobotSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotSettingsViewModel.swift; sourceTree = "<group>"; };
 		4D74E6E7081C7AE4DA22B562 /* TimersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimersView.swift; sourceTree = "<group>"; };
 		5713E6238AD5A3F2420EE02B /* RobotListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotListView.swift; sourceTree = "<group>"; };
+		5E86B5858DFF36ABA29E732F /* SupportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportManager.swift; sourceTree = "<group>"; };
 		602023483884AA7FC99EE28A /* RobotState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotState.swift; sourceTree = "<group>"; };
+		67E063E08AD679C61BFC04E6 /* ValetudoAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValetudoAPITests.swift; sourceTree = "<group>"; };
 		698C8F9BC11A4FCCF9D99923 /* RobotSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotSettingsView.swift; sourceTree = "<group>"; };
+		8489C5B4217131AFAA714813 /* PresetHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetHelpers.swift; sourceTree = "<group>"; };
 		8B35122CA897ECE8B3B52014 /* ManualControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualControlView.swift; sourceTree = "<group>"; };
+		9CA75525C383460748ED61C0 /* MapViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModelTests.swift; sourceTree = "<group>"; };
+		9D2944F811E75D2A18C7A192 /* ValetudoAppTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ValetudoAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		9FD244AAC28A5D50E6DF9E55 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
 		A85C9582AEC53718BC544A5F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+		B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		B313EE35A432692658D58220 /* Consumable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Consumable.swift; sourceTree = "<group>"; };
+		B65C57A11EEEF91115F0C845 /* NWBrowserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWBrowserService.swift; sourceTree = "<group>"; };
+		BDFE1B37CB17CC446C036D73 /* MapLayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapLayerTests.swift; sourceTree = "<group>"; };
+		C06AD3C1B9A930E3DFF22B33 /* KeychainStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStoreTests.swift; sourceTree = "<group>"; };
 		C3BEF0FC2A1B164BA6099BBC /* AddRobotView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddRobotView.swift; sourceTree = "<group>"; };
+		CB4E4824159FC4CC51EB9AC8 /* ErrorRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorRouter.swift; sourceTree = "<group>"; };
+		D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumableTests.swift; sourceTree = "<group>"; };
 		D4B8AD3F113C1AD37B4E5BBA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D8827C015A536153957BA6AC /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
+		E0B69520E1BFEDF5824964BC /* DebugConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugConfig.swift; sourceTree = "<group>"; };
 		E6102D935A16D6758543ADC2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		EBBA65057AA09088A3B6E843 /* RobotDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailViewModel.swift; sourceTree = "<group>"; };
+		EE89B2C234119A62502A7547 /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
+		EECFDCDDB1ADB346E675933D /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		F24988119F831BB0A8B779FA /* ConsumablesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumablesView.swift; sourceTree = "<group>"; };
 		F4727F8CABE30473DD20C391 /* ValetudoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValetudoApp.swift; sourceTree = "<group>"; };
 		F59ACF682660288ABD2AB9E7 /* DoNotDisturbView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoNotDisturbView.swift; sourceTree = "<group>"; };
 		F6096D4E41E9DA4B4A7CB36A /* RobotMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotMap.swift; sourceTree = "<group>"; };
-		F87A9FA92EF61BDB009A0D9D /* Media.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Media.xcassets; sourceTree = "<group>"; };
-		HELPER001A2B3C4D5E6F7A8C /* PresetHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetHelpers.swift; sourceTree = "<group>"; };
-		HELPER002A2B3C4D5E6F7A8C /* DebugConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugConfig.swift; sourceTree = "<group>"; };
-		SUP00200000000000000001 /* SupportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportManager.swift; sourceTree = "<group>"; };
-		SUP00200000000000000002 /* SupportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportView.swift; sourceTree = "<group>"; };
-		SUP00200000000000000003 /* SupportReminderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportReminderView.swift; sourceTree = "<group>"; };
-		NEW00200000000000000001 /* ErrorRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ErrorRouter.swift; sourceTree = "<group>"; };
-		NEW00200000000000000002 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
-		NEW00200000000000000003 /* SSEConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSEConnectionManager.swift; sourceTree = "<group>"; };
-		NEW00200000000000000004 /* NWBrowserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWBrowserService.swift; sourceTree = "<group>"; };
-		NEW00200000000000000005 /* ObstaclePhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObstaclePhotoView.swift; sourceTree = "<group>"; };
-		NEW00200000000000000006 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
-		NEW00200000000000000007 /* RobotDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailViewModel.swift; sourceTree = "<group>"; };
-		NEW00200000000000000008 /* RobotSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotSettingsViewModel.swift; sourceTree = "<group>"; };
-		TEST0020000000000000001 /* ConsumableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumableTests.swift; sourceTree = "<group>"; };
-		TEST0020000000000000002 /* KeychainStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStoreTests.swift; sourceTree = "<group>"; };
-		TEST0020000000000000003 /* MapLayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapLayerTests.swift; sourceTree = "<group>"; };
-		TEST0020000000000000004 /* TimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerTests.swift; sourceTree = "<group>"; };
-		TEST0020000000000000005 /* MapViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModelTests.swift; sourceTree = "<group>"; };
-		TEST0020000000000000006 /* RobotDetailViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailViewModelTests.swift; sourceTree = "<group>"; };
-		TEST0020000000000000007 /* RobotSettingsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotSettingsViewModelTests.swift; sourceTree = "<group>"; };
-		TEST0020000000000000008 /* ValetudoAPITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValetudoAPITests.swift; sourceTree = "<group>"; };
-		TEST0030000000000000000 /* ValetudoAppTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = ValetudoAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		F9841E9A11C0D78ACE274994 /* SSEConnectionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSEConnectionManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
-		0A1B2C3D4E5F6A7B8C9D0E30 /* Intents */ = {
-			isa = PBXGroup;
-			children = (
-				0A1B2C3D4E5F6A7B8C9D0E20 /* RobotIntents.swift */,
-			);
-			path = Intents;
-			sourceTree = "<group>";
-		};
-		HELPER000A2B3C4D5E6F7A8B /* Helpers */ = {
-			isa = PBXGroup;
-			children = (
-				HELPER002A2B3C4D5E6F7A8C /* DebugConfig.swift */,
-				NEW00200000000000000001 /* ErrorRouter.swift */,
-				HELPER001A2B3C4D5E6F7A8C /* PresetHelpers.swift */,
-			);
-			path = Helpers;
-			sourceTree = "<group>";
-		};
 		0E61845B1FBBABA715253E03 /* ValetudoApp */ = {
 			isa = PBXGroup;
 			children = (
 				E6102D935A16D6758543ADC2 /* ContentView.swift */,
 				F4727F8CABE30473DD20C391 /* ValetudoApp.swift */,
-				HELPER000A2B3C4D5E6F7A8B /* Helpers */,
-				0A1B2C3D4E5F6A7B8C9D0E30 /* Intents */,
+				E5107C61D378D549A904B8CD /* Helpers */,
+				D73255153280F613476F9DAC /* Intents */,
 				D3074C1BD6D8A65B06301332 /* Models */,
 				F20102FE03EECD76EDA8E1E5 /* Resources */,
 				CADCB8BE5F841BD0A6673297 /* Services */,
-				NEW00300000000000000000 /* ViewModels */,
+				9FA2A6686F37333EFF3FF7D3 /* Utilities */,
+				B23BAB5EF717011FCC1D09AF /* ViewModels */,
 				10A658E9071747D3402F7EF6 /* Views */,
 			);
 			path = ValetudoApp;
@@ -156,16 +149,16 @@
 				172B1FB7678A953A4655A3EE /* IntensityControlView.swift */,
 				8B35122CA897ECE8B3B52014 /* ManualControlView.swift */,
 				0EB9C50A27756E4D5EDFB505 /* MapView.swift */,
-				NEW00200000000000000005 /* ObstaclePhotoView.swift */,
-				0A1B2C3D4E5F6A7B8C9D0E10 /* OnboardingView.swift */,
+				28A30679F5032173015E8B86 /* ObstaclePhotoView.swift */,
+				B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */,
 				34DD7833558396395DCA7D32 /* RobotDetailView.swift */,
 				5713E6238AD5A3F2420EE02B /* RobotListView.swift */,
 				698C8F9BC11A4FCCF9D99923 /* RobotSettingsView.swift */,
 				075F2DE6ED60C5F11921459D /* RoomsManagementView.swift */,
 				A85C9582AEC53718BC544A5F /* SettingsView.swift */,
 				2F02071A0C637423ED754AC4 /* StatisticsView.swift */,
-				SUP00200000000000000002 /* SupportView.swift */,
-				SUP00200000000000000003 /* SupportReminderView.swift */,
+				135106415AF4ADA72F4D02A2 /* SupportReminderView.swift */,
+				EE89B2C234119A62502A7547 /* SupportView.swift */,
 				4D74E6E7081C7AE4DA22B562 /* TimersView.swift */,
 			);
 			path = Views;
@@ -175,46 +168,48 @@
 			isa = PBXGroup;
 			children = (
 				44002D9750AED2C37546A796 /* ValetudoApp.app */,
-				TEST0030000000000000000 /* ValetudoAppTests.xctest */,
+				9D2944F811E75D2A18C7A192 /* ValetudoAppTests.xctest */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		TEST0040000000000000000 /* ValetudoAppTests */ = {
-			isa = PBXGroup;
-			children = (
-				TEST0020000000000000001 /* ConsumableTests.swift */,
-				TEST0020000000000000002 /* KeychainStoreTests.swift */,
-				TEST0020000000000000003 /* MapLayerTests.swift */,
-				TEST0020000000000000005 /* MapViewModelTests.swift */,
-				TEST0020000000000000006 /* RobotDetailViewModelTests.swift */,
-				TEST0020000000000000007 /* RobotSettingsViewModelTests.swift */,
-				TEST0020000000000000004 /* TimerTests.swift */,
-				TEST0020000000000000008 /* ValetudoAPITests.swift */,
-			);
-			path = ValetudoAppTests;
 			sourceTree = "<group>";
 		};
 		706B5E1B783986C1BAAA5737 = {
 			isa = PBXGroup;
 			children = (
-				F87A9FA92EF61BDB009A0D9D /* Media.xcassets */,
 				0E61845B1FBBABA715253E03 /* ValetudoApp */,
-				TEST0040000000000000000 /* ValetudoAppTests */,
+				DF83A2C88499866699E76EA9 /* ValetudoAppTests */,
 				5A0E541CC39DC062D0BDC717 /* Products */,
 			);
+			sourceTree = "<group>";
+		};
+		9FA2A6686F37333EFF3FF7D3 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				EECFDCDDB1ADB346E675933D /* Constants.swift */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		B23BAB5EF717011FCC1D09AF /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				9FD244AAC28A5D50E6DF9E55 /* MapViewModel.swift */,
+				EBBA65057AA09088A3B6E843 /* RobotDetailViewModel.swift */,
+				4D6AE0002BBCCDB7F2151021 /* RobotSettingsViewModel.swift */,
+			);
+			path = ViewModels;
 			sourceTree = "<group>";
 		};
 		CADCB8BE5F841BD0A6673297 /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				NEW00200000000000000002 /* KeychainStore.swift */,
+				21BF56FF46BA4144DBD73CA4 /* KeychainStore.swift */,
 				048B373C4CE7F9EF571625D6 /* NetworkScanner.swift */,
 				4C082534D8ADAC8160B2405F /* NotificationService.swift */,
-				NEW00200000000000000004 /* NWBrowserService.swift */,
+				B65C57A11EEEF91115F0C845 /* NWBrowserService.swift */,
 				4BE7F0D27E21AAB984042AF4 /* RobotManager.swift */,
-				NEW00200000000000000003 /* SSEConnectionManager.swift */,
-				SUP00200000000000000001 /* SupportManager.swift */,
+				F9841E9A11C0D78ACE274994 /* SSEConnectionManager.swift */,
+				5E86B5858DFF36ABA29E732F /* SupportManager.swift */,
 				004F5A0A2815A8D95949878D /* ValetudoAPI.swift */,
 			);
 			path = Services;
@@ -232,6 +227,39 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		D73255153280F613476F9DAC /* Intents */ = {
+			isa = PBXGroup;
+			children = (
+				1A18570DE687AB149DC4A37C /* RobotIntents.swift */,
+			);
+			path = Intents;
+			sourceTree = "<group>";
+		};
+		DF83A2C88499866699E76EA9 /* ValetudoAppTests */ = {
+			isa = PBXGroup;
+			children = (
+				D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */,
+				C06AD3C1B9A930E3DFF22B33 /* KeychainStoreTests.swift */,
+				BDFE1B37CB17CC446C036D73 /* MapLayerTests.swift */,
+				9CA75525C383460748ED61C0 /* MapViewModelTests.swift */,
+				207A76A1020CA2C1DEB44125 /* RobotDetailViewModelTests.swift */,
+				01D16364C1588D7F0AEB5FEE /* RobotSettingsViewModelTests.swift */,
+				29662D61BFED0893E6E573CB /* TimerTests.swift */,
+				67E063E08AD679C61BFC04E6 /* ValetudoAPITests.swift */,
+			);
+			path = ValetudoAppTests;
+			sourceTree = "<group>";
+		};
+		E5107C61D378D549A904B8CD /* Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				E0B69520E1BFEDF5824964BC /* DebugConfig.swift */,
+				CB4E4824159FC4CC51EB9AC8 /* ErrorRouter.swift */,
+				8489C5B4217131AFAA714813 /* PresetHelpers.swift */,
+			);
+			path = Helpers;
+			sourceTree = "<group>";
+		};
 		F20102FE03EECD76EDA8E1E5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -240,19 +268,27 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
-		NEW00300000000000000000 /* ViewModels */ = {
-			isa = PBXGroup;
-			children = (
-				NEW00200000000000000006 /* MapViewModel.swift */,
-				NEW00200000000000000007 /* RobotDetailViewModel.swift */,
-				NEW00200000000000000008 /* RobotSettingsViewModel.swift */,
-			);
-			path = ViewModels;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		54E7A0E12B6491E95C754063 /* ValetudoAppTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A56610287917A8309E972BC1 /* Build configuration list for PBXNativeTarget "ValetudoAppTests" */;
+			buildPhases = (
+				248816EAAB50D7E342772852 /* Sources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				BA9E2CA97C98EF56B9AE16D2 /* PBXTargetDependency */,
+			);
+			name = ValetudoAppTests;
+			packageProductDependencies = (
+			);
+			productName = ValetudoAppTests;
+			productReference = 9D2944F811E75D2A18C7A192 /* ValetudoAppTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		B2971D6203E36800C370817D /* ValetudoApp */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 1F22DE0C66E037B207879993 /* Build configuration list for PBXNativeTarget "ValetudoApp" */;
@@ -271,43 +307,7 @@
 			productReference = 44002D9750AED2C37546A796 /* ValetudoApp.app */;
 			productType = "com.apple.product-type.application";
 		};
-		TEST0050000000000000000 /* ValetudoAppTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = TEST0080000000000000000 /* Build configuration list for PBXNativeTarget "ValetudoAppTests" */;
-			buildPhases = (
-				TEST0060000000000000000 /* Sources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				TEST00A0000000000000000 /* PBXTargetDependency */,
-			);
-			name = ValetudoAppTests;
-			packageProductDependencies = (
-			);
-			productName = ValetudoAppTests;
-			productReference = TEST0030000000000000000 /* ValetudoAppTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 /* End PBXNativeTarget section */
-
-/* Begin PBXContainerItemProxy section */
-		TEST0090000000000000000 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 2127E299588E4EC8D4C24FE7 /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = B2971D6203E36800C370817D;
-			remoteInfo = ValetudoApp;
-		};
-/* End PBXContainerItemProxy section */
-
-/* Begin PBXTargetDependency section */
-		TEST00A0000000000000000 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = B2971D6203E36800C370817D /* ValetudoApp */;
-			targetProxy = TEST0090000000000000000 /* PBXContainerItemProxy */;
-		};
-/* End PBXTargetDependency section */
 
 /* Begin PBXProject section */
 		2127E299588E4EC8D4C24FE7 /* Project object */ = {
@@ -316,13 +316,15 @@
 				BuildIndependentTargetsInParallel = YES;
 				LastUpgradeCheck = 1500;
 				TargetAttributes = {
+					54E7A0E12B6491E95C754063 = {
+						DevelopmentTeam = J459G9CJT5;
+					};
 					B2971D6203E36800C370817D = {
 						DevelopmentTeam = J459G9CJT5;
 					};
 				};
 			};
 			buildConfigurationList = 1FBCBC696D0D66CF26CE820B /* Build configuration list for PBXProject "ValetudoApp" */;
-			compatibilityVersion = "Xcode 14.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -332,11 +334,13 @@
 			);
 			mainGroup = 706B5E1B783986C1BAAA5737;
 			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 5A0E541CC39DC062D0BDC717 /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
 				B2971D6203E36800C370817D /* ValetudoApp */,
-				TEST0050000000000000000 /* ValetudoAppTests */,
+				54E7A0E12B6491E95C754063 /* ValetudoAppTests */,
 			);
 		};
 /* End PBXProject section */
@@ -346,7 +350,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				F87A9FAA2EF61BDB009A0D9D /* Media.xcassets in Resources */,
 				7DA66DFFA501849A09C40000 /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -354,68 +357,77 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		248816EAAB50D7E342772852 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7287C4B56D6A0CE743D38B28 /* ConsumableTests.swift in Sources */,
+				1F0534502B3DB53D433509DD /* KeychainStoreTests.swift in Sources */,
+				BD5D356EA599C51A65452FA2 /* MapLayerTests.swift in Sources */,
+				5D3B904354FE1DCBB4A0859B /* MapViewModelTests.swift in Sources */,
+				E729DF2F6C2B31C596133D84 /* RobotDetailViewModelTests.swift in Sources */,
+				B729DD529A0445E3996DD614 /* RobotSettingsViewModelTests.swift in Sources */,
+				D919418DE4EA629CDA129AFA /* TimerTests.swift in Sources */,
+				2F9C24F46ECB55001E3C6191 /* ValetudoAPITests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		9AFDFDF71D7794B80EF495C0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				DDD26A60B887E1133DD2E18B /* AddRobotView.swift in Sources */,
-				HELPER002A2B3C4D5E6F7A8B /* DebugConfig.swift in Sources */,
-				HELPER001A2B3C4D5E6F7A8B /* PresetHelpers.swift in Sources */,
+				5BC9FCF8C32F80990A5AAAA2 /* Constants.swift in Sources */,
 				4F1CBBF41038293EA0F80B16 /* Consumable.swift in Sources */,
 				EF03FC536C8B10A814C55E48 /* ConsumablesView.swift in Sources */,
 				6FD4E58AD099B5D5DEC67AA2 /* ContentView.swift in Sources */,
+				023B647B98CE0D551626BEB0 /* DebugConfig.swift in Sources */,
 				8E7FB7D245E8323E351F68C8 /* DoNotDisturbView.swift in Sources */,
+				0C6898A2E427A1F4DB944811 /* ErrorRouter.swift in Sources */,
 				DA136B4862BD6BD33702E71A /* IntensityControlView.swift in Sources */,
+				D692854F2D2227501DA43AF6 /* KeychainStore.swift in Sources */,
 				A2F93F458EDD354944B50689 /* ManualControlView.swift in Sources */,
 				812642A8D77C6E37764AC03D /* MapView.swift in Sources */,
+				296A3B5821E1A4916CB23FB8 /* MapViewModel.swift in Sources */,
+				DB3194EBB4566F919E12A364 /* NWBrowserService.swift in Sources */,
 				C51D8291FD9CFE191FA9557D /* NetworkScanner.swift in Sources */,
 				583401D717322CA5AE6527B8 /* NotificationService.swift in Sources */,
-				0A1B2C3D4E5F6A7B8C9D0E1F /* OnboardingView.swift in Sources */,
+				BDECD717380DC7168DFC0ED7 /* ObstaclePhotoView.swift in Sources */,
+				12E1CB26BDC7E310A9C141EB /* OnboardingView.swift in Sources */,
+				143326E22353048B7A54418D /* PresetHelpers.swift in Sources */,
 				8F8EB3702AA2ADAC6889DC0D /* RobotConfig.swift in Sources */,
 				26187F76B128067478E11E35 /* RobotDetailView.swift in Sources */,
-				0A1B2C3D4E5F6A7B8C9D0E2F /* RobotIntents.swift in Sources */,
+				6BE4BC052593841E0B70FE6F /* RobotDetailViewModel.swift in Sources */,
+				5AEEB82CA45C29C587696C1B /* RobotIntents.swift in Sources */,
 				9207AFBD4FCBC7AAFE751181 /* RobotListView.swift in Sources */,
 				E3B89B8282E352373120510B /* RobotManager.swift in Sources */,
 				7B4C873365DACB44A3E2AD41 /* RobotMap.swift in Sources */,
 				1932127BBDCC8FBE2645FC31 /* RobotSettingsView.swift in Sources */,
+				F733B7BBDFCBC3B580936D5B /* RobotSettingsViewModel.swift in Sources */,
 				48E82472B522893504594AC9 /* RobotState.swift in Sources */,
 				D20FA57F529017D6027F3C71 /* RoomsManagementView.swift in Sources */,
+				268751822B3D802C519CE03C /* SSEConnectionManager.swift in Sources */,
 				FFECCF69B6C0CE99DDF1E747 /* SettingsView.swift in Sources */,
 				5CA62D98CD706CA8FD0A0737 /* StatisticsView.swift in Sources */,
+				65CDA694BCC22AD6CAD3E629 /* SupportManager.swift in Sources */,
+				745E6057D78374C972BF350C /* SupportReminderView.swift in Sources */,
+				5C0908D7F386F63B7F6FFA1D /* SupportView.swift in Sources */,
 				B5ACCE16A7996B790BBF09CA /* Timer.swift in Sources */,
 				D4ACB8D36AF5B70E720588DE /* TimersView.swift in Sources */,
 				F1406BFE3F7724B3D7729D73 /* ValetudoAPI.swift in Sources */,
 				B9C7BC253C6ABA4DAA4D41C9 /* ValetudoApp.swift in Sources */,
-				NEW00100000000000000001 /* ErrorRouter.swift in Sources */,
-				NEW00100000000000000002 /* KeychainStore.swift in Sources */,
-				NEW00100000000000000003 /* SSEConnectionManager.swift in Sources */,
-				NEW00100000000000000004 /* NWBrowserService.swift in Sources */,
-				NEW00100000000000000005 /* ObstaclePhotoView.swift in Sources */,
-				NEW00100000000000000006 /* MapViewModel.swift in Sources */,
-				NEW00100000000000000007 /* RobotDetailViewModel.swift in Sources */,
-				NEW00100000000000000008 /* RobotSettingsViewModel.swift in Sources */,
-				SUP00100000000000000001 /* SupportManager.swift in Sources */,
-				SUP00100000000000000002 /* SupportView.swift in Sources */,
-				SUP00100000000000000003 /* SupportReminderView.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		TEST0060000000000000000 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				TEST0010000000000000001 /* ConsumableTests.swift in Sources */,
-				TEST0010000000000000002 /* KeychainStoreTests.swift in Sources */,
-				TEST0010000000000000003 /* MapLayerTests.swift in Sources */,
-				TEST0010000000000000004 /* TimerTests.swift in Sources */,
-				TEST0010000000000000005 /* MapViewModelTests.swift in Sources */,
-				TEST0010000000000000006 /* RobotDetailViewModelTests.swift in Sources */,
-				TEST0010000000000000007 /* RobotSettingsViewModelTests.swift in Sources */,
-				TEST0010000000000000008 /* ValetudoAPITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		BA9E2CA97C98EF56B9AE16D2 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = B2971D6203E36800C370817D /* ValetudoApp */;
+			targetProxy = 5FB6B7FF4836895BEED5C4F3 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
 		1566EBC02CAC15BD406025DD /* Debug */ = {
@@ -486,65 +498,85 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_GENERATION_MODE = GeneratedFile;
-				INFOPLIST_KEY_CFBundleDisplayName = ValetudiOS;
-				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSBonjourServices = _valetudo._tcp;
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Access local network to communicate with Valetudo robots";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudiOS;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudoApp;
 				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
+		};
+		781F813199893E3729136BD1 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudoAppTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ValetudoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ValetudoApp";
+			};
+			name = Debug;
+		};
+		9C59C9CD1E07AA42AD18D089 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				GENERATE_INFOPLIST_FILE = YES;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudoAppTests;
+				SDKROOT = iphoneos;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ValetudoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ValetudoApp";
+			};
+			name = Release;
 		};
 		A300FE29E9806349871AD5B1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
-				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CURRENT_PROJECT_VERSION = 1;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_GENERATION_MODE = GeneratedFile;
-				INFOPLIST_KEY_CFBundleDisplayName = ValetudiOS;
-				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
-				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSBonjourServices = _valetudo._tcp;
 				INFOPLIST_KEY_NSLocalNetworkUsageDescription = "Access local network to communicate with Valetudo robots";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
-				INFOPLIST_KEY_UISupportedInterfaceOrientations = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait";
-				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.2.0;
-				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudiOS;
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudoApp;
 				SDKROOT = iphoneos;
-				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
-				SUPPORTS_MACCATALYST = NO;
-				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
-				TARGETED_DEVICE_FAMILY = 1;
+				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
 		};
@@ -605,48 +637,6 @@
 			};
 			name = Release;
 		};
-		TEST0070000000000000001 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = J459G9CJT5;
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudiOS.Tests;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ValetudoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ValetudoApp";
-			};
-			name = Debug;
-		};
-		TEST0070000000000000002 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CODE_SIGN_IDENTITY = "Apple Development";
-				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = J459G9CJT5;
-				GENERATE_INFOPLIST_FILE = YES;
-				LD_RUNPATH_SEARCH_PATHS = (
-					"$(inherited)",
-					"@executable_path/Frameworks",
-					"@loader_path/Frameworks",
-				);
-				PRODUCT_BUNDLE_IDENTIFIER = de.simonluthe.ValetudiOS.Tests;
-				SDKROOT = iphoneos;
-				SKIP_INSTALL = YES;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/ValetudoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ValetudoApp";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -668,11 +658,11 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;
 		};
-		TEST0080000000000000000 /* Build configuration list for PBXNativeTarget "ValetudoAppTests" */ = {
+		A56610287917A8309E972BC1 /* Build configuration list for PBXNativeTarget "ValetudoAppTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				TEST0070000000000000001 /* Debug */,
-				TEST0070000000000000002 /* Release */,
+				781F813199893E3729136BD1 /* Debug */,
+				9C59C9CD1E07AA42AD18D089 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Debug;

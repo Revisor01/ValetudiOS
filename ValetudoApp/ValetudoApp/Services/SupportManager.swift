@@ -19,13 +19,6 @@ class SupportManager: ObservableObject {
     @AppStorage("hasSupported") private var hasSupported = false
     @AppStorage("appLaunchCount") private var launchCount = 0
 
-    // Product IDs - diese müssen in App Store Connect erstellt werden
-    private let productIds = [
-        "de.godsapp.valetudoapp.support.small",   // 0,99€
-        "de.godsapp.valetudoapp.support.medium",  // 2,99€
-        "de.godsapp.valetudoapp.support.large"    // 5,99€
-    ]
-
     private init() {}
 
     func loadProducts() async {
@@ -33,7 +26,7 @@ class SupportManager: ObservableObject {
         defer { isLoading = false }
 
         do {
-            products = try await Product.products(for: productIds)
+            products = try await Product.products(for: Constants.supportProductIds)
                 .sorted { $0.price < $1.price }
         } catch {
             logger.error("Failed to load products: \(error.localizedDescription, privacy: .public)")

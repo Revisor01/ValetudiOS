@@ -274,7 +274,7 @@ final class RobotDetailViewModel: ObservableObject {
             let state = try await api.getUpdaterState()
             updaterState = state
 
-            let url = URL(string: "https://api.github.com/repos/Hypfer/Valetudo/releases/latest")!
+            guard let url = URL(string: Constants.githubApiLatestReleaseUrl) else { return }
             let (data, _) = try await URLSession.shared.data(from: url)
             let release = try JSONDecoder().decode(GitHubRelease.self, from: data)
             latestVersion = release.tag_name

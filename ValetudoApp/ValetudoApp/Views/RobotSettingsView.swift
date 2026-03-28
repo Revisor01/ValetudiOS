@@ -1452,7 +1452,7 @@ struct ValetudoInfoView: View {
     }
 
     private func checkForUpdate() async {
-        guard let url = URL(string: "https://api.github.com/repos/Hypfer/Valetudo/releases/latest") else { return }
+        guard let url = URL(string: Constants.githubApiLatestReleaseUrl) else { return }
 
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
