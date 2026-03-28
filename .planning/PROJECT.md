@@ -50,17 +50,25 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 - Cloud-Anbindung -- Lokale Kommunikation ist Core Value
 - Android-Version -- Nur iOS
 
-## Current Milestone: v1.3.0 Polish & Full API Coverage
+## Current State
+
+**Shipped:** v1.3.0 (2026-03-28)
+**Version:** 1.3.0 — Polish & Full API Coverage
+
+Die App hat vollständige Valetudo API-Abdeckung mit capability-gated UI, MVVM-Architektur mit 3 ViewModels, SSE-Echtzeit-Updates, mDNS-Discovery, 57 Unit-Tests, und robustes Error-Handling.
+
+<details>
+<summary>v1.3.0 Milestone (completed)</summary>
 
 **Goal:** Phase-3-UI wiederherstellen, fehlende Valetudo-Capabilities nachrüsten, Concerns beheben, Test-Coverage erweitern
 
-**Target features:**
-- Phase-3 UI-Features in ViewModels wiederherstellen (Events, CleanRoute, Snapshots, Notifications, Obstacles)
-- Fehlende Capabilities: VoicePack, AutoEmptyDuration, MopDockDrying, Robot Properties
-- Concerns: Force-unwraps, stille Fehler mit ErrorRouter, SSE Exponential Backoff
-- Koordinaten-Bug in MapView (Float→Int Rundung)
-- Test-Coverage: ViewModels und API-Layer
-- Valetudo API vollständig capability-gated abdecken
+**Delivered:**
+- UI-Features in ViewModels wiederhergestellt (Events, CleanRoute, Snapshots, Notifications, Obstacles)
+- 4 neue Capabilities: VoicePack, AutoEmptyDuration, MopDockDrying, Robot Properties
+- Force-unwraps eliminiert, stille Fehler durch Logger ersetzt, SSE Exponential Backoff
+- Koordinaten-Rundungsfehler in MapView behoben
+- 28 neue Unit-Tests (ViewModel + API-Layer)
+</details>
 
 ## Context
 
@@ -106,4 +114,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-28 — Milestone v1.3.0 started*
+*Last updated: 2026-03-28 — Milestone v1.3.0 completed*
