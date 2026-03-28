@@ -1,6 +1,8 @@
 import SwiftUI
+import os
 
 struct TimersView: View {
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "TimersView")
     @EnvironmentObject var robotManager: RobotManager
     let robot: RobotConfig
 
@@ -74,7 +76,7 @@ struct TimersView: View {
         do {
             timers = try await api.getTimers()
         } catch {
-            print("Failed to load timers: \(error)")
+            logger.error("Failed to load timers: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -87,7 +89,7 @@ struct TimersView: View {
             try await api.updateTimer(updatedTimer)
             await loadTimers()
         } catch {
-            print("Failed to toggle timer: \(error)")
+            logger.error("Failed to toggle timer: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -99,7 +101,7 @@ struct TimersView: View {
                 do {
                     try await api.deleteTimer(id: timer.id)
                 } catch {
-                    print("Failed to delete timer: \(error)")
+                    logger.error("Failed to delete timer: \(error.localizedDescription, privacy: .public)")
                 }
             }
             await loadTimers()
@@ -169,6 +171,8 @@ struct TimerEditView: View {
     let robot: RobotConfig
     let timer: ValetudoTimer?
     let onSave: () async -> Void
+
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "TimersView")
 
     @State private var label = ""
     @State private var hour = 9
@@ -321,7 +325,7 @@ struct TimerEditView: View {
             await onSave()
             dismiss()
         } catch {
-            print("Failed to save timer: \(error)")
+            logger.error("Failed to save timer: \(error.localizedDescription, privacy: .public)")
         }
     }
 }

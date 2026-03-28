@@ -1,6 +1,8 @@
 import SwiftUI
+import os
 
 struct RoomsManagementView: View {
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "RoomsManagementView")
     let robot: RobotConfig
     @EnvironmentObject var robotManager: RobotManager
 
@@ -182,11 +184,11 @@ struct RoomsManagementView: View {
                         supportedMaterials = props.supportedMaterials
                     }
                 } catch {
-                    print("Failed to load material properties: \(error)")
+                    logger.error("Failed to load material properties: \(error.localizedDescription, privacy: .public)")
                 }
             }
         } catch {
-            print("Failed to load capabilities: \(error)")
+            logger.error("Failed to load capabilities: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -200,7 +202,7 @@ struct RoomsManagementView: View {
             showMaterialSheet = false
             materialSegment = nil
         } catch {
-            print("Failed to set segment material: \(error)")
+            logger.error("Failed to set segment material: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -212,7 +214,7 @@ struct RoomsManagementView: View {
         do {
             segments = try await api.getSegments()
         } catch {
-            print("Failed to load segments: \(error)")
+            logger.error("Failed to load segments: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -225,7 +227,7 @@ struct RoomsManagementView: View {
             try await api.renameSegment(id: segment.id, name: newName)
             await loadSegments()
         } catch {
-            print("Failed to rename segment: \(error)")
+            logger.error("Failed to rename segment: \(error.localizedDescription, privacy: .public)")
         }
 
         editingSegment = nil
@@ -244,7 +246,7 @@ struct RoomsManagementView: View {
             showJoinSheet = false
             await loadSegments()
         } catch {
-            print("Failed to join segments: \(error)")
+            logger.error("Failed to join segments: \(error.localizedDescription, privacy: .public)")
         }
     }
 
@@ -258,7 +260,7 @@ struct RoomsManagementView: View {
             showSplitSheet = false
             await loadSegments()
         } catch {
-            print("Failed to split segment: \(error)")
+            logger.error("Failed to split segment: \(error.localizedDescription, privacy: .public)")
         }
     }
 }
@@ -384,6 +386,8 @@ struct SplitSegmentSheet: View {
     @Environment(\.dismiss) var dismiss
     @EnvironmentObject var robotManager: RobotManager
 
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "RoomsManagementView")
+
     @State private var selectedSegmentId: String?
     @State private var map: RobotMap?
     @State private var isLoading = true
@@ -495,7 +499,7 @@ struct SplitSegmentSheet: View {
         do {
             map = try await api.getMap()
         } catch {
-            print("Failed to load map: \(error)")
+            logger.error("Failed to load map: \(error.localizedDescription, privacy: .public)")
         }
         isLoading = false
     }
