@@ -18,7 +18,7 @@
 
 **Milestone Goal:** Phase-3-UI in ViewModels wiederherstellen, fehlende Valetudo-Capabilities nachrüsten, Robustness-Concerns beheben, Test-Coverage erweitern.
 
-- [ ] **Phase 5: UI Restore** - Events, CleanRoute, Snapshots, Obstacles und Notifications in ViewModels und Views verdrahten
+- [x] **Phase 5: UI Restore** - Events, CleanRoute, Snapshots, Obstacles und Notifications in ViewModels und Views verdrahten (completed 2026-03-28)
 - [ ] **Phase 6: New Capabilities** - VoicePack, AutoEmptyDuration, MopDryingTime und Robot Properties vollständig integrieren
 - [ ] **Phase 7: Bugfixes & Robustness** - Force-unwraps, stille Fehler, SSE Backoff, Koordinaten-Transformation beheben
 - [ ] **Phase 8: Test Coverage** - ViewModel- und API-Layer-Tests aufbauen
@@ -106,7 +106,7 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 05-01-PLAN.md — Events-Section, CleanRoute-Picker und Obstacle-Photos in RobotDetailViewModel/View + API-Erweiterungen
+- [x] 05-01-PLAN.md — Events-Section, CleanRoute-Picker und Obstacle-Photos in RobotDetailViewModel/View + API-Erweiterungen
 - [x] 05-02-PLAN.md — Map-Snapshots und Pending-Map-Change Sections in RobotSettingsViewModel/View
 
 ### Phase 6: New Capabilities
@@ -154,7 +154,7 @@ v1.3.0: 5 → 6 → 7 → 8
 | 2. Network Layer | 3/3 | Complete | 2026-03-27 |
 | 3. API Completeness | 3/3 | Complete | 2026-03-28 |
 | 4. View Refactoring & Tests | 4/4 | Complete | 2026-03-27 |
-| 5. UI Restore | 0/2 | Not started | - |
+| 5. UI Restore | 2/2 | Complete   | 2026-03-28 |
 | 6. New Capabilities | 0/TBD | Not started | - |
 | 7. Bugfixes & Robustness | 0/TBD | Not started | - |
 | 8. Test Coverage | 0/TBD | Not started | - |

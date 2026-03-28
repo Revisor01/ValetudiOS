@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v1.3.0
 milestone_name: Polish & Full API Coverage
-status: executing
-stopped_at: Completed 05-ui-restore 05-02-PLAN.md
-last_updated: "2026-03-28T14:33:44.010Z"
+status: verifying
+stopped_at: Completed 05-ui-restore 05-01-PLAN.md
+last_updated: "2026-03-28T14:34:50.173Z"
 last_activity: 2026-03-28
 progress:
   total_phases: 8
-  completed_phases: 4
+  completed_phases: 5
   total_plans: 15
-  completed_plans: 14
+  completed_plans: 15
   percent: 0
 ---
 
@@ -27,7 +27,7 @@ See: .planning/PROJECT.md (updated 2026-03-28)
 
 Phase: 05 (ui-restore) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-03-28
 
 Progress: [░░░░░░░░░░] 0%
@@ -60,6 +60,7 @@ Progress: [░░░░░░░░░░] 0%
 
 *Updated after each plan completion*
 | Phase 05-ui-restore P02 | 15min | 2 tasks | 3 files |
+| Phase 05-ui-restore P01 | 3min | 2 tasks | 4 files |
 
 ## Accumulated Context
 
@@ -104,6 +105,8 @@ Recent decisions affecting current work:
 - [Phase 04-view-refactoring-tests]: KeychainStoreTests use unique UUID per test + tearDown cleanup to prevent cross-test Keychain pollution
 - [Phase 05-ui-restore]: restoreMapSnapshot() reloads mapSnapshots after restore using try? fallback — keeps UI consistent without failing if reload errors
 - [Phase 05-ui-restore]: Pending Map Change section is double-gated: hasPendingMapChange AND pendingMapChangeEnabled — hides section when no change is pending
+- [Phase 05-ui-restore]: loadObstacles() uses api.getMap() directly — RobotManager has no mapData dict
+- [Phase 05-ui-restore]: Events always available (hasEvents = true) — no Valetudo capability gate for /valetudo/events
 
 ### v1.3.0 Context
 
@@ -123,6 +126,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-03-28T14:33:44.007Z
-Stopped at: Completed 05-ui-restore 05-02-PLAN.md
+Last session: 2026-03-28T14:34:50.171Z
+Stopped at: Completed 05-ui-restore 05-01-PLAN.md
 Resume file: None
