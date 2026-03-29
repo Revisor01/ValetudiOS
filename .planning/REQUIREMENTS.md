@@ -1,123 +1,118 @@
 # Requirements: ValetudiOS
 
-**Defined:** 2026-03-28
+**Defined:** 2026-03-29
 **Core Value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
 
-## v1.4.0 Requirements
+## v2.0.0 Requirements
 
-Requirements for milestone v1.4.0: Code Quality & Robustness.
+Requirements for Update Process Hardening. Each maps to roadmap phases.
+
+### State Machine & Guards
+
+- [ ] **STATE-01**: Update-Zustand wird als enum-basierte State Machine modelliert (Idle, Checking, Downloading, ReadyToApply, Applying, Rebooting, Error)
+- [ ] **STATE-02**: startUpdate() hat einen Re-Entrancy-Guard — Doppelaufruf wird verhindert
+- [ ] **STATE-03**: Valetudo ErrorState wird im Model abgebildet und zeigt Fehlermeldung an
+- [ ] **STATE-04**: Ein zentraler UpdateService ist die einzige Source of Truth für Update-Zustand (statt ViewModel + View doppelt)
+
+### Apply-Phase Hardening
+
+- [ ] **APPLY-01**: Während der Apply-Phase wird ein Fullscreen-Lock angezeigt, der nicht weggeklickt werden kann
+- [ ] **APPLY-02**: Bildschirm bleibt während Download und Apply an (Idle Timer deaktiviert)
+- [ ] **APPLY-03**: Nach Apply wird der Roboter-Neustart erkannt und nicht als Fehler gewertet
+- [ ] **APPLY-04**: UIBackgroundTask verhindert Abbruch bei App-Hintergrund während Apply
+
+### UI & Feedback
+
+- [ ] **UI-01**: Download-Fortschritt wird aus metaData.progress als ProgressView angezeigt
+- [ ] **UI-02**: Fehlermeldungen bei Update-Problemen werden sichtbar als Banner angezeigt
+- [ ] **UI-03**: Update-Check wird auf max. 1x/Stunde gedrosselt statt bei jedem View-Erscheinen
+
+### Code Cleanup
+
+- [ ] **CLEAN-01**: Ungenutzte isUpdating/showUpdateWarning Properties werden aus dem ViewModel entfernt
+- [ ] **CLEAN-02**: Doppelte Update-Check-Logik in ValetudoInfoView wird entfernt und an UpdateService angebunden
+
+## v1.4.0 Requirements (Completed)
 
 ### Logging & Diagnostics
 
-- [x] **LOG-01**: Alle print()-Aufrufe in View-Dateien sind durch os.Logger ersetzt (DoNotDisturbView, StatisticsView, IntensityControlView, MapView, ManualControlView, RoomsManagementView, TimersView)
+- [x] **LOG-01**: Alle print()-Aufrufe in View-Dateien sind durch os.Logger ersetzt
 - [x] **LOG-02**: SupportManager.swift print() durch os.Logger ersetzen
 - [x] **LOG-03**: Alle Views mit print()-Aufrufen haben eine private Logger-Property
 
 ### Safety & Error Handling
 
-- [x] **SAFE-01**: Force-Unwrap in SettingsView.swift eliminiert durch nil-coalescing/optional binding
-- [x] **SAFE-02**: KeychainStore.swift prüft SecItemDelete/SecItemAdd Return-Status und loggt Fehler
-- [x] **SAFE-03**: SupportReminderView nutzt Task.sleep statt DispatchQueue.main.asyncAfter
+- [x] **SAFE-01**: Force-Unwrap in SettingsView.swift eliminiert
+- [x] **SAFE-02**: KeychainStore.swift prüft SecItemDelete/SecItemAdd Return-Status
+- [x] **SAFE-03**: SupportReminderView nutzt Task.sleep statt DispatchQueue
 
 ### Code Organization
 
-- [x] **ORG-01**: Hardcoded GitHub-API-URLs in RobotDetailViewModel und RobotSettingsView in zentrale Constants extrahieren
-- [x] **ORG-02**: MapView (2532 Zeilen) in logische Sub-Views aufbrechen (MiniMap, Controls, Drawing-Helpers)
-- [x] **ORG-03**: RobotSettingsView (1801 Zeilen) in Section-Views aufbrechen
-- [x] **ORG-04**: RobotDetailView (1253 Zeilen) in Section-Views aufbrechen
+- [x] **ORG-01**: Hardcoded URLs in zentrale Constants extrahiert
+- [x] **ORG-02**: MapView in logische Sub-Views aufgebrochen
+- [x] **ORG-03**: RobotSettingsView in Section-Views aufgebrochen
+- [x] **ORG-04**: RobotDetailView in Section-Views aufgebrochen
 
 ## v1.3.0 Requirements (Completed)
 
-### UI Restore
-
-- [x] **UIR-01**: Events-Section in RobotDetailView zeigt Valetudo-Events chronologisch mit Dismiss-Button
-- [x] **UIR-02**: CleanRoute-Picker in RobotDetailView erlaubt Auswahl der Reinigungsroute (capability-gated)
-- [x] **UIR-03**: Map-Snapshots Section in RobotSettingsView zeigt Liste und ermöglicht Restore (capability-gated)
-- [x] **UIR-04**: Pending-Map-Change Section in RobotSettingsView erlaubt Accept/Reject (capability-gated)
-- [x] **UIR-05**: Obstacle-Photos Section in RobotDetailView mit Navigation zu ObstaclePhotoView (capability-gated)
-- [x] **UIR-06**: Notification-Actions GO_HOME und LOCATE funktionieren (AppDelegate + Handler)
-
-### Neue Capabilities
-
-- [x] **CAP-01**: Benutzer kann Sprachpakete des Roboters verwalten (VoicePackManagementCapability)
-- [x] **CAP-02**: Benutzer kann Absaugdauer der Auto-Empty-Station steuern
-- [x] **CAP-03**: Benutzer kann Trocknungszeit der Mop-Station steuern
-- [x] **CAP-04**: Benutzer sieht Robot-Properties (Modell, Firmware, Seriennummer)
-
-### Bugfixes & Robustness
-
-- [x] **FIX-01**: Force-unwrap URLs durch sichere optionale Bindung ersetzen
-- [x] **FIX-02**: Stille Fehler durch ErrorRouter-Alerts oder Logger-Warnungen ersetzen
-- [x] **FIX-03**: SSE-Reconnect mit Exponential Backoff (1s → 5s → 30s)
-- [x] **FIX-04**: Koordinaten-Transformation in MapView (Rundungsfehler) behoben
-
-### Test Coverage
-
-- [x] **TEST-01**: ViewModel-Unit-Tests
-- [x] **TEST-02**: ValetudoAPI-Tests
+- [x] **UIR-01** – **UIR-06**: UI Restore (Events, CleanRoute, Snapshots, PendingMap, Obstacles, Notifications)
+- [x] **CAP-01** – **CAP-04**: Neue Capabilities (VoicePack, AutoEmpty, MopDock, Properties)
+- [x] **FIX-01** – **FIX-04**: Bugfixes (Force-unwrap, stille Fehler, SSE Backoff, Koordinaten)
+- [x] **TEST-01** – **TEST-02**: Test Coverage (ViewModel + API)
 
 ## v1.2.0 Requirements (Completed)
 
-### UX
-- [x] **UX-01**: Robot-Zeile in der Liste ist vollständig klickbar
-- [x] **UX-02**: Benutzer sieht Fehlermeldungen bei fehlgeschlagenen Aktionen
-- [x] **UX-03**: Notification-Actions GO_HOME und LOCATE führen die jeweilige Aktion aus
-- [x] **UX-04**: Benutzer kann Valetudo Events einsehen
+- [x] **UX-01** – **UX-04**: UX (klickbare Zeilen, Fehlermeldungen, Notification-Actions, Events)
+- [x] **NET-01** – **NET-03**: Netzwerk (SSE, mDNS, Keychain)
+- [x] **API-01** – **API-04**: API Capabilities (Snapshots, Map-Changes, CleanRoute, Obstacles)
+- [x] **DEBT-01** – **DEBT-04**: Tech Debt (Logger, ViewModels, Caching, Tests)
 
-### Netzwerk
-- [x] **NET-01**: App nutzt SSE-Streams für Echtzeit-State-Updates
-- [x] **NET-02**: App findet Roboter via mDNS/Bonjour
-- [x] **NET-03**: Credentials werden im iOS Keychain gespeichert
+## Future Requirements
 
-### API Capabilities
-- [x] **API-01**: Benutzer kann Map-Snapshots erstellen und wiederherstellen
-- [x] **API-02**: Benutzer kann ausstehende Kartenänderungen akzeptieren/ablehnen
-- [x] **API-03**: Benutzer kann Reinigungsroute wählen
-- [x] **API-04**: Benutzer kann Fotos erkannter Hindernisse ansehen
+### Post-v2.0.0
 
-### Tech Debt
-- [x] **DEBT-01**: Alle print()-Aufrufe durch os.Logger ersetzt
-- [x] **DEBT-02**: MapView, RobotDetailView, RobotSettingsView in ViewModels aufgeteilt
-- [x] **DEBT-03**: Map-Pixel-Dekompression wird gecacht
-- [x] **DEBT-04**: XCTest-Target mit Unit-Tests
-
-## v2 Requirements (Deferred)
-
+- **UPDATE-F01**: Update-Changelog/Release-Notes in der App anzeigen
+- **UPDATE-F02**: Automatische Update-Benachrichtigung via Local Notification
+- **UPDATE-F03**: Update-Historie pro Roboter anzeigen
 - **EXT-01**: Background-Monitoring via BGAppRefreshTask
 - **EXT-02**: WiFi-Rekonfiguration in-App
 - **EXT-03**: Map-Caching auf Disk (Offline-Zugriff)
-- **EXT-04**: @Observable Migration (nach ausreichender Test-Coverage)
+- **EXT-04**: @Observable Migration
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
+| Download-Cancel-Button | Valetudo API hat keine Cancel-Action — technisch nicht umsetzbar |
+| Automatisches Update ohne Bestätigung | Zu riskant bei Firmware — User muss immer bestätigen |
 | Multi-Floor Map Management | Valetudo unterstützt dies nicht offiziell |
 | MQTT in-App | SSE erreicht dasselbe ohne Broker-Konfiguration |
 | Cloud-Anbindung | Lokale Kommunikation ist Core Value |
 | Android-Version | Nur iOS |
-| Valetudo-Update in-App | Reboot bricht Verbindung; Link zu Web UI |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| LOG-01 | Phase 9 | Complete |
-| LOG-02 | Phase 9 | Complete |
-| LOG-03 | Phase 9 | Complete |
-| SAFE-03 | Phase 9 | Complete |
-| SAFE-01 | Phase 10 | Complete |
-| SAFE-02 | Phase 10 | Complete |
-| ORG-01 | Phase 10 | Complete |
-| ORG-02 | Phase 11 | Complete |
-| ORG-03 | Phase 11 | Complete |
-| ORG-04 | Phase 11 | Complete |
+| STATE-01 | — | Pending |
+| STATE-02 | — | Pending |
+| STATE-03 | — | Pending |
+| STATE-04 | — | Pending |
+| APPLY-01 | — | Pending |
+| APPLY-02 | — | Pending |
+| APPLY-03 | — | Pending |
+| APPLY-04 | — | Pending |
+| UI-01 | — | Pending |
+| UI-02 | — | Pending |
+| UI-03 | — | Pending |
+| CLEAN-01 | — | Pending |
+| CLEAN-02 | — | Pending |
 
 **Coverage:**
-- v1.4.0 requirements: 10 total
-- Mapped to phases: 10
-- Unmapped: 0
+- v2.0.0 requirements: 13 total
+- Mapped to phases: 0
+- Unmapped: 13 ⚠️
 
 ---
-*Requirements defined: 2026-03-28*
-*Last updated: 2026-03-28 after roadmap v1.4.0 creation*
+*Requirements defined: 2026-03-29*
+*Last updated: 2026-03-29 after initial definition*
