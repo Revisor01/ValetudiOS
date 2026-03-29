@@ -1,36 +1,32 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2.0
-milestone_name: Quality & API Completeness
-status: verifying
-last_updated: "2026-03-28T23:22:19.803Z"
-last_activity: 2026-03-28
+milestone: v2.0.0
+milestone_name: Update Process Hardening
+status: defining-requirements
+last_updated: "2026-03-29"
+last_activity: 2026-03-29
 progress:
-  total_phases: 11
-  completed_phases: 10
-  total_plans: 32
-  completed_plans: 31
+  total_phases: 0
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-28)
+See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 11 — view-decomposition
+**Current focus:** Defining requirements for v2.0.0
 
 ## Current Position
 
-Phase: 11
-Plan: Not started
-Status: Phase complete — ready for verification
-Last activity: 2026-03-28
-
-```
-v1.4.0 progress: [··········] 0% (0/3 phases)
-```
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-03-29 — Milestone v2.0.0 started
 
 ## Accumulated Context
 

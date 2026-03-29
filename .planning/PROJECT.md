@@ -36,7 +36,8 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 
 ### Active
 
-(None — define for next milestone)
+<!-- v2.0.0 — Update Process Hardening -->
+(Defined in REQUIREMENTS.md)
 
 ### Validated (v1.4.0)
 
@@ -52,6 +53,19 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 - Multi-Floor-Support -- Valetudo unterstützt dies nicht offiziell, nur Workarounds via SSH
 - Cloud-Anbindung -- Lokale Kommunikation ist Core Value
 - Android-Version -- Nur iOS
+
+## Current Milestone: v2.0.0 Update Process Hardening
+
+**Goal:** Den Firmware-Update-Prozess des Roboters robust und fehlerfrei machen — kein Doppelklick, klare Zustandsanzeige, Fehlerfeedback, Schutz während kritischer Phasen.
+
+**Target features:**
+- Zustandsmaschine für den Update-Lifecycle (Idle → Checking → Download → Ready → Applying → Done/Error)
+- Doppelklick-Schutz und UI-Lock während kritischer Phasen (Download/Apply)
+- Error-State-Handling mit User-Feedback (Download-Fehler, Apply-Fehler)
+- Konsolidierung der doppelten Update-Logik (eine Source of Truth)
+- Dead-Code-Bereinigung (ungenutzte Properties)
+- Intelligenteres Update-Checking (nicht bei jedem View-Erscheinen)
+- Apply-Phase: Vollbild-Lock oder Modal, das nicht weggeklickt werden kann
 
 ## Current State
 
@@ -133,4 +147,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-29 — Milestone v1.4.0 completed*
+*Last updated: 2026-03-29 — Milestone v2.0.0 started*
