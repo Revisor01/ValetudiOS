@@ -1,296 +1,347 @@
 # Stack Research
 
-**Domain:** iOS Valetudo Robot Controller — v1.2.0 Quality & API Completeness
-**Researched:** 2026-03-27
-**Confidence:** HIGH (all additions are Apple-native, documented frameworks)
+**Domain:** iOS Firmware Update UX — v2.0.0 Update Process Hardening
+**Researched:** 2026-03-29
+**Confidence:** HIGH (all patterns are Apple-native, iOS 17+ only, verified against Apple Developer Documentation)
 
 ---
 
 ## Context: What is NOT Changing
 
-The existing stack is validated and stays untouched:
+The existing stack is locked and validated:
 
 - Swift 5.9, SwiftUI, iOS 17+
-- URLSession, Foundation, Network, UserNotifications, AppIntents
-- UserDefaults for non-sensitive config, XcodeGen for project generation
-- Zero external dependencies — this constraint is maintained for all additions below
+- `@MainActor ObservableObject` ViewModels (RobotDetailViewModel, RobotSettingsViewModel)
+- URLSession + structured concurrency (`async/await`, `Task`, `actor`)
+- `os.Logger` logging, Keychain storage
+- Zero external dependencies — this constraint applies to all additions below
+
+**Existing update code state (as found):**
+
+`RobotDetailViewModel` has two redundant `@Published` properties for the same concept:
+- `isUpdating: Bool` and `updateInProgress: Bool` — both describe "update is in flight"
+- `updaterState: UpdaterState?` — polled server state, not the app's own lifecycle state
+
+`RobotSettingsSections.swift` has a *third* `@State private var updaterState: UpdaterState?` — a local copy that duplicates ViewModel state.
+
+The `startUpdate()` function encodes state machine transitions implicitly via `let needsDownload` / `let needsApply` booleans computed at call site, with no guard against double-invocation.
+
+All patterns below replace this implicit state with explicit, compiler-enforced state.
 
 ---
 
-## New Framework Additions for v1.2.0
+## Recommended Patterns for v2.0.0
 
-### Core Technologies
+### 1. Enum-Based State Machine — Single Source of Truth
 
-| Technology | Framework | Available Since | Purpose | Why This |
-|------------|-----------|-----------------|---------|----------|
-| Security (Keychain) | Security.framework | iOS 2.0 | Store robot credentials (username/password) securely | Only encrypted credential store on iOS. Survives app uninstall with correct `kSecAttrAccessGroup`. Excluded from unencrypted backups by default. |
-| NWBrowser | Network.framework | iOS 13.0 | mDNS/Bonjour service discovery for `_valetudo._tcp` | Already imported in the project (`NetworkScanner.swift`). Replaces brute-force IP scan. Valetudo advertises `_valetudo._tcp` natively. `NSBonjourServices` key already in Info.plist. |
-| URLSession.AsyncBytes | Foundation | iOS 15.0 | Server-Sent Events (SSE) streaming from Valetudo | Built into URLSession. No external dependency. Uses Swift structured concurrency (`for await`). Parses SSE line-by-line via `.lines`. |
-| os.Logger | os.framework (OSLog) | iOS 14.0 | Structured logging replacing all `print()` calls | Integrates with Xcode console and Console.app. Supports log levels (debug/info/error/fault). Privacy controls for sensitive values. Subsystem+category filtering. |
-| XCTest | XCTest.framework | iOS 8.0 | Unit tests for business logic (parsers, calculators, state) | Apple's standard test framework. Built into Xcode. No configuration beyond adding a test target to `project.yml`. |
-
-### Supporting Patterns (No New Frameworks)
-
-| Pattern | Existing Foundation | Purpose |
-|---------|---------------------|---------|
-| JSONDecoder + Codable | Foundation (already used) | Parse Valetudo OpenAPI/Swagger JSON fetched from `/swagger/openapi.json` on the robot |
-| URLSession data task | Foundation (already used) | Fetch the OpenAPI definition from the live robot at runtime |
-| @testable import | XCTest | Expose `internal` declarations in test target without changing access modifiers |
-
----
-
-## Integration Points with Existing Code
-
-### 1. Keychain — replaces UserDefaults credential storage
-
-**Where to integrate:** `RobotManager.swift` (lines 196–209), `RobotConfig.swift`
+**Why:** The existing `isUpdating + updateInProgress + updaterState?` combination cannot express all states unambiguously. An enum makes illegal states unrepresentable at the type level. The Swift compiler then enforces exhaustive handling everywhere the state is consumed.
 
 **Pattern:**
+
 ```swift
-import Security
+enum UpdatePhase: Equatable {
+    case idle
+    case checking
+    case downloading(progress: Double)   // 0.0–1.0
+    case readyToApply
+    case applying
+    case done
+    case failed(UpdateError)
+}
 
-// Store
-let query: [CFString: Any] = [
-    kSecClass: kSecClassGenericPassword,
-    kSecAttrService: "de.simonluthe.ValetudiOS",
-    kSecAttrAccount: robotId,          // unique per robot
-    kSecValueData: passwordData,
-    kSecAttrAccessible: kSecAttrAccessibleWhenUnlockedThisDeviceOnly
-]
-SecItemAdd(query as CFDictionary, nil)
-
-// Retrieve
-var result: AnyObject?
-SecItemCopyMatching(query as CFDictionary, &result)
-
-// Delete
-SecItemDelete(query as CFDictionary)
+enum UpdateError: Error, Equatable {
+    case checkFailed(String)
+    case downloadFailed(String)
+    case applyFailed(String)
+    case timeout
+}
 ```
 
-**Migration path:** `RobotConfig` keeps all fields in UserDefaults except `username` and `password`. On first load of an existing config, if credentials exist in UserDefaults, migrate to Keychain and delete from UserDefaults.
+**Placement:** Add `UpdatePhase` as a nested type or top-level type in the same file as `RobotDetailViewModel`. Replace `isUpdating`, `updateInProgress`, and `showUpdateWarning` with a single `@Published var updatePhase: UpdatePhase = .idle`.
 
-**Key:** Use `robotId` (a stable UUID per robot) as `kSecAttrAccount` so multiple robots each have independent Keychain entries.
+**Transition guards — prevent double-invocation:**
 
-**`kSecAttrAccessible` choice:** `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` — correct for credentials that are only needed when the app is in the foreground (no background network task currently). Does not migrate to new device via iCloud backup, which is appropriate for LAN-bound robot credentials.
+```swift
+@MainActor
+func beginUpdate() async {
+    guard case .idle = updatePhase else { return }  // guard at call site
+    updatePhase = .checking
+    // ...
+    guard case .readyToApply = updatePhase else { return }
+    updatePhase = .applying
+}
+```
+
+The `guard case` pattern extracts associated values and short-circuits cleanly. No boolean flags needed.
+
+**SwiftUI exhaustive switch — forces all states to be handled in UI:**
+
+```swift
+switch viewModel.updatePhase {
+case .idle:             UpdateIdleView(...)
+case .checking:         ProgressView("Checking...")
+case .downloading(let p): DownloadProgressView(progress: p)
+case .readyToApply:     ApplyButtonView(...)
+case .applying:         ApplyingView()
+case .done:             UpdateDoneView()
+case .failed(let err):  UpdateErrorView(error: err)
+}
+```
+
+**Confidence:** HIGH — enum state machines are a standard Swift pattern, documented in Swift Evolution proposals and endorsed in WWDC content on Swift concurrency.
 
 ---
 
-### 2. NWBrowser — replaces brute-force IP scan
+### 2. Button Disable Pattern — `.disabled()` Modifier Tied to State
 
-**Where to integrate:** `NetworkScanner.swift` — replace the 254-IP loop with NWBrowser as primary path, keep IP scan as fallback.
+**Why:** SwiftUI's `.disabled()` modifier is the correct, declarative way to prevent button interaction. It is driven by the state machine — no separate `isEnabled` boolean needed.
 
 **Pattern:**
-```swift
-import Network
 
-let browser = NWBrowser(
-    for: .bonjourWithTXTRecord(type: "_valetudo._tcp", domain: "local."),
-    using: .tcp
-)
-browser.browseResultsChangedHandler = { results, changes in
-    for result in results {
-        if case .service(let name, _, _, _) = result.endpoint {
-            // result.endpoint can be used directly with NWConnection to resolve IP
+```swift
+// A computed property on the ViewModel (or inline in the View)
+var canStartUpdate: Bool {
+    if case .idle = updatePhase { return true }
+    if case .readyToApply = updatePhase { return true }
+    return false
+}
+
+// In the View
+Button("Update") {
+    Task { await viewModel.beginUpdate() }
+}
+.disabled(!viewModel.canStartUpdate)
+```
+
+**Why not a separate boolean:** A separate `isEnabled` boolean can drift out of sync with the state machine. Deriving it from `updatePhase` makes it impossible for the button to be enabled while an update is running.
+
+**`@MainActor` requirement:** All `@Published` mutations must happen on the main actor. The ViewModel is already `@MainActor ObservableObject` — this is satisfied. The `Task { await viewModel.beginUpdate() }` in the button action creates a detached task on the main actor context.
+
+**Confidence:** HIGH — documented in SwiftUI `disabled(_:)` modifier reference. The `@MainActor` interaction is documented in SE-0316 (Global Actors).
+
+---
+
+### 3. Blocking UI During Apply Phase — `fullScreenCover` + `interactiveDismissDisabled`
+
+**Why:** The apply phase is destructive and non-cancellable. The robot will reboot. The user must not be able to navigate away, dismiss a sheet, or trigger any robot command while this is in progress.
+
+**Mechanism:**
+
+`fullScreenCover` already blocks all interaction with the content behind it. Adding `.interactiveDismissDisabled()` removes the swipe-down gesture. Controlling `isPresented` from the state machine (not from user action) means only the app — never the user — can dismiss it.
+
+**Pattern:**
+
+```swift
+// In the parent View (e.g. RobotSettingsView)
+.fullScreenCover(isPresented: $viewModel.isApplyPhaseActive) {
+    UpdateApplyingView()
+        .interactiveDismissDisabled()   // belt-and-suspenders for fullScreenCover
+}
+
+// Computed property on ViewModel
+var isApplyPhaseActive: Bool {
+    switch updatePhase {
+    case .applying, .done: return true
+    default: return false
+    }
+}
+```
+
+**Why `fullScreenCover` and not `.overlay` or `.sheet`:**
+- `.sheet` can be dismissed with a swipe on iOS (`.interactiveDismissDisabled()` prevents this, but it is a second line of defence, not primary)
+- `.overlay` does not prevent interaction with the content behind it unless combined with `allowsHitTesting(false)` on the underlying view — more fragile
+- `fullScreenCover` blocks the entire screen by design; no underlying content is hittable
+
+**Why keep it presented for `.done` as well:** The robot reboots after `.applying`. The "done" state should show a success message and a "Close" button the user taps intentionally. Dismissing automatically risks the user missing the success state.
+
+**Confidence:** HIGH — `fullScreenCover` and `interactiveDismissDisabled` documented on developer.apple.com. The pattern of state-driven `isPresented` is SwiftUI standard practice.
+
+---
+
+### 4. Progress Tracking — Determinate `ProgressView` With Polled State
+
+**Why:** The Valetudo updater API exposes download progress via `GET /api/v2/updater` which returns a `progress` field (0–100 integer) when `status == "downloading"`. This is a polling approach — not streaming — which matches the existing app architecture.
+
+**Pattern:**
+
+```swift
+// State machine carries progress as associated value
+case downloading(progress: Double)   // derived from updaterState.progress / 100
+
+// In View
+if case .downloading(let p) = viewModel.updatePhase {
+    VStack {
+        ProgressView(value: p, total: 1.0)
+            .progressViewStyle(.linear)
+        Text("\(Int(p * 100))%")
+            .font(.caption)
+            .foregroundStyle(.secondary)
+    }
+}
+```
+
+**Polling loop with progress update:**
+
+```swift
+@MainActor
+private func pollDownloadProgress() async throws {
+    for attempt in 0..<60 {   // 5-min max (60 * 5s)
+        try await Task.sleep(for: .seconds(5))
+        let state = try await api.getUpdaterState()
+        if let progress = state.progress {
+            updatePhase = .downloading(progress: Double(progress) / 100.0)
+        }
+        if state.isReadyToApply {
+            updatePhase = .readyToApply
+            return
+        }
+        if !state.isDownloading {
+            throw UpdateError.downloadFailed("Unexpected state: \(state.status ?? "unknown")")
         }
     }
+    throw UpdateError.timeout
 }
-browser.stateUpdateHandler = { state in ... }
-browser.start(queue: .main)
 ```
 
-**IP resolution:** Create a temporary `NWConnection` to the discovered `NWEndpoint` — the Network framework resolves the mDNS hostname to an IP during connection setup. Extract the resolved IP from `NWConnection`'s `currentPath`.
+**Why polling and not URLSession download delegate:** The app does not download the firmware binary itself — it tells the robot to download it via `POST /api/v2/updater/downloadLatestUpdate`. The progress lives on the robot, not in the iOS app's URLSession. The only way to track it is to poll the robot's `/api/v2/updater` endpoint.
 
-**Info.plist:** `NSBonjourServices` already declares `_valetudo._tcp` in the existing project. No additional entitlements needed.
-
-**Fallback:** Keep the existing IP-scan loop in `NetworkScanner.swift` as fallback if `NWBrowser` finds nothing after a 5-second timeout.
+**Confidence:** HIGH — Valetudo OpenAPI spec confirms the `progress` field exists on the updater state response. Polling approach matches existing `startUpdate()` implementation in `RobotDetailViewModel`.
 
 ---
 
-### 3. URLSession.AsyncBytes — SSE for real-time robot state
+### 5. Preventing Screen Sleep — `UIApplication.shared.isIdleTimerDisabled`
 
-**Important finding:** Valetudo does NOT natively expose an SSE endpoint. Real-time push from Valetudo is MQTT-only. The REST API is request/response only.
-
-**Consequence:** "Adaptive Polling / SSE" in the milestone must be implemented as **adaptive polling** — not true SSE. The SSE path would require a gateway/proxy in front of Valetudo, which is out of scope.
-
-**Recommended approach — Adaptive Polling with URLSession.AsyncBytes ready:**
-- Reduce polling interval from 5s to 2s when robot is active (cleaning/returning)
-- Increase interval to 30s when robot is docked/idle
-- Use `URLSession.AsyncBytes` now to structure the polling pipeline as a streaming `AsyncSequence`, so it can be upgraded to SSE later if Valetudo adds support
-
-**Pattern for adaptive polling:**
-```swift
-actor RobotPoller {
-    private var interval: Duration {
-        switch robotState.status {
-        case .cleaning, .returning: return .seconds(2)
-        case .docked, .idle:        return .seconds(30)
-        default:                    return .seconds(5)
-        }
-    }
-
-    func startPolling() async {
-        while !Task.isCancelled {
-            await fetchState()
-            try? await Task.sleep(for: interval)
-        }
-    }
-}
-```
-
-**If/when Valetudo adds SSE** — upgrade path using `URLSession.AsyncBytes`:
-```swift
-let (bytes, _) = try await URLSession.shared.bytes(from: sseURL)
-for try await line in bytes.lines {
-    if line.hasPrefix("data:") {
-        // parse JSON event
-    }
-}
-```
-
----
-
-### 4. os.Logger — structured logging
-
-**Where to integrate:** All files with `print()` calls — primarily `ValetudoAPI.swift`, `MapView.swift`, `RobotSettingsView.swift`, `ConsumablesView.swift`, `RobotManager.swift`.
+**Why:** The download + apply sequence can take several minutes. iOS will lock the screen after the system idle timeout (typically 30 seconds to 2 minutes). If the app is backgrounded or the screen locks during apply, the polling task is suspended, and the user loses progress visibility.
 
 **Pattern:**
+
 ```swift
-import os
-
-// Define once per subsystem, reuse across files
-extension Logger {
-    private static let subsystem = Bundle.main.bundleIdentifier!
-
-    static let api      = Logger(subsystem: subsystem, category: "API")
-    static let map      = Logger(subsystem: subsystem, category: "Map")
-    static let scanner  = Logger(subsystem: subsystem, category: "Scanner")
-    static let robot    = Logger(subsystem: subsystem, category: "Robot")
-    static let ui       = Logger(subsystem: subsystem, category: "UI")
+@MainActor
+private func withIdleTimerDisabled(_ work: () async throws -> Void) async rethrows {
+    UIApplication.shared.isIdleTimerDisabled = true
+    defer { UIApplication.shared.isIdleTimerDisabled = false }
+    try await work()
 }
 
-// Usage (replaces print())
-Logger.api.debug("Fetching robot attributes")
-Logger.api.error("Connection failed: \(error.localizedDescription, privacy: .public)")
+// Usage in beginUpdate():
+await withIdleTimerDisabled {
+    try await pollDownloadProgress()
+    try await api.applyUpdate()
+}
 ```
 
-**Privacy:** Mark user-provided values (robot host, username) as `.private` or redact with `\(value, privacy: .private)`. Error descriptions are safe to mark `.public`.
+**Scope:** Enable only during `.downloading` and `.applying` phases. Disable immediately when entering `.done`, `.failed`, or `.idle`. The `defer` block ensures it is always re-enabled even if an error is thrown.
 
-**Debug guard:** `os.Logger` already gates `debug`-level output — it does not appear in production device logs by default. No `#if DEBUG` needed around logger calls.
+**iOS Scene lifecycle:** The app targets iOS 17+ with SwiftUI lifecycle (`@main App`). In pure SwiftUI lifecycle apps, UIKit scene delegate methods are not used. Setting `isIdleTimerDisabled` from a `@MainActor` context (i.e., from the ViewModel) is correct — no AppDelegate or SceneDelegate interaction required. Apple's own documentation confirms setting this from any UIKit-accessible main-thread context works.
 
-**Replace all `print()` one-for-one:**
-- `[API DEBUG]` → `Logger.api.debug(...)`
-- `[DEBUG]` → appropriate category `.debug(...)`
-- Error paths → `.error(...)`
-- User-visible failures → `.fault(...)` (persists in system log)
+**Why not `ProcessInfo.performActivity`:** `ProcessInfo.performActivity(options:reason:)` is for preventing *process* sleep (App Nap on macOS) and automatic termination, not screen sleep. It does not affect `isIdleTimerDisabled`. For screen-on during a foreground operation, `isIdleTimerDisabled` is the correct API.
+
+**Confidence:** HIGH — `UIApplication.isIdleTimerDisabled` documented on developer.apple.com. Pattern of `defer { isIdleTimerDisabled = false }` is established practice in the iOS community (multiple Stack Overflow answers, Hacking with Swift).
 
 ---
 
-### 5. XCTest — test target setup
+### 6. Background Task Completion — UIKit `beginBackgroundTask`
 
-**Where to integrate:** `project.yml` — add a new `ValetudoAppTests` target.
+**Why:** If the user presses the Home button during download/apply, iOS suspends the app. A `UIBackgroundTask` buys ~30 additional seconds of execution time — enough for a polling cycle to complete and the state to be persisted.
 
-**XcodeGen `project.yml` addition:**
-```yaml
-targets:
-  # ... existing ValetudoApp target ...
-
-  ValetudoAppTests:
-    type: bundle.unit-test
-    platform: iOS
-    sources:
-      - ValetudoAppTests
-    dependencies:
-      - target: ValetudoApp
-    settings:
-      base:
-        PRODUCT_BUNDLE_IDENTIFIER: de.simonluthe.ValetudoAppTests
-```
-
-**Directory to create:** `ValetudoApp/ValetudoAppTests/` — XcodeGen will pick up `.swift` files automatically.
-
-**Priority test subjects** (from CONCERNS.md):
-1. `ValetudoTimer` — UTC/local time conversion (pure logic, easy to test)
-2. `Consumable.remainingPercent` — calculation correctness across robot models
-3. `MapLayer.decompressedPixels` — RLE decompression correctness
-4. Keychain wrapper — read/write/delete round-trip (requires device, not simulator)
-5. API response parsing — `JSONDecoder` correctness for edge cases in `RobotState`, `RobotMap`
-
-**`@testable import`:** Add `@testable import ValetudoApp` to test files to access `internal` declarations without changing access modifiers in production code.
-
----
-
-### 6. Valetudo OpenAPI/Swagger — fetching API definition
-
-**Finding:** Valetudo serves its OpenAPI definition at `http://ROBOT_IP/swagger/openapi.json`. The spec is generated at build time from capability-specific JSON schema fragments across the Valetudo source tree.
-
-**Approach:** Fetch the spec at runtime using existing `URLSession`. Do not bundle a static copy — the spec varies by robot model and Valetudo version.
+**When to use:** Only during `.applying`. Downloading can be safely interrupted because the download lives on the robot, not the phone. Applying triggers the robot's reboot sequence — the app only needs to receive the HTTP 200 response before being suspended.
 
 **Pattern:**
+
 ```swift
-// Fetch at app startup or on robot add
-let url = URL(string: "http://\(robot.host)/swagger/openapi.json")!
-let (data, _) = try await URLSession.shared.data(from: url)
-let spec = try JSONDecoder().decode(OpenAPISpec.self, from: data)
+@MainActor
+private func applyUpdateWithBackgroundTask() async throws {
+    var bgTask = UIBackgroundTaskIdentifier.invalid
+    bgTask = UIApplication.shared.beginBackgroundTask(withName: "valetudo.apply") {
+        // Expiry handler — called if we run out of time
+        UIApplication.shared.endBackgroundTask(bgTask)
+        bgTask = .invalid
+    }
+    defer {
+        UIApplication.shared.endBackgroundTask(bgTask)
+        bgTask = .invalid
+    }
+    try await api.applyUpdate()
+}
 ```
 
-**What to decode:** Model only the paths and capability names needed to drive UI decisions (which capabilities are available on the connected robot). Do not attempt to decode the full spec — it is large and varies. A partial `Codable` struct that only decodes `paths` keys is sufficient.
+**Why not BGProcessingTask / BGAppRefreshTask:** Background Tasks framework (`BackgroundTasks`) is for work scheduled for the future (when the app is not in the foreground). It cannot be started on-demand mid-operation. `UIBackgroundTask` is the correct API for "I am currently doing important work, please don't suspend me yet."
 
-**Where to store:** In-memory in `RobotManager` or `ValetudoAPI` — capabilities are session-scoped, not persisted. Cache invalidation: re-fetch on reconnect.
+**Confidence:** HIGH — `UIApplication.beginBackgroundTask` documented on developer.apple.com. Distinguished from `BGProcessingTask` which is for scheduled background work.
 
 ---
 
-## What NOT to Add
+## Integration with Existing MVVM Architecture
+
+| Existing Code | What Changes | Why |
+|---------------|--------------|-----|
+| `RobotDetailViewModel.isUpdating: Bool` | Remove — replaced by `updatePhase` | Redundant with `updateInProgress` |
+| `RobotDetailViewModel.updateInProgress: Bool` | Remove — replaced by `updatePhase` | Single source of truth |
+| `RobotDetailViewModel.showUpdateWarning: Bool` | Remove — derive from `updatePhase == .failed(...)` | No separate boolean needed |
+| `RobotDetailViewModel.updaterState: UpdaterState?` | Keep — this is *server* state | It tracks what the robot thinks its state is; `updatePhase` tracks what the *app* thinks it should do next |
+| `RobotSettingsSections.updaterState: @State` | Remove — read from ViewModel only | Eliminates duplicate state |
+| `startUpdate()` — no guard | Add `guard case .idle = updatePhase else { return }` | Prevents double-invocation |
+| `startUpdate()` — no progress update | Emit `updatePhase = .downloading(progress:)` in poll loop | Enables UI progress display |
+
+**ViewModel stays `@MainActor ObservableObject`** — all mutations to `updatePhase` happen on the main actor. This is already the existing architecture; no changes to threading model.
+
+---
+
+## What NOT to Use
 
 | Avoid | Why | Use Instead |
 |-------|-----|-------------|
-| Any SSE/EventSource Swift package (mattt/EventSource, Recouse/EventSource) | Valetudo has no SSE endpoint; package would be unused. Breaks zero-deps constraint. | Adaptive polling via URLSession async tasks |
-| SwiftData / CoreData for credential migration | Massive scope increase for what is a two-field migration | Keychain (Security.framework) + UserDefaults for non-sensitive fields |
-| Combine for polling pipeline | Unnecessary when Swift structured concurrency (async/await + actor) already used throughout the app | Swift concurrency: `Task`, `AsyncSequence`, `actor` |
-| Third-party logging libraries (CocoaLumberjack, swift-log) | Break zero-deps constraint; `os.Logger` is equally capable and integrates with system Console.app | os.Logger from os.framework |
-| Third-party mock/test helpers (Quick, Nimble) | Break zero-deps constraint; XCTest provides sufficient assertions for unit tests at this scope | XCTest native assertions (`XCTAssertEqual`, `XCTAssertNil`, etc.) |
-| MQTT client library | Out of scope per PROJECT.md — app is REST-only. MQTT would be a new architectural dependency, not a quality fix | Adaptive polling |
+| Multiple `Bool` flags for update state | Can express `2^n` combinations, most of which are invalid (e.g., `isUpdating = true` AND `updateInProgress = false`) | Single `UpdatePhase` enum |
+| `Combine.PassthroughSubject` for state transitions | Adds Combine complexity; app already uses structured concurrency throughout | Enum + `@Published` |
+| Any third-party state machine library (ReactKit/SwiftState etc.) | Breaks zero-deps constraint; overkill for a 7-case enum | Native Swift enum with `guard case` pattern |
+| `BGProcessingTask` or `BGAppRefreshTask` | Wrong API — these are for *scheduled* future background work, not in-progress operations | `UIBackgroundTask` (`beginBackgroundTask`) |
+| `ProcessInfo.performActivity` | Prevents App Nap / automatic termination (macOS concept); does not affect screen sleep on iOS | `UIApplication.isIdleTimerDisabled` |
+| `DispatchQueue.main.async` for state mutations | Already migrated to structured concurrency in v1.4.0; reverting creates mixed concurrency models | `@MainActor` + `await MainActor.run {}` if needed off-actor |
 
 ---
 
 ## Alternatives Considered
 
-| Recommended | Alternative | Why Not |
-|-------------|-------------|---------|
-| Security.framework Keychain | CryptoKit + custom encrypted UserDefaults | Keychain is the platform-standard solution. CryptoKit encryption of UserDefaults is more code with the same security model, minus OS backup exclusion guarantees. |
-| NWBrowser (Network.framework) | NetServiceBrowser (Foundation/Bonjour) | NetServiceBrowser is Objective-C-era API, deprecated in favor of Network.framework since iOS 13. NWBrowser is already in use in the project for network interface enumeration. |
-| URLSession.AsyncBytes | WebSocket (URLSessionWebSocketTask) | Valetudo does not expose WebSocket. AsyncBytes is the correct tool for HTTP streaming and is future-compatible with SSE if Valetudo adds it. |
-| os.Logger | OSLog (lower-level C API) | os.Logger is the Swift-idiomatic wrapper for OSLog introduced in iOS 14. Same performance, better ergonomics, string interpolation with privacy annotations. iOS 14 is below the iOS 17 deployment target. |
-| XCTest | Swift Testing (swift-testing package) | Swift Testing is available as part of Xcode 16+ without a package dependency, but XCTest is more established, better documented, and has full UITest support. Either is valid — XCTest is the safer default for an initial test setup. |
+| Recommended | Alternative | When Alternative is Better |
+|-------------|-------------|---------------------------|
+| `fullScreenCover` + `interactiveDismissDisabled` | `.overlay` with `allowsHitTesting(false)` | Never for this case — overlay does not prevent navigation or tab switching at higher levels of the hierarchy |
+| `UIApplication.isIdleTimerDisabled` | `UIScreen.main.brightness = 1.0` (keep screen max-bright) | Never — does not prevent sleep, only keeps brightness up |
+| Polling `GET /api/v2/updater` for progress | URLSession `downloadTask` delegate for byte-level progress | Only if the app itself downloaded the firmware binary (it does not — the robot does) |
+| Enum `UpdatePhase` with `Equatable` | SwiftUI `@State` navigation enum | `@State` is for view-local state; update lifecycle belongs in the ViewModel |
 
 ---
 
 ## Version Compatibility
 
-All additions target iOS 17.0+ (existing deployment target). All APIs were available well before iOS 17:
+All patterns target iOS 17.0+ (existing deployment target). All APIs are available on iOS 17:
 
-| API | Available Since | iOS 17 Compatible |
-|-----|-----------------|-------------------|
-| Security.framework Keychain | iOS 2.0 | Yes |
-| NWBrowser | iOS 13.0 | Yes |
-| URLSession.AsyncBytes | iOS 15.0 | Yes |
-| os.Logger | iOS 14.0 | Yes |
-| XCTest | iOS 8.0 | Yes |
+| API / Pattern | Available Since | Notes |
+|---------------|-----------------|-------|
+| Swift enum with associated values | Swift 1.0 | — |
+| `guard case` pattern matching | Swift 2.0 | — |
+| `@Published` + `@MainActor ObservableObject` | iOS 13.0 | Already used throughout app |
+| `ProgressView(value:total:)` | iOS 14.0 | Linear progress bar built-in |
+| `fullScreenCover(isPresented:)` | iOS 14.0 | — |
+| `.interactiveDismissDisabled()` | iOS 15.0 | — |
+| `UIApplication.isIdleTimerDisabled` | iOS 2.0 | — |
+| `UIApplication.beginBackgroundTask` | iOS 4.0 | — |
 
-No minimum version bumps required.
+No minimum version bumps required. All additions are below the existing iOS 17 deployment target.
 
 ---
 
 ## Sources
 
-- Apple Developer Documentation: Keychain Services — `kSecClassGenericPassword`, `SecItemAdd`, `SecItemCopyMatching` (HIGH confidence, platform standard since iOS 2.0)
-- Apple Developer Documentation: NWBrowser — [https://developer.apple.com/documentation/foundation/bonjour](https://developer.apple.com/documentation/foundation/bonjour) (HIGH confidence, verified via Apple Developer Forums thread)
-- Apple WWDC21 "Use async/await with URLSession" — [https://developer.apple.com/videos/play/wwdc2021/10095/](https://developer.apple.com/videos/play/wwdc2021/10095/) — URLSession.AsyncBytes confirmed iOS 15+ (HIGH confidence)
-- SwiftLee: OSLog and Unified Logging — [https://www.avanderlee.com/debugging/oslog-unified-logging/](https://www.avanderlee.com/debugging/oslog-unified-logging/) (MEDIUM confidence, verified against Apple WWDC2020 content)
-- XcodeGen test target fixture — [https://github.com/yonaskolb/XcodeGen/blob/master/Tests/Fixtures/TestProject/project.yml](https://github.com/yonaskolb/XcodeGen/blob/master/Tests/Fixtures/TestProject/project.yml) — `bundle.unit-test` target type confirmed (HIGH confidence)
-- Valetudo Newcomer Guide — [https://valetudo.cloud/pages/general/newcomer-guide.html](https://valetudo.cloud/pages/general/newcomer-guide.html) — REST API with Swagger UI at `/swagger/`, no native SSE confirmed (MEDIUM confidence; SSE absence confirmed via GitHub search returning 0 results)
-- Valetudo Discussion #968 — [https://github.com/Hypfer/Valetudo/discussions/968](https://github.com/Hypfer/Valetudo/discussions/968) — OpenAPI spec added in 2021.06.0 (HIGH confidence)
+- Apple Developer Documentation: `fullScreenCover(isPresented:onDismiss:content:)` — [https://developer.apple.com/documentation/swiftui/view/fullscreencover(ispresented:ondismiss:content:)](https://developer.apple.com/documentation/swiftui/view/fullscreencover(ispresented:ondismiss:content:)) (HIGH confidence)
+- Apple Developer Documentation: `interactiveDismissDisabled()` — confirmed available iOS 15+ (HIGH confidence, via SwiftUI modifier reference)
+- Apple Developer Documentation: `UIApplication.isIdleTimerDisabled` — [https://developer.apple.com/documentation/uikit/uiapplication/isidletimerdisabled](https://developer.apple.com/documentation/uikit/uiapplication/isidletimerdisabled) (HIGH confidence)
+- Apple Developer Documentation: `UIApplication.beginBackgroundTask(withName:expirationHandler:)` — [https://developer.apple.com/documentation/uikit/uiapplication/beginbackgroundtask(withname:expirationhandler:)](https://developer.apple.com/documentation/uikit/uiapplication/beginbackgroundtask(withname:expirationhandler:)) (HIGH confidence)
+- Apple Developer Documentation: `BGProcessingTask` — [https://developer.apple.com/documentation/backgroundtasks/bgprocessingtask](https://developer.apple.com/documentation/backgroundtasks/bgprocessingtask) — confirmed: scheduled background work only, NOT for in-progress operations (HIGH confidence)
+- WebSearch: "Swift enum state machine guard invalid state" — splinter.com.au article and betterprogramming.pub article confirm `guard case` pattern as community standard (MEDIUM confidence, multiple sources agree)
+- WebSearch: "UIApplication isIdleTimerDisabled Swift iOS prevent screen sleep" — hackingwithswift.com, developermemos.com confirm `defer` pattern (MEDIUM confidence, consistent across sources)
+- Existing codebase: `RobotDetailViewModel.startUpdate()` lines 450–490 — duplicate boolean analysis based on direct code read (HIGH confidence)
 
 ---
 
-*Stack research for: ValetudiOS v1.2.0 — iOS native robot controller*
-*Researched: 2026-03-27*
+*Stack research for: ValetudiOS v2.0.0 — Firmware Update Process Hardening*
+*Researched: 2026-03-29*

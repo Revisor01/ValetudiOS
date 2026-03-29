@@ -1,201 +1,160 @@
 # Project Research Summary
 
-**Project:** ValetudiOS v1.2.0 — Quality & API Completeness Milestone
-**Domain:** iOS native SwiftUI app — Valetudo robot vacuum controller
-**Researched:** 2026-03-27
+**Project:** ValetudiOS — Firmware Update Process Hardening (v2.0.0)
+**Domain:** iOS/SwiftUI — OTA firmware update UX for IoT robot vacuum controller
+**Researched:** 2026-03-29
 **Confidence:** HIGH
 
 ## Executive Summary
 
-ValetudiOS v1.2.0 is a focused quality and API completeness milestone for an existing iOS 17+ SwiftUI app that already implements the majority of the Valetudo REST API. The research establishes a clear picture: the app has strong capability coverage but suffers from three systemic problems — massive views (1500+ lines) with logic mixed into layout, silent failures with no user-facing error feedback, and missing connections to critical Valetudo endpoints that affect real users (SSE streams, Events API, MapSnapshot, mDNS discovery). All additions use Apple-native frameworks only; the zero-external-dependencies constraint is maintained throughout.
+ValetudiOS v2.0.0 addresses a focused but safety-critical domain: hardening the firmware update flow for Valetudo-controlled robot vacuums. The existing implementation works in the happy path but has multiple failure modes ranging from confusing (silent download errors with no user feedback) to potentially dangerous (double-invocation sending two concurrent update requests, navigation away killing an in-flight apply sequence). The research is unambiguously clear that the root cause of all these failure modes is a single architectural issue: update state is modeled as multiple boolean flags scattered across three separate code locations rather than as a single authoritative state machine.
 
-The recommended approach is a phased build order that treats infrastructure and foundations first (Keychain, ErrorRouter, logging), then service-layer improvements (SSE via confirmed Valetudo endpoints, mDNS via NWBrowser), then view-layer refactoring (ViewModel extraction from the three massive views), and finally test coverage as a forcing function that verifies the extracted architecture. A key correction from initial STACK.md research: Valetudo DOES expose three SSE endpoints (`/api/v2/robot/state/sse`, `/api/v2/robot/state/attributes/sse`, `/api/v2/robot/state/map/sse`), verified directly against `RobotRouter.js` in the Valetudo source. True SSE replaces adaptive polling as the primary real-time mechanism.
+The recommended approach is to introduce a dedicated `UpdateService` per robot, owned by the long-lived `RobotManager`, which drives all update logic through an `UpdatePhase` enum. This is not a rewrite — it is a surgical extraction and consolidation. The Valetudo server already exposes a clean 7-state state machine via `GET /api/v2/updater/state`. The iOS app simply needs to mirror it faithfully, add two client-only states (`.checking` and `.applying`), and ensure all UI decisions derive from one published property. All patterns required are Apple-native, iOS 17+-compatible, and zero external dependencies are needed.
 
-The principal risks are: credential loss during UserDefaults-to-Keychain migration (verify Keychain write before deleting from UserDefaults); SSE Task leaks if the existing polling loop is not explicitly disabled on SSE connect; and mDNS silent failure if `NSBonjourServices` + `NSLocalNetworkUsageDescription` are not added to Info.plist before testing. All three risks have concrete, well-documented prevention strategies.
-
----
+The highest-risk pitfall is the apply phase: after `applyUpdate()` is called, the robot reboots and goes offline. The current code cannot distinguish a successful reboot from a genuine failure, navigation away during this window kills the polling Task, and the phone's idle timer can lock the screen mid-operation. These three issues must be addressed together in a single phase — they are interdependent. The lower-risk improvements (progress display, error messages, update-check throttling) are best addressed in a final UI wiring phase once the service layer is stable.
 
 ## Key Findings
 
 ### Recommended Stack
 
-The existing stack (Swift 5.9, SwiftUI, iOS 17+, URLSession, Foundation, zero external dependencies) requires only five Apple-native additions. No minimum version bumps are needed since all additions have been available since iOS 14 or earlier. The most architecturally significant addition is `URLSession.AsyncBytes` for SSE streaming — it enables replacing the 5-second polling loop with event-driven updates from confirmed Valetudo SSE endpoints.
+The existing stack is fully locked: Swift 5.9, SwiftUI, iOS 17+, `@MainActor ObservableObject` ViewModels, URLSession with structured concurrency, `os.Logger`, Keychain. No new dependencies are required for this milestone. All patterns identified in research (enum state machines, `fullScreenCover`, `interactiveDismissDisabled`, `UIApplication.isIdleTimerDisabled`, `UIBackgroundTask`) are Apple-native APIs available since iOS 14-15, well below the iOS 17 deployment target.
 
-**Core technologies:**
-- `Security.framework` (Keychain): Secure credential storage — platform standard, survives app uninstall, excluded from iCloud backup by default
-- `Network.framework` NWBrowser: mDNS/Bonjour discovery of `_valetudo._tcp` — already imported in the project, replaces 254-IP brute-force scan
-- `URLSession.AsyncBytes`: SSE stream consumption from Valetudo's 3 confirmed SSE endpoints — built into Foundation, uses Swift structured concurrency, no new dependency
-- `os.Logger`: Structured logging replacing 80+ `print()` calls — integrates with Console.app, has privacy annotations to protect credentials
-- `XCTest`: Unit test target — foundational for verifying extracted ViewModels and Keychain wrapper
+**Core additions (all Apple-native):**
+- `UpdatePhase` enum with associated values — replaces three redundant boolean `@Published` properties; makes illegal states unrepresentable at the type level
+- `UIApplication.isIdleTimerDisabled` — prevents screen sleep during download/apply; must be managed with `defer` on `@MainActor`
+- `UIApplication.beginBackgroundTask` — buys ~30s of execution time if user backgrounds during apply; correct API for in-progress operations (not `BGProcessingTask`, which is for scheduled future work)
+- `fullScreenCover` + `interactiveDismissDisabled` — blocks UI during apply phase; stronger than `.sheet` (swipeable) and stronger than `.overlay` (does not block navigation hierarchy)
+- `ProgressView(value:total:)` — determinate progress display; data already decoded in `UpdaterState.metaData.progress`; only UI wiring needed
 
 ### Expected Features
 
-**Must have (table stakes for v1.2.0):**
-- Robot list row fully tappable — currently only text area responds, feels broken
-- Notification action handlers (GO_HOME, LOCATE) — defined but silently do nothing, destroys user trust
-- User-visible error feedback — 80+ silent failures across all views; foundational for every other addition
-- mDNS/Bonjour robot discovery — brute-force scan is slow; Valetudo advertises `_valetudo._tcp` natively
-- SSE real-time state updates — 5-second polling creates noticeable UI lag; 3 SSE endpoints confirmed in source
-- MapSnapshot capability — standard Valetudo feature for map backup before edits; not in app
-- PendingMapChange handling — robots can be stuck awaiting accept/reject after mapping pass
-- Valetudo Events display — `/api/v2/events/` endpoint covers consumable depletion, errors, bin-full; entirely unconsumed
-- CleanRouteControl — simple GET/PUT, present in Valetudo web UI, expected in native app
+The research identified existing infrastructure that is already in place but not wired to the UI (`metaData.progress.current/total` is decoded but never displayed). Industry comparison against Apple Home, Roborock, eufy, Sonos, and Tesla confirms that the patterns required are standard for IoT firmware apps. Sonos's cautionary example — blocking the entire app for one device's update — is explicitly what to avoid; the UI lock must be scoped to the specific robot's context, not the entire app.
 
-**Should have (differentiators, ship as v1.2.x patches):**
-- Keychain credential storage — security differentiator; UserDefaults stores credentials in plaintext
-- ObstacleImages browsing — unique to AI-camera robots; inline in cleaning history
-- VoicePackManagement — better UX than web UI for non-English users
-- AutoEmptyDock/MopDock duration controls — minor dock refinements
+**Must have (table stakes, all P1):**
+- `UpdatePhase` state machine with a single `@Published` source of truth — foundational; everything else builds on this
+- Double-invocation guard on `startUpdate()` — safety-critical; missing guard causes undefined robot state
+- User-visible error state with message — currently all failures silently reset `updateInProgress = false`
+- Download progress percentage — data already available; wiring is a UI-only change
+- Apply-phase fullscreen lock — prevents navigation away during the most dangerous phase
 
-**Defer to v2+:**
-- Background monitoring via BGAppRefreshTask — quota-limited, requires APNS infrastructure
-- WiFi reconfiguration in-app — connection drops mid-request; high brick risk
-- Multi-floor map management — Valetudo itself does not support multiple maps
+**Should have (P2, after core is stable):**
+- Post-apply reconnect detection with auto-dismiss of the fullscreen cover on success
+- Retry button in error state — avoids requiring a full flow restart after a transient error
+- Update-check throttling (`lastCheckDate`) — prevents `POST /updater/check` firing on every view appear (this triggers a background job on the robot each time)
+
+**Defer (v2.x):**
+- Dual-source consolidation (Valetudo updater API vs. GitHub releases API) — architectural cleanup with no user-facing change; safe to defer if time-constrained
 
 ### Architecture Approach
 
-The target architecture introduces a ViewModel layer between views and services, an `SSEConnectionManager` actor that owns SSE lifecycle per robot, a `KeychainStore` service that handles transparent migration from UserDefaults, an `NWBrowserService` that delegates from the existing `NetworkScanner`, and a centralized `ErrorRouter` ViewModifier. The three massive views (MapView, RobotDetailView, RobotSettingsView — each 400-1500 lines) become thin declarative shells; all logic moves to `@MainActor ObservableObject` ViewModels owned via `@StateObject`.
+The target architecture introduces one new type (`UpdateService`) and modifies four existing files. `UpdateService` is a `@MainActor final class ObservableObject` owned by `RobotManager` (one instance per robot) and survives view navigation. `RobotDetailViewModel` becomes a thin pass-through that reads `UpdateService.phase` and delegates calls. `ValetudoInfoView` drops its own duplicate `checkForUpdate()` entirely. `ValetudoAPI` is unchanged — all four updater endpoints already exist and are correctly implemented.
+
+The build order is strictly dependency-layered: model types first, then service, then manager wiring, then ViewModel cleanup, then UI. Each layer is testable before the next is started.
 
 **Major components:**
-1. `SSEConnectionManager` (new actor) — owns all URLSession.bytes streams per robot, cancels/restarts on disconnect; RobotManager checks this before each poll cycle
-2. `KeychainStore` (new service) — wraps SecItem APIs, handles one-time UserDefaults migration transparently on first access
-3. `ErrorRouter` (new helper) — ViewModifier that maps `Error?` binding to SwiftUI `.alert`; installs once per screen-level view
-4. `NWBrowserService` (new service) — NWBrowser wrapper; NetworkScanner delegates to it as primary path, retains IP-scan as fallback
-5. `MapViewModel` / `RobotDetailViewModel` / `RobotSettingsViewModel` (new ViewModels) — extract all async command logic, loading state, and error state from the three massive views
+1. `UpdatePhase` enum + `UpdateError` struct (in `Models/RobotState.swift`) — domain model types shared across all layers; `UpdatePhase` init from `UpdaterState` is the single mapping point from server strings to client state
+2. `UpdateService` (new `Services/UpdateService.swift`) — owns state machine, re-entrancy guard (`activeTask != nil`), polling loop, error surface, check throttling; scoped per robot
+3. `RobotManager` (modified) — creates and owns one `UpdateService` per robot; feeds `robotUpdateAvailable[UUID]` badge from `UpdateService.phase.isUpdateAvailable`
+4. `RobotDetailViewModel` (modified, slimmed) — removes 5 `@Published` properties; exposes computed `updatePhase` and delegating `startUpdate()` / `applyDownloadedUpdate()`
+5. `RobotDetailView` + optional `UpdateBannerView` (modified) — exhaustive `switch updatePhase`; `fullScreenCover` for `.applying`; `interactiveDismissDisabled`
 
 ### Critical Pitfalls
 
-1. **`@StateObject` vs `@ObservedObject` when extracting ViewModels** — Using `@ObservedObject` for a ViewModel created inside a view causes it to be recreated on every parent re-render, destroying in-flight async Tasks and all state. Rule: `@StateObject` for ViewModels created in the view, `@ObservedObject` only when passed in from a parent. Define this rule in CONVENTIONS before the first ViewModel file is created.
+1. **No re-entrancy guard on `startUpdate()`** — `@MainActor` does not prevent two `Task { await startUpdate() }` calls from both reading `updateInProgress == false` before either sets it. Fix: `guard activeTask == nil else { return }` as the very first statement. Must be addressed in Phase 1 before any other hardening is layered on top.
 
-2. **Credential loss during Keychain migration** — Code that writes to Keychain then deletes from UserDefaults in the same step will permanently destroy credentials if the Keychain write fails silently. Prevention: read-back verification after `SecItemAdd` before touching UserDefaults; treat `errSecDuplicateItem` as success; keep UserDefaults as fallback for one release cycle.
+2. **Apply phase is indistinguishable from failure during robot reboot** — `URLError.cannotConnectToHost` after a successful `applyUpdate()` is the normal reboot window (30-90s), not an error. Current code treats it as failure. Fix: model a distinct `.applying` state; suppress connection errors during the reboot window; only declare failure after a 3-minute timeout; confirm success by comparing `currentVersion` pre- and post-update.
 
-3. **SSE Task leak with simultaneous polling** — If the existing polling loop is not explicitly disabled when SSE connects, both paths update `@Published` state simultaneously causing flicker, doubled battery drain, and Task accumulation. Define a strict contract: SSE active = polling disabled. Never run both for the same robot.
+3. **Phone sleep kills apply phase visibility** — no `UIApplication.isIdleTimerDisabled` exists anywhere in the codebase (confirmed). Idle timer fires after 2 minutes; screen locks; polling loop may be throttled; user never sees completion. Fix: enable at apply-phase start, reset in `defer` on `@MainActor`.
 
-4. **NWBrowser silent failure without Info.plist keys** — `NWBrowser` starts, reports `.ready`, but finds nothing if `NSBonjourServices` does not include `_valetudo._tcp`. Add both `NSBonjourServices` and `NSLocalNetworkUsageDescription` to `project.yml` Info.plist section before writing any NWBrowser code. Test only on real device.
+4. **Navigation away during apply destroys the polling Task** — `@StateObject` ViewModel is deallocated on navigation pop; in-flight Task is cancelled. Fix: `UpdateService` lives in `RobotManager` (app lifetime), not in the ViewModel (view lifetime). Task survives navigation.
 
-5. **`os.Logger` credential exposure** — Migrating `print()` calls with `.public` privacy annotation (added while debugging, not reverted) exposes credentials in system logs and sysdiagnose bundles. Audit all existing `print()` calls for sensitivity before migration; never log credential values at any privacy level.
-
----
+5. **Duplicate `checkForUpdate()` in ViewModel and View creates state desync** — both paths write to separate state variables; concurrent calls can re-enable the Update button mid-download. Fix: `ValetudoInfoView` reads from `UpdateService.phase` published state; never calls `getUpdaterState()` independently.
 
 ## Implications for Roadmap
 
-Based on combined research, a four-phase structure maps cleanly to the dependency graph identified in ARCHITECTURE.md.
+Based on research, the dependency structure dictates a strict 4-phase build order. Phases are not arbitrary slices — each phase's output is a direct prerequisite for the next. Skipping or reordering will produce integration conflicts.
 
-### Phase 1: Foundation — Infrastructure & Error Handling
+### Phase 1: State Machine Foundation
 
-**Rationale:** `KeychainStore` and `ErrorRouter` have no upstream dependencies, unblock all other phases, and address the two highest-risk quality issues (credential security + silent failures). `os.Logger` migration belongs here because it must precede any new logging in Phase 2+.
+**Rationale:** All other improvements depend on a single source of truth existing. The re-entrancy guard (Pitfall 1), error state modeling (Pitfall 2), and check-trigger logic (Pitfall 9) must exist before any UI or service layer is built on top. This is the riskiest phase to skip — everything else stacks on it.
+**Delivers:** `UpdatePhase` enum, `UpdateError` struct, `UpdateService` skeleton with re-entrancy guard and error state. Update state is now represented by one type consumed everywhere.
+**Addresses:** State machine (table stakes P1), double-invocation guard, error state with user message
+**Avoids:** Pitfall 1 (re-entrancy), Pitfall 2 (silent error exit), Pitfall 9 (check trigger piling up on robot)
 
-**Delivers:** Secure credential storage with zero data loss; consistent error presentation across all views; structured logging with credential safety; all `print()` calls replaced.
+### Phase 2: State Consolidation
 
-**Addresses:** Keychain credential storage (P2 from FEATURES.md), error feedback system (P1), logging cleanup
+**Rationale:** With the state machine defined, duplicate code paths must be eliminated before the service is wired into the UI. If both old paths and new service coexist, the desync problem (Pitfall 7) becomes worse, not better. Consolidation before UI wiring is the correct order.
+**Delivers:** `RobotManager` wired to `UpdateService`; `RobotDetailViewModel` slimmed to pass-through; `ValetudoInfoView` duplicate check logic removed. Single state owner confirmed throughout the codebase.
+**Addresses:** Dual-source problem, state desync pitfall, per-view `@State var updaterState` elimination
+**Avoids:** Pitfall 3 (view-level state divergence during active download), Pitfall 7 (duplicate logic race condition)
 
-**Avoids:** Credential loss (Pitfall 2), credential exposure via logging (Pitfall 5)
+### Phase 3: Apply Phase Hardening
 
-**Research flag:** Standard patterns — well-documented SecItem API and SwiftUI ViewModifier patterns. No deeper research needed.
+**Rationale:** The apply phase is the highest-risk operation. The three apply-phase pitfalls (idle timer, false-positive failure, background suspension) are interdependent — fixing one without the others leaves the sequence unreliable end-to-end. All three must ship together in one phase.
+**Delivers:** `UIApplication.isIdleTimerDisabled` management with `defer`; reboot window state modeling (suppress `URLError.cannotConnectToHost` for 180s post-apply); `UIBackgroundTask` for the apply HTTP call; foreground re-sync on `scenePhase` change from background to active.
+**Addresses:** Apply-phase hardening features, reconnect detection foundation, post-apply version verification
+**Avoids:** Pitfall 4 (phone sleep), Pitfall 5 (false-positive failure during reboot window), Pitfall 6 (navigation away kills Task — prevented by UpdateService in RobotManager), Pitfall 8 (background suspension suspends polling loop), Pitfall 10 (`@MainActor` isolation on UIKit)
 
----
+### Phase 4: UI Wiring and Navigation Lock
 
-### Phase 2: Network Layer — SSE & mDNS
-
-**Rationale:** `SSEConnectionManager` and `NWBrowserService` are the highest-value user-visible improvements and form a coherent network layer. SSE depends on `ValetudoAPI` modifications (additive only). mDNS is independent but belongs here as the other "network quality" fix. Both require careful state management that must be correct before ViewModels build on top.
-
-**Delivers:** Real-time robot state via Valetudo's confirmed SSE endpoints (replaces 5-second polling); instant robot discovery via Bonjour (replaces 254-IP scan with 5s-timeout fallback); robot row fully tappable (quick UX fix that belongs in this phase's delivery).
-
-**Addresses:** SSE real-time updates (P1), mDNS discovery (P1), robot row tappability (P1)
-
-**Avoids:** SSE Task leak (Pitfall 3), NWBrowser silent failure (Pitfall 4), running SSE and polling simultaneously
-
-**Research flag:** SSE integration has a verified Valetudo-side 5-client connection limit — `SSEConnectionManager` must enforce one shared connection per robot. This is documented but deserves implementation-time validation.
-
----
-
-### Phase 3: API Completeness — New Capabilities & Events
-
-**Rationale:** With stable infrastructure (Phase 1) and a reliable network layer (Phase 2), new capability endpoints can be added incrementally without risk to existing functionality. Notification action handlers belong here because they require `RobotManager` access from AppDelegate, which is cleaner once the service layer is stable.
-
-**Delivers:** MapSnapshot, PendingMapChange handling, CleanRouteControl, Valetudo Events display, notification action handlers (GO_HOME, LOCATE).
-
-**Addresses:** MapSnapshot (P1), PendingMapChange (P1), CleanRouteControl (P1), Events display (P1), notification handlers (P1)
-
-**Avoids:** PendingMapChange leaving robots stuck; notification actions silently failing (UX pitfall)
-
-**Research flag:** Standard patterns — all endpoints verified against Valetudo source. No research needed. Events API (`/api/v2/events/`) endpoint structure is confirmed.
-
----
-
-### Phase 4: View Refactoring & Test Coverage
-
-**Rationale:** ViewModel extraction is the highest-risk change (touching the three largest files) and should happen after new features are stable. The test target is set up here because it creates the forcing function for clean ViewModel interfaces and validates Keychain migration, SSE state updates, and map decompression logic.
-
-**Delivers:** Three ViewModels extracted from massive views; XCTest target with tests for pure logic (timer conversion, consumable percentage, map RLE decompression, Keychain round-trip); map pixel cache moved from computed property to pre-computed reference in RobotManager.
-
-**Addresses:** Tech debt (massive views), map cache performance (Pitfall 8), `@StateObject` ownership correctness (Pitfall 1)
-
-**Avoids:** `@ObservedObject` ownership error (Pitfall 1), `@MainActor` XCTest isolation conflicts (Pitfall 6), map cache on value-type struct (Pitfall 8)
-
-**Research flag:** `@MainActor` test isolation pattern must be established in the first test file — annotate individual test methods, not the class. Standard pattern but easy to get wrong.
-
----
+**Rationale:** With a reliable service and state machine in place, the UI changes are low-risk and straightforward. UI phase comes last because all `viewModel.updatePhase` cases must be stable before views switch on them exhaustively. The `fullScreenCover` depends on Phase 3's apply-phase state being correctly modeled.
+**Delivers:** `RobotDetailView` updated with exhaustive `switch viewModel.updatePhase`; `fullScreenCover` with `interactiveDismissDisabled` for `.applying`; download `ProgressView(value:total:)` wired to `UpdateService`; error banner with Retry and Dismiss actions; update-check throttling (`lastCheckDate` guard in `checkForUpdate()`).
+**Addresses:** All P1 table-stakes features completed in UI, P2 differentiators (apply-phase lock, retry, throttling)
+**Avoids:** Pitfall 6 (navigation away during apply — fullscreen cover blocks it), UX pitfalls (no progress, no error message, screen locks mid-apply)
 
 ### Phase Ordering Rationale
 
-- Phase 1 before everything: credential loss is unrecoverable; error routing is needed by all subsequent ViewModels
-- Phase 2 before Phase 3: SSE/mDNS establish the network layer contracts that capability additions depend on
-- Phase 3 before Phase 4: new capabilities must exist and be working before ViewModels are extracted around them; extracting from moving targets increases conflict risk
-- Phase 4 last: ViewModel extraction touches the largest files; doing it last means tests can immediately validate the extracted interfaces
+- Model types must precede service, service must precede manager wiring, manager must precede ViewModel cleanup, ViewModel must precede View changes — strict bottom-up dependency chain with no valid shortcuts.
+- The three apply-phase pitfalls (4, 5, 8) are clustered in Phase 3 because they share a root cause (no durable apply-phase state that survives backgrounding and navigation) and their fixes interact: idle timer + background task + reboot window suppression all defend the same operation window.
+- UI changes are deliberately last — this is a hardening milestone, not a feature milestone. Correctness before cosmetics.
+- The dual-source GitHub/Valetudo consolidation is intentionally deferred to v2.x: it is architectural cleanup with no user-facing impact and significant refactor surface area relative to its benefit.
 
 ### Research Flags
 
-Phases needing deeper research during planning:
-- **Phase 2 (SSE):** Validate Valetudo's 5-client SSE limit behavior under reconnect conditions. The `SSEConnectionManager` design assumes one shared connection per robot is sufficient — confirm this holds when both attributes SSE and map SSE are used concurrently.
+Phases with well-documented patterns (skip `/gsd:research-phase`):
+- **Phase 1:** Swift enum state machines are a standard, thoroughly documented Swift pattern. No additional research needed.
+- **Phase 2:** Consolidation is mechanical wiring of existing components. No research needed.
+- **Phase 4:** All UI components (`fullScreenCover`, `ProgressView`, `interactiveDismissDisabled`) have HIGH-confidence Apple documentation. No research needed.
 
-Phases with standard patterns (skip research-phase):
-- **Phase 1 (Foundation):** SecItem API, SwiftUI ViewModifier, os.Logger — all well-documented Apple-native APIs
-- **Phase 3 (API Completeness):** All endpoints verified against Valetudo source; implementation follows existing capability pattern in the codebase
-- **Phase 4 (Tests):** XcodeGen test target setup confirmed; `@MainActor` XCTest pattern documented
-
----
+Phases that may benefit from targeted implementation-time checks:
+- **Phase 3:** `UIBackgroundTask` expiry handler behavior and exact background execution time limits vary by iOS version (nominally ~30s). Worth confirming current iOS 17+ behavior before implementation. Also: the exact Valetudo server state sequence after robot comes back online (does it return `ValetudoUpdaterIdleState` or `ValetudoUpdaterNoUpdateRequiredState` first?) should be confirmed against Valetudo `Updater.js` before coding the reconnect detection termination condition.
 
 ## Confidence Assessment
 
 | Area | Confidence | Notes |
 |------|------------|-------|
-| Stack | HIGH | All additions are Apple-native frameworks, available since iOS 14 or earlier. Zero-dependency constraint maintained. |
-| Features | HIGH | SSE endpoints, capability routes, and Events API verified directly against Valetudo source on GitHub. mDNS service type confirmed from `NetworkAdvertisementManager.js`. |
-| Architecture | HIGH | Patterns sourced from Apple documentation, Swift by Sundell, SwiftLee — established MVVM and actor patterns for iOS 17. |
-| Pitfalls | HIGH | Each pitfall sourced from official Apple documentation, Swift Forums, or documented community issues. Recovery strategies included. |
+| Stack | HIGH | All patterns are Apple-native, verified against official Apple Developer Documentation. Zero ambiguity on API availability for iOS 17+. |
+| Features | HIGH | Issues confirmed by direct source inspection of `RobotDetailViewModel.swift` and `RobotSettingsSections.swift`. Industry patterns verified against multiple real apps (Apple Home, Roborock, eufy, Sonos). |
+| Architecture | HIGH | Server state machine confirmed from Valetudo `Updater.js` source. Component responsibilities derived from direct codebase analysis. Build order validated against dependency graph. |
+| Pitfalls | HIGH | Each pitfall confirmed by direct source inspection. iOS concurrency pitfalls cross-referenced against Swift Forum, Donny Wals, and Apple documentation. `@MainActor` re-entrancy window analyzed precisely. |
 
 **Overall confidence:** HIGH
 
 ### Gaps to Address
 
-- **SSE concurrent connection behavior:** Research confirms the 5-client limit but does not cover behavior when attributes SSE and map SSE are both open for the same robot. Implementation should start with attributes SSE only and add map SSE in MapView conditionally.
-- **Keychain behavior after first device unlock:** The `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` class requires device to be unlocked at least once after restart. The "Looks Done But Isn't" checklist in PITFALLS.md flags this — must be on the manual test checklist, not just automated tests.
-- **Valetudo version range for SSE:** The SSE endpoints were confirmed in the current master branch. Users running older Valetudo versions may not have these endpoints. The app should gracefully fall back to polling if the SSE endpoint returns a non-200 response.
+- **Post-apply server state sequence:** It is confirmed that the robot reboots after `applyUpdate()` succeeds. It is not confirmed whether the server returns `ValetudoUpdaterIdleState` or `ValetudoUpdaterNoUpdateRequiredState` as the first state after reboot. The `UpdateService` reconnect detection termination condition depends on this. Validate against Valetudo `Updater.js` during Phase 3 implementation before coding the polling exit condition.
 
----
+- **`ValetudoUpdaterBusyState` exact class name:** Pitfall 9 identifies that `POST /updater/check` can return a busy state if a check is already in progress. The exact `__class` string for this state and its API behavior are not confirmed from the existing `UpdaterState` model in the codebase. Confirm the exact class name and add a mapping in `UpdatePhase.init(from:)` during Phase 1.
+
+- **Background execution time limit on iOS 17+:** `UIApplication.beginBackgroundTask` nominally provides ~30 seconds. For the apply HTTP request this is sufficient (request should complete in under 5 seconds). The gap is minor but the exact expiry handler behavior on time-out warrants a brief check during Phase 3 to ensure the `defer` cleanup runs correctly.
 
 ## Sources
 
 ### Primary (HIGH confidence)
-- Valetudo `RobotRouter.js` — SSE endpoint verification: https://github.com/Hypfer/Valetudo/blob/master/backend/lib/webserver/RobotRouter.js
-- Valetudo `NetworkAdvertisementManager.js` — mDNS service type `_valetudo._tcp`: https://github.com/Hypfer/Valetudo/blob/master/backend/lib/NetworkAdvertisementManager.js
-- Valetudo `capabilityRouters/index.js` — complete capability router list: https://github.com/Hypfer/Valetudo/blob/master/backend/lib/webserver/capabilityRouters/index.js
-- Valetudo `valetudo_events/events/` — event type files: https://github.com/Hypfer/Valetudo/tree/master/backend/lib/valetudo_events/events
-- Apple Developer Documentation: Keychain Services, NWBrowser, URLSession.AsyncBytes, os.Logger, XCTest
-- Apple WWDC21 "Use async/await with URLSession" — URLSession.AsyncBytes iOS 15+
-- XcodeGen test target fixtures — `bundle.unit-test` target type confirmed
+- Valetudo `Updater.js` — server-side state machine and transition triggers: `https://github.com/Hypfer/Valetudo/blob/master/backend/lib/updater/Updater.js`
+- ValetudiOS codebase: `RobotDetailViewModel.swift` (lines 448-490), `RobotSettingsSections.swift` (lines 779-973), `RobotManager.swift`, `RobotState.swift` — direct analysis, 2026-03-29
+- Apple Developer Documentation: `fullScreenCover(isPresented:onDismiss:content:)`, `interactiveDismissDisabled()`, `UIApplication.isIdleTimerDisabled`, `UIApplication.beginBackgroundTask(withName:expirationHandler:)`, `BGProcessingTask`
 
 ### Secondary (MEDIUM confidence)
-- Valetudo Newcomer Guide — https://valetudo.cloud/pages/general/newcomer-guide.html
-- Valetudo DeepWiki — SSE endpoints and polling fallback need
-- SwiftLee: OSLog and Unified Logging — verified against Apple WWDC2020 content
-- TN3179: Understanding local network privacy — Apple Developer Documentation
-- Valetudo Discussion #968 — OpenAPI spec added in 2021.06.0
+- Swift Forums: Actor reentrancy analysis — `https://forums.swift.org/t/reasoning-about-actor-re-entrancy-suspension-for-optional-await-s/62314`
+- Donny Wals: Actor reentrancy in Swift explained — `https://www.donnywals.com/actor-reentrancy-in-swift-explained/`
+- Hacking with Swift: `isIdleTimerDisabled` + `defer` pattern — confirmed consistent across hackingwithswift.com and developermemos.com
+- App UX comparison: Apple Home, eufy Security, Roborock, Sonos, Tesla app update flows — editorial descriptions
 
-### Tertiary (informational)
-- ValetudiOS codebase analysis: `.planning/codebase/CONCERNS.md` (2026-03-27)
+### Tertiary (LOW confidence)
+- Memfault OTA update checklist for embedded devices — general principles for reboot window and version-verification recommendations (not iOS-specific)
+- Medium: Building Bulletproof OTA Updates for Embedded Systems — post-apply verification pattern reference only
 
 ---
-*Research completed: 2026-03-27*
+*Research completed: 2026-03-29*
 *Ready for roadmap: yes*
