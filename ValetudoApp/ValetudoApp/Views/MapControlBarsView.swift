@@ -509,9 +509,7 @@ extension MapContentView {
                             segmentId: segmentId,
                             start: start,
                             end: end,
-                            viewSize: currentViewSize,
-                            gestureScale: scale,
-                            gestureOffset: offset
+                            viewSize: currentViewSize
                         )
                         currentDrawStart = nil
                         currentDrawEnd = nil

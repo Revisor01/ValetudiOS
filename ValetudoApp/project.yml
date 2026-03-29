@@ -16,20 +16,32 @@ targets:
     platform: iOS
     sources:
       - ValetudoApp
+    info:
+      path: ValetudoApp/Info.plist
+      properties:
+        UIApplicationSceneManifest:
+          UIApplicationSupportsMultipleScenes: false
+        UIApplicationSupportsIndirectInputEvents: true
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations~iPad:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        UISupportedInterfaceOrientations~iPhone:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        CFBundleDisplayName: ValetudiOS
+        NSLocalNetworkUsageDescription: "Access local network to communicate with Valetudo robots"
+        NSBonjourServices:
+          - _valetudo._tcp
     settings:
       base:
-        INFOPLIST_GENERATION_MODE: GeneratedFile
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: "1"
         PRODUCT_BUNDLE_IDENTIFIER: de.simonluthe.ValetudoApp
-        GENERATE_INFOPLIST_FILE: YES
-        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
-        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
-        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad: "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
-        INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone: "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight"
-        INFOPLIST_KEY_NSLocalNetworkUsageDescription: "Access local network to communicate with Valetudo robots"
-        INFOPLIST_KEY_NSBonjourServices: "_valetudo._tcp"
+        DEVELOPMENT_TEAM: "J459G9CJT5"
 
   ValetudoAppTests:
     type: bundle.unit-test

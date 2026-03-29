@@ -279,7 +279,7 @@ final class MapViewModel: ObservableObject {
         }
     }
 
-    func splitRoom(segmentId: String, start: CGPoint, end: CGPoint, viewSize: CGSize, gestureScale: CGFloat, gestureOffset: CGSize) async {
+    func splitRoom(segmentId: String, start: CGPoint, end: CGPoint, viewSize: CGSize) async {
         guard let api = api else {
             logger.error("performSplit: No API available")
             return
@@ -290,6 +290,8 @@ final class MapViewModel: ObservableObject {
         }
 
         let pixelSize = map.pixelSize ?? 5
+
+        // Calculate map params the same way as finishDrawing/calculateMapParams
         var minX = Int.max, maxX = Int.min
         var minY = Int.max, maxY = Int.min
 
@@ -309,27 +311,21 @@ final class MapViewModel: ObservableObject {
 
         let contentWidth = CGFloat(maxX - minX + pixelSize)
         let contentHeight = CGFloat(maxY - minY + pixelSize)
-
-        let viewWidth: CGFloat = viewSize.width > 0 ? viewSize.width : 400
-        let viewHeight: CGFloat = viewSize.height > 0 ? viewSize.height : 600
         let padding: CGFloat = 20
-        let availableWidth = viewWidth - padding * 2
-        let availableHeight = viewHeight - padding * 2
+        let availableWidth = viewSize.width - padding * 2
+        let availableHeight = viewSize.height - padding * 2
         let scaleX = availableWidth / contentWidth
         let scaleY = availableHeight / contentHeight
         let mapScale = Swift.min(scaleX, scaleY)
         let offsetX = padding + (availableWidth - contentWidth * mapScale) / 2 - CGFloat(minX) * mapScale
         let offsetY = padding + (availableHeight - contentHeight * mapScale) / 2 - CGFloat(minY) * mapScale
 
-        let adjustedStartX = (start.x - gestureOffset.width) / gestureScale
-        let adjustedStartY = (start.y - gestureOffset.height) / gestureScale
-        let adjustedEndX = (end.x - gestureOffset.width) / gestureScale
-        let adjustedEndY = (end.y - gestureOffset.height) / gestureScale
-
-        let pixelAX = Int(((adjustedStartX - offsetX) / mapScale).rounded())
-        let pixelAY = Int(((adjustedStartY - offsetY) / mapScale).rounded())
-        let pixelBX = Int(((adjustedEndX - offsetX) / mapScale).rounded())
-        let pixelBY = Int(((adjustedEndY - offsetY) / mapScale).rounded())
+        // start/end are already in map coordinates (from screenToMapCoords)
+        // Convert directly to pixel coordinates — no gesture transform removal needed
+        let pixelAX = Int(((start.x - offsetX) / mapScale).rounded())
+        let pixelAY = Int(((start.y - offsetY) / mapScale).rounded())
+        let pixelBX = Int(((end.x - offsetX) / mapScale).rounded())
+        let pixelBY = Int(((end.y - offsetY) / mapScale).rounded())
 
         let pointA = ZonePoint(x: pixelAX * pixelSize, y: pixelAY * pixelSize)
         let pointB = ZonePoint(x: pixelBX * pixelSize, y: pixelBY * pixelSize)
