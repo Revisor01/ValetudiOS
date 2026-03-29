@@ -5,6 +5,7 @@
 - [x] **v1.2.0 Quality & API Completeness** - Phases 1-4 (completed 2026-03-28)
 - [x] **v1.3.0 Polish & Full API Coverage** - Phases 5-8 (completed 2026-03-28)
 - [x] **v1.4.0 Code Quality & Robustness** - Phases 9-11 (completed 2026-03-29)
+- [ ] **v2.0.0 Update Process Hardening** - Phases 12-15
 
 ## Phases
 
@@ -24,13 +25,22 @@
 - [x] **Phase 7: Bugfixes & Robustness** - Force-unwraps, stille Fehler, SSE Backoff, Koordinaten-Fix (completed 2026-03-28)
 - [x] **Phase 8: Test Coverage** - ViewModel- und API-Layer-Tests aufbauen (completed 2026-03-28)
 
-### v1.4.0 Code Quality & Robustness
+### v1.4.0 Code Quality & Robustness (Completed)
 
 **Milestone Goal:** Codebase sauber machen — alle print()-Reste, Force-Unwraps, fehlende Logger, inkonsistente Concurrency-Patterns, Keychain-Fehlerbehandlung, und View-Decomposition.
 
 - [x] **Phase 9: Logger Migration** - print() durch os.Logger in allen Views und Services ersetzen, DispatchQueue auf structured concurrency migrieren (completed 2026-03-28)
 - [x] **Phase 10: Safety Fixes** - Force-Unwrap und Keychain-Fehlerbehandlung reparieren, hardcoded URLs/ProductIDs in Constants extrahieren (completed 2026-03-28)
 - [x] **Phase 11: View Decomposition** - MapView, RobotSettingsView und RobotDetailView in logische Sub-Views aufbrechen (completed 2026-03-28)
+
+### v2.0.0 Update Process Hardening
+
+**Milestone Goal:** Den Firmware-Update-Prozess robust und fehlerfrei machen — kein Doppelklick, klare Zustandsanzeige, Fehlerfeedback, Schutz während kritischer Phasen.
+
+- [ ] **Phase 12: State Machine Foundation** - UpdatePhase-Enum, UpdateService mit Re-Entrancy-Guard und Error-State-Modell einführen
+- [ ] **Phase 13: State Consolidation** - Doppelte Update-Logik entfernen, RobotManager verdrahten, ValetudoInfoView bereinigen
+- [ ] **Phase 14: Apply Phase Hardening** - Idle Timer, Reboot-Fenster-Erkennung, Background Task und Fullscreen-Lock absichern
+- [ ] **Phase 15: UI Wiring** - Fortschrittsanzeige, Error-Banner und gedrosseltes Update-Checking einbauen
 
 ## Phase Details
 
@@ -213,12 +223,57 @@ Plans:
 - [x] 11-02-PLAN.md — RobotSettingsView-Dekomposition: RobotSettingsSections.swift mit 7 eigenstaendigen Sub-Views
 - [x] 11-03-PLAN.md — RobotDetailView-Dekomposition: RobotDetailSections.swift mit ControlButton, DockActionButton, PulseAnimationView
 
+### Phase 12: State Machine Foundation
+**Goal**: Der Update-Prozess hat eine einzige autoritative State Machine — Update-Zustände sind als unveränderliches Enum modelliert, Doppelaufrufe werden type-safe verhindert, und Fehler werden explizit abgebildet
+**Depends on**: Phase 11
+**Requirements**: STATE-01, STATE-02, STATE-03, STATE-04
+**Success Criteria** (what must be TRUE):
+  1. Der Update-Zustand des Roboters ist zu jedem Zeitpunkt in genau einem der Zustände Idle, Checking, Downloading, ReadyToApply, Applying, Rebooting oder Error — kein "Zwischen-Boolean" ist mehr nötig
+  2. Ein zweiter Tap auf "Nach Updates suchen" oder "Update starten" während ein Update bereits läuft hat keine Wirkung — kein zweiter API-Call wird abgesetzt
+  3. Ein Valetudo-Fehler nach einem fehlgeschlagenen Download oder Apply zeigt dem Benutzer eine lesbare Fehlermeldung statt stillem Zurücksetzen
+  4. Alle Update-Aufrufe gehen durch `UpdateService` — `RobotDetailViewModel` und `ValetudoInfoView` lesen denselben `@Published phase`-Wert
+**Plans**: TBD
+
+### Phase 13: State Consolidation
+**Goal**: Es gibt genau eine Code-Stelle, die Update-Logik besitzt — doppelte Properties und parallele Check-Pfade sind eliminiert
+**Depends on**: Phase 12
+**Requirements**: CLEAN-01, CLEAN-02
+**Success Criteria** (what must be TRUE):
+  1. Die Properties `isUpdating` und `showUpdateWarning` existieren nicht mehr im ViewModel — die View leitet alle Darstellungsentscheidungen aus `updatePhase` ab
+  2. `ValetudoInfoView` ruft keine eigene `checkForUpdate()`-Variante mehr auf; Update-Status-Anfragen gehen ausschließlich über `UpdateService`
+  3. Ein Grep nach `isUpdating` und `showUpdateWarning` im gesamten Codebase liefert null Treffer
+**Plans**: TBD
+
+### Phase 14: Apply Phase Hardening
+**Goal**: Der kritische Moment zwischen "Apply gedrückt" und "Roboter wieder online" ist vollständig abgesichert — kein Schlafmodus, kein falscher Fehler, kein App-Abbruch
+**Depends on**: Phase 13
+**Requirements**: APPLY-01, APPLY-02, APPLY-03, APPLY-04
+**Success Criteria** (what must be TRUE):
+  1. Sobald Apply gestartet wird, erscheint ein Vollbild-Overlay das nicht weggeklickt oder durch Wischen geschlossen werden kann; es verschwindet erst wenn der Roboter wieder erreichbar ist oder ein Timeout eintritt
+  2. Das Display bleibt während Download und Apply durchgehend an — kein automatischer Schlafmodus nach 2 Minuten
+  3. Nach einem erfolgreichen Apply und Roboter-Neustart wird kein Fehler angezeigt; die App erkennt das Reboot-Fenster (30–90 Sekunden keine Verbindung) als erwartetes Verhalten
+  4. Wenn der Benutzer die App in den Hintergrund schiebt während Apply läuft, wird der API-Call nicht durch iOS abgebrochen
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 15: UI Wiring
+**Goal**: Benutzer sieht jederzeit den exakten Update-Zustand, Download-Fortschritt und Fehlerdetails ohne die App neu starten zu müssen
+**Depends on**: Phase 14
+**Requirements**: UI-01, UI-02, UI-03
+**Success Criteria** (what must be TRUE):
+  1. Während des Downloads zeigt die Update-Sektion eine ProgressView mit prozentualer Angabe an — die Zahl steigt sichtbar von 0 bis 100
+  2. Schlägt ein Update-Schritt fehl, erscheint ein Error-Banner mit der Fehlermeldung; der Benutzer kann Retry oder Dismiss tippen
+  3. Update-Check wird maximal einmal pro Stunde ausgelöst — mehrfaches Öffnen und Schließen der View innerhalb einer Stunde sendet keinen erneuten Check-Request an den Roboter
+**Plans**: TBD
+**UI hint**: yes
+
 ## Progress
 
 **Execution Order:**
 v1.2.0: 1 → 2 → 3 → 4 (completed)
 v1.3.0: 5 → 6 → 7 → 8 (completed)
-v1.4.0: 9 → 10 → 11
+v1.4.0: 9 → 10 → 11 (completed)
+v2.0.0: 12 → 13 → 14 → 15
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -232,4 +287,8 @@ v1.4.0: 9 → 10 → 11
 | 8. Test Coverage | 2/2 | Complete   | 2026-03-28 |
 | 9. Logger Migration | 3/3 | Complete   | 2026-03-28 |
 | 10. Safety Fixes | 1/1 | Complete    | 2026-03-28 |
-| 11. View Decomposition | 3/3 | Complete    | 2026-03-28 |
+| 11. View Decomposition | 3/3 | Complete    | 2026-03-29 |
+| 12. State Machine Foundation | 0/? | Not started | - |
+| 13. State Consolidation | 0/? | Not started | - |
+| 14. Apply Phase Hardening | 0/? | Not started | - |
+| 15. UI Wiring | 0/? | Not started | - |

@@ -94,25 +94,25 @@ Requirements for Update Process Hardening. Each maps to roadmap phases.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| STATE-01 | — | Pending |
-| STATE-02 | — | Pending |
-| STATE-03 | — | Pending |
-| STATE-04 | — | Pending |
-| APPLY-01 | — | Pending |
-| APPLY-02 | — | Pending |
-| APPLY-03 | — | Pending |
-| APPLY-04 | — | Pending |
-| UI-01 | — | Pending |
-| UI-02 | — | Pending |
-| UI-03 | — | Pending |
-| CLEAN-01 | — | Pending |
-| CLEAN-02 | — | Pending |
+| STATE-01 | Phase 12 | Pending |
+| STATE-02 | Phase 12 | Pending |
+| STATE-03 | Phase 12 | Pending |
+| STATE-04 | Phase 12 | Pending |
+| CLEAN-01 | Phase 13 | Pending |
+| CLEAN-02 | Phase 13 | Pending |
+| APPLY-01 | Phase 14 | Pending |
+| APPLY-02 | Phase 14 | Pending |
+| APPLY-03 | Phase 14 | Pending |
+| APPLY-04 | Phase 14 | Pending |
+| UI-01 | Phase 15 | Pending |
+| UI-02 | Phase 15 | Pending |
+| UI-03 | Phase 15 | Pending |
 
 **Coverage:**
 - v2.0.0 requirements: 13 total
-- Mapped to phases: 0
-- Unmapped: 13 ⚠️
+- Mapped to phases: 13
+- Unmapped: 0 ✓
 
 ---
 *Requirements defined: 2026-03-29*
-*Last updated: 2026-03-29 after initial definition*
+*Last updated: 2026-03-29 — Traceability mapped to Phases 12-15*

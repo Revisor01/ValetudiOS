@@ -2,11 +2,11 @@
 gsd_state_version: 1.0
 milestone: v2.0.0
 milestone_name: Update Process Hardening
-status: defining-requirements
+status: roadmap-ready
 last_updated: "2026-03-29"
 last_activity: 2026-03-29
 progress:
-  total_phases: 0
+  total_phases: 4
   completed_phases: 0
   total_plans: 0
   completed_plans: 0
@@ -19,14 +19,24 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Defining requirements for v2.0.0
+**Current focus:** v2.0.0 — Update Process Hardening (Phase 12 next)
 
 ## Current Position
 
-Phase: Not started (defining requirements)
+Phase: 12 — State Machine Foundation (not started)
 Plan: —
-Status: Defining requirements
-Last activity: 2026-03-29 — Milestone v2.0.0 started
+Status: Roadmap created, ready for planning
+Last activity: 2026-03-29 — Roadmap v2.0.0 created (Phases 12-15)
+
+```
+[Phase 12]──[Phase 13]──[Phase 14]──[Phase 15]
+ State        State      Apply Phase  UI Wiring
+ Machine      Consol.    Hardening
+ Foundation
+    ▲ next
+```
+
+Progress: 0/4 phases complete
 
 ## Accumulated Context
 
@@ -37,7 +47,7 @@ Recent decisions affecting current work:
 
 - Codebase mapped: .planning/codebase/ (7 documents, 2026-03-28)
 - Deep audit completed: 30 print() stmts in 8 files, 1 force-unwrap, keychain error handling, hardcoded URLs
-- Previous releases: v1.0 (App Store), v1.1.0, v1.2.0, v1.3.0
+- Previous releases: v1.0 (App Store), v1.1.0, v1.2.0, v1.3.0, v1.4.0
 - Phase 9 groups all logging work + SAFE-03 (DispatchQueue → Task.sleep, same concurrency concern)
 - Phase 10 handles remaining safety/organization quick-fixes
 - Phase 11 is the largest structural change (3 big views decomposed)
@@ -50,10 +60,15 @@ Recent decisions affecting current work:
 - [Phase 11-view-decomposition]: sectionsLogger fuer RobotSettingsSections.swift als file-top-level Logger, konsistent mit settingsLogger-Pattern
 - [Phase 11-view-decomposition]: WifiSettingsView Struct-Name beibehalten (camelCase, nicht WiFiSettingsView) — passt zur bestehenden Call-Site
 - [Phase 11]: Control Bars als MapContentView extension statt eigenstaendige Structs -- vermeidet 10+ Parameter fuer State-Zugriff
+- [v2.0.0 Roadmap]: Phasen aus Requirements abgeleitet — 4 strikte Dependency-Layers: Model → Service → Manager/ViewModel → UI
+- [v2.0.0 Roadmap]: Phase 14 (Apply Hardening) bündelt 3 interdependente Pitfalls (Idle Timer + Reboot-Fenster + Background Task) — diese dürfen nicht aufgetrennt werden
+- [v2.0.0 Research]: Reboot-Fenster-Erkennung benötigt Bestätigung des Post-Apply-Server-State-Sequence gegen Valetudo Updater.js vor Phase-14-Implementation
+- [v2.0.0 Research]: UIBackgroundTask nominell ~30s — für Apply-HTTP-Call ausreichend (<5s), Expiry-Handler-Verhalten auf iOS 17+ vor Phase 14 prüfen
 
 ### Pending Todos
 
-None.
+- Vor Phase 14 Implementation: post-apply Server-State-Sequence gegen Valetudo `Updater.js` validieren (welcher State kommt zuerst nach Reboot: `ValetudoUpdaterIdleState` oder `ValetudoUpdaterNoUpdateRequiredState`?)
+- Vor Phase 14 Implementation: exakten `ValetudoUpdaterBusyState`-Klassennamen im bestehenden `UpdaterState`-Model prüfen
 
 ### Blockers/Concerns
 
