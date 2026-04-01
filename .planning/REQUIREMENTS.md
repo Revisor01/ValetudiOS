@@ -12,7 +12,7 @@ Requirements for Update Process Hardening. Each maps to roadmap phases.
 - [x] **STATE-01**: Update-Zustand wird als enum-basierte State Machine modelliert (Idle, Checking, Downloading, ReadyToApply, Applying, Rebooting, Error)
 - [x] **STATE-02**: startUpdate() hat einen Re-Entrancy-Guard — Doppelaufruf wird verhindert
 - [x] **STATE-03**: Valetudo ErrorState wird im Model abgebildet und zeigt Fehlermeldung an
-- [ ] **STATE-04**: Ein zentraler UpdateService ist die einzige Source of Truth für Update-Zustand (statt ViewModel + View doppelt)
+- [x] **STATE-04**: Ein zentraler UpdateService ist die einzige Source of Truth für Update-Zustand (statt ViewModel + View doppelt)
 
 ### Apply-Phase Hardening
 
@@ -97,7 +97,7 @@ Requirements for Update Process Hardening. Each maps to roadmap phases.
 | STATE-01 | Phase 12 | Complete |
 | STATE-02 | Phase 12 | Complete |
 | STATE-03 | Phase 12 | Complete |
-| STATE-04 | Phase 12 | Pending |
+| STATE-04 | Phase 12 | Complete |
 | CLEAN-01 | Phase 13 | Pending |
 | CLEAN-02 | Phase 13 | Pending |
 | APPLY-01 | Phase 14 | Pending |

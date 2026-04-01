@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: executing
-last_updated: "2026-04-01T16:41:39.415Z"
+status: verifying
+last_updated: "2026-04-01T16:50:32.278Z"
 last_activity: 2026-04-01
 progress:
   total_phases: 12
-  completed_phases: 10
+  completed_phases: 11
   total_plans: 34
-  completed_plans: 32
+  completed_plans: 33
 ---
 
 # Project State
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-03-29)
 
 Phase: 12 (state-machine-foundation) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-01
 
 ```
@@ -66,6 +66,7 @@ Recent decisions affecting current work:
 - [v2.0.0 Research]: UIBackgroundTask nominell ~30s — für Apply-HTTP-Call ausreichend (<5s), Expiry-Handler-Verhalten auf iOS 17+ vor Phase 14 prüfen
 - [Phase 12-state-machine-foundation]: pollUntilReadyToApply() speichert Task in pollingTask-Property fuer externes Cancel via reset()
 - [Phase 12-state-machine-foundation]: [Phase 12-01]: Unerwarteter idle-State im Polling-Loop wird als Fehler behandelt (Pitfall 6)
+- [Phase 12-state-machine-foundation]: ValetudoInfoView erhält UpdateService als optionalen Init-Parameter (nicht EnvironmentObject) — explizites Ownership, STATE-04 erfüllt
 
 ### Pending Todos
 
