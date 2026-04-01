@@ -39,7 +39,7 @@
 
 - [x] **Phase 12: State Machine Foundation** - UpdatePhase-Enum, UpdateService mit Re-Entrancy-Guard und Error-State-Modell einführen (completed 2026-04-01)
 - [x] **Phase 13: State Consolidation** - Doppelte Update-Logik entfernen, RobotManager verdrahten, ValetudoInfoView bereinigen (completed 2026-04-01)
-- [ ] **Phase 14: Apply Phase Hardening** - Idle Timer, Reboot-Fenster-Erkennung, Background Task und Fullscreen-Lock absichern
+- [x] **Phase 14: Apply Phase Hardening** - Idle Timer, Reboot-Fenster-Erkennung, Background Task und Fullscreen-Lock absichern (completed 2026-04-01)
 - [ ] **Phase 15: UI Wiring** - Fortschrittsanzeige, Error-Banner und gedrosseltes Update-Checking einbauen
 
 ## Phase Details
@@ -265,7 +265,7 @@ Plans:
 
 Plans:
 - [x] 14-01-PLAN.md — Idle Timer, Reboot-Polling und Background Task in UpdateService
-- [ ] 14-02-PLAN.md — Fullscreen-Lock Overlay in RobotDetailView
+- [x] 14-02-PLAN.md — Fullscreen-Lock Overlay in RobotDetailView
 
 ### Phase 15: UI Wiring
 **Goal**: Benutzer sieht jederzeit den exakten Update-Zustand, Download-Fortschritt und Fehlerdetails ohne die App neu starten zu müssen
@@ -301,5 +301,5 @@ v2.0.0: 12 → 13 → 14 → 15
 | 11. View Decomposition | 3/3 | Complete    | 2026-03-29 |
 | 12. State Machine Foundation | 2/2 | Complete   | 2026-04-01 |
 | 13. State Consolidation | 1/1 | Complete   | 2026-04-01 |
-| 14. Apply Phase Hardening | 1/2 | In Progress|  |
+| 14. Apply Phase Hardening | 2/2 | Complete   | 2026-04-01 |
 | 15. UI Wiring | 0/? | Not started | - |

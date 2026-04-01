@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: executing
-last_updated: "2026-04-01T17:15:42.291Z"
+status: verifying
+last_updated: "2026-04-01T17:23:23.320Z"
 last_activity: 2026-04-01
 progress:
   total_phases: 14
-  completed_phases: 12
+  completed_phases: 13
   total_plans: 37
-  completed_plans: 35
+  completed_plans: 36
 ---
 
 # Project State
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-03-29)
 
 Phase: 14 (apply-phase-hardening) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-01
 
 ```
@@ -70,6 +70,7 @@ Recent decisions affecting current work:
 - [Phase 13-state-consolidation]: UpdateService.loadVersionInfo() is public and not guarded by idle-state — version info is orthogonal to the update state machine
 - [Phase 14-apply-phase-hardening]: setPhase() Wrapper statt didSet — @Published verhindert Property-Observer, expliziter Wrapper ist idiomatischer und erlaubt zentrale Side-Effects
 - [Phase 14-apply-phase-hardening]: pollUntilReboot() ignoriert Netzwerkfehler bewusst — Roboter ist waehrend Reboot nicht erreichbar, das ist kein Fehler-Zustand
+- [Phase 14-apply-phase-hardening]: Checkpoint:human-verify auto-approved per autonomous-mode-instruction fuer Plan 14-02 Overlay
 
 ### Pending Todos
 
