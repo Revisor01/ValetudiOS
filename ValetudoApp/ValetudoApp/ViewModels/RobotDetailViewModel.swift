@@ -38,7 +38,19 @@ final class RobotDetailViewModel: ObservableObject {
     @Published var updaterState: UpdaterState?
     @Published var isUpdating = false
     @Published var showUpdateWarning = false
-    @Published var updateInProgress = false
+
+    // UpdateService — Single Source of Truth (STATE-04)
+    private(set) var updateService: UpdateService?
+
+    var updateInProgress: Bool {
+        guard let svc = updateService else { return false }
+        switch svc.phase {
+        case .downloading, .applying, .rebooting, .checking:
+            return true
+        default:
+            return false
+        }
+    }
 
     // Statistics
     @Published var lastCleaningStats: [StatisticEntry] = []
@@ -262,18 +274,26 @@ final class RobotDetailViewModel: ObservableObject {
         }
     }
 
+    private func setupUpdateService() {
+        guard let api = api else { return }
+        if updateService == nil {
+            updateService = UpdateService(api: api)
+        }
+    }
+
     private func checkForUpdate() async {
+        setupUpdateService()
+
         guard let api = api else { return }
         do {
             if let version = try? await api.getValetudoVersion() {
                 currentVersion = version.release
             }
 
-            try? await api.checkForUpdates()
+            // Valetudo Update-Check via UpdateService (per STATE-04)
+            await updateService?.checkForUpdates()
 
-            let state = try await api.getUpdaterState()
-            updaterState = state
-
+            // GitHub Release Check (bleibt im ViewModel — nicht Update-Service-Scope)
             guard let url = URL(string: Constants.githubApiLatestReleaseUrl) else { return }
             let (data, _) = try await URLSession.shared.data(from: url)
             let release = try JSONDecoder().decode(GitHubRelease.self, from: data)
@@ -448,44 +468,15 @@ final class RobotDetailViewModel: ObservableObject {
     // MARK: - Update
 
     func startUpdate() async {
-        guard let api = api else { return }
-
-        let needsDownload = updaterState?.isUpdateAvailable == true && updaterState?.isReadyToApply != true
-        let needsApply = updaterState?.isReadyToApply == true
-
-        updateInProgress = true
-
-        do {
-            if needsDownload {
-                try await api.downloadUpdate()
-
-                var downloadComplete = false
-                for _ in 0..<60 {
-                    try? await Task.sleep(for: .seconds(5))
-                    let state = try await api.getUpdaterState()
-                    updaterState = state
-                    if state.isReadyToApply {
-                        downloadComplete = true
-                        break
-                    }
-                    if !state.isDownloading && !state.isReadyToApply {
-                        break
-                    }
-                }
-
-                if !downloadComplete {
-                    updateInProgress = false
-                    return
-                }
+        guard let svc = updateService else { return }
+        if case .updateAvailable = svc.phase {
+            await svc.startDownload()
+            // Nach Download, wenn ready: Apply starten
+            if case .readyToApply = svc.phase {
+                await svc.startApply()
             }
-
-            if needsApply || needsDownload {
-                try await api.applyUpdate()
-                // Keep showing progress - robot will be offline
-            }
-        } catch {
-            logger.error("Update failed: \(error, privacy: .public)")
-            updateInProgress = false
+        } else if case .readyToApply = svc.phase {
+            await svc.startApply()
         }
     }
 }
