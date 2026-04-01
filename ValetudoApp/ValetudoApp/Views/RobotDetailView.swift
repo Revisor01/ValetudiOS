@@ -177,7 +177,7 @@ struct RobotDetailView: View {
                 Section {
                     // Roboter (Robot Settings)
                     NavigationLink {
-                        RobotSettingsView(robot: viewModel.robot, robotManager: viewModel.robotManager)
+                        RobotSettingsView(robot: viewModel.robot, robotManager: viewModel.robotManager, updateService: viewModel.updateService)
                     } label: {
                         Label(String(localized: "settings.section_robot"), systemImage: "poweroutlet.type.b")
                     }

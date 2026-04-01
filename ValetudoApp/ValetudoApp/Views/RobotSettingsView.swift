@@ -5,6 +5,7 @@ private let settingsLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "
 
 struct RobotSettingsView: View {
     let robot: RobotConfig
+    let updateService: UpdateService?
     @EnvironmentObject var robotManager: RobotManager
     @StateObject private var viewModel: RobotSettingsViewModel
 
@@ -12,8 +13,9 @@ struct RobotSettingsView: View {
     @State private var showMappingAlert = false
     @State private var showMapResetAlert = false
 
-    init(robot: RobotConfig, robotManager: RobotManager) {
+    init(robot: RobotConfig, robotManager: RobotManager, updateService: UpdateService? = nil) {
         self.robot = robot
+        self.updateService = updateService
         _viewModel = StateObject(wrappedValue: RobotSettingsViewModel(robot: robot, robotManager: robotManager))
     }
 
@@ -405,7 +407,7 @@ struct RobotSettingsView: View {
 
                 // System Info
                 NavigationLink {
-                    ValetudoInfoView(robot: robot)
+                    ValetudoInfoView(robot: robot, updateService: updateService)
                 } label: {
                     HStack {
                         Image(systemName: "info.circle")

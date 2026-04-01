@@ -773,10 +773,10 @@ struct NTPSettingsView: View {
 // MARK: - Valetudo Info View
 struct ValetudoInfoView: View {
     let robot: RobotConfig
+    let updateService: UpdateService?   // NEU — per STATE-04
     @EnvironmentObject var robotManager: RobotManager
 
     @State private var version: ValetudoVersion?
-    @State private var updaterState: UpdaterState?
     @State private var hostInfo: SystemHostInfo?
     @State private var latestRelease: GitHubRelease?
     @State private var isLoading = false
@@ -786,7 +786,11 @@ struct ValetudoInfoView: View {
     }
 
     private var hasUpdate: Bool {
-        guard let current = updaterState?.currentVersion,
+        if case .updateAvailable = updateService?.phase {
+            return true
+        }
+        // Fallback: GitHub-Release-Vergleich fuer Version-Badge
+        guard let current = version?.release,
               let latest = latestRelease?.tag_name else { return false }
         return current != latest
     }
@@ -805,7 +809,7 @@ struct ValetudoInfoView: View {
                                 Text(String(localized: "update.available"))
                                     .fontWeight(.medium)
                                     .foregroundStyle(.primary)
-                                Text("\(updaterState?.currentVersion ?? "") → \(latest.tag_name)")
+                                Text("\(version?.release ?? "") → \(latest.tag_name)")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -824,7 +828,7 @@ struct ValetudoInfoView: View {
                         .foregroundStyle(.secondary)
                     Spacer()
                     HStack(spacing: 8) {
-                        Text(updaterState?.currentVersion ?? version?.release ?? "-")
+                        Text(version?.release ?? "-")
                         if hasUpdate {
                             Image(systemName: "exclamationmark.circle.fill")
                                 .foregroundStyle(.orange)
@@ -952,7 +956,7 @@ struct ValetudoInfoView: View {
         do {
             version = try await api.getValetudoVersion()
             hostInfo = try await api.getSystemHostInfo()
-            updaterState = try await api.getUpdaterState()
+            // updaterState wird nicht mehr hier geladen — kommt von UpdateService
         } catch {
             sectionsLogger.error("Failed to load Valetudo info: \(error, privacy: .public)")
         }
