@@ -23,9 +23,9 @@ Requirements for Update Process Hardening. Each maps to roadmap phases.
 
 ### UI & Feedback
 
-- [ ] **UI-01**: Download-Fortschritt wird aus metaData.progress als ProgressView angezeigt
-- [ ] **UI-02**: Fehlermeldungen bei Update-Problemen werden sichtbar als Banner angezeigt
-- [ ] **UI-03**: Update-Check wird auf max. 1x/Stunde gedrosselt statt bei jedem View-Erscheinen
+- [x] **UI-01**: Download-Fortschritt wird aus metaData.progress als ProgressView angezeigt
+- [x] **UI-02**: Fehlermeldungen bei Update-Problemen werden sichtbar als Banner angezeigt
+- [x] **UI-03**: Update-Check wird auf max. 1x/Stunde gedrosselt statt bei jedem View-Erscheinen
 
 ### Code Cleanup
 
@@ -104,9 +104,9 @@ Requirements for Update Process Hardening. Each maps to roadmap phases.
 | APPLY-02 | Phase 14 | Complete |
 | APPLY-03 | Phase 14 | Complete |
 | APPLY-04 | Phase 14 | Complete |
-| UI-01 | Phase 15 | Pending |
-| UI-02 | Phase 15 | Pending |
-| UI-03 | Phase 15 | Pending |
+| UI-01 | Phase 15 | Complete |
+| UI-02 | Phase 15 | Complete |
+| UI-03 | Phase 15 | Complete |
 
 **Coverage:**
 - v2.0.0 requirements: 13 total

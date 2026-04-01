@@ -40,7 +40,7 @@
 - [x] **Phase 12: State Machine Foundation** - UpdatePhase-Enum, UpdateService mit Re-Entrancy-Guard und Error-State-Modell einführen (completed 2026-04-01)
 - [x] **Phase 13: State Consolidation** - Doppelte Update-Logik entfernen, RobotManager verdrahten, ValetudoInfoView bereinigen (completed 2026-04-01)
 - [x] **Phase 14: Apply Phase Hardening** - Idle Timer, Reboot-Fenster-Erkennung, Background Task und Fullscreen-Lock absichern (completed 2026-04-01)
-- [ ] **Phase 15: UI Wiring** - Fortschrittsanzeige, Error-Banner und gedrosseltes Update-Checking einbauen
+- [x] **Phase 15: UI Wiring** - Fortschrittsanzeige, Error-Banner und gedrosseltes Update-Checking einbauen (completed 2026-04-01)
 
 ## Phase Details
 
@@ -279,7 +279,7 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 15-01-PLAN.md — Download-ProgressView, Error-Banner mit Retry und Update-Check-Throttling (1x/Stunde)
+- [x] 15-01-PLAN.md — Download-ProgressView, Error-Banner mit Retry und Update-Check-Throttling (1x/Stunde)
 
 ## Progress
 
@@ -305,4 +305,4 @@ v2.0.0: 12 → 13 → 14 → 15
 | 12. State Machine Foundation | 2/2 | Complete   | 2026-04-01 |
 | 13. State Consolidation | 1/1 | Complete   | 2026-04-01 |
 | 14. Apply Phase Hardening | 2/2 | Complete   | 2026-04-01 |
-| 15. UI Wiring | 0/1 | Not started | - |
+| 15. UI Wiring | 1/1 | Complete   | 2026-04-01 |

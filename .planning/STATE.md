@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: verifying
-last_updated: "2026-04-01T17:23:23.320Z"
+last_updated: "2026-04-01T17:37:56.180Z"
 last_activity: 2026-04-01
 progress:
-  total_phases: 14
-  completed_phases: 13
-  total_plans: 37
-  completed_plans: 36
+  total_phases: 15
+  completed_phases: 14
+  total_plans: 38
+  completed_plans: 37
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 14 — apply-phase-hardening
+**Current focus:** Phase 15 — ui-wiring
 
 ## Current Position
 
-Phase: 14 (apply-phase-hardening) — EXECUTING
-Plan: 2 of 2
+Phase: 15 (ui-wiring) — EXECUTING
+Plan: 1 of 1
 Status: Phase complete — ready for verification
 Last activity: 2026-04-01
 
@@ -71,6 +71,8 @@ Recent decisions affecting current work:
 - [Phase 14-apply-phase-hardening]: setPhase() Wrapper statt didSet — @Published verhindert Property-Observer, expliziter Wrapper ist idiomatischer und erlaubt zentrale Side-Effects
 - [Phase 14-apply-phase-hardening]: pollUntilReboot() ignoriert Netzwerkfehler bewusst — Roboter ist waehrend Reboot nicht erreichbar, das ist kein Fehler-Zustand
 - [Phase 14-apply-phase-hardening]: Checkpoint:human-verify auto-approved per autonomous-mode-instruction fuer Plan 14-02 Overlay
+- [Phase 15-ui-wiring]: if-else-chain reordered: .downloading VOR updateInProgress geprueft — lineare ProgressView greift statt generischem Spinner
+- [Phase 15-ui-wiring]: lastCheckDate reset in reset() — ermoeglicht Retry nach Fehler innerhalb derselben Stunde
 
 ### Pending Todos
 
