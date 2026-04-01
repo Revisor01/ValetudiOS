@@ -22,26 +22,8 @@ struct RobotDetailView: View {
 
     var body: some View {
         List {
-            // Update in progress banner (shown after update started)
-            if viewModel.updateInProgress {
-                Section {
-                    VStack(spacing: 12) {
-                        ProgressView()
-                            .scaleEffect(1.2)
-                        Text(String(localized: "update.in_progress"))
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                        Text(String(localized: "update.in_progress_hint"))
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
-                            .multilineTextAlignment(.center)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 16)
-                }
-            }
             // Update available banner
-            else if case .updateAvailable = viewModel.updateService?.phase {
+            if case .updateAvailable = viewModel.updateService?.phase {
                 Section {
                     VStack(alignment: .leading, spacing: 8) {
                         HStack {
@@ -82,11 +64,21 @@ struct RobotDetailView: View {
                     }
                 }
             } else if case .downloading = viewModel.updateService?.phase {
+                // Download in progress: linear ProgressView with percentage
                 Section {
                     VStack(spacing: 12) {
-                        ProgressView()
-                        Text(String(localized: "update.downloading"))
-                            .font(.subheadline)
+                        ProgressView(value: viewModel.updateService?.downloadProgress ?? 0.0)
+                            .progressViewStyle(.linear)
+                            .tint(.orange)
+                        HStack {
+                            Text(String(localized: "update.downloading"))
+                                .font(.subheadline)
+                            Spacer()
+                            Text("\(Int((viewModel.updateService?.downloadProgress ?? 0.0) * 100))%")
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                                .monospacedDigit()
+                        }
                         Text(String(localized: "update.do_not_disconnect"))
                             .font(.caption)
                             .foregroundStyle(.orange)
@@ -104,6 +96,56 @@ struct RobotDetailView: View {
                                 .foregroundStyle(.green)
                             Text(String(localized: "update.apply"))
                             Spacer()
+                        }
+                    }
+                }
+            } else if viewModel.updateInProgress {
+                // Update in progress banner for checking/applying/rebooting
+                Section {
+                    VStack(spacing: 12) {
+                        ProgressView()
+                            .scaleEffect(1.2)
+                        Text(String(localized: "update.in_progress"))
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                        Text(String(localized: "update.in_progress_hint"))
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                            .multilineTextAlignment(.center)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                }
+            } else if case .error(let message) = viewModel.updateService?.phase {
+                // Error banner with retry button
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.red)
+                            VStack(alignment: .leading) {
+                                Text(String(localized: "update.error"))
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                Text(message)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                        }
+
+                        Button {
+                            viewModel.updateService?.reset()
+                        } label: {
+                            HStack {
+                                Image(systemName: "arrow.clockwise")
+                                Text(String(localized: "update.retry"))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(Color.red.opacity(0.15))
+                            .foregroundStyle(.red)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                     }
                 }
