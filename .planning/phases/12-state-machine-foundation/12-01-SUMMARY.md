@@ -71,7 +71,7 @@ completed: 2026-04-01
 
 1. **Task 1: UpdatePhase-Enum und UpdateService erstellen** - `1c2d42a` (feat)
 
-**Plan metadata:** (folgt)
+**Plan metadata:** `21af601` (docs: complete plan)
 
 ## Files Created/Modified
 - `ValetudoApp/ValetudoApp/Services/UpdateService.swift` - UpdatePhase enum + UpdateService class mit vollstaendiger State-Machine-Logik
@@ -98,6 +98,13 @@ Keine — keine externen Services konfiguriert.
 - UpdateService.swift ist vollstaendig und kompiliert fehlerfrei
 - Phase 13 (State Machine Consolidation) kann UpdateService als Basis fuer die Konsolidierung der bestehenden Update-Logik in RobotDetailViewModel nutzen
 - UpdatePhase-Enum ist versioniert und stable — kein Breaking Change erwartet
+
+## Self-Check: PASSED
+
+- UpdateService.swift: FOUND
+- 12-01-SUMMARY.md: FOUND
+- Commit 1c2d42a: FOUND
+- Build: SUCCEEDED
 
 ---
 *Phase: 12-state-machine-foundation*

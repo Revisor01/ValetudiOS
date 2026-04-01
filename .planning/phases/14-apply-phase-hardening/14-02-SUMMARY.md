@@ -98,6 +98,15 @@ None — Overlay ist vollstaendig implementiert und verdrahtet. Alle String-Lite
 - UpdateService (Phase 14-01) und Overlay (Phase 14-02) bilden zusammen den kompletten Apply-Flow
 - Phase 15 kann auf `viewModel.updateService?.phase` zugreifen und das Overlay testen
 
+## Self-Check: PASSED
+
+- FOUND: ValetudoApp/ValetudoApp/Views/RobotDetailView.swift
+- FOUND: ValetudoApp/ValetudoApp/Resources/Localizable.xcstrings
+- FOUND: .planning/phases/14-apply-phase-hardening/14-02-SUMMARY.md
+- FOUND commit: 09e112a (feat)
+- FOUND commit: 7edf008 (docs)
+- BUILD SUCCEEDED (verified via xcodebuild)
+
 ---
 *Phase: 14-apply-phase-hardening*
 *Completed: 2026-04-01*

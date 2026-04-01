@@ -34,10 +34,25 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 - Floor Material Management
 - Lokalisierung: Deutsch + Englisch
 
+### Validated (v2.0.0)
+
+- UpdatePhase State Machine: Enum-basiertes Update-Lifecycle-Management -- v2.0.0
+- Re-Entrancy-Guard: Doppelklick-Schutz via State-Pattern-Matching -- v2.0.0
+- Error-State: Fehlermeldungen bei Update-Problemen sichtbar -- v2.0.0
+- UpdateService als Single Source of Truth: Keine doppelte Update-Logik -- v2.0.0
+- Fullscreen-Lock: Nicht-schliessbares Overlay während Apply/Reboot -- v2.0.0
+- Idle Timer: Display bleibt an während Update -- v2.0.0
+- Reboot-Erkennung: Neustart wird nicht als Fehler gewertet -- v2.0.0
+- Background Task: Apply wird bei App-Hintergrund nicht abgebrochen -- v2.0.0
+- Download-Fortschritt: ProgressView mit Prozentanzeige -- v2.0.0
+- Error-Banner: Inline-Fehlermeldung mit Retry-Button -- v2.0.0
+- Update-Check Throttling: Max 1x/Stunde -- v2.0.0
+- Property-Cleanup: isUpdating/showUpdateWarning entfernt -- v2.0.0
+- Französische Übersetzung: 206 Strings aus Community-PR -- v2.0.0
+
 ### Active
 
-<!-- v2.0.0 — Update Process Hardening -->
-(Defined in REQUIREMENTS.md)
+(No active milestone — ready for next)
 
 ### Validated (v1.4.0)
 
@@ -54,25 +69,28 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 - Cloud-Anbindung -- Lokale Kommunikation ist Core Value
 - Android-Version -- Nur iOS
 
-## Current Milestone: v2.0.0 Update Process Hardening
-
-**Goal:** Den Firmware-Update-Prozess des Roboters robust und fehlerfrei machen — kein Doppelklick, klare Zustandsanzeige, Fehlerfeedback, Schutz während kritischer Phasen.
-
-**Target features:**
-- Zustandsmaschine für den Update-Lifecycle (Idle → Checking → Download → Ready → Applying → Done/Error)
-- Doppelklick-Schutz und UI-Lock während kritischer Phasen (Download/Apply)
-- Error-State-Handling mit User-Feedback (Download-Fehler, Apply-Fehler)
-- Konsolidierung der doppelten Update-Logik (eine Source of Truth)
-- Dead-Code-Bereinigung (ungenutzte Properties)
-- Intelligenteres Update-Checking (nicht bei jedem View-Erscheinen)
-- Apply-Phase: Vollbild-Lock oder Modal, das nicht weggeklickt werden kann
-
 ## Current State
 
-**Shipped:** v1.4.0 (2026-03-29)
-**Version:** 1.4.0 — Code Quality & Robustness
+**Shipped:** v2.0.0 (2026-04-01)
+**Version:** 2.0.0 — Update Process Hardening
 
-Die App hat vollständige Valetudo API-Abdeckung mit capability-gated UI, MVVM-Architektur mit 3 ViewModels, SSE-Echtzeit-Updates, mDNS-Discovery, 57 Unit-Tests, robustes Error-Handling, durchgängiges os.Logger-Logging, zentralisierte Constants, und aufgeräumte View-Struktur.
+Die App hat vollständige Valetudo API-Abdeckung mit capability-gated UI, MVVM-Architektur mit 3 ViewModels + zentralem UpdateService, SSE-Echtzeit-Updates, mDNS-Discovery, 57 Unit-Tests, robustes Error-Handling mit State Machine für den Update-Prozess, Fullscreen-Lock während Apply, Reboot-Erkennung, und dreisprachige Lokalisierung (DE/EN/FR).
+
+<details>
+<summary>v2.0.0 Milestone (completed)</summary>
+
+**Goal:** Update-Prozess robust machen — State Machine, Fullscreen-Lock, Reboot-Erkennung, Error-Banner
+
+**Delivered:**
+- UpdatePhase Enum (8 States) + UpdateService als @MainActor ObservableObject
+- Re-Entrancy-Guards via State-Pattern-Matching (kein Doppelklick)
+- Fullscreen-Lock Overlay während Apply/Rebooting
+- Idle Timer Deaktivierung + Background Task Schutz
+- Reboot-Erkennung (120s Polling, Netzwerkfehler ignoriert)
+- Download-ProgressView mit Prozent + Error-Banner mit Retry
+- Update-Check Throttling (1x/Stunde)
+- Doppelte Properties und Check-Logik konsolidiert
+</details>
 
 <details>
 <summary>v1.4.0 Milestone (completed)</summary>
@@ -109,8 +127,9 @@ Die App hat vollständige Valetudo API-Abdeckung mit capability-gated UI, MVVM-A
 - **Architektur:** MVVM mit ViewModels (@MainActor ObservableObject) + zentralem RobotManager
 - **API:** Valetudo REST API v2, Basic Auth, optionales SSL
 - **Persistenz:** UserDefaults + Keychain (Credentials), kein CoreData
-- **Tests:** Keine vorhanden
-- **Version:** v1.1.0 (App Store), Xcode 15+, XcodeGen
+- **Tests:** 57 Unit-Tests (ViewModel + API-Layer)
+- **Version:** v2.0.0 (App Store), Xcode 15+, XcodeGen
+- **Lokalisierung:** Deutsch, Englisch, Französisch
 - **Robot:** Primär getestet mit Roborock S5 Max
 
 ## Constraints
@@ -147,4 +166,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-03-29 — Milestone v2.0.0 started*
+*Last updated: 2026-04-01 — Milestone v2.0.0 completed*

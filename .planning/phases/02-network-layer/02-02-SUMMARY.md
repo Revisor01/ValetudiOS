@@ -111,6 +111,16 @@ completed: 2026-03-27
 - NET-02 Requirement erfuellt
 - Plan 02-03 (Map-Pixel-Caching) ist unabhaengig und kann direkt starten
 
+## Self-Check: PASSED
+
+- FOUND: NWBrowserService.swift
+- FOUND: NetworkScanner.swift (updated)
+- FOUND: AddRobotView.swift (updated)
+- FOUND: 02-02-SUMMARY.md
+- FOUND commit: 5e8ab34 (Task 1)
+- FOUND commit: 9bcb353 (Task 2)
+- Build: ** BUILD SUCCEEDED **
+
 ---
 *Phase: 02-network-layer*
 *Completed: 2026-03-27*
