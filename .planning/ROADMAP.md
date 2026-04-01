@@ -62,8 +62,11 @@
   1. ValetudoInfoView ist nicht mehr in RobotSettingsView erreichbar — sie wurde in RobotDetailView verschoben
   2. Robot Properties Section und ValetudoInfoView sind zu einer einheitlichen Geräte-Info-Sektion zusammengeführt
   3. Firmware-Version, Commit, Hostname, Uptime, Memory und Robot Properties (Modell, Seriennummer) erscheinen in einer Section im Roboter-Detail-Screen
-**Plans**: TBD
+**Plans**: 1 plan
 **UI hint**: yes
+
+Plans:
+- [ ] 16-01-PLAN.md — DeviceInfoSection: ViewModel erweitern, neue Sub-View in RobotDetailSections, ValetudoInfoView entfernen
 
 ### Phase 17: Background Monitoring
 **Goal**: Die App prüft den Roboter-Status auch im Hintergrund und sendet lokale Notifications bei wichtigen Ereignissen
