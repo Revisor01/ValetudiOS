@@ -1,4 +1,5 @@
 import Foundation
+import UIKit
 import os
 
 // MARK: - UpdatePhase
@@ -41,6 +42,7 @@ class UpdateService: ObservableObject {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "UpdateService")
     private let api: ValetudoAPI
     private var pollingTask: Task<Void, Never>?
+    private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
 
     init(api: ValetudoAPI) {
         self.api = api
@@ -76,15 +78,15 @@ class UpdateService: ObservableObject {
             return
         }
 
-        phase = .checking
+        setPhase(.checking)
 
         do {
             try await api.checkForUpdates()
             let state = try await api.getUpdaterState()
-            phase = mapUpdaterState(state)
+            setPhase(mapUpdaterState(state))
         } catch {
             logger.error("checkForUpdates failed: \(error.localizedDescription, privacy: .public)")
-            phase = .error(error.localizedDescription)
+            setPhase(.error(error.localizedDescription))
         }
     }
 
@@ -94,14 +96,14 @@ class UpdateService: ObservableObject {
             return
         }
 
-        phase = .downloading
+        setPhase(.downloading)
 
         do {
             try await api.downloadUpdate()
             await pollUntilReadyToApply()
         } catch {
             logger.error("startDownload failed: \(error.localizedDescription, privacy: .public)")
-            phase = .error(error.localizedDescription)
+            setPhase(.error(error.localizedDescription))
         }
     }
 
@@ -111,26 +113,59 @@ class UpdateService: ObservableObject {
             return
         }
 
-        phase = .applying
+        setPhase(.applying)
+
+        backgroundTaskID = UIApplication.shared.beginBackgroundTask(withName: "ValetudoApplyUpdate") { [weak self] in
+            // Expiry handler — iOS gibt uns letzte Chance aufzuraeumen
+            self?.logger.warning("Background task expiring")
+            if let id = self?.backgroundTaskID, id != .invalid {
+                UIApplication.shared.endBackgroundTask(id)
+                self?.backgroundTaskID = .invalid
+            }
+        }
 
         do {
             try await api.applyUpdate()
-            phase = .rebooting
+            setPhase(.rebooting)
+            await pollUntilReboot()
         } catch {
             logger.error("startApply failed: \(error.localizedDescription, privacy: .public)")
-            phase = .error(error.localizedDescription)
+            setPhase(.error(error.localizedDescription))
         }
+
+        endBackgroundTaskIfNeeded()
     }
 
     func reset() {
         pollingTask?.cancel()
-        phase = .idle
+        endBackgroundTaskIfNeeded()
+        setPhase(.idle)
         currentVersion = nil
         latestVersion = nil
         updateUrl = nil
     }
 
     // MARK: - Private Helpers
+
+    private func setPhase(_ newPhase: UpdatePhase) {
+        phase = newPhase
+        updateIdleTimer()
+    }
+
+    private func updateIdleTimer() {
+        switch phase {
+        case .downloading, .applying, .rebooting:
+            UIApplication.shared.isIdleTimerDisabled = true
+        default:
+            UIApplication.shared.isIdleTimerDisabled = false
+        }
+    }
+
+    private func endBackgroundTaskIfNeeded() {
+        guard backgroundTaskID != .invalid else { return }
+        UIApplication.shared.endBackgroundTask(backgroundTaskID)
+        backgroundTaskID = .invalid
+    }
 
     private func pollUntilReadyToApply() async {
         pollingTask = Task {
@@ -148,23 +183,51 @@ class UpdateService: ObservableObject {
                 let mapped = mapUpdaterState(state)
 
                 if case .readyToApply = mapped {
-                    phase = .readyToApply
+                    setPhase(.readyToApply)
                     return
                 }
 
                 // Pitfall 6: Unexpected idle while downloading means the download was interrupted
                 if case .idle = mapped {
-                    phase = .error("Download wurde unterbrochen")
+                    setPhase(.error("Download wurde unterbrochen"))
                     return
                 }
             }
 
             // Loop exhausted without reaching readyToApply
             if case .downloading = phase {
-                phase = .error("Download-Timeout")
+                setPhase(.error("Download-Timeout"))
             }
         }
 
+        await pollingTask?.value
+    }
+
+    private func pollUntilReboot() async {
+        pollingTask = Task {
+            // Warte 10 Sekunden bevor erstes Poll — Roboter braucht Zeit zum Herunterfahren
+            try? await Task.sleep(for: .seconds(10))
+
+            for _ in 0..<22 {  // 22 * 5s = 110s + 10s initial = 120s total
+                guard !Task.isCancelled else { return }
+                try? await Task.sleep(for: .seconds(5))
+                guard !Task.isCancelled else { return }
+
+                do {
+                    let _ = try await api.getValetudoVersion()
+                    // Roboter antwortet wieder — Erfolg
+                    setPhase(.idle)
+                    return
+                } catch {
+                    // Netzwerkfehler waehrend Reboot ist ERWARTET — weiter pollen
+                    logger.info("Reboot-Polling: Roboter noch nicht erreichbar (\(error.localizedDescription, privacy: .public))")
+                    continue
+                }
+            }
+
+            // Timeout nach 120 Sekunden
+            setPhase(.error("Roboter nicht erreichbar nach Update"))
+        }
         await pollingTask?.value
     }
 
