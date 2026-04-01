@@ -235,7 +235,7 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 12-01-PLAN.md — UpdatePhase-Enum und UpdateService: State Machine mit 8 Cases, Re-Entrancy-Guards, Error-State, Valetudo-State-Mapping
+- [x] 12-01-PLAN.md — UpdatePhase-Enum und UpdateService: State Machine mit 8 Cases, Re-Entrancy-Guards, Error-State, Valetudo-State-Mapping
 - [ ] 12-02-PLAN.md — Verdrahtung: RobotDetailViewModel Proxy-Delegation + ValetudoInfoView UpdateService-Injection
 
 ### Phase 13: State Consolidation
@@ -292,7 +292,7 @@ v2.0.0: 12 → 13 → 14 → 15
 | 9. Logger Migration | 3/3 | Complete   | 2026-03-28 |
 | 10. Safety Fixes | 1/1 | Complete    | 2026-03-28 |
 | 11. View Decomposition | 3/3 | Complete    | 2026-03-29 |
-| 12. State Machine Foundation | 0/2 | Not started | - |
+| 12. State Machine Foundation | 1/2 | In Progress|  |
 | 13. State Consolidation | 0/? | Not started | - |
 | 14. Apply Phase Hardening | 0/? | Not started | - |
 | 15. UI Wiring | 0/? | Not started | - |

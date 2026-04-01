@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.0.0
-milestone_name: Update Process Hardening
-status: roadmap-ready
-last_updated: "2026-03-29"
-last_activity: 2026-03-29
+milestone: v1.2.0
+milestone_name: Quality & API Completeness
+status: executing
+last_updated: "2026-04-01T16:41:39.415Z"
+last_activity: 2026-04-01
 progress:
-  total_phases: 4
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_phases: 12
+  completed_phases: 10
+  total_plans: 34
+  completed_plans: 32
 ---
 
 # Project State
@@ -19,14 +19,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** v2.0.0 — Update Process Hardening (Phase 12 next)
+**Current focus:** Phase 12 — state-machine-foundation
 
 ## Current Position
 
-Phase: 12 — State Machine Foundation (not started)
-Plan: —
-Status: Roadmap created, ready for planning
-Last activity: 2026-03-29 — Roadmap v2.0.0 created (Phases 12-15)
+Phase: 12 (state-machine-foundation) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-04-01
 
 ```
 [Phase 12]──[Phase 13]──[Phase 14]──[Phase 15]
@@ -64,6 +64,8 @@ Recent decisions affecting current work:
 - [v2.0.0 Roadmap]: Phase 14 (Apply Hardening) bündelt 3 interdependente Pitfalls (Idle Timer + Reboot-Fenster + Background Task) — diese dürfen nicht aufgetrennt werden
 - [v2.0.0 Research]: Reboot-Fenster-Erkennung benötigt Bestätigung des Post-Apply-Server-State-Sequence gegen Valetudo Updater.js vor Phase-14-Implementation
 - [v2.0.0 Research]: UIBackgroundTask nominell ~30s — für Apply-HTTP-Call ausreichend (<5s), Expiry-Handler-Verhalten auf iOS 17+ vor Phase 14 prüfen
+- [Phase 12-state-machine-foundation]: pollUntilReadyToApply() speichert Task in pollingTask-Property fuer externes Cancel via reset()
+- [Phase 12-state-machine-foundation]: [Phase 12-01]: Unerwarteter idle-State im Polling-Loop wird als Fehler behandelt (Pitfall 6)
 
 ### Pending Todos
 
