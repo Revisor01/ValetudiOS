@@ -9,8 +9,8 @@ Requirements for App Architecture & Background Capabilities. Each maps to roadma
 
 ### UI Reorganization
 
-- [ ] **REORG-01**: ValetudoInfoView (Firmware, Commit, Host-Info, Memory, Uptime) wird von den Einstellungen in den Roboter-Detail-Screen verschoben
-- [ ] **REORG-02**: Die Robot Properties Section und ValetudoInfoView werden zu einer einheitlichen Geräte-Info-Sektion zusammengeführt
+- [x] **REORG-01**: ValetudoInfoView (Firmware, Commit, Host-Info, Memory, Uptime) wird von den Einstellungen in den Roboter-Detail-Screen verschoben
+- [x] **REORG-02**: Die Robot Properties Section und ValetudoInfoView werden zu einer einheitlichen Geräte-Info-Sektion zusammengeführt
 
 ### Background Monitoring
 
@@ -46,8 +46,8 @@ Requirements for App Architecture & Background Capabilities. Each maps to roadma
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| REORG-01 | Phase 16 | Pending |
-| REORG-02 | Phase 16 | Pending |
+| REORG-01 | Phase 16 | Complete |
+| REORG-02 | Phase 16 | Complete |
 | BG-01 | Phase 17 | Pending |
 | BG-02 | Phase 17 | Pending |
 | BG-03 | Phase 17 | Pending |
