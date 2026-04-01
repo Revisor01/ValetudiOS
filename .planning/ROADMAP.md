@@ -5,7 +5,8 @@
 - [x] **v1.2.0 Quality & API Completeness** - Phases 1-4 (completed 2026-03-28)
 - [x] **v1.3.0 Polish & Full API Coverage** - Phases 5-8 (completed 2026-03-28)
 - [x] **v1.4.0 Code Quality & Robustness** - Phases 9-11 (completed 2026-03-29)
-- [ ] **v2.0.0 Update Process Hardening** - Phases 12-15
+- [x] **v2.0.0 Update Process Hardening** - Phases 12-15 (completed 2026-04-01)
+- [ ] **v2.1.0 Architecture & Background** - Phases 16-19
 
 ## Phases
 
@@ -42,7 +43,59 @@
 - [x] **Phase 14: Apply Phase Hardening** - Idle Timer, Reboot-Fenster-Erkennung, Background Task und Fullscreen-Lock absichern (completed 2026-04-01)
 - [x] **Phase 15: UI Wiring** - Fortschrittsanzeige, Error-Banner und gedrosseltes Update-Checking einbauen (completed 2026-04-01)
 
+### v2.1.0 Architecture & Background
+
+**Milestone Goal:** App-Architektur modernisieren (@Observable), Geräte-Infos logisch einordnen, Hintergrund-Monitoring für Notifications ohne offene App, und Karten-Caching für Offline-Zugriff.
+
+- [ ] **Phase 16: UI Reorganization** - ValetudoInfoView und Robot Properties zu einheitlicher Geräte-Info-Sektion im Roboter-Detail zusammenführen
+- [ ] **Phase 17: Background Monitoring** - BGAppRefreshTask für periodische Status-Prüfung und lokale Notifications bei geschlossener App
+- [ ] **Phase 18: Map Caching** - Letzte Karte auf Disk speichern, Offline-Anzeige bei nicht-erreichbarem Roboter
+- [ ] **Phase 19: Observable Migration** - ObservableObject/@Published auf @Observable Macro migrieren (iOS 17+)
+
 ## Phase Details
+
+### Phase 16: UI Reorganization
+**Goal**: Geräte-Informationen (Firmware, Host-Info, Memory, Uptime) sind logisch im Roboter-Detail statt in den Einstellungen platziert
+**Depends on**: Nothing (first phase of new milestone)
+**Requirements**: REORG-01, REORG-02
+**Success Criteria** (what must be TRUE):
+  1. ValetudoInfoView ist nicht mehr in RobotSettingsView erreichbar — sie wurde in RobotDetailView verschoben
+  2. Robot Properties Section und ValetudoInfoView sind zu einer einheitlichen Geräte-Info-Sektion zusammengeführt
+  3. Firmware-Version, Commit, Hostname, Uptime, Memory und Robot Properties (Modell, Seriennummer) erscheinen in einer Section im Roboter-Detail-Screen
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 17: Background Monitoring
+**Goal**: Die App prüft den Roboter-Status auch im Hintergrund und sendet lokale Notifications bei wichtigen Ereignissen
+**Depends on**: Phase 16
+**Requirements**: BG-01, BG-02, BG-03
+**Success Criteria** (what must be TRUE):
+  1. BGAppRefreshTask ist registriert und prüft periodisch den Roboter-Status (ca. alle 15-30 Minuten, iOS bestimmt Timing)
+  2. Benutzer erhält eine lokale Notification wenn die Reinigung abgeschlossen ist, auch wenn die App geschlossen war
+  3. Benutzer erhält eine lokale Notification bei Fehlern (ErrorStateAttribute), auch wenn die App geschlossen war
+**Plans**: TBD
+
+### Phase 18: Map Caching
+**Goal**: Die letzte Karte jedes Roboters wird auf Disk gespeichert und ist auch bei nicht-erreichbarem Roboter sichtbar
+**Depends on**: Phase 16
+**Requirements**: CACHE-01, CACHE-02, CACHE-03
+**Success Criteria** (what must be TRUE):
+  1. Nach jedem erfolgreichen Karten-Update wird die Karte auf Disk persistiert (FileManager/Documents)
+  2. Wenn der Roboter nicht erreichbar ist, wird die letzte gespeicherte Karte angezeigt (mit "Offline"-Indikator)
+  3. Sobald die Verbindung wieder steht, wird die Offline-Karte automatisch durch die Live-Karte ersetzt
+**Plans**: TBD
+
+### Phase 19: Observable Migration
+**Goal**: Alle ViewModels und Services nutzen das moderne @Observable Macro statt ObservableObject/@Published
+**Depends on**: Phase 16
+**Requirements**: OBS-01, OBS-02, OBS-03, OBS-04
+**Success Criteria** (what must be TRUE):
+  1. RobotDetailViewModel, RobotSettingsViewModel und MapViewModel nutzen @Observable statt ObservableObject
+  2. RobotManager nutzt @Observable statt ObservableObject
+  3. UpdateService nutzt @Observable statt ObservableObject
+  4. Alle @StateObject werden zu @State, alle @ObservedObject zu @Bindable oder @Environment
+  5. Keine Regressions — alle bestehende Funktionalität bleibt erhalten
+**Plans**: TBD
 
 ### Phase 1: Foundation
 **Goal**: Alle Inhalte der App nutzen sicheren Credential-Speicher, strukturiertes Logging und sichtbare Fehlermeldungen
@@ -287,7 +340,8 @@ Plans:
 v1.2.0: 1 → 2 → 3 → 4 (completed)
 v1.3.0: 5 → 6 → 7 → 8 (completed)
 v1.4.0: 9 → 10 → 11 (completed)
-v2.0.0: 12 → 13 → 14 → 15
+v2.0.0: 12 → 13 → 14 → 15 (completed)
+v2.1.0: 16 → 17 + 18 + 19 (17/18/19 können parallel nach 16)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -306,3 +360,7 @@ v2.0.0: 12 → 13 → 14 → 15
 | 13. State Consolidation | 1/1 | Complete   | 2026-04-01 |
 | 14. Apply Phase Hardening | 2/2 | Complete   | 2026-04-01 |
 | 15. UI Wiring | 1/1 | Complete   | 2026-04-01 |
+| 16. UI Reorganization | 0/? | Not started | - |
+| 17. Background Monitoring | 0/? | Not started | - |
+| 18. Map Caching | 0/? | Not started | - |
+| 19. Observable Migration | 0/? | Not started | - |

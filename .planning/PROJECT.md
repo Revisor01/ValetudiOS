@@ -52,7 +52,8 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 
 ### Active
 
-(No active milestone — ready for next)
+<!-- v2.1.0 — Architecture & Background -->
+(Defined in REQUIREMENTS.md)
 
 ### Validated (v1.4.0)
 
@@ -166,4 +167,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-01 — Milestone v2.0.0 completed*
+*Last updated: 2026-04-01 — Milestone v2.1.0 started*
