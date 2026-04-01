@@ -778,7 +778,6 @@ struct ValetudoInfoView: View {
 
     @State private var version: ValetudoVersion?
     @State private var hostInfo: SystemHostInfo?
-    @State private var latestRelease: GitHubRelease?
     @State private var isLoading = false
 
     private var api: ValetudoAPI? {
@@ -791,16 +790,16 @@ struct ValetudoInfoView: View {
         }
         // Fallback: GitHub-Release-Vergleich fuer Version-Badge
         guard let current = version?.release,
-              let latest = latestRelease?.tag_name else { return false }
+              let latest = updateService?.latestVersion else { return false }
         return current != latest
     }
 
     var body: some View {
         List {
             // Update Available Banner
-            if hasUpdate, let latest = latestRelease {
+            if hasUpdate, let latestVersion = updateService?.latestVersion, let urlStr = updateService?.updateUrl, let url = URL(string: urlStr) {
                 Section {
-                    Link(destination: URL(string: latest.html_url)!) {
+                    Link(destination: url) {
                         HStack {
                             Image(systemName: "arrow.down.circle.fill")
                                 .font(.title2)
@@ -809,7 +808,7 @@ struct ValetudoInfoView: View {
                                 Text(String(localized: "update.available"))
                                     .fontWeight(.medium)
                                     .foregroundStyle(.primary)
-                                Text("\(version?.release ?? "") → \(latest.tag_name)")
+                                Text("\(version?.release ?? "") → \(latestVersion)")
                                     .font(.caption)
                                     .foregroundStyle(.secondary)
                             }
@@ -832,7 +831,7 @@ struct ValetudoInfoView: View {
                         if hasUpdate {
                             Image(systemName: "exclamationmark.circle.fill")
                                 .foregroundStyle(.orange)
-                        } else if latestRelease != nil {
+                        } else if updateService?.latestVersion != nil {
                             Image(systemName: "checkmark.circle.fill")
                                 .foregroundStyle(.green)
                         }
@@ -847,13 +846,15 @@ struct ValetudoInfoView: View {
                             .font(.system(.caption, design: .monospaced))
                     }
                 }
-                if let latest = latestRelease {
-                    Link(destination: URL(string: latest.html_url)!) {
+                if let latestVersion = updateService?.latestVersion,
+                   let urlStr = updateService?.updateUrl,
+                   let url = URL(string: urlStr) {
+                    Link(destination: url) {
                         HStack {
                             Text(String(localized: "update.latest"))
                                 .foregroundStyle(.secondary)
                             Spacer()
-                            Text(latest.tag_name)
+                            Text(latestVersion)
                             Image(systemName: "arrow.up.forward.square")
                                 .font(.caption)
                                 .foregroundStyle(.secondary)
@@ -956,24 +957,12 @@ struct ValetudoInfoView: View {
         do {
             version = try await api.getValetudoVersion()
             hostInfo = try await api.getSystemHostInfo()
-            // updaterState wird nicht mehr hier geladen — kommt von UpdateService
         } catch {
             sectionsLogger.error("Failed to load Valetudo info: \(error, privacy: .public)")
         }
 
-        // Check GitHub for latest release
-        await checkForUpdate()
-    }
-
-    private func checkForUpdate() async {
-        guard let url = URL(string: Constants.githubApiLatestReleaseUrl) else { return }
-
-        do {
-            let (data, _) = try await URLSession.shared.data(from: url)
-            latestRelease = try JSONDecoder().decode(GitHubRelease.self, from: data)
-        } catch {
-            sectionsLogger.error("Failed to check for updates: \(error, privacy: .public)")
-        }
+        // Load version info via UpdateService (single source of truth)
+        await updateService?.loadVersionInfo()
     }
 
     private func formatUptime(_ seconds: Double) -> String {
