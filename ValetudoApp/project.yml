@@ -33,6 +33,7 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
         CFBundleDisplayName: ValetudiOS
+        UIRequiresFullScreen: true
         CFBundleIconName: AppIcon
         NSLocalNetworkUsageDescription: "Access local network to communicate with Valetudo robots"
         NSBonjourServices:

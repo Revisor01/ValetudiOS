@@ -37,6 +37,8 @@
 	<true/>
 	<key>UILaunchScreen</key>
 	<dict/>
+	<key>UIRequiresFullScreen</key>
+	<true/>
 	<key>UISupportedInterfaceOrientations~iPad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
