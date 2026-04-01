@@ -246,7 +246,10 @@ Plans:
   1. Die Properties `isUpdating` und `showUpdateWarning` existieren nicht mehr im ViewModel — die View leitet alle Darstellungsentscheidungen aus `updatePhase` ab
   2. `ValetudoInfoView` ruft keine eigene `checkForUpdate()`-Variante mehr auf; Update-Status-Anfragen gehen ausschließlich über `UpdateService`
   3. Ein Grep nach `isUpdating` und `showUpdateWarning` im gesamten Codebase liefert null Treffer
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 13-01-PLAN.md — Redundante Update-Properties entfernen, UpdateService als alleinige Source of Truth verdrahten
 
 ### Phase 14: Apply Phase Hardening
 **Goal**: Der kritische Moment zwischen "Apply gedrückt" und "Roboter wieder online" ist vollständig abgesichert — kein Schlafmodus, kein falscher Fehler, kein App-Abbruch
@@ -293,6 +296,6 @@ v2.0.0: 12 → 13 → 14 → 15
 | 10. Safety Fixes | 1/1 | Complete    | 2026-03-28 |
 | 11. View Decomposition | 3/3 | Complete    | 2026-03-29 |
 | 12. State Machine Foundation | 2/2 | Complete   | 2026-04-01 |
-| 13. State Consolidation | 0/? | Not started | - |
+| 13. State Consolidation | 0/1 | Not started | - |
 | 14. Apply Phase Hardening | 0/? | Not started | - |
 | 15. UI Wiring | 0/? | Not started | - |
