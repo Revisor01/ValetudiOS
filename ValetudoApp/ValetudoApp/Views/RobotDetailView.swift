@@ -6,6 +6,16 @@ struct RobotDetailView: View {
     @State private var showFullMap = false
     @State private var showUpdateWarning = false
 
+    private var showUpdateOverlay: Bool {
+        guard let phase = viewModel.updateService?.phase else { return false }
+        switch phase {
+        case .applying, .rebooting:
+            return true
+        default:
+            return false
+        }
+    }
+
     init(robot: RobotConfig, robotManager: RobotManager) {
         _viewModel = StateObject(wrappedValue: RobotDetailViewModel(robot: robot, robotManager: robotManager))
     }
@@ -231,6 +241,14 @@ struct RobotDetailView: View {
         } message: {
             Text(String(localized: "update.warning_message"))
         }
+        .overlay {
+            if showUpdateOverlay {
+                updateOverlayView
+            }
+        }
+        .animation(.easeInOut(duration: 0.3), value: showUpdateOverlay)
+        .navigationBarBackButtonHidden(showUpdateOverlay)
+        .interactiveDismissDisabled(showUpdateOverlay)
         .task {
             await viewModel.loadData()
         }
@@ -252,6 +270,48 @@ struct RobotDetailView: View {
         .onDisappear {
             viewModel.stopStatsPolling()
         }
+    }
+
+    // MARK: - Update Overlay
+
+    @ViewBuilder
+    private var updateOverlayView: some View {
+        ZStack {
+            Color.black.opacity(0.85)
+                .ignoresSafeArea()
+
+            VStack(spacing: 20) {
+                ProgressView()
+                    .scaleEffect(1.5)
+                    .tint(.white)
+
+                Text(updateOverlayTitle)
+                    .font(.title3)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
+
+                Text(updateOverlaySubtitle)
+                    .font(.subheadline)
+                    .foregroundStyle(.white.opacity(0.7))
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal, 40)
+            }
+        }
+        .transition(.opacity)
+    }
+
+    private var updateOverlayTitle: String {
+        if case .rebooting = viewModel.updateService?.phase {
+            return String(localized: "update.rebooting_title")
+        }
+        return String(localized: "update.applying_title")
+    }
+
+    private var updateOverlaySubtitle: String {
+        if case .rebooting = viewModel.updateService?.phase {
+            return String(localized: "update.rebooting_hint")
+        }
+        return String(localized: "update.applying_hint")
     }
 
     // MARK: - Compact Status Header
