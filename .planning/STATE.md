@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: verifying
-last_updated: "2026-04-01T17:00:18.048Z"
+status: executing
+last_updated: "2026-04-01T17:15:42.291Z"
 last_activity: 2026-04-01
 progress:
-  total_phases: 13
+  total_phases: 14
   completed_phases: 12
-  total_plans: 35
-  completed_plans: 34
+  total_plans: 37
+  completed_plans: 35
 ---
 
 # Project State
@@ -19,13 +19,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 13 — state-consolidation
+**Current focus:** Phase 14 — apply-phase-hardening
 
 ## Current Position
 
-Phase: 13 (state-consolidation) — EXECUTING
-Plan: 1 of 1
-Status: Phase complete — ready for verification
+Phase: 14 (apply-phase-hardening) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-04-01
 
 ```
@@ -68,6 +68,8 @@ Recent decisions affecting current work:
 - [Phase 12-state-machine-foundation]: [Phase 12-01]: Unerwarteter idle-State im Polling-Loop wird als Fehler behandelt (Pitfall 6)
 - [Phase 12-state-machine-foundation]: ValetudoInfoView erhält UpdateService als optionalen Init-Parameter (nicht EnvironmentObject) — explizites Ownership, STATE-04 erfüllt
 - [Phase 13-state-consolidation]: UpdateService.loadVersionInfo() is public and not guarded by idle-state — version info is orthogonal to the update state machine
+- [Phase 14-apply-phase-hardening]: setPhase() Wrapper statt didSet — @Published verhindert Property-Observer, expliziter Wrapper ist idiomatischer und erlaubt zentrale Side-Effects
+- [Phase 14-apply-phase-hardening]: pollUntilReboot() ignoriert Netzwerkfehler bewusst — Roboter ist waehrend Reboot nicht erreichbar, das ist kein Fehler-Zustand
 
 ### Pending Todos
 

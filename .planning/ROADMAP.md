@@ -264,7 +264,7 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 14-01-PLAN.md — Idle Timer, Reboot-Polling und Background Task in UpdateService
+- [x] 14-01-PLAN.md — Idle Timer, Reboot-Polling und Background Task in UpdateService
 - [ ] 14-02-PLAN.md — Fullscreen-Lock Overlay in RobotDetailView
 
 ### Phase 15: UI Wiring
@@ -301,5 +301,5 @@ v2.0.0: 12 → 13 → 14 → 15
 | 11. View Decomposition | 3/3 | Complete    | 2026-03-29 |
 | 12. State Machine Foundation | 2/2 | Complete   | 2026-04-01 |
 | 13. State Consolidation | 1/1 | Complete   | 2026-04-01 |
-| 14. Apply Phase Hardening | 0/2 | Not started | - |
+| 14. Apply Phase Hardening | 1/2 | In Progress|  |
 | 15. UI Wiring | 0/? | Not started | - |

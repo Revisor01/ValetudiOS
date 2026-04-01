@@ -17,9 +17,9 @@ Requirements for Update Process Hardening. Each maps to roadmap phases.
 ### Apply-Phase Hardening
 
 - [ ] **APPLY-01**: Während der Apply-Phase wird ein Fullscreen-Lock angezeigt, der nicht weggeklickt werden kann
-- [ ] **APPLY-02**: Bildschirm bleibt während Download und Apply an (Idle Timer deaktiviert)
-- [ ] **APPLY-03**: Nach Apply wird der Roboter-Neustart erkannt und nicht als Fehler gewertet
-- [ ] **APPLY-04**: UIBackgroundTask verhindert Abbruch bei App-Hintergrund während Apply
+- [x] **APPLY-02**: Bildschirm bleibt während Download und Apply an (Idle Timer deaktiviert)
+- [x] **APPLY-03**: Nach Apply wird der Roboter-Neustart erkannt und nicht als Fehler gewertet
+- [x] **APPLY-04**: UIBackgroundTask verhindert Abbruch bei App-Hintergrund während Apply
 
 ### UI & Feedback
 
@@ -101,9 +101,9 @@ Requirements for Update Process Hardening. Each maps to roadmap phases.
 | CLEAN-01 | Phase 13 | Complete |
 | CLEAN-02 | Phase 13 | Complete |
 | APPLY-01 | Phase 14 | Pending |
-| APPLY-02 | Phase 14 | Pending |
-| APPLY-03 | Phase 14 | Pending |
-| APPLY-04 | Phase 14 | Pending |
+| APPLY-02 | Phase 14 | Complete |
+| APPLY-03 | Phase 14 | Complete |
+| APPLY-04 | Phase 14 | Complete |
 | UI-01 | Phase 15 | Pending |
 | UI-02 | Phase 15 | Pending |
 | UI-03 | Phase 15 | Pending |
