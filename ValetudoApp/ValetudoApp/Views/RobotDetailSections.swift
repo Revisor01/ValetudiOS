@@ -100,6 +100,118 @@ extension View {
     }
 }
 
+// MARK: - Device Info Section
+struct DeviceInfoSection: View {
+    @ObservedObject var viewModel: RobotDetailViewModel
+    @State private var isExpanded = false
+
+    var body: some View {
+        let hasAnyData = viewModel.robotProperties != nil
+            || viewModel.valetudoVersion != nil
+            || viewModel.systemHostInfo != nil
+
+        if hasAnyData {
+            Section {
+                DisclosureGroup(isExpanded: $isExpanded) {
+                    // Hardware
+                    if let props = viewModel.robotProperties {
+                        if let model = props.model {
+                            LabeledContent(String(localized: "device_info.model"), value: model)
+                        }
+                        if let manufacturer = props.manufacturer {
+                            LabeledContent(String(localized: "device_info.manufacturer"), value: manufacturer)
+                        }
+                        if let serial = props.metaData?.manufacturerSerialNumber {
+                            LabeledContent(String(localized: "device_info.serial"), value: serial)
+                        }
+                    }
+
+                    // Valetudo
+                    if let version = viewModel.valetudoVersion {
+                        LabeledContent(String(localized: "device_info.valetudo_version"), value: version.release)
+                        HStack {
+                            Text(String(localized: "device_info.commit"))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text(String(version.commit.prefix(8)))
+                                .font(.system(.caption, design: .monospaced))
+                        }
+                    }
+
+                    // System
+                    if let info = viewModel.systemHostInfo {
+                        LabeledContent(String(localized: "device_info.hostname"), value: info.hostname)
+                        LabeledContent(String(localized: "device_info.uptime"), value: formatUptime(info.uptime))
+
+                        // CPU bar
+                        if let load = info.load {
+                            HStack {
+                                Text(String(localized: "device_info.cpu"))
+                                    .foregroundStyle(.secondary)
+                                Spacer()
+                                let normalizedLoad = min(load._1, 1.0)
+                                ProgressView(value: normalizedLoad, total: 1.0)
+                                    .tint(normalizedLoad > 0.8 ? .red : .blue)
+                                    .frame(width: 100)
+                            }
+                        }
+
+                        // Memory bar
+                        HStack {
+                            Text(String(localized: "device_info.memory"))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text(formatBytes(info.mem.total - info.mem.free))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text("/")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                            Text(formatBytes(info.mem.total))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        let usedPercent = Double(info.mem.total - info.mem.free) / Double(info.mem.total)
+                        GeometryReader { geometry in
+                            ZStack(alignment: .leading) {
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(Color.secondary.opacity(0.2))
+                                RoundedRectangle(cornerRadius: 4)
+                                    .fill(usedPercent > 0.8 ? Color.red : Color.blue)
+                                    .frame(width: geometry.size.width * usedPercent)
+                            }
+                        }
+                        .frame(height: 8)
+                    }
+                } label: {
+                    Label(String(localized: "device_info.title"), systemImage: "cpu")
+                }
+            }
+        }
+    }
+
+    private func formatUptime(_ seconds: Double) -> String {
+        let days = Int(seconds) / 86400
+        let hours = (Int(seconds) % 86400) / 3600
+        let minutes = (Int(seconds) % 3600) / 60
+        if days > 0 {
+            return "\(days)d \(hours)h"
+        } else if hours > 0 {
+            return "\(hours)h \(minutes)m"
+        } else {
+            return "\(minutes)m"
+        }
+    }
+
+    private func formatBytes(_ bytes: Int) -> String {
+        let mb = Double(bytes) / 1024 / 1024
+        if mb >= 1024 {
+            return String(format: "%.1f GB", mb / 1024)
+        }
+        return String(format: "%.1f MB", mb)
+    }
+}
+
 // MARK: - Dock Action Button
 struct DockActionButton: View {
     let title: String

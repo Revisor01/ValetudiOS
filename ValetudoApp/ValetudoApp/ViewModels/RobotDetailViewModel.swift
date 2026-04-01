@@ -61,6 +61,10 @@ final class RobotDetailViewModel: ObservableObject {
     // Robot Properties
     @Published var robotProperties: RobotProperties?
 
+    // Device Info
+    @Published var valetudoVersion: ValetudoVersion?
+    @Published var systemHostInfo: SystemHostInfo?
+
     // Live stats polling
     private var statsPollingTask: Task<Void, Never>?
 
@@ -130,7 +134,8 @@ final class RobotDetailViewModel: ObservableObject {
         async let cleanRouteTask: () = loadCleanRoute()
         async let obstaclesTask: () = loadObstacles()
         async let propertiesTask: () = loadRobotProperties()
-        _ = await (segmentsTask, consumablesTask, capabilitiesTask, fanSpeedTask, updateTask, statsTask, eventsTask, cleanRouteTask, obstaclesTask, propertiesTask)
+        async let deviceInfoTask: () = loadDeviceInfo()
+        _ = await (segmentsTask, consumablesTask, capabilitiesTask, fanSpeedTask, updateTask, statsTask, eventsTask, cleanRouteTask, obstaclesTask, propertiesTask, deviceInfoTask)
     }
 
     func refreshData() async {
@@ -263,6 +268,18 @@ final class RobotDetailViewModel: ObservableObject {
         } catch {
             logger.debug("Robot properties not available: \(error, privacy: .public)")
             // Non-fatal: section wird ausgeblendet wenn nil
+        }
+    }
+
+    private func loadDeviceInfo() async {
+        guard let api = api else { return }
+        do {
+            async let v = api.getValetudoVersion()
+            async let h = api.getSystemHostInfo()
+            valetudoVersion = try await v
+            systemHostInfo = try await h
+        } catch {
+            logger.debug("Device info not available: \(error, privacy: .public)")
         }
     }
 
