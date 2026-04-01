@@ -267,8 +267,8 @@ struct RobotDetailView: View {
                     Text(String(localized: "settings.title"))
                 }
 
-                // Robot Properties (ganz unten)
-                robotPropertiesSection
+                // Device Info (ganz unten)
+                DeviceInfoSection(viewModel: viewModel)
             }
         }
         .navigationTitle(viewModel.robot.name)
@@ -936,29 +936,6 @@ extension RobotDetailView {
                 }
             } label: {
                 Label(String(localized: "stats.title"), systemImage: "chart.bar")
-            }
-        }
-    }
-
-    // MARK: - Robot Properties Section
-    @ViewBuilder
-    private var robotPropertiesSection: some View {
-        if let props = viewModel.robotProperties {
-            Section {
-                if let model = props.model {
-                    LabeledContent(String(localized: "robot_properties.model"), value: model)
-                }
-                if let firmware = props.firmwareVersion {
-                    LabeledContent(String(localized: "robot_properties.firmware"), value: firmware)
-                }
-                if let serial = props.metaData?.manufacturerSerialNumber {
-                    LabeledContent(String(localized: "robot_properties.serial"), value: serial)
-                }
-                if let manufacturer = props.manufacturer {
-                    LabeledContent(String(localized: "robot_properties.manufacturer"), value: manufacturer)
-                }
-            } header: {
-                Label(String(localized: "robot_properties.title"), systemImage: "cpu")
             }
         }
     }

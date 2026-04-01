@@ -405,16 +405,6 @@ struct RobotSettingsView: View {
                     }
                 }
 
-                // System Info
-                NavigationLink {
-                    ValetudoInfoView(robot: robot, updateService: updateService)
-                } label: {
-                    HStack {
-                        Image(systemName: "info.circle")
-                            .foregroundStyle(.gray)
-                        Text("Valetudo")
-                    }
-                }
             } header: {
                 Label(String(localized: "settings.system"), systemImage: "gearshape.2")
             }
