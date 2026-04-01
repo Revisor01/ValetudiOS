@@ -33,6 +33,7 @@ targets:
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
         CFBundleDisplayName: ValetudiOS
+        CFBundleIconName: AppIcon
         NSLocalNetworkUsageDescription: "Access local network to communicate with Valetudo robots"
         NSBonjourServices:
           - _valetudo._tcp
@@ -40,7 +41,8 @@ targets:
       base:
         MARKETING_VERSION: "1.0.0"
         CURRENT_PROJECT_VERSION: "1"
-        PRODUCT_BUNDLE_IDENTIFIER: de.simonluthe.ValetudoApp
+        PRODUCT_BUNDLE_IDENTIFIER: de.simonluthe.ValetudiOS
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         DEVELOPMENT_TEAM: "J459G9CJT5"
 
   ValetudoAppTests:
@@ -52,7 +54,7 @@ targets:
       - target: ValetudoApp
     settings:
       base:
-        PRODUCT_BUNDLE_IDENTIFIER: de.simonluthe.ValetudoAppTests
+        PRODUCT_BUNDLE_IDENTIFIER: de.simonluthe.ValetudiOSTests
         TEST_HOST: "$(BUILT_PRODUCTS_DIR)/ValetudoApp.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/ValetudoApp"
         BUNDLE_LOADER: "$(TEST_HOST)"
         GENERATE_INFOPLIST_FILE: YES
