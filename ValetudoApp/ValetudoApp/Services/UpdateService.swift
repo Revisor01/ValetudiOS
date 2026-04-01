@@ -38,11 +38,13 @@ class UpdateService: ObservableObject {
     @Published private(set) var currentVersion: String?
     @Published private(set) var latestVersion: String?
     @Published private(set) var updateUrl: String?
+    @Published private(set) var downloadProgress: Double = 0.0
 
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "UpdateService")
     private let api: ValetudoAPI
     private var pollingTask: Task<Void, Never>?
     private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
+    private var lastCheckDate: Date?
 
     init(api: ValetudoAPI) {
         self.api = api
@@ -73,12 +75,15 @@ class UpdateService: ObservableObject {
     }
 
     func checkForUpdates() async {
+        if let last = lastCheckDate, Date().timeIntervalSince(last) < 3600 { return }
+
         guard case .idle = phase else {
             logger.warning("checkForUpdates called in non-idle phase: \(String(describing: self.phase), privacy: .public)")
             return
         }
 
         setPhase(.checking)
+        lastCheckDate = Date()
 
         do {
             try await api.checkForUpdates()
@@ -143,11 +148,14 @@ class UpdateService: ObservableObject {
         currentVersion = nil
         latestVersion = nil
         updateUrl = nil
+        downloadProgress = 0.0
+        lastCheckDate = nil
     }
 
     // MARK: - Private Helpers
 
     private func setPhase(_ newPhase: UpdatePhase) {
+        if case .downloading = newPhase { } else { downloadProgress = 0.0 }
         phase = newPhase
         updateIdleTimer()
     }
@@ -178,6 +186,11 @@ class UpdateService: ObservableObject {
 
                 guard let state = try? await api.getUpdaterState() else {
                     continue
+                }
+
+                if let meta = state.metaData?.progress,
+                   let current = meta.current, let total = meta.total, total > 0 {
+                    downloadProgress = Double(current) / Double(total)
                 }
 
                 let mapped = mapUpdaterState(state)
