@@ -29,8 +29,8 @@ Requirements for Update Process Hardening. Each maps to roadmap phases.
 
 ### Code Cleanup
 
-- [ ] **CLEAN-01**: Ungenutzte isUpdating/showUpdateWarning Properties werden aus dem ViewModel entfernt
-- [ ] **CLEAN-02**: Doppelte Update-Check-Logik in ValetudoInfoView wird entfernt und an UpdateService angebunden
+- [x] **CLEAN-01**: Ungenutzte isUpdating/showUpdateWarning Properties werden aus dem ViewModel entfernt
+- [x] **CLEAN-02**: Doppelte Update-Check-Logik in ValetudoInfoView wird entfernt und an UpdateService angebunden
 
 ## v1.4.0 Requirements (Completed)
 
@@ -98,8 +98,8 @@ Requirements for Update Process Hardening. Each maps to roadmap phases.
 | STATE-02 | Phase 12 | Complete |
 | STATE-03 | Phase 12 | Complete |
 | STATE-04 | Phase 12 | Complete |
-| CLEAN-01 | Phase 13 | Pending |
-| CLEAN-02 | Phase 13 | Pending |
+| CLEAN-01 | Phase 13 | Complete |
+| CLEAN-02 | Phase 13 | Complete |
 | APPLY-01 | Phase 14 | Pending |
 | APPLY-02 | Phase 14 | Pending |
 | APPLY-03 | Phase 14 | Pending |

@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: verifying
-last_updated: "2026-04-01T16:50:32.278Z"
+last_updated: "2026-04-01T17:00:18.048Z"
 last_activity: 2026-04-01
 progress:
-  total_phases: 12
-  completed_phases: 11
-  total_plans: 34
-  completed_plans: 33
+  total_phases: 13
+  completed_phases: 12
+  total_plans: 35
+  completed_plans: 34
 ---
 
 # Project State
@@ -19,12 +19,12 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-29)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 12 — state-machine-foundation
+**Current focus:** Phase 13 — state-consolidation
 
 ## Current Position
 
-Phase: 12 (state-machine-foundation) — EXECUTING
-Plan: 2 of 2
+Phase: 13 (state-consolidation) — EXECUTING
+Plan: 1 of 1
 Status: Phase complete — ready for verification
 Last activity: 2026-04-01
 
@@ -67,6 +67,7 @@ Recent decisions affecting current work:
 - [Phase 12-state-machine-foundation]: pollUntilReadyToApply() speichert Task in pollingTask-Property fuer externes Cancel via reset()
 - [Phase 12-state-machine-foundation]: [Phase 12-01]: Unerwarteter idle-State im Polling-Loop wird als Fehler behandelt (Pitfall 6)
 - [Phase 12-state-machine-foundation]: ValetudoInfoView erhält UpdateService als optionalen Init-Parameter (nicht EnvironmentObject) — explizites Ownership, STATE-04 erfüllt
+- [Phase 13-state-consolidation]: UpdateService.loadVersionInfo() is public and not guarded by idle-state — version info is orthogonal to the update state machine
 
 ### Pending Todos
 
