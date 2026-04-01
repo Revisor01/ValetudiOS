@@ -275,8 +275,11 @@ Plans:
   1. Während des Downloads zeigt die Update-Sektion eine ProgressView mit prozentualer Angabe an — die Zahl steigt sichtbar von 0 bis 100
   2. Schlägt ein Update-Schritt fehl, erscheint ein Error-Banner mit der Fehlermeldung; der Benutzer kann Retry oder Dismiss tippen
   3. Update-Check wird maximal einmal pro Stunde ausgelöst — mehrfaches Öffnen und Schließen der View innerhalb einer Stunde sendet keinen erneuten Check-Request an den Roboter
-**Plans**: TBD
+**Plans**: 1 plan
 **UI hint**: yes
+
+Plans:
+- [ ] 15-01-PLAN.md — Download-ProgressView, Error-Banner mit Retry und Update-Check-Throttling (1x/Stunde)
 
 ## Progress
 
@@ -302,4 +305,4 @@ v2.0.0: 12 → 13 → 14 → 15
 | 12. State Machine Foundation | 2/2 | Complete   | 2026-04-01 |
 | 13. State Consolidation | 1/1 | Complete   | 2026-04-01 |
 | 14. Apply Phase Hardening | 2/2 | Complete   | 2026-04-01 |
-| 15. UI Wiring | 0/? | Not started | - |
+| 15. UI Wiring | 0/1 | Not started | - |
