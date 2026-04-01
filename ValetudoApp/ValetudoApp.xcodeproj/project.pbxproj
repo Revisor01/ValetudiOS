@@ -41,6 +41,7 @@
 		8F8EB3702AA2ADAC6889DC0D /* RobotConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B5589AF6019A8A237268523 /* RobotConfig.swift */; };
 		9207AFBD4FCBC7AAFE751181 /* RobotListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5713E6238AD5A3F2420EE02B /* RobotListView.swift */; };
 		A2F93F458EDD354944B50689 /* ManualControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8B35122CA897ECE8B3B52014 /* ManualControlView.swift */; };
+		B005024DBE4AB92629AA313B /* UpdateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFCC182F1E0F5359E9BA5372 /* UpdateService.swift */; };
 		B5ACCE16A7996B790BBF09CA /* Timer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D8827C015A536153957BA6AC /* Timer.swift */; };
 		B729DD529A0445E3996DD614 /* RobotSettingsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01D16364C1588D7F0AEB5FEE /* RobotSettingsViewModelTests.swift */; };
 		B77910FB25419990C9E3CD03 /* MapSheetsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CD7F92D155B6F61F11FAD35 /* MapSheetsView.swift */; };
@@ -124,6 +125,7 @@
 		D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumableTests.swift; sourceTree = "<group>"; };
 		D4B8AD3F113C1AD37B4E5BBA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D8827C015A536153957BA6AC /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
+		DFCC182F1E0F5359E9BA5372 /* UpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateService.swift; sourceTree = "<group>"; };
 		E0B69520E1BFEDF5824964BC /* DebugConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugConfig.swift; sourceTree = "<group>"; };
 		E6102D935A16D6758543ADC2 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		EBBA65057AA09088A3B6E843 /* RobotDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailViewModel.swift; sourceTree = "<group>"; };
@@ -233,6 +235,7 @@
 				4BE7F0D27E21AAB984042AF4 /* RobotManager.swift */,
 				F9841E9A11C0D78ACE274994 /* SSEConnectionManager.swift */,
 				5E86B5858DFF36ABA29E732F /* SupportManager.swift */,
+				DFCC182F1E0F5359E9BA5372 /* UpdateService.swift */,
 				004F5A0A2815A8D95949878D /* ValetudoAPI.swift */,
 			);
 			path = Services;
@@ -445,6 +448,7 @@
 				5C0908D7F386F63B7F6FFA1D /* SupportView.swift in Sources */,
 				B5ACCE16A7996B790BBF09CA /* Timer.swift in Sources */,
 				D4ACB8D36AF5B70E720588DE /* TimersView.swift in Sources */,
+				B005024DBE4AB92629AA313B /* UpdateService.swift in Sources */,
 				F1406BFE3F7724B3D7729D73 /* ValetudoAPI.swift in Sources */,
 				B9C7BC253C6ABA4DAA4D41C9 /* ValetudoApp.swift in Sources */,
 			);
