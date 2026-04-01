@@ -31,14 +31,6 @@ final class RobotDetailViewModel: ObservableObject {
     @Published var hasCleanRoute = DebugConfig.showAllCapabilities
     @Published var hasObstacleImages = DebugConfig.showAllCapabilities
 
-    // Update state
-    @Published var currentVersion: String?
-    @Published var latestVersion: String?
-    @Published var updateUrl: String?
-    @Published var updaterState: UpdaterState?
-    @Published var isUpdating = false
-    @Published var showUpdateWarning = false
-
     // UpdateService — Single Source of Truth (STATE-04)
     private(set) var updateService: UpdateService?
 
@@ -283,25 +275,8 @@ final class RobotDetailViewModel: ObservableObject {
 
     private func checkForUpdate() async {
         setupUpdateService()
-
-        guard let api = api else { return }
-        do {
-            if let version = try? await api.getValetudoVersion() {
-                currentVersion = version.release
-            }
-
-            // Valetudo Update-Check via UpdateService (per STATE-04)
-            await updateService?.checkForUpdates()
-
-            // GitHub Release Check (bleibt im ViewModel — nicht Update-Service-Scope)
-            guard let url = URL(string: Constants.githubApiLatestReleaseUrl) else { return }
-            let (data, _) = try await URLSession.shared.data(from: url)
-            let release = try JSONDecoder().decode(GitHubRelease.self, from: data)
-            latestVersion = release.tag_name
-            updateUrl = release.html_url
-        } catch {
-            logger.error("Failed to check for updates: \(error, privacy: .public)")
-        }
+        await updateService?.loadVersionInfo()
+        await updateService?.checkForUpdates()
     }
 
     // MARK: - Stats Polling

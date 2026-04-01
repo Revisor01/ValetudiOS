@@ -34,6 +34,9 @@ enum UpdatePhase: Equatable {
 class UpdateService: ObservableObject {
 
     @Published private(set) var phase: UpdatePhase = .idle
+    @Published private(set) var currentVersion: String?
+    @Published private(set) var latestVersion: String?
+    @Published private(set) var updateUrl: String?
 
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "UpdateService")
     private let api: ValetudoAPI
@@ -48,6 +51,24 @@ class UpdateService: ObservableObject {
     }
 
     // MARK: - Public Actions
+
+    func loadVersionInfo() async {
+        // Load current Valetudo version
+        if let version = try? await api.getValetudoVersion() {
+            currentVersion = version.release
+        }
+
+        // Load latest GitHub release
+        guard let url = URL(string: Constants.githubApiLatestReleaseUrl) else { return }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let release = try JSONDecoder().decode(GitHubRelease.self, from: data)
+            latestVersion = release.tag_name
+            updateUrl = release.html_url
+        } catch {
+            logger.error("loadVersionInfo GitHub fetch failed: \(error.localizedDescription, privacy: .public)")
+        }
+    }
 
     func checkForUpdates() async {
         guard case .idle = phase else {
@@ -104,6 +125,9 @@ class UpdateService: ObservableObject {
     func reset() {
         pollingTask?.cancel()
         phase = .idle
+        currentVersion = nil
+        latestVersion = nil
+        updateUrl = nil
     }
 
     // MARK: - Private Helpers
