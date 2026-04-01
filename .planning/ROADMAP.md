@@ -363,7 +363,7 @@ v2.1.0: 16 → 17 + 18 + 19 (17/18/19 können parallel nach 16)
 | 13. State Consolidation | 1/1 | Complete   | 2026-04-01 |
 | 14. Apply Phase Hardening | 2/2 | Complete   | 2026-04-01 |
 | 15. UI Wiring | 1/1 | Complete   | 2026-04-01 |
-| 16. UI Reorganization | 1/1 | Complete   | 2026-04-01 |
+| 16. UI Reorganization | 1/1 | Complete    | 2026-04-01 |
 | 17. Background Monitoring | 0/? | Not started | - |
 | 18. Map Caching | 0/? | Not started | - |
 | 19. Observable Migration | 0/? | Not started | - |
