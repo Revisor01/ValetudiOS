@@ -21,6 +21,7 @@
 		29FB72FF2B66844A54364021 /* RobotDetailSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = C8B03A26DDEE040E1800C512 /* RobotDetailSections.swift */; };
 		2F9C24F46ECB55001E3C6191 /* ValetudoAPITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 67E063E08AD679C61BFC04E6 /* ValetudoAPITests.swift */; };
 		34B0559E0C4C96150C6F7076 /* MapControlBarsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD2387AE1CFE8B8462ACDDB6 /* MapControlBarsView.swift */; };
+		3692C118EEE4D844F681DC5A /* MapCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF4588FA1C92BE6B69DEEFE /* MapCacheService.swift */; };
 		463715B3BAE62493A0D01D8B /* MapInteractiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A7ADB46F356027F35DDE05 /* MapInteractiveView.swift */; };
 		48E82472B522893504594AC9 /* RobotState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602023483884AA7FC99EE28A /* RobotState.swift */; };
 		4F1CBBF41038293EA0F80B16 /* Consumable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B313EE35A432692658D58220 /* Consumable.swift */; };
@@ -109,6 +110,7 @@
 		6CD7F92D155B6F61F11FAD35 /* MapSheetsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapSheetsView.swift; sourceTree = "<group>"; };
 		8489C5B4217131AFAA714813 /* PresetHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetHelpers.swift; sourceTree = "<group>"; };
 		8B35122CA897ECE8B3B52014 /* ManualControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualControlView.swift; sourceTree = "<group>"; };
+		9BF4588FA1C92BE6B69DEEFE /* MapCacheService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCacheService.swift; sourceTree = "<group>"; };
 		9CA75525C383460748ED61C0 /* MapViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModelTests.swift; sourceTree = "<group>"; };
 		9D2944F811E75D2A18C7A192 /* ValetudoAppTests.xctest */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.cfbundle; path = ValetudoAppTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		9FD244AAC28A5D50E6DF9E55 /* MapViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapViewModel.swift; sourceTree = "<group>"; };
@@ -232,6 +234,7 @@
 			children = (
 				B47F4D17ACA9DC7007F05B9E /* BackgroundMonitorService.swift */,
 				21BF56FF46BA4144DBD73CA4 /* KeychainStore.swift */,
+				9BF4588FA1C92BE6B69DEEFE /* MapCacheService.swift */,
 				048B373C4CE7F9EF571625D6 /* NetworkScanner.swift */,
 				4C082534D8ADAC8160B2405F /* NotificationService.swift */,
 				B65C57A11EEEF91115F0C845 /* NWBrowserService.swift */,
@@ -419,6 +422,7 @@
 				DA136B4862BD6BD33702E71A /* IntensityControlView.swift in Sources */,
 				D692854F2D2227501DA43AF6 /* KeychainStore.swift in Sources */,
 				A2F93F458EDD354944B50689 /* ManualControlView.swift in Sources */,
+				3692C118EEE4D844F681DC5A /* MapCacheService.swift in Sources */,
 				34B0559E0C4C96150C6F7076 /* MapControlBarsView.swift in Sources */,
 				463715B3BAE62493A0D01D8B /* MapInteractiveView.swift in Sources */,
 				CB68130A422E30CC0C51BF78 /* MapMiniMapView.swift in Sources */,
