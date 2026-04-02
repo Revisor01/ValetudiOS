@@ -14,9 +14,9 @@ Requirements for App Architecture & Background Capabilities. Each maps to roadma
 
 ### Background Monitoring
 
-- [ ] **BG-01**: BGAppRefreshTask prüft periodisch den Roboter-Status im Hintergrund
-- [ ] **BG-02**: Lokale Notification bei Reinigungsende auch wenn die App geschlossen ist
-- [ ] **BG-03**: Lokale Notification bei Fehlern (Roboter steckt fest, Staubbehälter voll) auch im Hintergrund
+- [x] **BG-01**: BGAppRefreshTask prüft periodisch den Roboter-Status im Hintergrund
+- [x] **BG-02**: Lokale Notification bei Reinigungsende auch wenn die App geschlossen ist
+- [x] **BG-03**: Lokale Notification bei Fehlern (Roboter steckt fest, Staubbehälter voll) auch im Hintergrund
 
 ### Map Caching
 
@@ -48,9 +48,9 @@ Requirements for App Architecture & Background Capabilities. Each maps to roadma
 |-------------|-------|--------|
 | REORG-01 | Phase 16 | Complete |
 | REORG-02 | Phase 16 | Complete |
-| BG-01 | Phase 17 | Pending |
-| BG-02 | Phase 17 | Pending |
-| BG-03 | Phase 17 | Pending |
+| BG-01 | Phase 17 | Complete |
+| BG-02 | Phase 17 | Complete |
+| BG-03 | Phase 17 | Complete |
 | CACHE-01 | Phase 18 | Pending |
 | CACHE-02 | Phase 18 | Pending |
 | CACHE-03 | Phase 18 | Pending |
