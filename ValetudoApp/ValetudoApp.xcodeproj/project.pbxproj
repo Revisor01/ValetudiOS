@@ -13,6 +13,7 @@
 		130BA61C39B4D03F73E6873A /* RobotSettingsSections.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1FBC2DF8B34C8EB854C9C1D2 /* RobotSettingsSections.swift */; };
 		143326E22353048B7A54418D /* PresetHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8489C5B4217131AFAA714813 /* PresetHelpers.swift */; };
 		1932127BBDCC8FBE2645FC31 /* RobotSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 698C8F9BC11A4FCCF9D99923 /* RobotSettingsView.swift */; };
+		1D20363A8F2119925CB2DC8B /* BackgroundMonitorService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B47F4D17ACA9DC7007F05B9E /* BackgroundMonitorService.swift */; };
 		1F0534502B3DB53D433509DD /* KeychainStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C06AD3C1B9A930E3DFF22B33 /* KeychainStoreTests.swift */; };
 		26187F76B128067478E11E35 /* RobotDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34DD7833558396395DCA7D32 /* RobotDetailView.swift */; };
 		268751822B3D802C519CE03C /* SSEConnectionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = F9841E9A11C0D78ACE274994 /* SSEConnectionManager.swift */; };
@@ -116,6 +117,7 @@
 		AD2387AE1CFE8B8462ACDDB6 /* MapControlBarsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapControlBarsView.swift; sourceTree = "<group>"; };
 		B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		B313EE35A432692658D58220 /* Consumable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Consumable.swift; sourceTree = "<group>"; };
+		B47F4D17ACA9DC7007F05B9E /* BackgroundMonitorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundMonitorService.swift; sourceTree = "<group>"; };
 		B65C57A11EEEF91115F0C845 /* NWBrowserService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NWBrowserService.swift; sourceTree = "<group>"; };
 		BDFE1B37CB17CC446C036D73 /* MapLayerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapLayerTests.swift; sourceTree = "<group>"; };
 		C06AD3C1B9A930E3DFF22B33 /* KeychainStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStoreTests.swift; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 		CADCB8BE5F841BD0A6673297 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				B47F4D17ACA9DC7007F05B9E /* BackgroundMonitorService.swift */,
 				21BF56FF46BA4144DBD73CA4 /* KeychainStore.swift */,
 				048B373C4CE7F9EF571625D6 /* NetworkScanner.swift */,
 				4C082534D8ADAC8160B2405F /* NotificationService.swift */,
@@ -405,6 +408,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DDD26A60B887E1133DD2E18B /* AddRobotView.swift in Sources */,
+				1D20363A8F2119925CB2DC8B /* BackgroundMonitorService.swift in Sources */,
 				5BC9FCF8C32F80990A5AAAA2 /* Constants.swift in Sources */,
 				4F1CBBF41038293EA0F80B16 /* Consumable.swift in Sources */,
 				EF03FC536C8B10A814C55E48 /* ConsumablesView.swift in Sources */,

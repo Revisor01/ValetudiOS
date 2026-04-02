@@ -38,6 +38,8 @@ targets:
         NSLocalNetworkUsageDescription: "Access local network to communicate with Valetudo robots"
         NSBonjourServices:
           - _valetudo._tcp
+        BGTaskSchedulerPermittedIdentifiers:
+          - de.simonluthe.ValetudiOS.backgroundRefresh
     settings:
       base:
         MARKETING_VERSION: "2.0.0"
