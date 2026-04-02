@@ -380,4 +380,4 @@ v2.1.0: 16 -> 17 + 18 + 19 (17/18/19 koennen parallel nach 16)
 | 16. UI Reorganization | 1/1 | Complete    | 2026-04-01 |
 | 17. Background Monitoring | 2/2 | Complete    | 2026-04-02 |
 | 18. Map Caching | 2/2 | Complete    | 2026-04-02 |
-| 19. Observable Migration | 2/2 | Complete   | 2026-04-02 |
+| 19. Observable Migration | 2/2 | Complete    | 2026-04-02 |
