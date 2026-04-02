@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: executing
-last_updated: "2026-04-02T09:05:10.159Z"
+status: verifying
+last_updated: "2026-04-02T09:10:41.687Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 18
-  completed_phases: 16
+  completed_phases: 17
   total_plans: 43
-  completed_plans: 41
+  completed_plans: 42
 ---
 
 # Project State
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-03-29)
 
 Phase: 18 (map-caching) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-02
 
 ```
@@ -54,6 +54,8 @@ Recent decisions affecting current work:
 - [Phase 18-map-caching]: MapCacheService ohne @MainActor — save/load sind async und blockieren den Main Thread nicht
 - [Phase 18-map-caching]: [Phase 18-01]: isOffline=true NUR bei tatsaechlich geladenem Cache gesetzt — ohne Cache bleibt ContentUnavailableView
 - [Phase 18-map-caching]: [Phase 18-01]: isOffline=true im Polling-Loop auch bei bereits sichtbarer Karte (map != nil) — Offline-Indikator ohne Cache-Reload
+- [Phase 18-map-caching]: Checkpoint:human-verify auto-approved per autonomous-mode-instruction fuer Plan 18-02
+- [Phase 18-map-caching]: [18-02]: map.offline fr-Uebersetzung hinzugefuegt (Hors ligne — Carte en cache) — xcstrings enthaelt fr als dritte Sprache
 
 ### Pending Todos
 

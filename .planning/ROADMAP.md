@@ -49,7 +49,7 @@
 
 - [x] **Phase 16: UI Reorganization** - ValetudoInfoView und Robot Properties zu einheitlicher Geräte-Info-Sektion im Roboter-Detail zusammenführen (completed 2026-04-01)
 - [x] **Phase 17: Background Monitoring** - BGAppRefreshTask für periodische Status-Prüfung und lokale Notifications bei geschlossener App (completed 2026-04-02)
-- [ ] **Phase 18: Map Caching** - Letzte Karte auf Disk speichern, Offline-Anzeige bei nicht-erreichbarem Roboter
+- [x] **Phase 18: Map Caching** - Letzte Karte auf Disk speichern, Offline-Anzeige bei nicht-erreichbarem Roboter (completed 2026-04-02)
 - [ ] **Phase 19: Observable Migration** - ObservableObject/@Published auf @Observable Macro migrieren (iOS 17+)
 
 ## Phase Details
@@ -95,7 +95,7 @@ Plans:
 
 Plans:
 - [x] 18-01-PLAN.md — MapCacheService + MapViewModel: Disk-Cache-Service, Cache-Integration in loadMap/startMapRefresh, isOffline-Flag
-- [ ] 18-02-PLAN.md — Offline-Banner in MapView, Cache-Cleanup in RobotManager, Lokalisierung map.offline
+- [x] 18-02-PLAN.md — Offline-Banner in MapView, Cache-Cleanup in RobotManager, Lokalisierung map.offline
 
 ### Phase 19: Observable Migration
 **Goal**: Alle ViewModels und Services nutzen das moderne @Observable Macro statt ObservableObject/@Published
@@ -111,7 +111,7 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 18-01-PLAN.md — MapCacheService + MapViewModel: Disk-Cache-Service, Cache-Integration in loadMap/startMapRefresh, isOffline-Flag
+- [x] 18-01-PLAN.md — MapCacheService + MapViewModel: Disk-Cache-Service, Cache-Integration in loadMap/startMapRefresh, isOffline-Flag
 - [ ] 18-02-PLAN.md — Offline-Banner in MapView, Cache-Cleanup in RobotManager, Lokalisierung map.offline
 
 ### Phase 1: Foundation
@@ -379,5 +379,5 @@ v2.1.0: 16 -> 17 + 18 + 19 (17/18/19 koennen parallel nach 16)
 | 15. UI Wiring | 1/1 | Complete   | 2026-04-01 |
 | 16. UI Reorganization | 1/1 | Complete    | 2026-04-01 |
 | 17. Background Monitoring | 2/2 | Complete    | 2026-04-02 |
-| 18. Map Caching | 1/2 | In Progress|  |
+| 18. Map Caching | 2/2 | Complete   | 2026-04-02 |
 | 19. Observable Migration | 0/? | Not started | - |
