@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: executing
-last_updated: "2026-04-02T09:35:07.460Z"
-last_activity: 2026-04-02 -- Phase 19 execution started
+last_updated: "2026-04-02T09:55:31.855Z"
+last_activity: 2026-04-02
 progress:
   total_phases: 19
-  completed_phases: 17
+  completed_phases: 18
   total_plans: 45
-  completed_plans: 42
+  completed_plans: 44
 ---
 
 # Project State
@@ -24,9 +24,9 @@ See: .planning/PROJECT.md (updated 2026-03-29)
 ## Current Position
 
 Phase: 19 (observable-migration) — EXECUTING
-Plan: 1 of 2
-Status: Executing Phase 19
-Last activity: 2026-04-02 -- Phase 19 execution started
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-04-02
 
 ```
 [Phase 16]──[Phase 17]──[Phase 18]──[Phase 19]
@@ -56,6 +56,8 @@ Recent decisions affecting current work:
 - [Phase 18-map-caching]: [Phase 18-01]: isOffline=true im Polling-Loop auch bei bereits sichtbarer Karte (map != nil) — Offline-Indikator ohne Cache-Reload
 - [Phase 18-map-caching]: Checkpoint:human-verify auto-approved per autonomous-mode-instruction fuer Plan 18-02
 - [Phase 18-map-caching]: [18-02]: map.offline fr-Uebersetzung hinzugefuegt (Hors ligne — Carte en cache) — xcstrings enthaelt fr als dritte Sprache
+- [Phase 19-02]: @Bindable for SupportView.supportManager — binding needed for showThankYou alert ( access)
+- [Phase 19-02]: @ObservationIgnored required on @AppStorage properties in @Observable classes — macro synthesizes conflicting backing storage
 
 ### Pending Todos
 
