@@ -48,7 +48,7 @@
 **Milestone Goal:** App-Architektur modernisieren (@Observable), Geräte-Infos logisch einordnen, Hintergrund-Monitoring für Notifications ohne offene App, und Karten-Caching für Offline-Zugriff.
 
 - [x] **Phase 16: UI Reorganization** - ValetudoInfoView und Robot Properties zu einheitlicher Geräte-Info-Sektion im Roboter-Detail zusammenführen (completed 2026-04-01)
-- [ ] **Phase 17: Background Monitoring** - BGAppRefreshTask für periodische Status-Prüfung und lokale Notifications bei geschlossener App
+- [x] **Phase 17: Background Monitoring** - BGAppRefreshTask für periodische Status-Prüfung und lokale Notifications bei geschlossener App (completed 2026-04-02)
 - [ ] **Phase 18: Map Caching** - Letzte Karte auf Disk speichern, Offline-Anzeige bei nicht-erreichbarem Roboter
 - [ ] **Phase 19: Observable Migration** - ObservableObject/@Published auf @Observable Macro migrieren (iOS 17+)
 
@@ -80,7 +80,7 @@ Plans:
 
 Plans:
 - [x] 17-01-PLAN.md — BackgroundMonitorService + Info.plist: BGTask-Handler, State-Persistenz, Notification-Dispatch
-- [ ] 17-02-PLAN.md — AppDelegate BGTask-Registrierung + scenePhase-Scheduling + Build-Validierung
+- [x] 17-02-PLAN.md — AppDelegate BGTask-Registrierung + scenePhase-Scheduling + Build-Validierung
 
 ### Phase 18: Map Caching
 **Goal**: Die letzte Karte jedes Roboters wird auf Disk gespeichert und ist auch bei nicht-erreichbarem Roboter sichtbar
@@ -368,6 +368,6 @@ v2.1.0: 16 -> 17 + 18 + 19 (17/18/19 koennen parallel nach 16)
 | 14. Apply Phase Hardening | 2/2 | Complete   | 2026-04-01 |
 | 15. UI Wiring | 1/1 | Complete   | 2026-04-01 |
 | 16. UI Reorganization | 1/1 | Complete    | 2026-04-01 |
-| 17. Background Monitoring | 1/2 | In Progress|  |
+| 17. Background Monitoring | 2/2 | Complete   | 2026-04-02 |
 | 18. Map Caching | 0/? | Not started | - |
 | 19. Observable Migration | 0/? | Not started | - |

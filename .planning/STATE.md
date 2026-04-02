@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: executing
-last_updated: "2026-04-02T08:14:31.643Z"
+status: verifying
+last_updated: "2026-04-02T08:19:19.766Z"
 last_activity: 2026-04-02
 progress:
   total_phases: 17
-  completed_phases: 15
+  completed_phases: 16
   total_plans: 41
-  completed_plans: 39
+  completed_plans: 40
 ---
 
 # Project State
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-03-29)
 
 Phase: 17 (background-monitoring) — EXECUTING
 Plan: 2 of 2
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-02
 
 ```
@@ -50,6 +50,7 @@ Recent decisions affecting current work:
 - [Phase 16-ui-reorganization]: device_info.* key namespace for merged DeviceInfoSection; loadDeviceInfo() concurrent fetch; ValetudoInfoView deleted entirely
 - [Phase 17-background-monitoring]: BackgroundMonitorService.taskIdentifier als static let — Plan 02 AppDelegate referenziert diesen statt doppelte String-Literale
 - [Phase 17-background-monitoring]: project.yml muss BGTaskSchedulerPermittedIdentifiers enthalten, damit xcodegen generate den Eintrag nicht ueberschreibt
+- [Phase 17]: scenePhase via @Environment nutzen statt applicationDidEnterBackground — SwiftUI App-Lifecycle ruft AppDelegate-Callback nicht auf
 
 ### Pending Todos
 
