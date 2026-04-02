@@ -6,8 +6,8 @@ private let settingsLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "
 struct RobotSettingsView: View {
     let robot: RobotConfig
     let updateService: UpdateService?
-    @EnvironmentObject var robotManager: RobotManager
-    @StateObject private var viewModel: RobotSettingsViewModel
+    @Environment(RobotManager.self) var robotManager
+    @State private var viewModel: RobotSettingsViewModel
 
     // Pure UI presentation state (alert toggles only)
     @State private var showMappingAlert = false
@@ -16,7 +16,7 @@ struct RobotSettingsView: View {
     init(robot: RobotConfig, robotManager: RobotManager, updateService: UpdateService? = nil) {
         self.robot = robot
         self.updateService = updateService
-        _viewModel = StateObject(wrappedValue: RobotSettingsViewModel(robot: robot, robotManager: robotManager))
+        _viewModel = State(initialValue: RobotSettingsViewModel(robot: robot, robotManager: robotManager))
     }
 
     var body: some View {
@@ -489,6 +489,6 @@ struct RobotSettingsView: View {
     let robotManager = RobotManager()
     NavigationStack {
         RobotSettingsView(robot: RobotConfig(name: "Test Robot", host: "192.168.0.35"), robotManager: robotManager)
-            .environmentObject(robotManager)
+            .environment(robotManager)
     }
 }

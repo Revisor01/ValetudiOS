@@ -94,7 +94,7 @@ struct SaveGoToPresetSheet: View {
 // MARK: - GoTo Presets Sheet
 struct GoToPresetsSheet: View {
     let robot: RobotConfig
-    @ObservedObject var presetStore: GoToPresetStore
+    var presetStore: GoToPresetStore
     let onSelect: (GoToPreset) -> Void
     let onEdit: ((GoToPreset) -> Void)?
     @Environment(\.dismiss) var dismiss

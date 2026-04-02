@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RobotDetailView: View {
-    @StateObject private var viewModel: RobotDetailViewModel
+    @State private var viewModel: RobotDetailViewModel
 
     @State private var showFullMap = false
     @State private var showUpdateWarning = false
@@ -17,7 +17,7 @@ struct RobotDetailView: View {
     }
 
     init(robot: RobotConfig, robotManager: RobotManager) {
-        _viewModel = StateObject(wrappedValue: RobotDetailViewModel(robot: robot, robotManager: robotManager))
+        _viewModel = State(initialValue: RobotDetailViewModel(robot: robot, robotManager: robotManager))
     }
 
     var body: some View {

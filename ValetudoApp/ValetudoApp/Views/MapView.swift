@@ -37,7 +37,7 @@ struct MapParams {
 
 // MARK: - Map Tab View (for Tab Bar)
 struct MapTabView: View {
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
     let robot: RobotConfig
     @State private var viewId = UUID()
 
@@ -57,7 +57,7 @@ struct MapTabView: View {
 
 // MARK: - Embedded Map Preview (for Detail View)
 struct MapPreviewView: View {
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
     let robot: RobotConfig
     @State private var map: RobotMap?
     @State private var restrictions: VirtualRestrictions?
@@ -178,11 +178,11 @@ struct MapPreviewView: View {
 
 // MARK: - Map Content View (shared between Tab and Sheet)
 struct MapContentView: View {
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
     let robot: RobotConfig
     let isFullscreen: Bool
 
-    @StateObject var viewModel: MapViewModel
+    @State var viewModel: MapViewModel
 
     // MARK: - Gesture / View-local state (inherently view-bound)
     @State var scale: CGFloat = 1.0
@@ -202,7 +202,7 @@ struct MapContentView: View {
     init(robot: RobotConfig, robotManager: RobotManager, isFullscreen: Bool = false) {
         self.robot = robot
         self.isFullscreen = isFullscreen
-        _viewModel = StateObject(wrappedValue: MapViewModel(robot: robot, robotManager: robotManager, isFullscreen: isFullscreen))
+        _viewModel = State(initialValue: MapViewModel(robot: robot, robotManager: robotManager, isFullscreen: isFullscreen))
     }
 
     var body: some View {
@@ -850,7 +850,7 @@ struct MapContentView: View {
 // MARK: - Map View (Sheet/Modal version - uses MapContentView)
 struct MapView: View {
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
     let robot: RobotConfig
 
     var body: some View {
@@ -874,5 +874,5 @@ struct MapView: View {
 
 #Preview {
     MapView(robot: RobotConfig(name: "Test", host: "192.168.0.35"))
-        .environmentObject(RobotManager())
+        .environment(RobotManager())
 }

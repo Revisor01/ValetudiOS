@@ -96,6 +96,15 @@ None - no external service configuration required.
 - MapCacheService und isOffline-Flag sind bereit fuer Plan 18-02 (Offline-Banner in MapView.swift + Cache-Cleanup in RobotManager)
 - Plan 18-02 kann direkt mit `viewModel.isOffline` das ZStack-Overlay implementieren
 
+## Self-Check: PASSED
+
+- MapCacheService.swift: FOUND
+- MapViewModel.swift (modified): FOUND
+- 18-01-SUMMARY.md: FOUND
+- Commit e3c2584 (Task 1): FOUND
+- Commit fcb9e0f (Task 2): FOUND
+- BUILD SUCCEEDED: VERIFIED
+
 ---
 *Phase: 18-map-caching*
 *Completed: 2026-04-01*

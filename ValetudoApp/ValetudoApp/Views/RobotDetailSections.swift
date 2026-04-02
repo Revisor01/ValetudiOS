@@ -102,7 +102,7 @@ extension View {
 
 // MARK: - Device Info Section
 struct DeviceInfoSection: View {
-    @ObservedObject var viewModel: RobotDetailViewModel
+    var viewModel: RobotDetailViewModel
     @State private var isExpanded = false
 
     var body: some View {

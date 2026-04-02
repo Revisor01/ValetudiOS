@@ -41,24 +41,24 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 struct ValetudoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) private var scenePhase
-    @StateObject private var robotManager = RobotManager()
-    @StateObject private var errorRouter = ErrorRouter()
+    @State private var robotManager = RobotManager()
+    @State private var errorRouter = ErrorRouter()
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     var body: some Scene {
         WindowGroup {
             if hasCompletedOnboarding {
                 ContentView()
-                    .environmentObject(robotManager)
-                    .environmentObject(errorRouter)
+                    .environment(robotManager)
+                    .environment(errorRouter)
                     .withErrorAlert(router: errorRouter)
                     .onAppear {
                         NotificationService.robotManagerRef = robotManager
                     }
             } else {
                 OnboardingView()
-                    .environmentObject(robotManager)
-                    .environmentObject(errorRouter)
+                    .environment(robotManager)
+                    .environment(errorRouter)
                     .withErrorAlert(router: errorRouter)
                     .onAppear {
                         NotificationService.robotManagerRef = robotManager
