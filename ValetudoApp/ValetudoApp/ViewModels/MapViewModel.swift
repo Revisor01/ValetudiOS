@@ -69,6 +69,9 @@ final class MapViewModel: ObservableObject {
     // MARK: - Error State
     @Published var errorMessage: String? = nil
 
+    // MARK: - Offline State
+    @Published var isOffline: Bool = false
+
     // MARK: - Task Management
     private var refreshTask: Task<Void, Never>?
 
@@ -130,9 +133,18 @@ final class MapViewModel: ObservableObject {
             map = loadedMap
             segments = loadedSegments
             loadError = nil
+            isOffline = false
             isLoading = false
+            await MapCacheService.shared.save(loadedMap, for: robot.id)
         } catch {
-            loadError = error.localizedDescription
+            // Kein erfolgreicher Load — Cache laden falls vorhanden
+            if let cachedMap = await MapCacheService.shared.load(for: robot.id), self.map == nil {
+                self.map = cachedMap
+                self.isOffline = true
+                self.loadError = nil
+            } else {
+                loadError = error.localizedDescription
+            }
             isLoading = false
         }
     }
@@ -149,6 +161,17 @@ final class MapViewModel: ObservableObject {
                 if !Task.isCancelled {
                     if let newMap = try? await api.getMap() {
                         self.map = newMap
+                        self.isOffline = false
+                        await MapCacheService.shared.save(newMap, for: robot.id)
+                    } else {
+                        // getMap() fehlgeschlagen — Cache laden falls noch keine Karte vorhanden
+                        if self.map == nil, let cachedMap = await MapCacheService.shared.load(for: robot.id) {
+                            self.map = cachedMap
+                            self.isOffline = true
+                        } else if self.map != nil {
+                            // Karte bereits sichtbar — Offline-Indikator setzen
+                            self.isOffline = true
+                        }
                     }
                 }
             }
