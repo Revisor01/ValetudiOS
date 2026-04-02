@@ -1,13 +1,15 @@
 import Foundation
 import Network
 import os
+import Observation
 
 @MainActor
-final class NWBrowserService: ObservableObject {
-    @Published private(set) var discovered: [DiscoveredRobot] = []
-    @Published private(set) var isBrowsing = false
+@Observable
+final class NWBrowserService {
+    private(set) var discovered: [DiscoveredRobot] = []
+    private(set) var isBrowsing = false
 
-    private var browser: NWBrowser?
+    @ObservationIgnored private var browser: NWBrowser?
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "mDNS")
 
     func startBrowsing() {

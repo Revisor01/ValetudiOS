@@ -1,76 +1,78 @@
 import Foundation
 import SwiftUI
 import os
+import Observation
 
 @MainActor
-final class RobotSettingsViewModel: ObservableObject {
+@Observable
+final class RobotSettingsViewModel {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "RobotSettingsViewModel")
     let robot: RobotConfig
     private let robotManager: RobotManager
 
     // MARK: - Settings values
-    @Published var volume: Double = 80
-    @Published var carpetMode = false
-    @Published var persistentMap = false
-    @Published var keyLock = false
-    @Published var obstacleAvoidance = false
-    @Published var petObstacleAvoidance = false
-    @Published var collisionAvoidance = false
-    @Published var mopDockAutoDrying = false
-    @Published var floorMaterialNavigation = false
-    @Published var carpetSensorMode: String = ""
-    @Published var currentWashTemperature: String = ""
+    var volume: Double = 80
+    var carpetMode = false
+    var persistentMap = false
+    var keyLock = false
+    var obstacleAvoidance = false
+    var petObstacleAvoidance = false
+    var collisionAvoidance = false
+    var mopDockAutoDrying = false
+    var floorMaterialNavigation = false
+    var carpetSensorMode: String = ""
+    var currentWashTemperature: String = ""
 
     // MARK: - Capability flags
-    @Published var hasVolumeControl = DebugConfig.showAllCapabilities
-    @Published var hasSpeakerTest = DebugConfig.showAllCapabilities
-    @Published var hasCarpetMode = DebugConfig.showAllCapabilities
-    @Published var hasPersistentMap = DebugConfig.showAllCapabilities
-    @Published var hasMappingPass = DebugConfig.showAllCapabilities
-    @Published var hasAutoEmptyDock = DebugConfig.showAllCapabilities
-    @Published var hasQuirks = DebugConfig.showAllCapabilities
-    @Published var hasWifiConfig = DebugConfig.showAllCapabilities
-    @Published var hasWifiScan = DebugConfig.showAllCapabilities
-    @Published var hasKeyLock = DebugConfig.showAllCapabilities
-    @Published var hasObstacleAvoidance = DebugConfig.showAllCapabilities
-    @Published var hasPetObstacleAvoidance = DebugConfig.showAllCapabilities
-    @Published var hasCarpetSensorMode = DebugConfig.showAllCapabilities
-    @Published var hasMapReset = DebugConfig.showAllCapabilities
-    @Published var hasCollisionAvoidance = DebugConfig.showAllCapabilities
-    @Published var hasMopDockAutoDrying = DebugConfig.showAllCapabilities
-    @Published var hasMopDockWashTemperature = DebugConfig.showAllCapabilities
-    @Published var hasMopDockDryingTime = DebugConfig.showAllCapabilities
-    @Published var hasFloorMaterialNavigation = DebugConfig.showAllCapabilities
-    @Published var hasMapSnapshots = DebugConfig.showAllCapabilities
-    @Published var hasPendingMapChange = DebugConfig.showAllCapabilities
-    @Published var hasVoicePack = DebugConfig.showAllCapabilities
-    @Published var hasAutoEmptyDockDuration = DebugConfig.showAllCapabilities
+    var hasVolumeControl = DebugConfig.showAllCapabilities
+    var hasSpeakerTest = DebugConfig.showAllCapabilities
+    var hasCarpetMode = DebugConfig.showAllCapabilities
+    var hasPersistentMap = DebugConfig.showAllCapabilities
+    var hasMappingPass = DebugConfig.showAllCapabilities
+    var hasAutoEmptyDock = DebugConfig.showAllCapabilities
+    var hasQuirks = DebugConfig.showAllCapabilities
+    var hasWifiConfig = DebugConfig.showAllCapabilities
+    var hasWifiScan = DebugConfig.showAllCapabilities
+    var hasKeyLock = DebugConfig.showAllCapabilities
+    var hasObstacleAvoidance = DebugConfig.showAllCapabilities
+    var hasPetObstacleAvoidance = DebugConfig.showAllCapabilities
+    var hasCarpetSensorMode = DebugConfig.showAllCapabilities
+    var hasMapReset = DebugConfig.showAllCapabilities
+    var hasCollisionAvoidance = DebugConfig.showAllCapabilities
+    var hasMopDockAutoDrying = DebugConfig.showAllCapabilities
+    var hasMopDockWashTemperature = DebugConfig.showAllCapabilities
+    var hasMopDockDryingTime = DebugConfig.showAllCapabilities
+    var hasFloorMaterialNavigation = DebugConfig.showAllCapabilities
+    var hasMapSnapshots = DebugConfig.showAllCapabilities
+    var hasPendingMapChange = DebugConfig.showAllCapabilities
+    var hasVoicePack = DebugConfig.showAllCapabilities
+    var hasAutoEmptyDockDuration = DebugConfig.showAllCapabilities
 
     // MARK: - Presets
-    @Published var carpetSensorModePresets: [String] = []
-    @Published var mopDockWashTemperaturePresets: [String] = []
-    @Published var mopDockDryingTimePresets: [String] = []
-    @Published var currentMopDockDryingTime: String = ""
-    @Published var autoEmptyDockDurationPresets: [String] = []
-    @Published var currentAutoEmptyDockDuration: String = ""
+    var carpetSensorModePresets: [String] = []
+    var mopDockWashTemperaturePresets: [String] = []
+    var mopDockDryingTimePresets: [String] = []
+    var currentMopDockDryingTime: String = ""
+    var autoEmptyDockDurationPresets: [String] = []
+    var currentAutoEmptyDockDuration: String = ""
 
     // MARK: - Voice Pack state
-    @Published var voicePacks: [VoicePack] = []
-    @Published var currentVoicePackId: String = ""
-    @Published var isSettingVoicePack = false
+    var voicePacks: [VoicePack] = []
+    var currentVoicePackId: String = ""
+    var isSettingVoicePack = false
 
     // MARK: - Map Snapshots state
-    @Published var mapSnapshots: [MapSnapshot] = []
-    @Published var isRestoringSnapshot = false
+    var mapSnapshots: [MapSnapshot] = []
+    var isRestoringSnapshot = false
 
     // MARK: - Pending Map Change state
-    @Published var pendingMapChangeEnabled = false
-    @Published var isHandlingMapChange = false
+    var pendingMapChangeEnabled = false
+    var isHandlingMapChange = false
 
     // MARK: - UI state
-    @Published var isLoading = false
-    @Published var isInitialLoad = true
-    @Published var volumeChanged = false
+    var isLoading = false
+    var isInitialLoad = true
+    var volumeChanged = false
 
     // MARK: - Computed
     var api: ValetudoAPI? {

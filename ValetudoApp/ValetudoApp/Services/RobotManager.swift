@@ -1,21 +1,23 @@
 import Foundation
 import SwiftUI
 import os
+import Observation
 
 @MainActor
-class RobotManager: ObservableObject {
-    @Published var robots: [RobotConfig] = []
-    @Published var robotStates: [UUID: RobotStatus] = [:]
-    @Published var robotUpdateAvailable: [UUID: Bool] = [:]
+@Observable
+class RobotManager {
+    var robots: [RobotConfig] = []
+    var robotStates: [UUID: RobotStatus] = [:]
+    var robotUpdateAvailable: [UUID: Bool] = [:]
 
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "RobotManager")
-    private var apis: [UUID: ValetudoAPI] = [:]
-    private var refreshTask: Task<Void, Never>?
-    private var previousStates: [UUID: RobotStatus] = [:]
-    private var lastConsumableCheck: [UUID: Date] = [:]
+    @ObservationIgnored private var apis: [UUID: ValetudoAPI] = [:]
+    @ObservationIgnored private var refreshTask: Task<Void, Never>?
+    @ObservationIgnored private var previousStates: [UUID: RobotStatus] = [:]
+    @ObservationIgnored private var lastConsumableCheck: [UUID: Date] = [:]
     private let storageKey = "valetudo_robots"
     private let notificationService = NotificationService.shared
-    private let sseManager = SSEConnectionManager()
+    @ObservationIgnored private let sseManager = SSEConnectionManager()
 
     init() {
         loadRobots()

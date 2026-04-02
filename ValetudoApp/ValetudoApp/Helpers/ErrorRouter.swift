@@ -1,8 +1,10 @@
 import SwiftUI
+import Observation
 
 @MainActor
-final class ErrorRouter: ObservableObject {
-    @Published var currentError: Error?
+@Observable
+final class ErrorRouter {
+    var currentError: Error?
     var retryAction: (() async -> Void)?
 
     func show(_ error: Error, retry: (() async -> Void)? = nil) {

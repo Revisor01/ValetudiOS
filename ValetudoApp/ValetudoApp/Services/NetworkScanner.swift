@@ -1,6 +1,7 @@
 import Foundation
 import Network
 import os
+import Observation
 
 struct DiscoveredRobot: Identifiable, Hashable {
     let id = UUID()
@@ -29,14 +30,15 @@ struct DiscoveredRobot: Identifiable, Hashable {
 }
 
 @MainActor
-class NetworkScanner: ObservableObject {
-    @Published var discoveredRobots: [DiscoveredRobot] = []
-    @Published var isScanning = false
-    @Published var progress: Double = 0
+@Observable
+class NetworkScanner {
+    var discoveredRobots: [DiscoveredRobot] = []
+    var isScanning = false
+    var progress: Double = 0
 
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "NetworkScanner")
-    private var scanTask: Task<Void, Never>?
-    private let browserService = NWBrowserService()
+    @ObservationIgnored private var scanTask: Task<Void, Never>?
+    @ObservationIgnored private let browserService = NWBrowserService()
 
     func startScan() {
         stopScan()

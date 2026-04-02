@@ -1,11 +1,13 @@
 import SwiftUI
 import Foundation
 import os
+import Observation
 
 // MARK: - MapViewModel
 
 @MainActor
-final class MapViewModel: ObservableObject {
+@Observable
+final class MapViewModel {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "MapViewModel")
     // MARK: - Configuration
     let robot: RobotConfig
@@ -13,67 +15,67 @@ final class MapViewModel: ObservableObject {
     let isFullscreen: Bool
 
     // MARK: - Map Data State
-    @Published var map: RobotMap?
-    @Published var segments: [Segment] = []
-    @Published var isLoading = true
-    @Published var mapRefreshId = UUID()
-    @Published var loadError: String?
+    var map: RobotMap?
+    var segments: [Segment] = []
+    var isLoading = true
+    var mapRefreshId = UUID()
+    var loadError: String?
 
     // MARK: - Capabilities
-    @Published var hasZoneCleaning = false
-    @Published var hasVirtualRestrictions = false
-    @Published var hasGoTo = false
-    @Published var hasSegmentRename = false
-    @Published var hasSegmentEdit = false
+    var hasZoneCleaning = false
+    var hasVirtualRestrictions = false
+    var hasGoTo = false
+    var hasSegmentRename = false
+    var hasSegmentEdit = false
 
     // MARK: - Edit Mode State
-    @Published var editMode: MapEditMode = .none
-    @Published var drawnZones: [CleaningZone] = []
-    @Published var drawnNoGoAreas: [NoGoArea] = []
-    @Published var drawnNoMopAreas: [NoMopArea] = []
-    @Published var drawnVirtualWalls: [VirtualWall] = []
+    var editMode: MapEditMode = .none
+    var drawnZones: [CleaningZone] = []
+    var drawnNoGoAreas: [NoGoArea] = []
+    var drawnNoMopAreas: [NoMopArea] = []
+    var drawnVirtualWalls: [VirtualWall] = []
 
     // MARK: - Existing Restrictions
-    @Published var existingRestrictions: VirtualRestrictions?
-    @Published var restrictionToDelete: RestrictionIdentifier?
+    var existingRestrictions: VirtualRestrictions?
+    var restrictionToDelete: RestrictionIdentifier?
 
     // MARK: - Room Editing State
-    @Published var showRenameSheet = false
-    @Published var renameSegmentId: String?
-    @Published var renameNewName = ""
-    @Published var splitSegmentId: String?
-    @Published var selectedSegmentIds: Set<String> = []
+    var showRenameSheet = false
+    var renameSegmentId: String?
+    var renameNewName = ""
+    var splitSegmentId: String?
+    var selectedSegmentIds: Set<String> = []
 
     // MARK: - GoTo State
-    @Published var goToMarkerPosition: CGPoint?
-    @Published var goToApiCoords: (x: Int, y: Int)?
-    @Published var showGoToConfirm = false
+    var goToMarkerPosition: CGPoint?
+    var goToApiCoords: (x: Int, y: Int)?
+    var showGoToConfirm = false
 
     // MARK: - GoTo Presets
-    @Published var presetStore = GoToPresetStore()
-    @Published var showSavePresetSheet = false
-    @Published var pendingGoToX: Int?
-    @Published var pendingGoToY: Int?
-    @Published var newPresetName = ""
-    @Published var showPresetsSheet = false
-    @Published var showPresetsOnMap = false
-    @Published var editingPreset: GoToPreset?
+    var presetStore = GoToPresetStore()
+    var showSavePresetSheet = false
+    var pendingGoToX: Int?
+    var pendingGoToY: Int?
+    var newPresetName = ""
+    var showPresetsSheet = false
+    var showPresetsOnMap = false
+    var editingPreset: GoToPreset?
 
     // MARK: - Cleaning State
-    @Published var isCleaning = false
-    @Published var selectedIterations: Int = 1
+    var isCleaning = false
+    var selectedIterations: Int = 1
 
     // MARK: - UI State
-    @Published var showRoomLabels: Bool = true
+    var showRoomLabels: Bool = true
 
     // MARK: - Error State
-    @Published var errorMessage: String? = nil
+    var errorMessage: String? = nil
 
     // MARK: - Offline State
     @Published var isOffline: Bool = false
 
     // MARK: - Task Management
-    private var refreshTask: Task<Void, Never>?
+    @ObservationIgnored private var refreshTask: Task<Void, Never>?
 
     // MARK: - Computed Properties
     var api: ValetudoAPI? {
