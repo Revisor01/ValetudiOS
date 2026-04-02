@@ -111,8 +111,8 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [x] 18-01-PLAN.md — MapCacheService + MapViewModel: Disk-Cache-Service, Cache-Integration in loadMap/startMapRefresh, isOffline-Flag
-- [ ] 18-02-PLAN.md — Offline-Banner in MapView, Cache-Cleanup in RobotManager, Lokalisierung map.offline
+- [ ] 19-01-PLAN.md — Alle 11 ObservableObject-Klassen auf @Observable migrieren, @Published entfernen, @ObservationIgnored setzen
+- [ ] 19-02-PLAN.md — Alle View-Call-Sites migrieren: @StateObject zu @State, @ObservedObject zu var, @EnvironmentObject zu @Environment, Build-Verifikation
 
 ### Phase 1: Foundation
 **Goal**: Alle Inhalte der App nutzen sicheren Credential-Speicher, strukturiertes Logging und sichtbare Fehlermeldungen
@@ -380,4 +380,4 @@ v2.1.0: 16 -> 17 + 18 + 19 (17/18/19 koennen parallel nach 16)
 | 16. UI Reorganization | 1/1 | Complete    | 2026-04-01 |
 | 17. Background Monitoring | 2/2 | Complete    | 2026-04-02 |
 | 18. Map Caching | 2/2 | Complete    | 2026-04-02 |
-| 19. Observable Migration | 0/? | Not started | - |
+| 19. Observable Migration | 0/2 | Not started | - |
