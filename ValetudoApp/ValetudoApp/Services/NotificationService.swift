@@ -2,12 +2,14 @@ import Foundation
 import UserNotifications
 import SwiftUI
 import os
+import Observation
 
 @MainActor
-class NotificationService: ObservableObject {
+@Observable
+class NotificationService {
     static let shared = NotificationService()
 
-    @Published var isAuthorized = false
+    var isAuthorized = false
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "Notifications")
 
     // User preferences - synced with AppStorage in NotificationSettingsView
@@ -154,7 +156,7 @@ class NotificationService: ObservableObject {
     }
 
     // Static weak reference to RobotManager — set from ValetudoApp.swift onAppear
-    static weak var robotManagerRef: RobotManager?
+    @ObservationIgnored static weak var robotManagerRef: RobotManager?
 
     // MARK: - Setup Categories
     func setupCategories() {

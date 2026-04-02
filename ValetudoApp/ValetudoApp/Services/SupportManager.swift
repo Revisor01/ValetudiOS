@@ -2,17 +2,19 @@ import Foundation
 import os
 import StoreKit
 import SwiftUI
+import Observation
 
 @MainActor
-class SupportManager: ObservableObject {
+@Observable
+class SupportManager {
     static let shared = SupportManager()
 
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "SupportManager")
 
-    @Published var products: [Product] = []
-    @Published var isLoading = false
-    @Published var purchaseError: String?
-    @Published var showThankYou = false
+    var products: [Product] = []
+    var isLoading = false
+    var purchaseError: String?
+    var showThankYou = false
 
     // Support reminder tracking
     @AppStorage("supportReminderShown") private var reminderShown = false

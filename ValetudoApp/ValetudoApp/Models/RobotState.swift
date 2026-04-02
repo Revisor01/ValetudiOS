@@ -1,4 +1,5 @@
 import Foundation
+import Observation
 
 // MARK: - Robot Info
 struct RobotInfo: Codable {
@@ -827,8 +828,9 @@ struct ValetudoEvent: Codable, Identifiable {
 }
 
 @MainActor
-class GoToPresetStore: ObservableObject {
-    @Published var presets: [GoToPreset] = []
+@Observable
+class GoToPresetStore {
+    var presets: [GoToPreset] = []
 
     private let saveKey = "goToPresets"
 
