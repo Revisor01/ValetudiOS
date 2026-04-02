@@ -1,3 +1,4 @@
+import BackgroundTasks
 import SwiftUI
 import UserNotifications
 
@@ -7,6 +8,18 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil
     ) -> Bool {
         UNUserNotificationCenter.current().delegate = self
+
+        // BGTask-Handler registrieren — MUSS in didFinishLaunchingWithOptions passieren
+        BGTaskScheduler.shared.register(
+            forTaskWithIdentifier: BackgroundMonitorService.taskIdentifier,
+            using: nil
+        ) { task in
+            BackgroundMonitorService.shared.handleBackgroundRefresh(task: task as! BGAppRefreshTask)
+        }
+
+        // Initiales Scheduling (fuer frische Installationen die noch nie in den Hintergrund gingen)
+        BackgroundMonitorService.shared.scheduleBackgroundRefresh()
+
         return true
     }
 
@@ -27,6 +40,7 @@ class AppDelegate: NSObject, UIApplicationDelegate, UNUserNotificationCenterDele
 @main
 struct ValetudoApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    @Environment(\.scenePhase) private var scenePhase
     @StateObject private var robotManager = RobotManager()
     @StateObject private var errorRouter = ErrorRouter()
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
@@ -49,6 +63,11 @@ struct ValetudoApp: App {
                     .onAppear {
                         NotificationService.robotManagerRef = robotManager
                     }
+            }
+        }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .background {
+                BackgroundMonitorService.shared.scheduleBackgroundRefresh()
             }
         }
     }
