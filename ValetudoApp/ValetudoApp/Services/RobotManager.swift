@@ -64,6 +64,7 @@ class RobotManager: ObservableObject {
         robotStates.removeValue(forKey: id)
         previousStates.removeValue(forKey: id)
         saveRobots()
+        MapCacheService.shared.deleteCache(for: id)
     }
 
     func getAPI(for id: UUID) -> ValetudoAPI? {

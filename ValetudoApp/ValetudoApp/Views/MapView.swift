@@ -331,6 +331,25 @@ struct MapContentView: View {
                             if viewModel.editMode == .deleteRestriction, let p = params, let restrictions = viewModel.existingRestrictions {
                                 restrictionDeleteOverlay(params: p, restrictions: restrictions, viewSize: geometry.size)
                             }
+
+                            // Offline banner
+                            if viewModel.isOffline {
+                                VStack {
+                                    HStack(spacing: 6) {
+                                        Image(systemName: "wifi.slash")
+                                            .font(.caption)
+                                        Text(String(localized: "map.offline"))
+                                            .font(.caption)
+                                            .fontWeight(.medium)
+                                    }
+                                    .padding(.horizontal, 12)
+                                    .padding(.vertical, 6)
+                                    .background(.ultraThinMaterial)
+                                    .clipShape(Capsule())
+                                    .padding(.top, 8)
+                                    Spacer()
+                                }
+                            }
                         }
                         .gesture(combinedGesture)
                     } else {
