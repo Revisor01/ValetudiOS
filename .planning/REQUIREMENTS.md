@@ -26,9 +26,9 @@ Requirements for App Architecture & Background Capabilities. Each maps to roadma
 
 ### Observable Migration
 
-- [ ] **OBS-01**: Alle ViewModels migrieren von ObservableObject/@Published zu @Observable Macro
-- [ ] **OBS-02**: RobotManager migriert zu @Observable
-- [ ] **OBS-03**: UpdateService migriert zu @Observable
+- [x] **OBS-01**: Alle ViewModels migrieren von ObservableObject/@Published zu @Observable Macro
+- [x] **OBS-02**: RobotManager migriert zu @Observable
+- [x] **OBS-03**: UpdateService migriert zu @Observable
 - [ ] **OBS-04**: Alle @StateObject/@ObservedObject Referenzen werden durch @State/@Environment ersetzt
 
 ## Out of Scope
@@ -54,9 +54,9 @@ Requirements for App Architecture & Background Capabilities. Each maps to roadma
 | CACHE-01 | Phase 18 | Pending |
 | CACHE-02 | Phase 18 | Pending |
 | CACHE-03 | Phase 18 | Pending |
-| OBS-01 | Phase 19 | Pending |
-| OBS-02 | Phase 19 | Pending |
-| OBS-03 | Phase 19 | Pending |
+| OBS-01 | Phase 19 | Complete |
+| OBS-02 | Phase 19 | Complete |
+| OBS-03 | Phase 19 | Complete |
 | OBS-04 | Phase 19 | Pending |
 
 **Coverage:**

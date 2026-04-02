@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: verifying
-last_updated: "2026-04-01T21:45:53.623Z"
-last_activity: 2026-04-01
+last_updated: "2026-04-02T09:42:13.398Z"
+last_activity: 2026-04-02
 progress:
-  total_phases: 15
+  total_phases: 16
   completed_phases: 14
   total_plans: 38
-  completed_plans: 37
+  completed_plans: 38
 ---
 
 # Project State
@@ -26,7 +26,7 @@ See: .planning/PROJECT.md (updated 2026-03-29)
 Phase: 15 (ui-wiring) — EXECUTING
 Plan: 1 of 1
 Status: Phase complete — ready for verification
-Last activity: 2026-04-01
+Last activity: 2026-04-02
 
 ```
 [Phase 12]──[Phase 13]──[Phase 14]──[Phase 15]
@@ -73,6 +73,8 @@ Recent decisions affecting current work:
 - [Phase 14-apply-phase-hardening]: Checkpoint:human-verify auto-approved per autonomous-mode-instruction fuer Plan 14-02 Overlay
 - [Phase 15-ui-wiring]: if-else-chain reordered: .downloading VOR updateInProgress geprueft — lineare ProgressView greift statt generischem Spinner
 - [Phase 15-ui-wiring]: lastCheckDate reset in reset() — ermoeglicht Retry nach Fehler innerhalb derselben Stunde
+- [Phase 19-observable-migration]: @ObservationIgnored applied to private var Task/infrastructure properties; private let constants do not need it
+- [Phase 19-observable-migration]: presetStore in MapViewModel stays as plain var — nested @Observable is auto-tracked by SwiftUI
 
 ### Pending Todos
 
