@@ -20,9 +20,9 @@ Requirements for App Architecture & Background Capabilities. Each maps to roadma
 
 ### Map Caching
 
-- [ ] **CACHE-01**: Die letzte Karte jedes Roboters wird auf Disk gespeichert
-- [ ] **CACHE-02**: Gespeicherte Karte wird angezeigt wenn der Roboter nicht erreichbar ist
-- [ ] **CACHE-03**: Karte wird automatisch aktualisiert sobald Verbindung wieder steht
+- [x] **CACHE-01**: Die letzte Karte jedes Roboters wird auf Disk gespeichert
+- [x] **CACHE-02**: Gespeicherte Karte wird angezeigt wenn der Roboter nicht erreichbar ist
+- [x] **CACHE-03**: Karte wird automatisch aktualisiert sobald Verbindung wieder steht
 
 ### Observable Migration
 
@@ -51,9 +51,9 @@ Requirements for App Architecture & Background Capabilities. Each maps to roadma
 | BG-01 | Phase 17 | Complete |
 | BG-02 | Phase 17 | Complete |
 | BG-03 | Phase 17 | Complete |
-| CACHE-01 | Phase 18 | Pending |
-| CACHE-02 | Phase 18 | Pending |
-| CACHE-03 | Phase 18 | Pending |
+| CACHE-01 | Phase 18 | Complete |
+| CACHE-02 | Phase 18 | Complete |
+| CACHE-03 | Phase 18 | Complete |
 | OBS-01 | Phase 19 | Pending |
 | OBS-02 | Phase 19 | Pending |
 | OBS-03 | Phase 19 | Pending |
