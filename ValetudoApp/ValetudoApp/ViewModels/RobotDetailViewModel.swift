@@ -1,9 +1,11 @@
 import Foundation
 import SwiftUI
 import os
+import Observation
 
 @MainActor
-final class RobotDetailViewModel: ObservableObject {
+@Observable
+final class RobotDetailViewModel {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "RobotDetailViewModel")
 
     // MARK: - Identity
@@ -11,25 +13,25 @@ final class RobotDetailViewModel: ObservableObject {
     let robotManager: RobotManager
 
     // MARK: - Data state
-    @Published var segments: [Segment] = []
-    @Published var consumables: [Consumable] = []
-    @Published var selectedSegments: Set<String> = []
-    @Published var selectedIterations: Int = 1
-    @Published var isLoading = false
+    var segments: [Segment] = []
+    var consumables: [Consumable] = []
+    var selectedSegments: Set<String> = []
+    var selectedIterations: Int = 1
+    var isLoading = false
 
     // Intensity control presets
-    @Published var fanSpeedPresets: [String] = []
-    @Published var waterUsagePresets: [String] = []
-    @Published var operationModePresets: [String] = []
+    var fanSpeedPresets: [String] = []
+    var waterUsagePresets: [String] = []
+    var operationModePresets: [String] = []
 
     // Capability flags
-    @Published var hasManualControl = DebugConfig.showAllCapabilities
-    @Published var hasAutoEmptyTrigger = DebugConfig.showAllCapabilities
-    @Published var hasMopDockClean = DebugConfig.showAllCapabilities
-    @Published var hasMopDockDry = DebugConfig.showAllCapabilities
-    @Published var hasEvents = DebugConfig.showAllCapabilities
-    @Published var hasCleanRoute = DebugConfig.showAllCapabilities
-    @Published var hasObstacleImages = DebugConfig.showAllCapabilities
+    var hasManualControl = DebugConfig.showAllCapabilities
+    var hasAutoEmptyTrigger = DebugConfig.showAllCapabilities
+    var hasMopDockClean = DebugConfig.showAllCapabilities
+    var hasMopDockDry = DebugConfig.showAllCapabilities
+    var hasEvents = DebugConfig.showAllCapabilities
+    var hasCleanRoute = DebugConfig.showAllCapabilities
+    var hasObstacleImages = DebugConfig.showAllCapabilities
 
     // UpdateService — Single Source of Truth (STATE-04)
     private(set) var updateService: UpdateService?
@@ -45,24 +47,24 @@ final class RobotDetailViewModel: ObservableObject {
     }
 
     // Statistics
-    @Published var lastCleaningStats: [StatisticEntry] = []
-    @Published var totalStats: [StatisticEntry] = []
+    var lastCleaningStats: [StatisticEntry] = []
+    var totalStats: [StatisticEntry] = []
 
     // Events
-    @Published var events: [ValetudoEvent] = []
+    var events: [ValetudoEvent] = []
 
     // Clean Route
-    @Published var cleanRoutePresets: [String] = []
-    @Published var currentCleanRoute: String = ""
+    var cleanRoutePresets: [String] = []
+    var currentCleanRoute: String = ""
 
     // Obstacles (from map entities)
-    @Published var obstacles: [(id: String, label: String?)] = []
+    var obstacles: [(id: String, label: String?)] = []
 
     // Robot Properties
-    @Published var robotProperties: RobotProperties?
+    var robotProperties: RobotProperties?
 
     // Live stats polling
-    private var statsPollingTask: Task<Void, Never>?
+    @ObservationIgnored private var statsPollingTask: Task<Void, Never>?
 
     // MARK: - Computed properties
 
