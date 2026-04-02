@@ -2489,6 +2489,28 @@
         }
       }
     },
+    "map.offline" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline — Gespeicherte Karte"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Offline — Cached Map"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Hors ligne — Carte en cache"
+          }
+        }
+      }
+    },
     "map.nomop_hint": {
       "extractionState": "stale",
       "localizations": {
