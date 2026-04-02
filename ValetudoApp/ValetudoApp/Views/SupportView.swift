@@ -2,7 +2,7 @@ import SwiftUI
 import StoreKit
 
 struct SupportView: View {
-    @ObservedObject private var supportManager = SupportManager.shared
+    @Bindable private var supportManager = SupportManager.shared
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {

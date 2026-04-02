@@ -72,7 +72,7 @@ final class MapViewModel {
     var errorMessage: String? = nil
 
     // MARK: - Offline State
-    @Published var isOffline: Bool = false
+    var isOffline: Bool = false
 
     // MARK: - Task Management
     @ObservationIgnored private var refreshTask: Task<Void, Never>?

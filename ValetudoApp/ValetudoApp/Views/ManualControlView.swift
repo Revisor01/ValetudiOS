@@ -4,7 +4,7 @@ import os
 struct ManualControlView: View {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "ManualControlView")
     let robot: RobotConfig
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
 
     @State private var isEnabled = false
     @State private var useHighRes = false
@@ -221,6 +221,6 @@ struct ManualControlView: View {
 #Preview {
     NavigationStack {
         ManualControlView(robot: RobotConfig(name: "Test Robot", host: "192.168.0.35"))
-            .environmentObject(RobotManager())
+            .environment(RobotManager())
     }
 }

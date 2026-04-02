@@ -17,8 +17,11 @@ class SupportManager {
     var showThankYou = false
 
     // Support reminder tracking
+    @ObservationIgnored
     @AppStorage("supportReminderShown") private var reminderShown = false
+    @ObservationIgnored
     @AppStorage("hasSupported") private var hasSupported = false
+    @ObservationIgnored
     @AppStorage("appLaunchCount") private var launchCount = 0
 
     private init() {}

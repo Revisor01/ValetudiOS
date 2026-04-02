@@ -13,10 +13,15 @@ class NotificationService {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "Notifications")
 
     // User preferences - synced with AppStorage in NotificationSettingsView
+    @ObservationIgnored
     @AppStorage("notify_cleaning_complete") private var notifyCleaningComplete = true
+    @ObservationIgnored
     @AppStorage("notify_robot_error") private var notifyRobotError = true
+    @ObservationIgnored
     @AppStorage("notify_robot_stuck") private var notifyRobotStuck = true
+    @ObservationIgnored
     @AppStorage("notify_consumable_low") private var notifyConsumableLow = true
+    @ObservationIgnored
     @AppStorage("notify_robot_offline") private var notifyRobotOffline = true
 
     private init() {

@@ -1,9 +1,9 @@
 import SwiftUI
 
 struct AddRobotView: View {
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
     @Environment(\.dismiss) var dismiss
-    @StateObject private var scanner = NetworkScanner()
+    @State private var scanner = NetworkScanner()
 
     @State private var name = ""
     @State private var host = ""
@@ -157,7 +157,7 @@ struct AddRobotView: View {
 
 // MARK: - Network Scanner View
 struct NetworkScannerView: View {
-    @ObservedObject var scanner: NetworkScanner
+    var scanner: NetworkScanner
     @Environment(\.dismiss) var dismiss
     let onSelect: (DiscoveredRobot) -> Void
 
@@ -298,5 +298,5 @@ struct NetworkScannerView: View {
 
 #Preview {
     AddRobotView()
-        .environmentObject(RobotManager())
+        .environment(RobotManager())
 }

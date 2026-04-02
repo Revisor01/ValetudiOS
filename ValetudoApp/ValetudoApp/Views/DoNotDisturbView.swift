@@ -4,7 +4,7 @@ import os
 struct DoNotDisturbView: View {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "DoNotDisturbView")
     let robot: RobotConfig
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
 
     @State private var config: DoNotDisturbConfig?
     @State private var isEnabled = false
@@ -157,6 +157,6 @@ struct DoNotDisturbView: View {
 #Preview {
     NavigationStack {
         DoNotDisturbView(robot: RobotConfig(name: "Test Robot", host: "192.168.0.35"))
-            .environmentObject(RobotManager())
+            .environment(RobotManager())
     }
 }

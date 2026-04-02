@@ -6,7 +6,7 @@ private let sectionsLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "
 // MARK: - Auto Empty Dock Settings View
 struct AutoEmptyDockSettingsView: View {
     let robot: RobotConfig
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
 
     @State private var presets: [String] = []
     @State private var selectedPreset: String?
@@ -83,7 +83,7 @@ struct AutoEmptyDockSettingsView: View {
 // MARK: - Quirks View
 struct QuirksView: View {
     let robot: RobotConfig
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
 
     @State private var quirks: [Quirk] = []
     @State private var isLoading = false
@@ -194,7 +194,7 @@ struct QuirksView: View {
 // MARK: - WiFi Settings View
 struct WifiSettingsView: View {
     let robot: RobotConfig
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
 
     @State private var wifiStatus: WifiStatus?
     @State private var networks: [WifiNetwork] = []
@@ -410,7 +410,7 @@ struct WifiSettingsView: View {
 // MARK: - MQTT Settings View
 struct MQTTSettingsView: View {
     let robot: RobotConfig
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
 
     @State private var config: MQTTConfig?
     @State private var isLoading = false
@@ -586,7 +586,7 @@ struct MQTTSettingsView: View {
 // MARK: - NTP Settings View
 struct NTPSettingsView: View {
     let robot: RobotConfig
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
 
     @State private var config: NTPConfig?
     @State private var status: NTPStatus?
@@ -773,7 +773,7 @@ struct NTPSettingsView: View {
 // MARK: - Station Settings View (Dock/Station specific settings)
 struct StationSettingsView: View {
     let robot: RobotConfig
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
 
     @State private var isLoading = false
     @State private var isInitialLoad = true

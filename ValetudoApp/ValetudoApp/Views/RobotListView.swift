@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct RobotListView: View {
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
     @Binding var selectedRobotId: UUID?
     @State private var showAddRobot = false
     @State private var navigateToRobot: RobotConfig?
@@ -192,6 +192,6 @@ struct StatusBadge: View {
 #Preview {
     NavigationStack {
         RobotListView(selectedRobotId: .constant(nil))
-            .environmentObject(RobotManager())
+            .environment(RobotManager())
     }
 }

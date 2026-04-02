@@ -4,7 +4,7 @@ import os
 struct StatisticsView: View {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "StatisticsView")
     let robot: RobotConfig
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
 
     @State private var totalStats: [StatisticEntry] = []
     @State private var currentStats: [StatisticEntry] = []
@@ -144,6 +144,6 @@ struct StatisticRow: View {
 #Preview {
     NavigationStack {
         StatisticsView(robot: RobotConfig(name: "Test Robot", host: "192.168.0.35"))
-            .environmentObject(RobotManager())
+            .environment(RobotManager())
     }
 }

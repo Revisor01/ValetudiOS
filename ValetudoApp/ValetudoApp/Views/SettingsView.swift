@@ -1,8 +1,8 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @EnvironmentObject var robotManager: RobotManager
-    @ObservedObject var notificationService = NotificationService.shared
+    @Environment(RobotManager.self) var robotManager
+    var notificationService = NotificationService.shared
     @State private var robotToEdit: RobotConfig?
     @State private var showAddRobot = false
 
@@ -174,7 +174,7 @@ struct SettingsView: View {
 
 // MARK: - Edit Robot View
 struct EditRobotView: View {
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
     @Environment(\.dismiss) var dismiss
 
     let robot: RobotConfig
@@ -390,5 +390,5 @@ struct NotificationSettingsView: View {
 
 #Preview {
     SettingsView()
-        .environmentObject(RobotManager())
+        .environment(RobotManager())
 }

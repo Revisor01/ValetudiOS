@@ -4,7 +4,7 @@ import os
 private let consumablesLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "ConsumablesView")
 
 struct ConsumablesView: View {
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
     let robot: RobotConfig
 
     @State private var consumables: [Consumable] = []
@@ -154,6 +154,6 @@ struct ConsumableRow: View {
 #Preview {
     NavigationStack {
         ConsumablesView(robot: RobotConfig(name: "Test", host: "192.168.0.35"))
-            .environmentObject(RobotManager())
+            .environment(RobotManager())
     }
 }

@@ -4,7 +4,7 @@ import os
 struct RoomsManagementView: View {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "RoomsManagementView")
     let robot: RobotConfig
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
 
     @State private var segments: [Segment] = []
     @State private var isLoading = false
@@ -384,7 +384,7 @@ struct SplitSegmentSheet: View {
     let segments: [Segment]
     let onSplit: (String, ZonePoint, ZonePoint) async -> Void
     @Environment(\.dismiss) var dismiss
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
 
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "RoomsManagementView")
 
@@ -720,6 +720,6 @@ struct SegmentMaterialSheet: View {
 #Preview {
     NavigationStack {
         RoomsManagementView(robot: RobotConfig(name: "Test Robot", host: "192.168.0.35"))
-            .environmentObject(RobotManager())
+            .environment(RobotManager())
     }
 }

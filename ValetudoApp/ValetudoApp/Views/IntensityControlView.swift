@@ -4,7 +4,7 @@ import os
 struct IntensityControlView: View {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "IntensityControlView")
     let robot: RobotConfig
-    @EnvironmentObject var robotManager: RobotManager
+    @Environment(RobotManager.self) var robotManager
 
     @State private var fanSpeedPresets: [String] = []
     @State private var waterUsagePresets: [String] = []
@@ -222,6 +222,6 @@ struct IntensityControlView: View {
 #Preview {
     NavigationStack {
         IntensityControlView(robot: RobotConfig(name: "Test Robot", host: "192.168.0.35"))
-            .environmentObject(RobotManager())
+            .environment(RobotManager())
     }
 }

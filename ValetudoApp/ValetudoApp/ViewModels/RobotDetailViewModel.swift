@@ -64,8 +64,8 @@ final class RobotDetailViewModel {
     var robotProperties: RobotProperties?
 
     // Device Info
-    @Published var valetudoVersion: ValetudoVersion?
-    @Published var systemHostInfo: SystemHostInfo?
+    var valetudoVersion: ValetudoVersion?
+    var systemHostInfo: SystemHostInfo?
 
     // Live stats polling
     @ObservationIgnored private var statsPollingTask: Task<Void, Never>?
