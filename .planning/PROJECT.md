@@ -50,10 +50,16 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 - Property-Cleanup: isUpdating/showUpdateWarning entfernt -- v2.0.0
 - Französische Übersetzung: 206 Strings aus Community-PR -- v2.0.0
 
+### Validated (v2.1.0)
+
+- DeviceInfoSection: Geräte-Info vereinheitlicht in RobotDetailView -- v2.1.0
+- BGAppRefreshTask: Hintergrund-Status-Prüfung mit Notifications -- v2.1.0
+- Map-Caching: Offline-Karte mit automatischer Wiederherstellung -- v2.1.0
+- @Observable Migration: 11 Klassen, 19 Views, zero legacy patterns -- v2.1.0
+
 ### Active
 
-<!-- v2.1.0 — Architecture & Background -->
-(Defined in REQUIREMENTS.md)
+(Next milestone — run /gsd:new-milestone)
 
 ### Validated (v1.4.0)
 
@@ -72,10 +78,22 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 
 ## Current State
 
-**Shipped:** v2.0.0 (2026-04-01)
-**Version:** 2.0.0 — Update Process Hardening
+**Shipped:** v2.1.0 (2026-04-02)
+**Version:** 2.1.0 — Architecture & Background
 
-Die App hat vollständige Valetudo API-Abdeckung mit capability-gated UI, MVVM-Architektur mit 3 ViewModels + zentralem UpdateService, SSE-Echtzeit-Updates, mDNS-Discovery, 57 Unit-Tests, robustes Error-Handling mit State Machine für den Update-Prozess, Fullscreen-Lock während Apply, Reboot-Erkennung, und dreisprachige Lokalisierung (DE/EN/FR).
+Die App nutzt moderne @Observable-Architektur (iOS 17+), hat Geräte-Infos logisch im Roboter-Detail, prüft den Roboter-Status im Hintergrund mit lokalen Notifications, und cacht Karten für Offline-Zugriff. Basiert auf vollständiger Valetudo API-Abdeckung, SSE-Echtzeit-Updates, mDNS-Discovery, 57 Unit-Tests und dreisprachiger Lokalisierung (DE/EN/FR).
+
+<details>
+<summary>v2.1.0 Milestone (completed)</summary>
+
+**Goal:** App-Architektur modernisieren, Hintergrund-Monitoring, Karten-Caching, @Observable-Migration
+
+**Delivered:**
+- DeviceInfoSection: Firmware, Host-Info, Memory, CPU, Robot Properties in einer DisclosureGroup
+- BGAppRefreshTask für periodische Status-Prüfung mit lokalen Notifications
+- MapCacheService für Offline-Karte mit automatischer Wiederherstellung
+- Vollständige @Observable-Migration: 11 Klassen, 19 Views, 0 Legacy-Patterns
+</details>
 
 <details>
 <summary>v2.0.0 Milestone (completed)</summary>
@@ -125,11 +143,11 @@ Die App hat vollständige Valetudo API-Abdeckung mit capability-gated UI, MVVM-A
 ## Context
 
 - **Stack:** Swift 5.9, SwiftUI, iOS 17+, Zero externe Dependencies
-- **Architektur:** MVVM mit ViewModels (@MainActor ObservableObject) + zentralem RobotManager
+- **Architektur:** MVVM mit ViewModels (@MainActor @Observable) + zentralem RobotManager
 - **API:** Valetudo REST API v2, Basic Auth, optionales SSL
-- **Persistenz:** UserDefaults + Keychain (Credentials), kein CoreData
+- **Persistenz:** UserDefaults + Keychain (Credentials) + FileManager (Map Cache), kein CoreData
 - **Tests:** 57 Unit-Tests (ViewModel + API-Layer)
-- **Version:** v2.0.0 (App Store), Xcode 15+, XcodeGen
+- **Version:** v2.1.0, Xcode 15+, XcodeGen
 - **Lokalisierung:** Deutsch, Englisch, Französisch
 - **Robot:** Primär getestet mit Roborock S5 Max
 
@@ -167,4 +185,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-01 — Milestone v2.1.0 started*
+*Last updated: 2026-04-02 after v2.1.0 milestone*
