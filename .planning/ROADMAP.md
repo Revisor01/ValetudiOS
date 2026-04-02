@@ -76,7 +76,11 @@ Plans:
   1. BGAppRefreshTask ist registriert und prüft periodisch den Roboter-Status (ca. alle 15-30 Minuten, iOS bestimmt Timing)
   2. Benutzer erhält eine lokale Notification wenn die Reinigung abgeschlossen ist, auch wenn die App geschlossen war
   3. Benutzer erhält eine lokale Notification bei Fehlern (ErrorStateAttribute), auch wenn die App geschlossen war
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 17-01-PLAN.md — BackgroundMonitorService + Info.plist: BGTask-Handler, State-Persistenz, Notification-Dispatch
+- [ ] 17-02-PLAN.md — AppDelegate BGTask-Registrierung + scenePhase-Scheduling + Build-Validierung
 
 ### Phase 18: Map Caching
 **Goal**: Die letzte Karte jedes Roboters wird auf Disk gespeichert und ist auch bei nicht-erreichbarem Roboter sichtbar
@@ -216,7 +220,7 @@ Plans:
 Plans:
 - [x] 07-01-PLAN.md — FIX-01: Force-unwrap URLs in NetworkScanner.checkHost() und RobotDetailView.updateUrl ersetzen
 - [x] 07-02-PLAN.md — FIX-02: Stille catch-Blöcke in MapViewModel und RobotManager durch logger.warning/errorMessage ersetzen
-- [x] 07-03-PLAN.md — FIX-03: SSE Exponential Backoff (1s → 5s → 30s) in SSEConnectionManager.streamWithReconnect()
+- [x] 07-03-PLAN.md — FIX-03: SSE Exponential Backoff (1s -> 5s -> 30s) in SSEConnectionManager.streamWithReconnect()
 - [x] 07-04-PLAN.md — FIX-04: Koordinaten-Truncation in MapView.finishDrawing(), GoTo-Drag und MapViewModel.splitRoom() durch .rounded() beheben
 
 ### Phase 8: Test Coverage
@@ -247,7 +251,7 @@ Plans:
 Plans:
 - [x] 09-01-PLAN.md — Logger-Migration Views (Batch 1): DoNotDisturbView, StatisticsView, IntensityControlView, MapView (11 print()-Stellen)
 - [x] 09-02-PLAN.md — Logger-Migration Views (Batch 2): ManualControlView, RoomsManagementView, TimersView (17 print()-Stellen)
-- [x] 09-03-PLAN.md — Logger-Migration SupportManager + DispatchQueue→Task.sleep in SupportReminderView
+- [x] 09-03-PLAN.md — Logger-Migration SupportManager + DispatchQueue->Task.sleep in SupportReminderView
 
 ### Phase 10: Safety Fixes
 **Goal**: Kein Force-Unwrap gefährdet die App-Stabilität, Keychain-Fehler werden sichtbar geloggt, und alle Magic-Strings sind zentralisiert
@@ -263,7 +267,7 @@ Plans:
 - [x] 10-01-PLAN.md — SAFE-01/02/ORG-01: Force-Unwrap fix, Keychain-Fehlerlogger, Constants.swift mit URLs und ProductIDs
 
 ### Phase 11: View Decomposition
-**Goal**: Die drei größten Views sind in überschaubare Sub-Views aufgeteilt; keine einzelne View-Datei überschreitet eine handhabbare Größe
+**Goal**: Die drei groessten Views sind in ueberschaubare Sub-Views aufgeteilt; keine einzelne View-Datei ueberschreitet eine handhabbare Groesse
 **Depends on**: Phase 10
 **Requirements**: ORG-02, ORG-03, ORG-04
 **Success Criteria** (what must be TRUE):
@@ -314,7 +318,7 @@ Plans:
 **Success Criteria** (what must be TRUE):
   1. Sobald Apply gestartet wird, erscheint ein Vollbild-Overlay das nicht weggeklickt oder durch Wischen geschlossen werden kann; es verschwindet erst wenn der Roboter wieder erreichbar ist oder ein Timeout eintritt
   2. Das Display bleibt während Download und Apply durchgehend an — kein automatischer Schlafmodus nach 2 Minuten
-  3. Nach einem erfolgreichen Apply und Roboter-Neustart wird kein Fehler angezeigt; die App erkennt das Reboot-Fenster (30–90 Sekunden keine Verbindung) als erwartetes Verhalten
+  3. Nach einem erfolgreichen Apply und Roboter-Neustart wird kein Fehler angezeigt; die App erkennt das Reboot-Fenster (30-90 Sekunden keine Verbindung) als erwartetes Verhalten
   4. Wenn der Benutzer die App in den Hintergrund schiebt während Apply läuft, wird der API-Call nicht durch iOS abgebrochen
 **Plans**: 2 plans
 **UI hint**: yes
@@ -340,11 +344,11 @@ Plans:
 ## Progress
 
 **Execution Order:**
-v1.2.0: 1 → 2 → 3 → 4 (completed)
-v1.3.0: 5 → 6 → 7 → 8 (completed)
-v1.4.0: 9 → 10 → 11 (completed)
-v2.0.0: 12 → 13 → 14 → 15 (completed)
-v2.1.0: 16 → 17 + 18 + 19 (17/18/19 können parallel nach 16)
+v1.2.0: 1 -> 2 -> 3 -> 4 (completed)
+v1.3.0: 5 -> 6 -> 7 -> 8 (completed)
+v1.4.0: 9 -> 10 -> 11 (completed)
+v2.0.0: 12 -> 13 -> 14 -> 15 (completed)
+v2.1.0: 16 -> 17 + 18 + 19 (17/18/19 koennen parallel nach 16)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -364,6 +368,6 @@ v2.1.0: 16 → 17 + 18 + 19 (17/18/19 können parallel nach 16)
 | 14. Apply Phase Hardening | 2/2 | Complete   | 2026-04-01 |
 | 15. UI Wiring | 1/1 | Complete   | 2026-04-01 |
 | 16. UI Reorganization | 1/1 | Complete    | 2026-04-01 |
-| 17. Background Monitoring | 0/? | Not started | - |
+| 17. Background Monitoring | 0/2 | Not started | - |
 | 18. Map Caching | 0/? | Not started | - |
 | 19. Observable Migration | 0/? | Not started | - |
