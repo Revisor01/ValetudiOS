@@ -1,4 +1,7 @@
 import SwiftUI
+import os
+
+private let detailSectionsLogger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "RobotDetailSections")
 
 // MARK: - Pulse Animation for Live Indicator
 struct PulseAnimation: ViewModifier {
@@ -100,93 +103,193 @@ extension View {
     }
 }
 
-// MARK: - Device Info Section
-struct DeviceInfoSection: View {
-    var viewModel: RobotDetailViewModel
-    @State private var isExpanded = false
+// MARK: - Device Info View (eigenständige Unterseite)
+struct DeviceInfoView: View {
+    let robot: RobotConfig
+    let updateService: UpdateService?
+    @Environment(RobotManager.self) var robotManager
+
+    @State private var version: ValetudoVersion?
+    @State private var hostInfo: SystemHostInfo?
+    @State private var robotProperties: RobotProperties?
+    @State private var latestRelease: GitHubRelease?
+    @State private var isLoading = false
+
+    private var api: ValetudoAPI? {
+        robotManager.getAPI(for: robot.id)
+    }
+
+    private var hasUpdate: Bool {
+        if case .updateAvailable = updateService?.phase {
+            return true
+        }
+        guard let current = version?.release,
+              let latest = latestRelease?.tag_name else { return false }
+        return current != latest
+    }
 
     var body: some View {
-        let hasAnyData = viewModel.robotProperties != nil
-            || viewModel.valetudoVersion != nil
-            || viewModel.systemHostInfo != nil
-
-        if hasAnyData {
-            Section {
-                DisclosureGroup(isExpanded: $isExpanded) {
-                    // Hardware
-                    if let props = viewModel.robotProperties {
-                        if let model = props.model {
-                            LabeledContent(String(localized: "device_info.model"), value: model)
-                        }
-                        if let manufacturer = props.manufacturer {
-                            LabeledContent(String(localized: "device_info.manufacturer"), value: manufacturer)
-                        }
-                        if let serial = props.metaData?.manufacturerSerialNumber {
-                            LabeledContent(String(localized: "device_info.serial"), value: serial)
-                        }
-                    }
-
-                    // Valetudo
-                    if let version = viewModel.valetudoVersion {
-                        LabeledContent(String(localized: "device_info.valetudo_version"), value: version.release)
+        List {
+            // Update Available Banner
+            if hasUpdate, let latest = latestRelease {
+                Section {
+                    Link(destination: URL(string: latest.html_url)!) {
                         HStack {
-                            Text(String(localized: "device_info.commit"))
-                                .foregroundStyle(.secondary)
-                            Spacer()
-                            Text(String(version.commit.prefix(8)))
-                                .font(.system(.caption, design: .monospaced))
-                        }
-                    }
-
-                    // System
-                    if let info = viewModel.systemHostInfo {
-                        LabeledContent(String(localized: "device_info.hostname"), value: info.hostname)
-                        LabeledContent(String(localized: "device_info.uptime"), value: formatUptime(info.uptime))
-
-                        // CPU bar
-                        if let load = info.load {
-                            HStack {
-                                Text(String(localized: "device_info.cpu"))
+                            Image(systemName: "arrow.down.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(.green)
+                            VStack(alignment: .leading) {
+                                Text(String(localized: "update.available"))
+                                    .fontWeight(.medium)
+                                    .foregroundStyle(.primary)
+                                Text("\(version?.release ?? "") → \(latest.tag_name)")
+                                    .font(.caption)
                                     .foregroundStyle(.secondary)
-                                Spacer()
-                                let normalizedLoad = min(load._1, 1.0)
-                                ProgressView(value: normalizedLoad, total: 1.0)
-                                    .tint(normalizedLoad > 0.8 ? .red : .blue)
-                                    .frame(width: 100)
                             }
-                        }
-
-                        // Memory bar
-                        HStack {
-                            Text(String(localized: "device_info.memory"))
-                                .foregroundStyle(.secondary)
                             Spacer()
-                            Text(formatBytes(info.mem.total - info.mem.free))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Text("/")
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                            Text(formatBytes(info.mem.total))
-                                .font(.caption)
+                            Image(systemName: "chevron.right")
                                 .foregroundStyle(.secondary)
                         }
-                        let usedPercent = Double(info.mem.total - info.mem.free) / Double(info.mem.total)
-                        GeometryReader { geometry in
-                            ZStack(alignment: .leading) {
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(Color.secondary.opacity(0.2))
-                                RoundedRectangle(cornerRadius: 4)
-                                    .fill(usedPercent > 0.8 ? Color.red : Color.blue)
-                                    .frame(width: geometry.size.width * usedPercent)
-                            }
-                        }
-                        .frame(height: 8)
                     }
-                } label: {
-                    Label(String(localized: "device_info.title"), systemImage: "cpu")
                 }
             }
+
+            // Robot Properties (Hardware)
+            if let props = robotProperties {
+                Section {
+                    if let model = props.model {
+                        LabeledContent(String(localized: "device_info.model"), value: model)
+                    }
+                    if let firmware = props.firmwareVersion {
+                        LabeledContent("Firmware", value: firmware)
+                    }
+                    if let manufacturer = props.manufacturer {
+                        LabeledContent(String(localized: "device_info.manufacturer"), value: manufacturer)
+                    }
+                    if let serial = props.metaData?.manufacturerSerialNumber {
+                        LabeledContent(String(localized: "device_info.serial"), value: serial)
+                    }
+                } header: {
+                    Label(String(localized: "device_info.hardware"), systemImage: "poweroutlet.type.b")
+                }
+            }
+
+            // Valetudo Version
+            Section {
+                HStack {
+                    Text("Version")
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    HStack(spacing: 8) {
+                        Text(version?.release ?? "-")
+                        if hasUpdate {
+                            Image(systemName: "exclamationmark.circle.fill")
+                                .foregroundStyle(.orange)
+                        } else if latestRelease != nil {
+                            Image(systemName: "checkmark.circle.fill")
+                                .foregroundStyle(.green)
+                        }
+                    }
+                }
+                if let version = version {
+                    HStack {
+                        Text("Commit")
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(String(version.commit.prefix(8)))
+                            .font(.system(.caption, design: .monospaced))
+                    }
+                }
+                if let latest = latestRelease {
+                    Link(destination: URL(string: latest.html_url)!) {
+                        HStack {
+                            Text(String(localized: "update.latest"))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text(latest.tag_name)
+                            Image(systemName: "arrow.up.forward.square")
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+            } header: {
+                Label("Valetudo", systemImage: "app.badge")
+            }
+
+            // System Info
+            if let info = hostInfo {
+                Section {
+                    LabeledContent(String(localized: "device_info.hostname"), value: info.hostname)
+                    HStack {
+                        Text("Architecture")
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text(info.arch)
+                    }
+                    LabeledContent(String(localized: "device_info.uptime"), value: formatUptime(info.uptime))
+                    if let load = info.load {
+                        HStack {
+                            Text(String(localized: "device_info.cpu"))
+                                .foregroundStyle(.secondary)
+                            Spacer()
+                            Text(String(format: "%.2f / %.2f / %.2f", load._1, load._5, load._15))
+                                .font(.caption)
+                        }
+                    }
+                } header: {
+                    Label(String(localized: "info.system"), systemImage: "cpu")
+                }
+
+                Section {
+                    LabeledContent(String(localized: "info.total"), value: formatBytes(info.mem.total))
+                    LabeledContent(String(localized: "info.free"), value: formatBytes(info.mem.free))
+                    LabeledContent("Valetudo", value: formatBytes(info.mem.valetudo_current))
+                } header: {
+                    Label(String(localized: "info.memory"), systemImage: "memorychip")
+                }
+            }
+        }
+        .navigationTitle(String(localized: "device_info.title"))
+        .task {
+            await loadInfo()
+        }
+        .refreshable {
+            await loadInfo()
+        }
+        .overlay {
+            if isLoading && version == nil {
+                ProgressView()
+            }
+        }
+    }
+
+    private func loadInfo() async {
+        guard let api = api else { return }
+        isLoading = true
+        defer { isLoading = false }
+
+        do {
+            async let v = api.getValetudoVersion()
+            async let h = api.getSystemHostInfo()
+            async let p = api.getRobotProperties()
+            version = try await v
+            hostInfo = try await h
+            robotProperties = try? await p
+        } catch {
+            detailSectionsLogger.error("Failed to load device info: \(error, privacy: .public)")
+        }
+
+        await checkForUpdate()
+    }
+
+    private func checkForUpdate() async {
+        guard let url = URL(string: Constants.githubApiLatestReleaseUrl) else { return }
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            latestRelease = try JSONDecoder().decode(GitHubRelease.self, from: data)
+        } catch {
+            detailSectionsLogger.error("Failed to check for updates: \(error, privacy: .public)")
         }
     }
 
