@@ -405,6 +405,17 @@ struct RobotSettingsView: View {
                     }
                 }
 
+                // Geräteinfo-Valetudo
+                NavigationLink {
+                    DeviceInfoView(robot: robot, updateService: updateService)
+                } label: {
+                    HStack {
+                        Image(systemName: "info.circle")
+                            .foregroundStyle(.gray)
+                        Text(String(localized: "device_info.valetudo_title"))
+                    }
+                }
+
             } header: {
                 Label(String(localized: "settings.system"), systemImage: "gearshape.2")
             }

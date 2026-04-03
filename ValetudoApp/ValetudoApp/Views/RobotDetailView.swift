@@ -227,13 +227,6 @@ struct RobotDetailView: View {
 
                 // Settings Section
                 Section {
-                    // Geräteinformationen (als erster Menüpunkt)
-                    NavigationLink {
-                        DeviceInfoView(robot: viewModel.robot, updateService: viewModel.updateService)
-                    } label: {
-                        Label(String(localized: "device_info.title"), systemImage: "cpu")
-                    }
-
                     // Roboter (Robot Settings)
                     NavigationLink {
                         RobotSettingsView(robot: viewModel.robot, robotManager: viewModel.robotManager, updateService: viewModel.updateService)

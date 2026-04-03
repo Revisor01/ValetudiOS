@@ -154,27 +154,7 @@ struct DeviceInfoView: View {
                 }
             }
 
-            // Robot Properties (Hardware)
-            if let props = robotProperties {
-                Section {
-                    if let model = props.model {
-                        LabeledContent(String(localized: "device_info.model"), value: model)
-                    }
-                    if let firmware = props.firmwareVersion {
-                        LabeledContent("Firmware", value: firmware)
-                    }
-                    if let manufacturer = props.manufacturer {
-                        LabeledContent(String(localized: "device_info.manufacturer"), value: manufacturer)
-                    }
-                    if let serial = props.metaData?.manufacturerSerialNumber {
-                        LabeledContent(String(localized: "device_info.serial"), value: serial)
-                    }
-                } header: {
-                    Label(String(localized: "device_info.hardware"), systemImage: "poweroutlet.type.b")
-                }
-            }
-
-            // Valetudo Version
+            // Valetudo
             Section {
                 HStack {
                     Text("Version")
@@ -217,7 +197,7 @@ struct DeviceInfoView: View {
                 Label("Valetudo", systemImage: "app.badge")
             }
 
-            // System Info
+            // System
             if let info = hostInfo {
                 Section {
                     LabeledContent(String(localized: "device_info.hostname"), value: info.hostname)
@@ -226,6 +206,9 @@ struct DeviceInfoView: View {
                             .foregroundStyle(.secondary)
                         Spacer()
                         Text(info.arch)
+                    }
+                    if let firmware = robotProperties?.firmwareVersion {
+                        LabeledContent("Firmware", value: firmware)
                     }
                     LabeledContent(String(localized: "device_info.uptime"), value: formatUptime(info.uptime))
                     if let load = info.load {
@@ -237,20 +220,19 @@ struct DeviceInfoView: View {
                                 .font(.caption)
                         }
                     }
+                    HStack {
+                        Text(String(localized: "info.memory"))
+                            .foregroundStyle(.secondary)
+                        Spacer()
+                        Text("\(formatBytes(info.mem.total - info.mem.free)) / \(formatBytes(info.mem.total))")
+                            .font(.caption)
+                    }
                 } header: {
                     Label(String(localized: "info.system"), systemImage: "cpu")
                 }
-
-                Section {
-                    LabeledContent(String(localized: "info.total"), value: formatBytes(info.mem.total))
-                    LabeledContent(String(localized: "info.free"), value: formatBytes(info.mem.free))
-                    LabeledContent("Valetudo", value: formatBytes(info.mem.valetudo_current))
-                } header: {
-                    Label(String(localized: "info.memory"), systemImage: "memorychip")
-                }
             }
         }
-        .navigationTitle(String(localized: "device_info.title"))
+        .navigationTitle(String(localized: "device_info.valetudo_title"))
         .task {
             await loadInfo()
         }
