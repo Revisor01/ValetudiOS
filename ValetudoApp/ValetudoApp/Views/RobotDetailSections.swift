@@ -232,7 +232,7 @@ struct DeviceInfoView: View {
                 }
             }
         }
-        .navigationTitle(String(localized: "device_info.valetudo_title"))
+        .navigationTitle(String(localized: "device_info.title"))
         .task {
             await loadInfo()
         }
