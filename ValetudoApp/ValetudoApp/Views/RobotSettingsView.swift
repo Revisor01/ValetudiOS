@@ -412,7 +412,7 @@ struct RobotSettingsView: View {
                     HStack {
                         Image(systemName: "info.circle")
                             .foregroundStyle(.gray)
-                        Text(String(localized: "device_info.valetudo_title"))
+                        Text(String(localized: "device_info.title"))
                     }
                 }
 
