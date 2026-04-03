@@ -32,6 +32,8 @@ targets:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
           - UIInterfaceOrientationLandscapeRight
+        CFBundleShortVersionString: "$(MARKETING_VERSION)"
+        CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
         CFBundleDisplayName: ValetudiOS
         UIRequiresFullScreen: true
         CFBundleIconName: AppIcon
@@ -42,7 +44,7 @@ targets:
           - de.simonluthe.ValetudiOS.backgroundRefresh
     settings:
       base:
-        MARKETING_VERSION: "2.0.0"
+        MARKETING_VERSION: "2.1.0"
         CURRENT_PROJECT_VERSION: "1"
         PRODUCT_BUNDLE_IDENTIFIER: de.simonluthe.ValetudiOS
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
