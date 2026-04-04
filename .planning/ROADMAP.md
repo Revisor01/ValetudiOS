@@ -7,6 +7,7 @@
 - [x] **v1.4.0 Code Quality & Robustness** - Phases 9-11 (completed 2026-03-29)
 - [x] **v2.0.0 Update Process Hardening** - Phases 12-15 (completed 2026-04-01)
 - [x] **v2.1.0 Architecture & Background** - Phases 16-19 (completed 2026-04-02)
+- [ ] **v2.2.0 Room Interaction & Cleaning Order** - Phases 20-21
 
 ## Phases
 
@@ -51,6 +52,13 @@
 - [x] **Phase 17: Background Monitoring** - BGAppRefreshTask für periodische Status-Prüfung und lokale Notifications bei geschlossener App (completed 2026-04-02)
 - [x] **Phase 18: Map Caching** - Letzte Karte auf Disk speichern, Offline-Anzeige bei nicht-erreichbarem Roboter (completed 2026-04-02)
 - [x] **Phase 19: Observable Migration** - ObservableObject/@Published auf @Observable Macro migrieren (iOS 17+) (completed 2026-04-02)
+
+### v2.2.0 Room Interaction & Cleaning Order
+
+**Milestone Goal:** Raumauswahl per Tap auf die Raumfläche ermöglichen und die Auswahlreihenfolge als Reinigungsreihenfolge an die Valetudo API übergeben.
+
+- [ ] **Phase 20: Room Tap Selection** - Hit-Testing auf Raumpolygone in der Canvas implementieren, sodass Tap auf die Fläche einen Raum auswählt
+- [ ] **Phase 21: Cleaning Order** - Auswahlreihenfolge als nummerierte Zahlen auf der Karte anzeigen und beim API-Aufruf übergeben
 
 ## Phase Details
 
@@ -113,6 +121,28 @@ Plans:
 Plans:
 - [x] 19-01-PLAN.md — Alle 11 ObservableObject-Klassen auf @Observable migrieren, @Published entfernen, @ObservationIgnored setzen
 - [x] 19-02-PLAN.md — Alle View-Call-Sites migrieren: @StateObject zu @State, @ObservedObject zu var, @EnvironmentObject zu @Environment, Build-Verifikation
+
+### Phase 20: Room Tap Selection
+**Goal**: Benutzer kann einen Raum durch Tap auf seine Fläche in der Karte auswählen — nicht nur durch Tap auf das Label
+**Depends on**: Phase 19
+**Requirements**: TAP-01, TAP-02
+**Success Criteria** (what must be TRUE):
+  1. Tap auf die Fläche eines Raums (nicht das Label) wählt den Raum aus — der Raum wechselt in den selektierten Zustand
+  2. Tap auf die Raumfläche funktioniert auch wenn Room-Labels in den Einstellungen ausgeblendet sind
+  3. Tap auf eine Stelle ohne Raumfläche (leere Karte, Wand) wählt keinen Raum aus — kein unbeabsichtigter Toggle
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 21: Cleaning Order
+**Goal**: Die Auswahlreihenfolge der Räume wird als Reinigungsreihenfolge auf der Karte visualisiert und beim Start an die Valetudo API übergeben
+**Depends on**: Phase 20
+**Requirements**: ROOM-01, ROOM-02
+**Success Criteria** (what must be TRUE):
+  1. Beim Auswählen eines Raums erscheint eine Zahl (1, 2, 3, ...) auf der Karte über dem jeweiligen Raum — die Zahl entspricht der Auswahlreihenfolge
+  2. Beim Starten der Raumreinigung wird die Reihenfolge als geordnete Liste an die Valetudo API übergeben (nicht ungeordnet)
+  3. Wird ein Raum abgewählt, werden die Zahlen der verbleibenden Räume neu nummeriert (keine Lücken)
+**Plans**: TBD
+**UI hint**: yes
 
 ### Phase 1: Foundation
 **Goal**: Alle Inhalte der App nutzen sicheren Credential-Speicher, strukturiertes Logging und sichtbare Fehlermeldungen
@@ -359,6 +389,7 @@ v1.3.0: 5 -> 6 -> 7 -> 8 (completed)
 v1.4.0: 9 -> 10 -> 11 (completed)
 v2.0.0: 12 -> 13 -> 14 -> 15 (completed)
 v2.1.0: 16 -> 17 + 18 + 19 (17/18/19 koennen parallel nach 16)
+v2.2.0: 20 -> 21
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -381,6 +412,8 @@ v2.1.0: 16 -> 17 + 18 + 19 (17/18/19 koennen parallel nach 16)
 | 17. Background Monitoring | 2/2 | Complete    | 2026-04-02 |
 | 18. Map Caching | 2/2 | Complete    | 2026-04-02 |
 | 19. Observable Migration | 2/2 | Complete    | 2026-04-02 |
+| 20. Room Tap Selection | 0/? | Not started | - |
+| 21. Cleaning Order | 0/? | Not started | - |
 
 ## Backlog
 

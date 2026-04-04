@@ -29,15 +29,15 @@ Requirements for Room Interaction & Cleaning Order. Each maps to roadmap phases.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| ROOM-01 | TBD | Pending |
-| ROOM-02 | TBD | Pending |
-| TAP-01 | TBD | Pending |
-| TAP-02 | TBD | Pending |
+| TAP-01 | Phase 20 | Pending |
+| TAP-02 | Phase 20 | Pending |
+| ROOM-01 | Phase 21 | Pending |
+| ROOM-02 | Phase 21 | Pending |
 
 **Coverage:**
 - v2.2.0 requirements: 4 total
-- Mapped to phases: 0 (roadmap pending)
-- Unmapped: 4
+- Mapped to phases: 4
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-04*
