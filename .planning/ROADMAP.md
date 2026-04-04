@@ -144,7 +144,10 @@ Plans:
   1. Beim Auswählen eines Raums erscheint eine Zahl (1, 2, 3, ...) auf der Karte über dem jeweiligen Raum — die Zahl entspricht der Auswahlreihenfolge
   2. Beim Starten der Raumreinigung wird die Reihenfolge als geordnete Liste an die Valetudo API übergeben (nicht ungeordnet)
   3. Wird ein Raum abgewählt, werden die Zahlen der verbleibenden Räume neu nummeriert (keine Lücken)
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 21-01-PLAN.md — Set→Array Migration fuer Reinigungsreihenfolge
+- [ ] 21-02-PLAN.md — Nummerierte Badges auf der Karte
 **UI hint**: yes
 
 ### Phase 1: Foundation
