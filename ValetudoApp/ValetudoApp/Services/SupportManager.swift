@@ -31,8 +31,20 @@ class SupportManager {
         defer { isLoading = false }
 
         do {
-            products = try await Product.products(for: Constants.supportProductIds)
+            let loaded = try await Product.products(for: Constants.supportProductIds)
                 .sorted { $0.price < $1.price }
+            products = loaded
+
+            // DEBT-07: Validiere dass alle konfigurierten Product IDs geladen wurden
+            let loadedIds = Set(loaded.map { $0.id })
+            let missingIds = Constants.supportProductIds.subtracting(loadedIds)
+            if !missingIds.isEmpty {
+                logger.error("StoreKit Product IDs not found in App Store: \(missingIds.sorted().joined(separator: ", "), privacy: .public)")
+            }
+            let unexpectedIds = loadedIds.subtracting(Constants.supportProductIds)
+            if !unexpectedIds.isEmpty {
+                logger.warning("StoreKit returned unexpected Product IDs: \(unexpectedIds.sorted().joined(separator: ", "), privacy: .public)")
+            }
         } catch {
             logger.error("Failed to load products: \(error.localizedDescription, privacy: .public)")
         }
