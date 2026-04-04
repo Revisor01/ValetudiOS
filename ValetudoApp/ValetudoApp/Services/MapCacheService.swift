@@ -4,6 +4,7 @@ import os
 final class MapCacheService {
     static let shared = MapCacheService()
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "MapCacheService")
+    private var lastDataHash: [UUID: Int] = [:]
     private init() {}
 
     // MARK: - Cache Directory
@@ -25,6 +26,23 @@ final class MapCacheService {
     }
 
     // MARK: - Public API
+
+    func saveIfChanged(_ map: RobotMap, for robotId: UUID) async {
+        do {
+            let url = try cacheURL(for: robotId)
+            let data = try JSONEncoder().encode(map)
+            let newHash = data.hashValue
+
+            if lastDataHash[robotId] == newHash {
+                return  // Keine Aenderung — Disk-Write ueberspringen
+            }
+            lastDataHash[robotId] = newHash
+            try data.write(to: url, options: .atomic)
+            logger.debug("MapCache saved (changed) for \(robotId.uuidString, privacy: .public)")
+        } catch {
+            logger.error("MapCache save failed for \(robotId.uuidString, privacy: .public): \(error.localizedDescription, privacy: .public)")
+        }
+    }
 
     func save(_ map: RobotMap, for robotId: UUID) async {
         do {
