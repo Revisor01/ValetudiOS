@@ -230,7 +230,9 @@ struct MapContentView: View {
                                 currentDrawStart: currentDrawStart,
                                 currentDrawEnd: currentDrawEnd,
                                 editMode: viewModel.editMode,
-                                showRoomLabels: viewModel.showRoomLabels
+                                showRoomLabels: viewModel.showRoomLabels,
+                                segmentPixelSets: viewModel.segmentPixelSets,
+                                cachedSegmentInfos: viewModel.cachedSegmentInfos
                             )
                             .id(viewModel.mapRefreshId) // Force redraw when segments change
                             .scaleEffect(scale)

@@ -17,6 +17,8 @@ struct InteractiveMapView: View {
     var currentDrawEnd: CGPoint?
     var editMode: MapEditMode = .none
     var showRoomLabels: Bool = true
+    var segmentPixelSets: [String: Set<Int>] = [:]
+    var cachedSegmentInfos: [SegmentInfo] = []
 
     // Soft pastel room colors
     private let segmentColors: [Color] = [
@@ -146,9 +148,9 @@ struct InteractiveMapView: View {
                 size: geometry.size
             )
 
-            if let p = params, let layers = map.layers {
+            if let p = params {
                 // Room labels only
-                ForEach(segmentInfos(from: layers), id: \.id) { info in
+                ForEach(cachedSegmentInfos, id: \.id) { info in
                     let x = CGFloat(info.midX) * p.scale + p.offsetX
                     let y = CGFloat(info.midY) * p.scale + p.offsetY
                     let isSelected = selectedSegmentIds.contains(info.id)
@@ -194,9 +196,9 @@ struct InteractiveMapView: View {
                     size: geometry.size
                 )
 
-                if let p = params, let layers = map.layers {
+                if let p = params {
                     ForEach(Array(selectedSegmentIds.enumerated()), id: \.element) { index, segmentId in
-                        if let info = segmentInfos(from: layers).first(where: { $0.id == segmentId }) {
+                        if let info = cachedSegmentInfos.first(where: { $0.id == segmentId }) {
                             let x = CGFloat(info.midX) * p.scale + p.offsetX
                             let y = CGFloat(info.midY) * p.scale + p.offsetY
 
@@ -232,75 +234,18 @@ struct InteractiveMapView: View {
         let pixelSize = map.pixelSize ?? 5
         guard let p = calculateMapParams(layers: layers, pixelSize: pixelSize, size: size) else { return }
 
-        // Reverse transform: Canvas coordinate -> pixel coordinate
         let pixelX = Int(((location.x - p.offsetX) / p.scale).rounded())
         let pixelY = Int(((location.y - p.offsetY) / p.scale).rounded())
 
-        // Segment lookup: first layer wins on overlap (per user decision)
-        for layer in layers where layer.type == "segment" {
-            let pixels = layer.decompressedPixels
-            var i = 0
-            while i < pixels.count - 1 {
-                if pixels[i] == pixelX && pixels[i + 1] == pixelY {
-                    if let segmentId = layer.metaData?.segmentId {
-                        toggleSegment(segmentId)
-                    }
-                    return
-                }
-                i += 2
+        // O(1) lookup per segment statt linearem Pixel-Scan
+        let key = pixelX &<< 16 | pixelY
+        for (segmentId, pixelSet) in segmentPixelSets {
+            if pixelSet.contains(key) {
+                toggleSegment(segmentId)
+                return
             }
         }
         // No hit — no toggle, no unintended state change
-    }
-
-    // MARK: - Segment Info
-    private struct SegmentInfo: Identifiable {
-        let id: String
-        let name: String
-        let midX: Int
-        let midY: Int
-    }
-
-    private func segmentInfos(from layers: [MapLayer]) -> [SegmentInfo] {
-        var infos: [SegmentInfo] = []
-
-        for layer in layers where layer.type == "segment" {
-            guard let segmentId = layer.metaData?.segmentId else { continue }
-
-            // Try to get mid point from dimensions first
-            var midX: Int? = layer.dimensions?.x?.mid
-            var midY: Int? = layer.dimensions?.y?.mid
-
-            // If no dimensions, calculate from decompressed pixels
-            if midX == nil || midY == nil {
-                let pixels = layer.decompressedPixels
-                if pixels.count >= 2 {
-                    var sumX = 0, sumY = 0, count = 0
-                    var i = 0
-                    while i < pixels.count - 1 {
-                        sumX += pixels[i]
-                        sumY += pixels[i + 1]
-                        count += 1
-                        i += 2
-                    }
-                    if count > 0 {
-                        midX = midX ?? (sumX / count)
-                        midY = midY ?? (sumY / count)
-                    }
-                }
-            }
-
-            guard let finalMidX = midX, let finalMidY = midY else { continue }
-
-            // Get name from segments array or use ID
-            let name = segments.first { $0.id == segmentId }?.displayName
-                ?? layer.metaData?.name
-                ?? String(localized: "map.room") + " \(segmentId)"
-
-            infos.append(SegmentInfo(id: segmentId, name: name, midX: finalMidX, midY: finalMidY))
-        }
-
-        return infos
     }
 
     // MARK: - Drawing Functions
