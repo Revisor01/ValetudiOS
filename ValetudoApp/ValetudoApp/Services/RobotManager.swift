@@ -10,6 +10,33 @@ class RobotManager {
     var robotStates: [UUID: RobotStatus] = [:]
     var robotUpdateAvailable: [UUID: Bool] = [:]
 
+    // MARK: - Centralized Room Selection (DEBT-02)
+    var roomSelections: [UUID: [String]] = [:]
+    var iterationSelections: [UUID: Int] = [:]
+
+    func toggleRoom(_ id: String, for robotId: UUID) {
+        var current = roomSelections[robotId] ?? []
+        if current.contains(id) {
+            current.removeAll { $0 == id }
+        } else {
+            current.append(id)
+        }
+        roomSelections[robotId] = current
+    }
+
+    func clearRoomSelection(for robotId: UUID) {
+        roomSelections[robotId] = nil
+        iterationSelections[robotId] = nil
+    }
+
+    func selectedRooms(for robotId: UUID) -> [String] {
+        roomSelections[robotId] ?? []
+    }
+
+    func selectedIterationCount(for robotId: UUID) -> Int {
+        iterationSelections[robotId] ?? 1
+    }
+
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "RobotManager")
     @ObservationIgnored private var apis: [UUID: ValetudoAPI] = [:]
     @ObservationIgnored private var refreshTask: Task<Void, Never>?
