@@ -381,3 +381,13 @@ v2.1.0: 16 -> 17 + 18 + 19 (17/18/19 koennen parallel nach 16)
 | 17. Background Monitoring | 2/2 | Complete    | 2026-04-02 |
 | 18. Map Caching | 2/2 | Complete    | 2026-04-02 |
 | 19. Observable Migration | 2/2 | Complete    | 2026-04-02 |
+
+## Backlog
+
+### Phase 999.1: Reinigungsreihenfolge der Räume festlegen (BACKLOG)
+**Goal**: Benutzer kann die Reihenfolge bestimmen, in der die Räume gereinigt werden (Drag & Drop oder nummerierte Liste)
+**Requirements**: TBD
+**Plans**: 0 plans
+
+Plans:
+- [ ] TBD (promote with /gsd:review-backlog when ready)
