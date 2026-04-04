@@ -166,23 +166,65 @@ final class MapViewModel {
             guard let self else { return }
             guard let api = self.api else { return }
 
-            // Poll map every 2 seconds
+            var retryCount = 0
+
             while !Task.isCancelled {
-                try? await Task.sleep(for: .seconds(2))
-                if !Task.isCancelled {
+                do {
+                    let bytes = try await api.streamMapLines()
+                    retryCount = 0
+                    logger.info("Map SSE connected for \(self.robot.id, privacy: .public)")
+
+                    for try await line in bytes.lines {
+                        if Task.isCancelled { break }
+                        guard line.hasPrefix("data:") else { continue }
+                        let jsonString = String(line.dropFirst(5)).trimmingCharacters(in: .whitespaces)
+                        guard !jsonString.isEmpty,
+                              let jsonData = jsonString.data(using: .utf8) else { continue }
+
+                        do {
+                            let newMap = try JSONDecoder().decode(RobotMap.self, from: jsonData)
+                            self.map = newMap
+                            self.isOffline = false
+                            await MapCacheService.shared.saveIfChanged(newMap, for: self.robot.id)
+                        } catch {
+                            // SSE event war kein vollstaendiges RobotMap — fallback: einzelner HTTP-GET
+                            logger.warning("Map SSE decode failed, falling back to HTTP GET: \(error.localizedDescription, privacy: .public)")
+                            if let fallbackMap = try? await api.getMap() {
+                                self.map = fallbackMap
+                                self.isOffline = false
+                                await MapCacheService.shared.saveIfChanged(fallbackMap, for: self.robot.id)
+                            }
+                        }
+                    }
+
+                } catch is CancellationError {
+                    break
+                } catch {
+                    logger.warning("Map SSE error: \(error.localizedDescription, privacy: .public) — falling back to HTTP poll")
+                    // Einmaliger HTTP-Poll als Fallback
                     if let newMap = try? await api.getMap() {
                         self.map = newMap
                         self.isOffline = false
-                        await MapCacheService.shared.save(newMap, for: robot.id)
+                        await MapCacheService.shared.saveIfChanged(newMap, for: self.robot.id)
                     } else {
-                        // getMap() fehlgeschlagen — Cache laden falls noch keine Karte vorhanden
-                        if self.map == nil, let cachedMap = await MapCacheService.shared.load(for: robot.id) {
+                        // HTTP-Poll auch fehlgeschlagen
+                        if self.map == nil, let cachedMap = await MapCacheService.shared.load(for: self.robot.id) {
                             self.map = cachedMap
                             self.isOffline = true
                         } else if self.map != nil {
-                            // Karte bereits sichtbar — Offline-Indikator setzen
                             self.isOffline = true
                         }
+                    }
+
+                    retryCount += 1
+                    let delay: Double = retryCount == 1 ? 2 : retryCount == 2 ? 5 : 30
+                    logger.info("Map SSE retry \(retryCount, privacy: .public) — waiting \(delay, privacy: .public)s")
+                    do {
+                        try await Task.sleep(for: .seconds(delay))
+                    } catch is CancellationError {
+                        break
+                    } catch {
+                        break
                     }
                 }
             }
