@@ -61,6 +61,19 @@
 - [x] **Phase 20: Room Tap Selection** - Hit-Testing auf Raumpolygone in der Canvas implementieren, sodass Tap auf die Fläche einen Raum auswählt (completed 2026-04-04)
 - [x] **Phase 21: Cleaning Order** - Auswahlreihenfolge als nummerierte Zahlen auf der Karte anzeigen und beim API-Aufruf übergeben (completed 2026-04-04)
 
+### v3.0.0 Quality, Performance & Hardening
+
+**Milestone Goal:** Die App auf Produktionsqualität bringen — alle Tech Debt eliminieren, Map-Rendering auf Performance trimmen, Views sauber dekomponieren, Security-Warnungen einbauen, VoiceOver-Accessibility nachrüsten, Test-Coverage für kritische Pfade aufbauen und Robustness-Lücken schließen.
+
+- [ ] **Phase 22: Map Geometry Unification** - calculateMapParams deduplizieren, Koordinaten-Transforms in zentrale Utility, Room-Selection-State zentralisieren
+- [ ] **Phase 23: Error Handling & Robustness Patterns** - try?-Suppressions durch echte Fehlerbehandlung ersetzen, DebugConfig-Masking fixen, isInitialLoad-Pattern ersetzen, Capability-Refresh und StoreKit-Validierung
+- [ ] **Phase 24: Map Performance** - SSE Map-Streaming, Spatial Lookup für Hit-Testing, segmentInfos-Caching, CGImage Pre-Rendering für statische Layer, MapCache-Throttling
+- [ ] **Phase 25: View Architecture** - RobotDetailView und RobotSettingsSections in eigenständige Dateien aufbrechen, MapContentView-State in ViewModel zentralisieren
+- [ ] **Phase 26: Security Hardening** - HTTP-Warnung, SSL-Bypass-Warnung, Robot-Config verschlüsselt speichern
+- [ ] **Phase 27: Accessibility** - VoiceOver-Labels für alle Controls, Status-Header, Consumables, Icon-Buttons und Map-Canvas
+- [ ] **Phase 28: Test Coverage Expansion** - Unit-Tests für Koordinaten-Transforms, UpdateService State Machine, SSE-Reconnection, MapCacheService
+- [ ] **Phase 29: UX Robustness** - ErrorRouter systematisch verdrahten, Confirmation-Dialogs für destruktive Aktionen, Multi-Robot-Polling-Optimierung
+
 ## Phase Details
 
 ### Phase 16: UI Reorganization
@@ -165,6 +178,108 @@ Plans:
 - [ ] 22-01-PLAN.md -- MapGeometry.swift: calculateMapParams + Koordinaten-Transforms deduplizieren (DEBT-01, VIEW-04)
 - [ ] 22-02-PLAN.md -- Room-Selection-State in RobotManager zentralisieren (DEBT-02)
 
+### Phase 23: Error Handling & Robustness Patterns
+**Goal**: Kein API-Fehler wird mehr stillschweigend verschluckt, Debug-Mode maskiert keine echten Fehler, und Settings-Initialization ist robust
+**Depends on**: Phase 22
+**Requirements**: DEBT-03, DEBT-04, DEBT-05, DEBT-06, DEBT-07
+**Success Criteria** (what must be TRUE):
+  1. Alle `try?` in benutzer-initiierten Aktionen (join, split, rename, segment clean, locate) sind durch do/catch mit Fehleranzeige ersetzt
+  2. DebugConfig steuert nur Mock-UI-Daten — API-Fehler werden immer geloggt, unabhängig vom Debug-Flag
+  3. RobotSettingsViewModel nutzt ein Two-Phase-Load-Pattern statt `isInitialLoad`-Boolean
+  4. Capabilities haben einen TTL-Cache mit Force-Refresh nach OTA-Update
+  5. StoreKit Product IDs werden beim App-Start validiert und Mismatches geloggt
+**Plans**: 0 plans
+
+Plans:
+- [ ] TBD
+
+### Phase 24: Map Performance
+**Goal**: Map-Rendering ist effizient — SSE statt Polling, schnelles Hit-Testing, gecachte Berechnungen und vorgerenderte statische Layer
+**Depends on**: Phase 22
+**Requirements**: PERF-01, PERF-02, PERF-03, PERF-04, PERF-05
+**Success Criteria** (what must be TRUE):
+  1. Map-Updates kommen via SSE-Stream — HTTP-Polling nur als Fallback bei SSE-Fehler
+  2. Room-Tap-Hit-Testing nutzt ein Dictionary oder Bounding-Box-Pre-Filter — kein linearer Pixel-Scan mehr
+  3. `segmentInfos()` wird einmal pro Map-Update berechnet und zwischen Overlays geteilt
+  4. Floor, Walls und Segments werden als CGImage vorgerendert — Canvas nutzt das Image statt alle Pixel neu zu zeichnen
+  5. MapCacheService schreibt nur bei Hash-Änderung der Map-Daten auf Disk
+**Plans**: 0 plans
+
+Plans:
+- [ ] TBD
+
+### Phase 25: View Architecture
+**Goal**: Keine View-Datei über 400 Zeilen — alle großen Views sind in eigenständige, fokussierte Sub-Views aufgeteilt
+**Depends on**: Phase 22
+**Requirements**: VIEW-01, VIEW-02, VIEW-03
+**Success Criteria** (what must be TRUE):
+  1. RobotDetailView delegiert jede Section an eine eigenständige View-Struct
+  2. Jede Sub-View aus RobotSettingsSections.swift lebt in einer eigenen Datei unter Views/Settings/
+  3. MapContentView State-Properties sind in MapViewModel migriert
+  4. Keine View-Datei überschreitet 400 Zeilen
+**Plans**: 0 plans
+**UI hint**: yes
+
+Plans:
+- [ ] TBD
+
+### Phase 26: Security Hardening
+**Goal**: Benutzer wird über unsichere Verbindungen informiert und sensible Daten sind verschlüsselt gespeichert
+**Depends on**: Nothing (kann parallel zu Phase 23-25)
+**Requirements**: SEC-01, SEC-02, SEC-03
+**Success Criteria** (what must be TRUE):
+  1. Bei HTTP-Verbindung zeigt die Robot-Detail-View einen Security-Indikator
+  2. Wenn ignoreCertificateErrors aktiviert ist, zeigt die Robot-Konfiguration eine deutliche Warnung
+  3. Robot-Config wird in Keychain oder verschlüsseltem Storage gespeichert
+**Plans**: 0 plans
+**UI hint**: yes
+
+Plans:
+- [ ] TBD
+
+### Phase 27: Accessibility
+**Goal**: Die App ist mit VoiceOver grundlegend bedienbar — alle interaktiven Elemente haben beschreibende Labels
+**Depends on**: Phase 25
+**Requirements**: A11Y-01, A11Y-02, A11Y-03, A11Y-04, A11Y-05
+**Success Criteria** (what must be TRUE):
+  1. Alle ControlButtons und DockActionButtons haben .accessibilityLabel mit Aktionsbeschreibung
+  2. Status-Header zeigt Batterie und Reinigungsstatus als .accessibilityValue
+  3. Consumable-Fortschrittsbalken haben .accessibilityValue mit Prozent
+  4. Alle Icon-only-Buttons haben beschreibende Labels
+  5. Map-Canvas hat .accessibilityElement Summary-Label
+**Plans**: 0 plans
+**UI hint**: yes
+
+Plans:
+- [ ] TBD
+
+### Phase 28: Test Coverage Expansion
+**Goal**: Kritische Pfade sind durch automatisierte Tests abgesichert
+**Depends on**: Phase 22, Phase 23
+**Requirements**: TEST-01, TEST-02, TEST-03, TEST-04
+**Success Criteria** (what must be TRUE):
+  1. Unit-Tests für Koordinaten-Transforms und Hit-Test-Logik existieren und laufen grün
+  2. Unit-Tests für UpdateService decken alle 8 Phase-Transitions und Error-Recovery ab
+  3. Unit-Tests für SSE-Reconnection validieren Backoff-Timing
+  4. Unit-Tests für MapCacheService decken Save/Load-Zyklus und Corrupted-Cache ab
+**Plans**: 0 plans
+
+Plans:
+- [ ] TBD
+
+### Phase 29: UX Robustness
+**Goal**: Fehler werden konsistent angezeigt, destruktive Aktionen erfordern Bestätigung, Multi-Robot-Polling ist optimiert
+**Depends on**: Phase 23
+**Requirements**: ROBUST-01, ROBUST-02, ROBUST-03
+**Success Criteria** (what must be TRUE):
+  1. ErrorRouter ist in RobotDetailView und MapContentView für alle benutzer-initiierten Aktionen verdrahtet
+  2. Stop während aktiver Reinigung und Consumable-Reset zeigen Confirmation-Dialog
+  3. Nur der aktuell sichtbare Roboter pollt die Map
+**Plans**: 0 plans
+**UI hint**: yes
+
+Plans:
+- [ ] TBD
 
 ### Phase 1: Foundation
 **Goal**: Alle Inhalte der App nutzen sicheren Credential-Speicher, strukturiertes Logging und sichtbare Fehlermeldungen
