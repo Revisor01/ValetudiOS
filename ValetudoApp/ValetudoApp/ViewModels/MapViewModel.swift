@@ -44,7 +44,9 @@ final class MapViewModel {
     var renameSegmentId: String?
     var renameNewName = ""
     var splitSegmentId: String?
-    var selectedSegmentIds: [String] = []
+    var selectedSegmentIds: [String] = [] {
+        didSet { robotManager.roomSelections[robot.id] = selectedSegmentIds }
+    }
 
     // MARK: - GoTo State
     var goToMarkerPosition: CGPoint?
@@ -63,7 +65,9 @@ final class MapViewModel {
 
     // MARK: - Cleaning State
     var isCleaning = false
-    var selectedIterations: Int = 1
+    var selectedIterations: Int = 1 {
+        didSet { robotManager.iterationSelections[robot.id] = selectedIterations }
+    }
 
     // MARK: - UI State
     var showRoomLabels: Bool = true
@@ -91,6 +95,8 @@ final class MapViewModel {
         self.robot = robot
         self.robotManager = robotManager
         self.isFullscreen = isFullscreen
+        self.selectedSegmentIds = robotManager.selectedRooms(for: robot.id)
+        self.selectedIterations = robotManager.selectedIterationCount(for: robot.id)
     }
 
     // MARK: - Data Loading

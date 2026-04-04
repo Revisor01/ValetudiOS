@@ -15,8 +15,12 @@ final class RobotDetailViewModel {
     // MARK: - Data state
     var segments: [Segment] = []
     var consumables: [Consumable] = []
-    var selectedSegments: [String] = []
-    var selectedIterations: Int = 1
+    var selectedSegments: [String] = [] {
+        didSet { robotManager.roomSelections[robot.id] = selectedSegments }
+    }
+    var selectedIterations: Int = 1 {
+        didSet { robotManager.iterationSelections[robot.id] = selectedIterations }
+    }
     var isLoading = false
 
     // Intensity control presets
@@ -120,6 +124,8 @@ final class RobotDetailViewModel {
     init(robot: RobotConfig, robotManager: RobotManager) {
         self.robot = robot
         self.robotManager = robotManager
+        self.selectedSegments = robotManager.selectedRooms(for: robot.id)
+        self.selectedIterations = robotManager.selectedIterationCount(for: robot.id)
     }
 
     // MARK: - Data Loading
