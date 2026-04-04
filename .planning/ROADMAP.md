@@ -188,10 +188,12 @@ Plans:
   3. RobotSettingsViewModel nutzt ein Two-Phase-Load-Pattern statt `isInitialLoad`-Boolean
   4. Capabilities haben einen TTL-Cache mit Force-Refresh nach OTA-Update
   5. StoreKit Product IDs werden beim App-Start validiert und Mismatches geloggt
-**Plans**: 0 plans
+**Plans**: 3 plans
 
 Plans:
-- [ ] TBD
+- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
+- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
+- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
 
 ### Phase 24: Map Performance
 **Goal**: Map-Rendering ist effizient — SSE statt Polling, schnelles Hit-Testing, gecachte Berechnungen und vorgerenderte statische Layer
@@ -203,10 +205,12 @@ Plans:
   3. `segmentInfos()` wird einmal pro Map-Update berechnet und zwischen Overlays geteilt
   4. Floor, Walls und Segments werden als CGImage vorgerendert — Canvas nutzt das Image statt alle Pixel neu zu zeichnen
   5. MapCacheService schreibt nur bei Hash-Änderung der Map-Daten auf Disk
-**Plans**: 0 plans
+**Plans**: 3 plans
 
 Plans:
-- [ ] TBD
+- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
+- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
+- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
 
 ### Phase 25: View Architecture
 **Goal**: Keine View-Datei über 400 Zeilen — alle großen Views sind in eigenständige, fokussierte Sub-Views aufgeteilt
@@ -217,11 +221,13 @@ Plans:
   2. Jede Sub-View aus RobotSettingsSections.swift lebt in einer eigenen Datei unter Views/Settings/
   3. MapContentView State-Properties sind in MapViewModel migriert
   4. Keine View-Datei überschreitet 400 Zeilen
-**Plans**: 0 plans
+**Plans**: 3 plans
 **UI hint**: yes
 
 Plans:
-- [ ] TBD
+- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
+- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
+- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
 
 ### Phase 26: Security Hardening
 **Goal**: Benutzer wird über unsichere Verbindungen informiert und sensible Daten sind verschlüsselt gespeichert
@@ -231,11 +237,13 @@ Plans:
   1. Bei HTTP-Verbindung zeigt die Robot-Detail-View einen Security-Indikator
   2. Wenn ignoreCertificateErrors aktiviert ist, zeigt die Robot-Konfiguration eine deutliche Warnung
   3. Robot-Config wird in Keychain oder verschlüsseltem Storage gespeichert
-**Plans**: 0 plans
+**Plans**: 3 plans
 **UI hint**: yes
 
 Plans:
-- [ ] TBD
+- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
+- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
+- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
 
 ### Phase 27: Accessibility
 **Goal**: Die App ist mit VoiceOver grundlegend bedienbar — alle interaktiven Elemente haben beschreibende Labels
@@ -247,11 +255,13 @@ Plans:
   3. Consumable-Fortschrittsbalken haben .accessibilityValue mit Prozent
   4. Alle Icon-only-Buttons haben beschreibende Labels
   5. Map-Canvas hat .accessibilityElement Summary-Label
-**Plans**: 0 plans
+**Plans**: 3 plans
 **UI hint**: yes
 
 Plans:
-- [ ] TBD
+- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
+- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
+- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
 
 ### Phase 28: Test Coverage Expansion
 **Goal**: Kritische Pfade sind durch automatisierte Tests abgesichert
@@ -262,10 +272,12 @@ Plans:
   2. Unit-Tests für UpdateService decken alle 8 Phase-Transitions und Error-Recovery ab
   3. Unit-Tests für SSE-Reconnection validieren Backoff-Timing
   4. Unit-Tests für MapCacheService decken Save/Load-Zyklus und Corrupted-Cache ab
-**Plans**: 0 plans
+**Plans**: 3 plans
 
 Plans:
-- [ ] TBD
+- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
+- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
+- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
 
 ### Phase 29: UX Robustness
 **Goal**: Fehler werden konsistent angezeigt, destruktive Aktionen erfordern Bestätigung, Multi-Robot-Polling ist optimiert
@@ -275,11 +287,13 @@ Plans:
   1. ErrorRouter ist in RobotDetailView und MapContentView für alle benutzer-initiierten Aktionen verdrahtet
   2. Stop während aktiver Reinigung und Consumable-Reset zeigen Confirmation-Dialog
   3. Nur der aktuell sichtbare Roboter pollt die Map
-**Plans**: 0 plans
+**Plans**: 3 plans
 **UI hint**: yes
 
 Plans:
-- [ ] TBD
+- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
+- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
+- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
 
 ### Phase 1: Foundation
 **Goal**: Alle Inhalte der App nutzen sicheren Credential-Speicher, strukturiertes Logging und sichtbare Fehlermeldungen
@@ -559,7 +573,7 @@ v3.0.0: 22 -> 23 + 24 + 25 + 26 (parallel nach 22) -> 27 (nach 25) -> 28 (nach 2
 ### Phase 999.1: Reinigungsreihenfolge der Räume festlegen (BACKLOG)
 **Goal**: Benutzer kann die Reihenfolge bestimmen, in der die Räume gereinigt werden (Drag & Drop oder nummerierte Liste)
 **Requirements**: TBD
-**Plans**: 0 plans
+**Plans**: 3 plans
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
