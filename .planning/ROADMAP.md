@@ -209,7 +209,7 @@ Plans:
 
 Plans:
 - [x] 24-01-PLAN.md — SSE Map-Streaming + MapCacheService Hash-Deduplication (PERF-02, PERF-05)
-- [ ] 24-02-PLAN.md — Spatial Lookup Hit-Testing + segmentInfos-Caching (PERF-01, PERF-03)
+- [x] 24-02-PLAN.md — Spatial Lookup Hit-Testing + segmentInfos-Caching (PERF-01, PERF-03)
 - [ ] 24-03-PLAN.md — Static Layer CGImage Pre-Rendering (PERF-04)
 
 ### Phase 25: View Architecture
