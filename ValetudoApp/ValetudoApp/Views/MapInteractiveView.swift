@@ -131,6 +131,9 @@ struct InteractiveMapView: View {
                 tapTargetsOverlay
             }
         }
+        .overlay {
+            orderBadgesOverlay
+        }
     }
 
     // MARK: - Tap Targets
@@ -175,6 +178,39 @@ struct InteractiveMapView: View {
                     }
                     .buttonStyle(.plain)
                     .position(x: x, y: y)
+                }
+            }
+        }
+    }
+
+    // MARK: - Order Badges
+    @ViewBuilder
+    private var orderBadgesOverlay: some View {
+        if editMode == .none, !selectedSegmentIds.isEmpty {
+            GeometryReader { geometry in
+                let params = calculateMapParams(
+                    layers: map.layers ?? [],
+                    pixelSize: map.pixelSize ?? 5,
+                    size: geometry.size
+                )
+
+                if let p = params, let layers = map.layers {
+                    ForEach(Array(selectedSegmentIds.enumerated()), id: \.element) { index, segmentId in
+                        if let info = segmentInfos(from: layers).first(where: { $0.id == segmentId }) {
+                            let x = CGFloat(info.midX) * p.scale + p.offsetX
+                            let y = CGFloat(info.midY) * p.scale + p.offsetY
+
+                            ZStack {
+                                Circle()
+                                    .fill(Color.blue)
+                                    .frame(width: 24, height: 24)
+                                Text("\(index + 1)")
+                                    .font(.system(size: 14, weight: .bold))
+                                    .foregroundStyle(.white)
+                            }
+                            .position(x: x, y: y - 20)
+                        }
+                    }
                 }
             }
         }
