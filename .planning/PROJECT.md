@@ -61,7 +61,7 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 
 <!-- v2.2.0 — Room Interaction & Cleaning Order -->
 - [ ] Reinigungsreihenfolge: Zahlen 1, 2, 3 auf der Karte beim Raumauswählen
-- [ ] Raumauswahl ohne Labels: Tap auf Raumfläche statt nur auf Label
+- [x] Raumauswahl ohne Labels: Tap auf Raumfläche statt nur auf Label -- v2.2.0 Phase 20
 
 ### Validated (v1.4.0)
 
