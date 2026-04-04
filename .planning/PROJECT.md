@@ -59,7 +59,9 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 
 ### Active
 
-(Next milestone — run /gsd:new-milestone)
+<!-- v2.2.0 — Room Interaction & Cleaning Order -->
+- [ ] Reinigungsreihenfolge: Zahlen 1, 2, 3 auf der Karte beim Raumauswählen
+- [ ] Raumauswahl ohne Labels: Tap auf Raumfläche statt nur auf Label
 
 ### Validated (v1.4.0)
 
@@ -185,4 +187,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-02 after v2.1.0 milestone*
+*Last updated: 2026-04-04 — Milestone v2.2.0 started*
