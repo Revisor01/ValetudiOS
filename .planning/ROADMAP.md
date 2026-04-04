@@ -146,7 +146,7 @@ Plans:
   3. Wird ein Raum abgewählt, werden die Zahlen der verbleibenden Räume neu nummeriert (keine Lücken)
 **Plans**: 2 plans
 Plans:
-- [ ] 21-01-PLAN.md — Set→Array Migration fuer Reinigungsreihenfolge
+- [x] 21-01-PLAN.md — Set→Array Migration fuer Reinigungsreihenfolge
 - [ ] 21-02-PLAN.md — Nummerierte Badges auf der Karte
 **UI hint**: yes
 
@@ -419,7 +419,7 @@ v2.2.0: 20 -> 21
 | 18. Map Caching | 2/2 | Complete    | 2026-04-02 |
 | 19. Observable Migration | 2/2 | Complete    | 2026-04-02 |
 | 20. Room Tap Selection | 1/1 | Complete    | 2026-04-04 |
-| 21. Cleaning Order | 0/? | Not started | - |
+| 21. Cleaning Order | 1/2 | In Progress|  |
 
 ## Backlog
 

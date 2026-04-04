@@ -10,7 +10,7 @@ Requirements for Room Interaction & Cleaning Order. Each maps to roadmap phases.
 ### Reinigungsreihenfolge
 
 - [ ] **ROOM-01**: Beim Auswählen der Räume erscheinen Zahlen 1, 2, 3 auf der Karte über den Räumen — die Auswahl-Reihenfolge definiert die Reinigungsreihenfolge
-- [ ] **ROOM-02**: Die definierte Reihenfolge wird beim Start der Raumreinigung an die Valetudo API übergeben
+- [x] **ROOM-02**: Die definierte Reihenfolge wird beim Start der Raumreinigung an die Valetudo API übergeben
 
 ### Raumauswahl
 
@@ -32,7 +32,7 @@ Requirements for Room Interaction & Cleaning Order. Each maps to roadmap phases.
 | TAP-01 | Phase 20 | Pending |
 | TAP-02 | Phase 20 | Pending |
 | ROOM-01 | Phase 21 | Pending |
-| ROOM-02 | Phase 21 | Pending |
+| ROOM-02 | Phase 21 | Complete |
 
 **Coverage:**
 - v2.2.0 requirements: 4 total

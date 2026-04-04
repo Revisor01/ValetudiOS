@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: executing
-last_updated: "2026-04-04T08:59:06.539Z"
+last_updated: "2026-04-04T13:01:25.826Z"
 last_activity: 2026-04-04
 progress:
-  total_phases: 21
+  total_phases: 22
   completed_phases: 19
-  total_plans: 46
-  completed_plans: 45
+  total_plans: 48
+  completed_plans: 46
 ---
 
 # Project State
@@ -19,13 +19,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 20 — Room Tap Selection
+**Current focus:** Phase 21 — Cleaning Order
 
 ## Current Position
 
-Phase: 999.1
-Plan: Not started
-Status: Executing Phase 20
+Phase: 21 (Cleaning Order) — EXECUTING
+Plan: 2 of 2
+Status: Ready to execute
 Last activity: 2026-04-04
 
 Progress: [....................] 0/2 phases complete
@@ -39,6 +39,7 @@ Progress: [....................] 0/2 phases complete
 - Räume nur über Labels auswählbar — muss auch über Fläche gehen
 - 2 Phasen gewählt: TAP (Hit-Testing) trennt sauber von ROOM (Reihenfolge + API) — Phase 20 ist Grundlage für Phase 21
 - Drag & Drop Reihenfolge explizit Out of Scope — Auswahl-Reihenfolge ist ausreichend
+- [Phase 21-cleaning-order]: Set<String> zu [String] migriert — Auswahl-Reihenfolge als Reinigungsreihenfolge (Plan 21-01)
 
 ### Pending Todos
 
