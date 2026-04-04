@@ -57,11 +57,22 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 - Map-Caching: Offline-Karte mit automatischer Wiederherstellung -- v2.1.0
 - @Observable Migration: 11 Klassen, 19 Views, zero legacy patterns -- v2.1.0
 
+### Validated (v2.2.0)
+
+- Reinigungsreihenfolge: Zahlen 1, 2, 3 auf der Karte beim Raumauswählen -- v2.2.0 Phase 21
+- Raumauswahl ohne Labels: Tap auf Raumfläche statt nur auf Label -- v2.2.0 Phase 20
+
 ### Active
 
-<!-- v2.2.0 — Room Interaction & Cleaning Order -->
-- [x] Reinigungsreihenfolge: Zahlen 1, 2, 3 auf der Karte beim Raumauswählen -- v2.2.0 Phase 21
-- [x] Raumauswahl ohne Labels: Tap auf Raumfläche statt nur auf Label -- v2.2.0 Phase 20
+<!-- v3.0.0 — Quality, Performance & Hardening -->
+- [ ] Map Geometry: calculateMapParams dedupliziert, Koordinaten-Transforms zentral, Room-Selection-State einheitlich -- v3.0.0 Phase 22
+- [ ] Error Handling: Stille try?-Fehler eliminiert, DebugConfig-Masking gefixt, isInitialLoad ersetzt, Capability-Refresh -- v3.0.0 Phase 23
+- [ ] Map Performance: SSE Map-Streaming, Spatial Hit-Testing, segmentInfos-Cache, CGImage Pre-Rendering -- v3.0.0 Phase 24
+- [ ] View Architecture: RobotDetailView/SettingsSections dekomponiert, MapContentView-State in ViewModel -- v3.0.0 Phase 25
+- [ ] Security: HTTP-Warnung, SSL-Bypass-Warnung, verschlüsselte Config-Speicherung -- v3.0.0 Phase 26
+- [ ] Accessibility: VoiceOver-Labels für Controls, Status, Consumables, Map-Canvas -- v3.0.0 Phase 27
+- [ ] Test Coverage: Unit-Tests für Transforms, UpdateService, SSE, MapCache -- v3.0.0 Phase 28
+- [ ] UX Robustness: ErrorRouter verdrahtet, Confirmation-Dialogs, Multi-Robot-Polling -- v3.0.0 Phase 29
 
 ### Validated (v1.4.0)
 
@@ -81,6 +92,7 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 ## Current State
 
 **Shipped:** v2.2.0 (2026-04-04)
+**In Progress:** v3.0.0 — Quality, Performance & Hardening (8 Phasen, 31 Requirements)
 **Version:** 2.2.0 — Room Interaction & Cleaning Order
 
 Die App ermöglicht Raumauswahl per Tap auf die Raumfläche (nicht nur Labels), zeigt die Reinigungsreihenfolge als nummerierte Badges auf der Karte und in der Raumliste, und übergibt die gewählte Reihenfolge mit `customOrder: true` an die Valetudo API. Basiert auf moderner @Observable-Architektur (iOS 17+), vollständiger Valetudo API-Abdeckung, SSE-Echtzeit-Updates, mDNS-Discovery, 57 Unit-Tests und dreisprachiger Lokalisierung (DE/EN/FR).

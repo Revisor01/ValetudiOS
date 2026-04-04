@@ -1,5 +1,21 @@
 # Milestones
 
+## v3.0.0 Quality, Performance & Hardening (In Progress)
+
+**Phases:** 22-29 (8 phases, 31 requirements)
+
+**Goal:** Die App auf Produktionsqualität bringen — Tech Debt eliminieren, Map-Performance optimieren, Views dekomponieren, Security-Warnungen, VoiceOver-Accessibility, Test-Coverage für kritische Pfade, UX-Robustness.
+
+**Dependency Graph:**
+```
+Phase 22 (Map Geometry) ──┬── Phase 23 (Error Handling) ──┬── Phase 28 (Tests)
+                          ├── Phase 24 (Map Performance)   └── Phase 29 (UX Robustness)
+                          ├── Phase 25 (View Architecture) ── Phase 27 (Accessibility)
+                          └── Phase 26 (Security) [parallel]
+```
+
+---
+
 ## v2.2.0 Room Interaction & Cleaning Order (Shipped: 2026-04-04)
 
 **Phases completed:** 22 phases, 48 plans, 63 tasks

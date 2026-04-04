@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.2.0
-milestone_name: Quality & API Completeness
-status: executing
-last_updated: "2026-04-04T19:14:12.831Z"
+milestone: v3.0.0
+milestone_name: Quality, Performance & Hardening
+status: planning
+last_updated: "2026-04-04T23:00:00.000Z"
 last_activity: 2026-04-04
 progress:
-  total_phases: 22
-  completed_phases: 20
-  total_plans: 48
-  completed_plans: 47
+  total_phases: 8
+  completed_phases: 0
+  total_plans: 0
+  completed_plans: 0
 ---
 
 # Project State
@@ -19,27 +19,28 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 21 — Cleaning Order
+**Current focus:** Milestone v3.0.0 — Quality, Performance & Hardening
 
 ## Current Position
 
-Phase: 999.1
+Phase: 22
 Plan: Not started
-Status: Ready to execute
+Status: Ready to plan
 Last activity: 2026-04-04
 
-Progress: [....................] 0/2 phases complete
+Progress: [........] 0/8 phases complete
 
 ## Accumulated Context
 
 ### Decisions
 
-- v2.1.0 completed: Architecture & Background (Phases 16-19)
-- Raumauswahl beim Karten-Bearbeiten funktioniert fehlerfrei (User-Feedback)
-- Räume nur über Labels auswählbar — muss auch über Fläche gehen
-- 2 Phasen gewählt: TAP (Hit-Testing) trennt sauber von ROOM (Reihenfolge + API) — Phase 20 ist Grundlage für Phase 21
-- Drag & Drop Reihenfolge explizit Out of Scope — Auswahl-Reihenfolge ist ausreichend
-- [Phase 21-cleaning-order]: Set<String> zu [String] migriert — Auswahl-Reihenfolge als Reinigungsreihenfolge (Plan 21-01)
+- v2.2.0 completed: Room Interaction & Cleaning Order (Phases 20-21)
+- v3.0.0 created from CONCERNS.md audit — all 7 concern categories mapped to 8 phases
+- Phase 22 (Map Geometry Unification) is foundation — dedup und State-Zentralisierung first
+- Phases 23-26 können nach Phase 22 parallel laufen
+- Phase 27 (Accessibility) braucht Phase 25 (View Architecture) — Labels auf dekomponierte Views
+- Phase 28 (Tests) braucht Phase 22 (extrahierte Transforms) + Phase 23 (UpdateService patterns)
+- Phase 29 (UX Robustness) braucht Phase 23 (ErrorRouter)
 
 ### Pending Todos
 

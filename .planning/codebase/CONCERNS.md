@@ -1,207 +1,231 @@
 # Codebase Concerns
 
-**Analysis Date:** 2026-03-28
+**Analysis Date:** 2026-04-04
 
 ## Tech Debt
 
-**Logger usage inconsistency across Views:**
-- Issue: Mix of structured Logger (os.Logger) in services and print() statements in views. DoNotDisturbView, StatisticsView, IntensityControlView, MapView, ManualControlView all use print() for error reporting instead of unified logger.
-- Files: `ValetudoApp/ValetudoApp/Views/DoNotDisturbView.swift:124`, `ValetudoApp/ValetudoApp/Views/StatisticsView.swift:72,80`, `ValetudoApp/ValetudoApp/Views/IntensityControlView.swift:145,158,171,186,200,214`, `ValetudoApp/ValetudoApp/Views/MapView.swift:156`, `ValetudoApp/ValetudoApp/Views/ManualControlView.swift:152,164,176,200`
-- Impact: Errors in views not captured in unified logging stream. Production debugging harder. Lost structured logging context (privacy levels, categories).
-- Fix approach: Replace all print() in Views with Logger instance matching service pattern (example: RobotDetailViewModel line 11). Ensure all API errors logged with `privacy: .public` for safe console output. Create shared logger creation helper to avoid duplication.
+**Triplicated `calculateMapParams` function:**
+- Issue: The map parameter calculation logic is copy-pasted identically in three separate files. All three iterate all layers, compute min/max pixel bounds, and derive scale/offset. Additionally, `MapViewModel.splitRoom()` contains a fourth inline copy of the same algorithm.
+- Files: `ValetudoApp/ValetudoApp/Views/MapView.swift:792`, `ValetudoApp/ValetudoApp/Views/MapInteractiveView.swift:307`, `ValetudoApp/ValetudoApp/Views/MapMiniMapView.swift:169`, `ValetudoApp/ValetudoApp/ViewModels/MapViewModel.swift:320-346`
+- Impact: Bug fixes or performance improvements must be applied four times. Inconsistencies between copies could cause coordinate mismatches between interactive map and control overlays.
+- Fix approach: Extract into a static method on `MapParams` or a free function in a shared file (e.g., `Utilities/MapGeometry.swift`). Accept `[MapLayer]`, `pixelSize: Int`, `size: CGSize` and return `MapParams?`.
 
-**DispatchQueue.main.asyncAfter instead of Task-based concurrency:**
-- Issue: SupportReminderOverlay uses `DispatchQueue.main.asyncAfter(deadline: .now() + 2)` instead of Task-based async/await pattern. Inconsistent with rest of codebase which uses async let and Task.sleep.
-- Files: `ValetudoApp/ValetudoApp/Views/SupportReminderView.swift:93`
-- Impact: Mixed concurrency models increase maintenance burden. DispatchQueue approach doesn't automatically cancel on view dealloc (unlike Task).
-- Fix approach: Replace with `Task { try? await Task.sleep(for: .seconds(2)); /* animation */ }`. Ensure Task cancelled in onDisappear like MapViewModel line 139.
+**Dual room selection state (`selectedSegmentIds` vs `selectedSegments`):**
+- Issue: `MapViewModel` uses `selectedSegmentIds: [String]` while `RobotDetailViewModel` independently maintains `selectedSegments: [String]`. Both are `[String]` arrays representing room IDs with cleaning order. These are not synchronized -- selecting rooms on the map does not update the detail view's list, and vice versa.
+- Files: `ValetudoApp/ValetudoApp/ViewModels/MapViewModel.swift:47`, `ValetudoApp/ValetudoApp/ViewModels/RobotDetailViewModel.swift:18`
+- Impact: User selects rooms in map view, then navigates back to detail view -- selection lost. Cleaning order set in one view not reflected in the other. Confusing UX when both views show different selections.
+- Fix approach: Lift selection state to `RobotManager` or a shared observable. Both ViewModels should read/write the same source. Consider a `RoomSelectionManager` per robot.
+
+**Silent error suppression with `try?` pattern:**
+- Issue: Over 30 instances of `try? await` that silently discard errors. Key examples: map refresh polling (line 164), segment/map reload after join/split operations (lines 295-298, 366-369), stats loading (lines 217-225), and locate command (line 334).
+- Files: `ValetudoApp/ValetudoApp/ViewModels/MapViewModel.swift:164,295,298,366,369`, `ValetudoApp/ValetudoApp/ViewModels/RobotDetailViewModel.swift:217-225,334`, `ValetudoApp/ValetudoApp/Services/UpdateService.swift:63,185,189,224,228`
+- Impact: Failures in map refresh, room operations, and updates go completely undetected. User sees stale data with no indication something went wrong. Particularly dangerous for `splitRoom`/`joinRooms` where the operation succeeds but the reload silently fails.
+- Fix approach: Replace `try?` with proper do/catch blocks that at minimum log warnings. For user-initiated actions (join, split, rename), surface errors via `errorMessage` state property and show alert.
+
+**DebugConfig fallback masks real failures:**
+- Issue: Capability flags initialized to `DebugConfig.showAllCapabilities` (e.g., `hasManualControl`, `hasAutoEmptyTrigger`). When debug mode is on, API failures are masked because the feature still appears enabled with mock data. Error handlers only disable features when NOT in debug mode.
+- Files: `ValetudoApp/ValetudoApp/ViewModels/RobotDetailViewModel.swift:28-34`, `ValetudoApp/ValetudoApp/ViewModels/RobotDetailViewModel.swift:170-176`, `ValetudoApp/ValetudoApp/ViewModels/RobotDetailViewModel.swift:186-209`
+- Impact: Developers testing on real devices with debug flag on will not notice API failures. Bugs may ship to production because the debug path suppresses them.
+- Fix approach: Always log errors regardless of debug flag. Use DebugConfig only to inject mock UI data, never to bypass error handling logic.
+
+**`isInitialLoad` flag pattern in RobotSettingsViewModel:**
+- Issue: Uses a fragile boolean `isInitialLoad` flag to suppress `onChange`-triggered API calls during initial data load. Pattern repeated across 10+ settings properties. If a developer adds a new setting and forgets the guard, an unintended API call fires on app launch.
+- Files: `ValetudoApp/ValetudoApp/ViewModels/RobotSettingsViewModel.swift` (throughout)
+- Impact: Risk of accidental API writes during initialization. Manual flag management is error-prone.
+- Fix approach: Use a two-phase pattern: load data into private backing storage, then copy to published properties. Or restructure to only bind onChange handlers after initial load completes.
+
+**Capabilities never re-checked after firmware update:**
+- Issue: Robot capabilities loaded once per view lifecycle. No cache invalidation mechanism if robot firmware updates and gains new capabilities (e.g., after OTA update within the app itself).
+- Files: `ValetudoApp/ValetudoApp/ViewModels/RobotSettingsViewModel.swift`, `ValetudoApp/ValetudoApp/ViewModels/MapViewModel.swift:107-112`, `ValetudoApp/ValetudoApp/ViewModels/RobotDetailViewModel.swift:166-179`
+- Impact: After firmware update, user must kill and restart the app to see new capabilities.
+- Fix approach: Cache capabilities in `RobotManager` with a TTL (e.g., 1 hour). Force-refresh after OTA update completes. Expose a manual refresh mechanism.
 
 **Product ID hardcoding in SupportManager:**
-- Issue: StoreKit product IDs hardcoded as string literals (SupportManager.swift lines 20-24). Changes require code modification + manual App Store Connect setup synchronization. No validation that products exist at runtime.
-- Files: `ValetudoApp/ValetudoApp/Services/SupportManager.swift:20-24`
-- Impact: If product ID mismatched in App Store Connect, purchase fails silently (line 54 shows unverified handler but no user alert). No way to toggle support feature without recompile.
-- Fix approach: Move product IDs to Configuration.plist or environment variable. Add product verification on app launch with explicit error message if load fails (currently caught and hidden with DEBUG print at line 37).
-
-**Manual isInitialLoad flag for onChange suppression:**
-- Issue: RobotSettingsViewModel uses fragile `isInitialLoad` flag (line 72) to suppress onChange-triggered API calls during initial loadSettings(). Pattern duplicated across 10+ onChange handlers (lines 77, 91, 104, 118, 132, 150, 339, etc.). If developer adds new property and forgets isInitialLoad check, accidental API call triggered on app launch.
-- Files: `ValetudoApp/ValetudoApp/ViewModels/RobotSettingsViewModel.swift:72, 87-300+`
-- Impact: Risk of duplicate unwanted API calls during initialization. Manual flag management error-prone.
-- Fix approach: Extract into generic initialization pattern using Swift Task cancellation. Use single @Published initializing state that gates all onChange handlers. Or refactor to separate view for loaded state (SkeletonView → RealSettingsView).
-
-**Keychain error handling ignored:**
-- Issue: KeychainStore operations ignore status codes. SecItemDelete (line 28) returns errSecItemNotFound for missing items, treated as success. SecItemAdd (line 37) failure silently continues.
-- Files: `ValetudoApp/ValetudoApp/Services/KeychainStore.swift:28,37,46`
-- Impact: Password persistence failure undetected. Robot credentials could be lost between sessions with no user feedback. User tries to connect → auth fails → confused.
-- Fix approach: Return Result<Void, KeychainError> from save/delete methods. Log errors to unified logger. Notify user if password storage fails (show alert).
-
-**Capabilities cache never invalidated:**
-- Issue: RobotSettingsViewModel loads capabilities once in loadSettings() (line 115). No cache invalidation if robot updates firmware and gains new capabilities. Capability detection mixed: some from API (capabilities array), some from DEBUG flag (DebugConfig.showAllCapabilities).
-- Files: `ValetudoApp/ValetudoApp/ViewModels/RobotSettingsViewModel.swift:115-137`
-- Impact: User won't see new features after robot firmware update without force-quit and relaunch. Capability flags initialized to DebugConfig value (lines 25-47) so features hidden until explicit loadSettings() call.
-- Fix approach: Store capability last-check timestamp. Invalidate if >1 week old or on explicit refresh. Implement capability cache in RobotManager as single source of truth.
-
-**Silent error suppression with DebugConfig fallback:**
-- Issue: Pattern throughout codebase: catch errors but only act if !DebugConfig.showAllCapabilities. Example: RobotSettingsViewModel line 96 — if volume load fails, hasCarpetMode disabled ONLY if not in debug mode. In debug mode, silently continues with mock data.
-- Files: RobotSettingsViewModel (lines 96, 103, 110, 144, 154, 162, 175, 186, 195), RobotDetailViewModel (lines 159-165)
-- Impact: Errors hidden in debug mode. Developer might not notice API failures. Debug path taken by development devices means bugs slip to production.
-- Fix approach: Log all errors regardless of debug flag. Use DebugConfig only to SHOW mock UI in development, not to suppress error handling. Separate concerns: error handling vs. capability mocking.
-
-## Fragile Areas
-
-**MapView (2532 lines) — Massive monolithic canvas view:**
-- Files: `ValetudoApp/ValetudoApp/Views/MapView.swift`
-- Why fragile: Complex Canvas rendering with all logic spread across 2500+ lines. Drawing operations (floor, walls, segments, entities, restrictions) tightly coupled. Zone/wall coordinate transformations duplicated across drawVirtualWall(), drawRestrictedZone(), drawNoMopZone() (lines 242-300). Small changes to coordinate system affect many methods. Scale/offset calculations repeated (MapParams used inconsistently).
-- Safe modification: Extract drawing helpers into separate structs (FloorDrawer, WallDrawer, ZoneDrawer, EntityDrawer). Use shared MapParams calculation to prevent coordinate drift. Add coordinate transformation unit tests. Implement incremental rendering (cache static layers as CGImage, only redraw dynamic entities).
-- Test coverage: Minimal — no unit tests for coordinate transformations, pixel-to-screen calculations, or zoom behavior.
-
-**RobotSettingsView (1801 lines) — UI mixing state, API, presentation:**
-- Files: `ValetudoApp/ValetudoApp/Views/RobotSettingsView.swift`
-- Why fragile: Settings controller mixing state management, API interactions, and presentation across 1800+ lines. Multiple nested conditional sections (VolumeControl, CleaningSettings, MapSettings, MapSnapshots, VoicePack, Quirks, System) making feature additions error-prone. Settings changes via onChange handlers (lines 36-152) trigger API calls without debouncing. Volume slider fires API request on every slider position change (10 requests if user drags from 0→100).
-- Safe modification: Split into smaller focused views (VolumeSettingsView, CleaningSettingsView, MapSettingsView). Extract API mutation logic into dedicated viewmodel methods. Add debouncing to onChange handlers: `.debounce(for: .milliseconds(500))` before calling setVolume(), setCarpetMode(), etc. Implement request cancellation for rapid state changes.
-- Test coverage: No unit tests for settings mutations, API error handling, or rapid state change sequences.
-
-**RobotDetailView (1253 lines) — Large coordinator view:**
-- Files: `ValetudoApp/ValetudoApp/Views/RobotDetailView.swift`
-- Why fragile: Large view coordinating multiple features (segments, consumables, statistics, events, cleaning route, obstacles, update status). Conditional capability rendering based on ViewModel flags could hide missing error states. Live stats polling logic embedded in view instead of service (calls refreshData() on timer). Complex state transitions (idle → cleaning → paused → returning → docked) not formally modeled.
-- Safe modification: Extract stats polling to RobotManager. Use separate ViewModels for distinct sections (StatisticsViewModel, ObstacleViewModel, EventsViewModel). Add explicit error states for missing data vs. loading vs. unsupported capability. Implement state machine for robot status transitions.
-- Test coverage: None for capability-gated sections or error paths. No tests for status transitions.
-
-**RobotManager SSE/Polling coordination (lines 79-120) — Complex state machine:**
-- Files: `ValetudoApp/ValetudoApp/Services/RobotManager.swift`
-- Why fragile: Complex logic mixing SSE connection attempts with 5s polling fallback. SSE manager maintains separate connection state; mismatch between SSE connection success and polling logic could cause duplicate updates or missed state changes. Attribute updates applied before previousState tracking (line 177) could lose connection-loss detection. No explicit state machine — SSE can drop but polling continues, creating uncertainty about which is active.
-- Safe modification: Consolidate SSE/polling state machine into single coordinator. Make previousState update atomic with status update. Add invariant tests verifying SSE-active prevents polling (and vice versa). Implement retry backoff not just for SSE but also for polling fallback.
-- Test coverage: No tests for SSE/polling race conditions, state consistency, or robot add/remove during streaming.
-
-**RobotSettingsViewModel onChange handlers — No debouncing:**
-- Files: `ValetudoApp/ValetudoApp/ViewModels/RobotSettingsViewModel.swift` (setVolume, setCarpetMode, setObstacleAvoidance, etc.)
-- Why fragile: Each onChange handler directly calls API without debouncing or request coalescing. Volume slider (RobotSettingsView line 36) generates 10 sequential setVolume() requests if user drags slider from 0-100. No cancellation of in-flight requests if user changes mind.
-- Safe modification: Add debouncing with task cancellation. Store previous request task and cancel before issuing new one. Use .debounce(for: .milliseconds(500)) on onChange handlers.
-- Test coverage: No tests for rapid state changes or concurrent API requests.
+- Issue: StoreKit product IDs are hardcoded string literals with no runtime validation that products exist.
+- Files: `ValetudoApp/ValetudoApp/Services/SupportManager.swift`
+- Impact: If product ID is mismatched in App Store Connect, purchase fails silently. No way to toggle support tiers without recompile.
+- Fix approach: Move product IDs to a configuration file. Add product verification on app launch with explicit error logging.
 
 ## Performance Bottlenecks
 
-**Map rendering on full view redraws entire canvas each update:**
-- Problem: MapView Canvas redraws entire map (floor, walls, segments, restrictions, entities) on every @State update. No layer caching or incremental rendering. Coordinate calculations in multiple drawing functions (drawPixels, drawThinWalls, drawPath, drawRobot) repeated on each frame.
-- Files: `ValetudoApp/ValetudoApp/Views/MapView.swift` (drawing methods starting line 183)
-- Cause: Canvas renders from scratch on @State updates. RobotMap updates at 3s intervals (MapPreviewView line 165) trigger full recompute. MiniMapView redraws on every map poll.
-- Improvement path: Cache static layers (floor, walls, segments) as CGImage. Only redraw dynamic entities (robot position, path). Implement layer reuse in Canvas context. Pre-calculate coordinate params. Target: 60fps on iPhone 14 (currently likely ~15fps on large maps).
+**Map pixel-by-pixel hit-testing via linear scan:**
+- Issue: `handleCanvasTap()` in `InteractiveMapView` performs a linear scan through ALL decompressed pixels of EVERY segment layer to find which room was tapped. For a typical map with 8 rooms and thousands of pixels per room, this is O(n) per tap where n = total pixel count across all segments.
+- Files: `ValetudoApp/ValetudoApp/Views/MapInteractiveView.swift:228-254`
+- Impact: Tap responsiveness degrades on maps with many rooms or large floor areas. On older devices (iPhone SE, iPad mini), perceptible delay possible.
+- Fix approach: Build a spatial lookup structure (e.g., dictionary keyed by `(x,y)` -> segmentId) when map data arrives. Or use bounding box pre-filter per segment before pixel-level check.
 
-**SSE-to-polling transition penalty — no fallback backoff:**
-- Problem: When SSE drops, system falls back to 5s polling. For 2-3 robots without active SSE, RobotManager.startRefreshing() (line 79) invokes refreshRobot() in parallel taskgroup every 5s, generating 6 API calls/min/robot without SSE. Backoff only in SSE stream (exponential 1s → 5s → 30s), not in polling fallback.
-- Files: `ValetudoApp/ValetudoApp/Services/RobotManager.swift:105-120`
-- Cause: Polling interval fixed at 5s regardless of connection state. No adaptive backoff after failed refreshes. No network reachability check before polling.
-- Improvement path: Implement polling backoff (5s → 15s → 60s) after failed refreshes. Check network reachability before polling. Reset backoff on successful refresh. Target: Reduce unnecessary API calls on poor network by 80%.
+**Map polling every 2-3 seconds with full JSON decode:**
+- Issue: `MapViewModel.startMapRefresh()` polls `api.getMap()` every 2 seconds. `MapPreviewView.startLiveRefresh()` polls every 3 seconds. Each call returns the full map JSON (can be 100KB+), which is fully decoded into `RobotMap` + all `MapLayer` objects. No SSE-based map streaming is used (only state attributes use SSE).
+- Files: `ValetudoApp/ValetudoApp/ViewModels/MapViewModel.swift:154-181`, `ValetudoApp/ValetudoApp/Views/MapView.swift:164-176`
+- Impact: Continuous network traffic and CPU usage for JSON parsing. On cellular connections, consumes significant bandwidth. Both the preview and full map poll independently -- if both are visible, double the traffic.
+- Fix approach: Use the map SSE endpoint (`/api/v2/robot/state/map/sse`) already defined in `ValetudoAPI.streamMapLines()` but currently unused. Implement differential map updates. Share a single map data source between preview and full map views.
 
-**Consumables check every refresh without rate limiting:**
-- Problem: checkConsumables() (RobotManager.swift line 154) called every refresh cycle as background task. Compares consumable levels across all items, logs notifications. On 2-3 robots refreshing every 5s, generates O(N) comparisons per robot per 5s.
-- Files: `ValetudoApp/ValetudoApp/Services/RobotManager.swift:154`
-- Cause: No rate limiting; called on every refresh in background task. Notification triggered on every <20% check even if level unchanged.
-- Improvement path: Implement debounce timer (check consumables max once per hour unless level changes >5%). Cache previous consumable state for delta detection. Suppress duplicate notifications.
+**`segmentInfos()` recomputed on every overlay render:**
+- Issue: `segmentInfos(from:)` iterates all segment layers and computes midpoints every time the `tapTargetsOverlay` or `orderBadgesOverlay` is rendered. Both overlays call it independently, so it runs twice per frame.
+- Files: `ValetudoApp/ValetudoApp/Views/MapInteractiveView.swift:264-304`, referenced at lines 151 and 199
+- Impact: Redundant computation during map panning/zooming. Midpoint calculation involves iterating all decompressed pixels if `dimensions.mid` is nil.
+- Fix approach: Cache segment info in a computed property that only recalculates when `map.layers` identity changes. Compute once and share between both overlays.
 
-**RobotMap JSON decoding on every preview refresh:**
-- Problem: Full RobotMap (with layer pixel data, entities, restrictions) decoded from JSON on every 3s preview refresh (MapPreviewView line 167). Decompression of pixel arrays happens in RobotMap.decompressedPixels (computed property). No caching. Canvas redraws entire map on each update.
-- Files: `ValetudoApp/ValetudoApp/Views/MapView.swift:150,167`, `ValetudoApp/ValetudoApp/Models/RobotState.swift`
-- Cause: RobotMap fully decoded; decompression runs on every Canvas render. No state snapshot between requests.
-- Improvement path: Cache decompressed pixels in RobotMap. Use @State snapshot for preview to avoid re-decoding. Implement lazy decompression only for visible layers. Batch map updates to max once per second.
+**Canvas redraws entire map every frame:**
+- Issue: `InteractiveMapView` uses a SwiftUI `Canvas` that redraws ALL pixels (floor, segments, walls, entities, restrictions, zones) on every render pass. No partial redraw or layer caching.
+- Files: `ValetudoApp/ValetudoApp/Views/MapInteractiveView.swift:34-121`
+- Impact: During zoom/pan gestures, all drawing functions execute per frame. `drawPixelsWithMaterial()` has extra branching per pixel for material texture patterns.
+- Fix approach: Pre-render the static map layers (floor, walls, segments) into a `CGImage` when map data changes. Use the image in Canvas for display. Only overlay dynamic elements (robot position, drawing preview, selection highlights) on each frame.
+
+**MapCacheService writes to disk on every 2-second poll:**
+- Issue: Every successful map poll triggers `MapCacheService.shared.save()`, which JSON-encodes the full map and writes atomically to disk.
+- Files: `ValetudoApp/ValetudoApp/ViewModels/MapViewModel.swift:140,167`, `ValetudoApp/ValetudoApp/Services/MapCacheService.swift:29-37`
+- Impact: Continuous disk I/O every 2 seconds. On devices with flash wear concerns or during battery-sensitive scenarios, unnecessary writes.
+- Fix approach: Only write cache when map data actually changes (compare hash/checksum). Or throttle writes to once per minute while actively polling.
+
+## Fragile Areas
+
+**RobotDetailView monolith (1208 lines):**
+- Issue: Single file contains the entire robot detail screen: status header, map preview, controls, intensity settings, dock actions, consumables, statistics, events, obstacles, rooms, clean route, settings navigation, update flow, and all helper functions.
+- Files: `ValetudoApp/ValetudoApp/Views/RobotDetailView.swift` (1208 lines)
+- Impact: Any change to one section risks breaking another. Merge conflicts when multiple features developed in parallel. Difficult to find specific logic. SwiftUI body is deeply nested.
+- Fix approach: Already partially decomposed with `RobotDetailSections.swift`. Continue extracting: move control section, consumables section, rooms section, statistics section, events section into separate files or extracted views. Each section should be a standalone `View` struct.
+
+**MapContentView split across 3 files with shared mutable state:**
+- Issue: `MapContentView` is defined in `MapView.swift` but extended in `MapControlBarsView.swift` (594 lines). The view's `@State` properties (`currentDrawStart`, `currentDrawEnd`, `currentViewSize`, `scale`, `offset`) are accessed from both files. Coordinate transformation functions (`screenToMapCoords`, `mapToScreenCoords`) live in `MapView.swift` but are called from control bar actions.
+- Files: `ValetudoApp/ValetudoApp/Views/MapView.swift`, `ValetudoApp/ValetudoApp/Views/MapControlBarsView.swift`, `ValetudoApp/ValetudoApp/Views/MapInteractiveView.swift`
+- Impact: Understanding the full map interaction requires reading 3 files simultaneously. State mutations from control bars affect rendering in MapView without clear data flow.
+- Fix approach: Move all mutable state into `MapViewModel`. Control bars should call ViewModel methods, not mutate view state directly. Coordinate transforms should live in a pure utility.
+
+**Coordinate transform correctness depends on render pipeline order:**
+- Issue: `screenToMapCoords` / `mapToScreenCoords` in `MapContentView` account for `scale` and `offset` state. But `InteractiveMapView` has its own `calculateMapParams` that computes different scale/offset values. The GoTo marker and preset markers convert between these two coordinate systems with manual math that must stay in sync with the Canvas drawing code.
+- Files: `ValetudoApp/ValetudoApp/Views/MapView.swift:459-480` (transforms), `ValetudoApp/ValetudoApp/Views/MapView.swift:260-297` (marker positioning), `ValetudoApp/ValetudoApp/Views/MapView.swift:300-328` (preset positioning)
+- Impact: If drawing code changes pixel placement logic, markers and tap targets drift out of alignment. Bug would be subtle -- off by a few pixels, visible only on certain map sizes.
+- Fix approach: Unify coordinate systems. Define canonical "map coordinate" and "screen coordinate" types. All conversions go through a single, tested utility.
+
+**RobotSettingsSections.swift complexity (1078 lines):**
+- Issue: Contains 15+ independent settings sub-views (AutoEmptyDock, Quirks, WiFi, NTP, MQTT, CarpetMode, VoicePack, MapSnapshots, etc.) all in one file. Each has its own state, loading logic, and API calls.
+- Files: `ValetudoApp/ValetudoApp/Views/RobotSettingsSections.swift` (1078 lines)
+- Impact: Long compile times for this file. Hard to navigate. Each sub-view is effectively independent but changes to shared patterns require scanning the entire file.
+- Fix approach: Extract each settings sub-view into its own file under a `Views/Settings/` directory.
 
 ## Security Considerations
 
-**SSL certificate validation disabled for self-signed certs — Man-in-the-middle risk:**
-- Risk: SSLSessionDelegate (ValetudoAPI.swift lines 65-75) bypasses certificate validation for *all* SSL connections if ignoreCertificateErrors flag set. Accepts any certificate presented. No hostname verification after trust accepted. Man-in-the-middle attack surface on local network.
-- Files: `ValetudoApp/ValetudoApp/Services/ValetudoAPI.swift:52-54,65-75`
-- Current mitigation: Only enabled if config.ignoreCertificateErrors explicitly set. Stored in RobotConfig (local only, not synced to iCloud).
-- Recommendations: Add certificate pinning option for production robots. Implement hostname verification even if certificate self-signed. Warn user in UI when SSL validation disabled (show badge on robot). Consider AppKit Security Framework for better cert handling. Log certificate acceptance with details.
+**Basic Auth credentials in every HTTP request:**
+- Issue: `ValetudoAPI` constructs Basic Auth header on every request by reading password from Keychain. The base64-encoded credentials are sent in plain text over HTTP if `useSSL` is false (the default for local network robots).
+- Files: `ValetudoApp/ValetudoApp/Services/ValetudoAPI.swift:90-95`, `ValetudoApp/ValetudoApp/Services/ValetudoAPI.swift:131-138`
+- Current mitigation: Keychain storage with `kSecAttrAccessibleWhenUnlockedThisDeviceOnly`. SSL option available.
+- Recommendations: Warn users when connecting without SSL. Consider showing a security indicator in the robot detail view when HTTP (not HTTPS) is used.
 
-**Basic Auth credentials in memory — Plaintext on network:**
-- Risk: Credentials decoded from Keychain on every API request (ValetudoAPI.swift lines 91, 137). Base64-encoded (not encrypted) and sent in Authorization header. Vulnerable to network sniffing if HTTPS bypass occurs. No request timeout for hanging connections (would block indefinitely).
-- Files: `ValetudoApp/ValetudoApp/Services/ValetudoAPI.swift:80-157`
-- Current mitigation: Credentials stored in Keychain (encrypted at rest). Used only for requests to configured robot host. URLSession uses default timeout (10s for requests, 30s for resource).
-- Recommendations: Enforce HTTPS-only for remote connections. Consider OAuth2 if Valetudo supports it. Implement certificate-based auth (client certs). Log authentication failures to detect credential issues (currently silent). Add credential rotation mechanism.
+**SSL certificate validation bypass:**
+- Issue: `SSLSessionDelegate` accepts ALL server certificates when `ignoreCertificateErrors` is enabled. No certificate pinning, no fingerprint validation.
+- Files: `ValetudoApp/ValetudoApp/Services/ValetudoAPI.swift:65-75`
+- Current mitigation: User must explicitly enable `ignoreCertificateErrors` in robot config.
+- Recommendations: Add certificate fingerprint pinning option. Show clear warning when certificate errors are ignored.
 
-**Unencrypted stored robot passwords in Keychain — Lock-dependent:**
-- Risk: While Keychain encrypts data, `kSecAttrAccessibleWhenUnlockedThisDeviceOnly` means passwords become unavailable when device locked. If user needs to unlock robot while phone asleep, authentication fails. Trade-off between security and usability.
-- Files: `ValetudoApp/ValetudoApp/Services/KeychainStore.swift:35`
-- Current mitigation: Setting requires device unlock. Protects against physical device theft.
-- Recommendations: Document the lock behavior in UI. Consider `kSecAttrAccessibleAfterFirstUnlock` if background connectivity needed (more security risk). Implement password complexity validation on save. Add warning if robot connectivity fails due to device lock state.
+**Robot configuration stored in UserDefaults:**
+- Issue: `RobotManager.saveRobots()` serializes robot configs (including hostnames, usernames, SSL settings) to `UserDefaults`. While passwords were migrated to Keychain, the rest of the config (host, port, username) remains in unencrypted UserDefaults.
+- Files: `ValetudoApp/ValetudoApp/Services/RobotManager.swift:286-289`
+- Impact: On jailbroken devices or via iTunes backup, robot network addresses and usernames are readable.
+- Recommendations: Low risk for typical home use. Consider migrating to Keychain for sensitive fields if targeting enterprise users.
 
-**No rate limiting on API requests — Spam/DoS risk:**
-- Risk: If robot credentials leaked or endpoint exposed, attacker can spam API with requests. No circuit breaker or request throttling. SSEConnectionManager implements backoff (exponential 1s → 5s → 30s) but only for streaming reconnects. Polling has no backoff.
-- Files: `ValetudoApp/ValetudoApp/Services/ValetudoAPI.swift` (request methods), `ValetudoApp/ValetudoApp/Services/RobotManager.swift` (polling)
-- Current mitigation: URLSession timeout prevents infinite hangs. SSE connection has backoff.
-- Recommendations: Implement per-robot request rate limiting (max N requests/min). Add circuit breaker (disable API calls after 10 consecutive failures). Log suspicious request patterns. Implement exponential backoff in polling like SSE does.
+## Accessibility Gaps
 
-## Scaling Limits
+**Zero accessibility labels/hints in entire codebase:**
+- Issue: A search for `accessibilityLabel`, `accessibilityHint`, `accessibilityValue`, and `.accessibility` returns zero matches across all Swift files. No VoiceOver support whatsoever.
+- Files: All view files in `ValetudoApp/ValetudoApp/Views/`
+- Impact: App is completely unusable for visually impaired users. VoiceOver will read generic button labels or nothing for icon-only buttons. Map interaction is entirely inaccessible.
+- Fix approach (high priority areas):
+  1. Control buttons (`ControlButton`, `DockActionButton`): Add `.accessibilityLabel` with action description
+  2. Status header battery/status indicators: Add `.accessibilityValue` for current state
+  3. Map room labels and order badges: Add `.accessibilityLabel` with room name and order number
+  4. Consumable progress bars: Add `.accessibilityValue` with percentage
+  5. All icon-only buttons throughout the app: Add descriptive labels
 
-**In-memory state for unlimited robots:**
-- Current capacity: Tested with 3-4 robots. RobotManager stores all state in @Published dicts (`robotStates: [UUID: RobotStatus]`, `apis: [UUID: ValetudoAPI]`, `previousStates: [UUID: RobotStatus]`). Each robot maintains SSE stream + 5s polling task. No pagination or windowing for robot list.
-- Limit: ~50+ robots would exceed iOS memory constraints (SSE streams not garbage collected, state accumulation, 50 * 10MB map buffers = 500MB).
-- Scaling path: Implement lazy-loading for robot state (load active robot state, background-load others with lower priority). Add max concurrent SSE connections (e.g., 5, others use polling only). Implement robot list pagination in UI. Add memory warning handler to drop cached maps.
-
-**Map pixel buffer scaling — Memory exhaustion on large maps:**
-- Current capacity: Typical map 1000x1000 pixels (~10MB uncompressed). Works fine on iPhone 12+. Larger maps (2000x2000) risk memory pressure during Canvas rendering.
-- Limit: >2000x2000 maps + 10 concurrent robots = potential memory exhaustion (500MB+ needed).
-- Scaling path: Implement map tiling (render only visible regions). Lazy-decompress pixel layers only when needed. Add memory warning handler to drop cached maps. Implement mipmap downsampling for preview view.
-
-**SSE connection limits — URLSession exhaustion:**
-- Current capacity: System limits concurrent URLSession data tasks (~1000 across all domains typical). SSE connections are long-lived tasks taking 1 connection slot each.
-- Limit: >50 robots with active SSE = potential connection exhaustion. Competing with other network traffic.
-- Scaling path: Implement connection pooling. Switch to WebSocket if Valetudo supports it (WebSocket allows multiplexing). Implement fallback to polling-only for non-primary robots. Share URLSession across robots.
-
-## Missing Critical Features
-
-**No offline queue for critical actions:**
-- Problem: User initiates cleaning/docking action but network drops. Action is lost (network error). No queue to retry when connectivity restored.
-- Blocks: Reliable robot control on poor networks.
-- Recommendation: Implement local action queue in RobotManager. Persist queued actions to disk. Retry on network restoration. Show user "X actions pending" badge.
-
-**No user-facing error messages for API failures:**
-- Problem: API calls fail silently (print() statements in console only). User sees no feedback when zone cleaning, consumable reset, or settings change fails.
-- Blocks: Debugging user issues. User trust degradation (app feels broken).
-- Recommendation: Add error alert coordinator. Display user-friendly error messages for each failure type. Provide retry option. Log details for debugging.
-
-**No background sync for consumables/statistics:**
-- Problem: Consumable levels only update when app in foreground. User won't know consumable is low until they open app.
-- Blocks: Proactive consumable replacement workflow.
-- Recommendation: Implement background task (BGProcessingTaskRequest) to sync consumable data every 6 hours. Show notification if low.
+**Map Canvas not accessible:**
+- Issue: The `Canvas`-based map rendering produces a flat image with no accessibility tree. Room selection by tapping areas, drawing zones, and GoTo placement are all gesture-based with no accessible alternatives.
+- Files: `ValetudoApp/ValetudoApp/Views/MapInteractiveView.swift` (entire file)
+- Impact: Map functionality is completely inaccessible via VoiceOver or Switch Control.
+- Fix approach: Provide alternative room selection via the list-based room picker (already exists in `RobotDetailView.roomsSection`). Mark the Canvas with `.accessibilityElement(children: .ignore)` and add a summary label. Consider adding an "Accessible mode" that uses only list-based interactions.
 
 ## Test Coverage Gaps
 
-**MapView coordinate transformation:**
-- What's not tested: Pixel-to-screen coordinate math, scale/offset calculations, zoom behavior, rotation handling
-- Files: `ValetudoApp/ValetudoApp/Views/MapView.swift` (calculateMapParams, drawing methods)
-- Risk: Coordinate bugs cause elements to render off-screen or misaligned. Hard to detect visually across devices.
-- Priority: High
+**No tests for map interaction logic:**
+- What's not tested: Room tap hit-testing (`handleCanvasTap`), coordinate transformations (`screenToMapCoords`/`mapToScreenCoords`), zone drawing, GoTo coordinate calculations, split line positioning.
+- Files: `ValetudoApp/ValetudoApp/Views/MapInteractiveView.swift`, `ValetudoApp/ValetudoApp/Views/MapView.swift:459-480,685-790`
+- Risk: Coordinate math bugs could cause cleaning wrong rooms, going to wrong locations, or drawing restrictions in wrong positions. These are the highest-impact bugs possible.
+- Priority: **High** -- Extract coordinate transform and hit-test logic into testable pure functions, then add unit tests.
 
-**RobotManager SSE/polling state machine:**
-- What's not tested: SSE drops and reconnects without duplicate updates. Polling activates when SSE fails. State consistency across robot add/remove during streaming.
-- Files: `ValetudoApp/ValetudoApp/Services/RobotManager.swift:79-120,166-179`
-- Risk: Race conditions cause missed or duplicate status updates. Connection leaks.
-- Priority: High
+**No tests for SSE connection management:**
+- What's not tested: SSE reconnection logic, backoff timing, connection state tracking, attribute parsing from SSE stream.
+- Files: `ValetudoApp/ValetudoApp/Services/SSEConnectionManager.swift`
+- Risk: SSE bugs cause stale robot state, missed notifications, or infinite reconnection loops.
+- Priority: **Medium** -- SSE reconnection has been stable, but edge cases (network transitions, background/foreground) untested.
 
-**API error handling in Views:**
-- What's not tested: Views behavior when API calls fail (network error, 401, 500). Current print() statements don't provide user feedback. No error retry logic.
-- Files: All view files with mutations (RobotSettingsView, ManualControlView, TimersView, etc.)
-- Risk: User sees no feedback when action fails. Silent failures degrade trust.
-- Priority: High
+**No tests for MapCacheService:**
+- What's not tested: Cache save/load cycle, cache invalidation on robot removal, behavior with corrupted cache data.
+- Files: `ValetudoApp/ValetudoApp/Services/MapCacheService.swift`
+- Risk: Corrupted cache could crash the app on startup or show stale/wrong map data.
+- Priority: **Medium**
 
-**Rapid onChange state mutations — Debouncing:**
-- What's not tested: User drags volume slider quickly. Are in-flight requests cancelled? Do they coalesce?
-- Files: `ValetudoApp/ValetudoApp/ViewModels/RobotSettingsViewModel.swift` (all setters)
-- Risk: API call storms, inconsistent state.
-- Priority: Medium
+**No tests for UpdateService state machine:**
+- What's not tested: Update phase transitions (checking -> downloading -> readyToApply -> applying -> rebooting), error recovery, download progress tracking, reboot detection via polling.
+- Files: `ValetudoApp/ValetudoApp/Services/UpdateService.swift`
+- Risk: Firmware update is the most dangerous operation. A bug could leave the robot in an inconsistent state or the app stuck on the update overlay with no way to dismiss.
+- Priority: **High**
 
-**Capability gating with DebugConfig interaction:**
-- What's not tested: Interaction between API capability detection and DebugConfig.showAllCapabilities override. Real APIs still called?
-- Files: ViewModels, RobotDetailView
-- Risk: Debug mode hides real issues. Production build behaves differently.
-- Priority: Medium
+**No UI/integration tests:**
+- What's not tested: Full user flows (add robot, view detail, select rooms, start cleaning). Navigation between views. Sheet presentation/dismissal.
+- Files: No UI test target exists.
+- Risk: Regressions in navigation flow, sheet presentation, or view state management undetected.
+- Priority: **Low** -- Unit tests for ViewModels cover most logic. UI tests would add significant maintenance burden for a small team.
 
-**Consumable warnings notification delivery:**
-- What's not tested: Do notifications trigger when consumable <20%? Persisted correctly? User can dismiss and see again?
-- Files: `ValetudoApp/ValetudoApp/Services/NotificationService.swift`, RobotManager line 154
-- Risk: Critical alerts might not reach user.
-- Priority: Medium
+**Existing test coverage (687 lines across 8 files):**
+- `RobotDetailViewModelTests.swift` (153 lines): Tests basic actions, segment selection, consumable loading
+- `MapViewModelTests.swift` (94 lines): Tests map loading, cleaning actions
+- `ValetudoAPITests.swift` (88 lines): Tests URL construction, request building
+- `ConsumableTests.swift` (80 lines): Tests consumable model parsing
+- `KeychainStoreTests.swift` (75 lines): Tests save/load/delete cycle
+- `TimerTests.swift` (74 lines): Tests timer model parsing
+- `RobotSettingsViewModelTests.swift` (71 lines): Tests settings loading
+- `MapLayerTests.swift` (52 lines): Tests pixel decompression
+
+## Scaling Limits
+
+**Single-robot map polling assumption:**
+- Issue: Each robot gets its own independent map polling loop (2-second interval) plus an independent preview polling loop (3-second interval). With multiple robots, this multiplies network requests linearly.
+- Current capacity: Works well for 1-3 robots.
+- Limit: 5+ robots would generate 5+ map requests/second continuously, plus SSE connections.
+- Scaling path: Use SSE for map updates (endpoint exists but unused). Share a single map data source between preview and full map. Only poll active/visible robot.
+
+**MapLayerCache uses reference type without thread safety:**
+- Issue: `MapLayerCache` is a `class` (reference type) used from SwiftUI `Canvas` closures. `cachedPixels` has no synchronization mechanism. If the map is accessed from multiple Canvas renders simultaneously (e.g., minimap and full map), a data race is theoretically possible.
+- Files: `ValetudoApp/ValetudoApp/Models/RobotMap.swift:18-29`
+- Current capacity: Works because SwiftUI typically renders on main thread.
+- Limit: If rendering moves to background (e.g., Metal-based map renderer), data race would occur.
+- Scaling path: Make `MapLayerCache` `@unchecked Sendable` with a lock, or move to a value-type caching approach.
+
+## Known Limitations
+
+**No map SSE streaming despite API support:**
+- Issue: `ValetudoAPI` defines `streamMapLines()` (line 648) for SSE-based map updates, but this endpoint is never used. Map data relies entirely on HTTP polling.
+- Files: `ValetudoApp/ValetudoApp/Services/ValetudoAPI.swift:648-676`
+- Impact: Unnecessary network overhead. Map updates have 2-3 second latency instead of near-realtime.
+- Fix: Implement map SSE consumer similar to `SSEConnectionManager.streamWithReconnect()` for attributes.
+
+**ErrorRouter defined but minimally used:**
+- Issue: `ErrorRouter` class exists with retry support, but most error handling throughout the app uses logger-only or silent `try?`. The router is not wired into any view's alert system in a systematic way.
+- Files: `ValetudoApp/ValetudoApp/Helpers/ErrorRouter.swift`
+- Impact: User-facing error reporting is inconsistent. Some errors show alerts, most are silently logged.
+- Fix: Wire `ErrorRouter` into `RobotDetailView` and `MapContentView` for user-initiated action failures.
+
+**No confirmation before destructive robot actions:**
+- Issue: Stop, Home, auto-empty dock, mop dock clean/dry actions execute immediately on tap with no confirmation dialog. Only firmware update has a confirmation alert.
+- Files: `ValetudoApp/ValetudoApp/Views/RobotDetailView.swift:518-527` (stop/home buttons)
+- Impact: Accidental taps can interrupt cleaning in progress or trigger dock operations unnecessarily.
+- Recommendations: Add confirmation for Stop during active cleaning. Other actions are low-risk.
+
+**Consumable reset has no confirmation:**
+- Issue: Tapping the reset arrow on a consumable immediately calls the API with no "Are you sure?" prompt.
+- Files: `ValetudoApp/ValetudoApp/Views/RobotDetailView.swift:816-824`
+- Impact: Accidental reset makes the app show 100% for a consumable that hasn't actually been replaced, misleading the user about replacement timing.
+- Fix: Add `.confirmationDialog` before `viewModel.resetConsumable()`.
 
 ---
 
-*Concerns audit: 2026-03-28*
+*Concerns audit: 2026-04-04*
