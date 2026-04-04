@@ -65,7 +65,7 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 ### Active
 
 <!-- v3.0.0 — Quality, Performance & Hardening -->
-- [ ] Map Geometry: calculateMapParams dedupliziert, Koordinaten-Transforms zentral, Room-Selection-State einheitlich -- v3.0.0 Phase 22
+- [x] Map Geometry: calculateMapParams dedupliziert, Koordinaten-Transforms zentral, Room-Selection-State einheitlich -- v3.0.0 Phase 22
 - [ ] Error Handling: Stille try?-Fehler eliminiert, DebugConfig-Masking gefixt, isInitialLoad ersetzt, Capability-Refresh -- v3.0.0 Phase 23
 - [ ] Map Performance: SSE Map-Streaming, Spatial Hit-Testing, segmentInfos-Cache, CGImage Pre-Rendering -- v3.0.0 Phase 24
 - [ ] View Architecture: RobotDetailView/SettingsSections dekomponiert, MapContentView-State in ViewModel -- v3.0.0 Phase 25
