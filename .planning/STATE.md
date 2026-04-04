@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: executing
-last_updated: "2026-04-04T23:34:10.611Z"
+status: verifying
+last_updated: "2026-04-04T23:42:42.776Z"
 last_activity: 2026-04-04
 progress:
   total_phases: 30
-  completed_phases: 22
+  completed_phases: 23
   total_plans: 56
-  completed_plans: 54
+  completed_plans: 55
 ---
 
 # Project State
@@ -25,7 +25,7 @@ See: .planning/PROJECT.md (updated 2026-04-04)
 
 Phase: 24 (map-performance) — EXECUTING
 Plan: 3 of 3
-Status: Ready to execute
+Status: Phase complete — ready for verification
 Last activity: 2026-04-04
 
 Progress: [........] 0/8 phases complete
@@ -45,6 +45,7 @@ Progress: [........] 0/8 phases complete
 - [Phase 24-map-performance]: data.hashValue used for cache dedup in MapCacheService — avoids CryptoKit, acceptable collision risk
 - [Phase 24-map-performance]: SSE stream replaces 2s polling in MapViewModel — exponential backoff 2s/5s/30s, HTTP fallback on failure
 - [Phase 24-map-performance]: segmentPixelSets is @ObservationIgnored (hit-testing only), cachedSegmentInfos is observable (overlays re-render on change); SegmentInfo defined top-level in MapViewModel for public accessibility
+- [Phase 24-map-performance]: staticLayerImage CGImage pre-rendered on background thread via UIGraphicsImageRenderer, Canvas draws only dynamic elements per frame
 
 ### Pending Todos
 

@@ -67,7 +67,7 @@
 
 - [x] **Phase 22: Map Geometry Unification** - calculateMapParams deduplizieren, Koordinaten-Transforms in zentrale Utility, Room-Selection-State zentralisieren (completed 2026-04-04)
 - [x] **Phase 23: Error Handling & Robustness Patterns** - try?-Suppressions durch echte Fehlerbehandlung ersetzen, DebugConfig-Masking fixen, isInitialLoad-Pattern ersetzen, Capability-Refresh und StoreKit-Validierung (completed 2026-04-04)
-- [ ] **Phase 24: Map Performance** - SSE Map-Streaming, Spatial Lookup für Hit-Testing, segmentInfos-Caching, CGImage Pre-Rendering für statische Layer, MapCache-Throttling
+- [x] **Phase 24: Map Performance** - SSE Map-Streaming, Spatial Lookup für Hit-Testing, segmentInfos-Caching, CGImage Pre-Rendering für statische Layer, MapCache-Throttling (completed 2026-04-04)
 - [ ] **Phase 25: View Architecture** - RobotDetailView und RobotSettingsSections in eigenständige Dateien aufbrechen, MapContentView-State in ViewModel zentralisieren
 - [ ] **Phase 26: Security Hardening** - HTTP-Warnung, SSL-Bypass-Warnung, Robot-Config verschlüsselt speichern
 - [ ] **Phase 27: Accessibility** - VoiceOver-Labels für alle Controls, Status-Header, Consumables, Icon-Buttons und Map-Canvas
@@ -210,7 +210,7 @@ Plans:
 Plans:
 - [x] 24-01-PLAN.md — SSE Map-Streaming + MapCacheService Hash-Deduplication (PERF-02, PERF-05)
 - [x] 24-02-PLAN.md — Spatial Lookup Hit-Testing + segmentInfos-Caching (PERF-01, PERF-03)
-- [ ] 24-03-PLAN.md — Static Layer CGImage Pre-Rendering (PERF-04)
+- [x] 24-03-PLAN.md — Static Layer CGImage Pre-Rendering (PERF-04)
 
 ### Phase 25: View Architecture
 **Goal**: Keine View-Datei über 400 Zeilen — alle großen Views sind in eigenständige, fokussierte Sub-Views aufgeteilt
