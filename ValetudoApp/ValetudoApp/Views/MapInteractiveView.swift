@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 // MARK: - Interactive Map View
 struct InteractiveMapView: View {
@@ -6,6 +7,7 @@ struct InteractiveMapView: View {
     let segments: [Segment]
     @Binding var selectedSegmentIds: [String]
     let viewSize: CGSize
+    var staticLayerImage: CGImage?
 
     // Drawing overlays
     var drawnZones: [CleaningZone] = []
@@ -34,10 +36,8 @@ struct InteractiveMapView: View {
 
     var body: some View {
         Canvas { context, size in
-            // Use default pixelSize of 5 if not provided
             let pixelSize = map.pixelSize ?? 5
             guard let layers = map.layers, !layers.isEmpty else {
-                // Draw "no data" indicator
                 let text = Text("No map layers")
                 context.draw(text, at: CGPoint(x: size.width / 2, y: size.height / 2))
                 return
@@ -45,38 +45,48 @@ struct InteractiveMapView: View {
 
             let params = calculateMapParams(layers: layers, pixelSize: pixelSize, size: size)
             guard let p = params else {
-                // Draw "calculation failed" indicator
                 let text = Text("Map calculation failed")
                 context.draw(text, at: CGPoint(x: size.width / 2, y: size.height / 2))
                 return
             }
 
-            // Draw floor
-            drawLayersDecompressed(context: context, layers: layers, type: "floor", color: Color(white: 0.92), params: p, pixelSize: pixelSize)
+            // STATIC: Pre-rendered floor + segments + walls
+            if let img = staticLayerImage {
+                context.draw(
+                    Image(decorative: img, scale: UIScreen.main.scale),
+                    in: CGRect(origin: .zero, size: size)
+                )
+            } else {
+                // Fallback: pixel-by-pixel when CGImage not yet ready
+                drawLayersDecompressed(context: context, layers: layers, type: "floor", color: Color(white: 0.92), params: p, pixelSize: pixelSize)
+                for layer in layers where layer.type == "segment" {
+                    let pixels = layer.decompressedPixels
+                    guard !pixels.isEmpty else { continue }
+                    let segmentId = layer.metaData?.segmentId
+                    let baseColor = segmentColor(segmentId: segmentId)
+                    let color = baseColor.opacity(0.6)
+                    let material = layer.metaData?.material
+                    drawPixelsWithMaterial(context: context, pixels: pixels, color: color, material: material, params: p, pixelSize: pixelSize)
+                }
+                drawWalls(context: context, layers: layers, color: Color(white: 0.25), params: p, pixelSize: pixelSize)
+            }
 
-            // Draw segments
+            // DYNAMIC: Selection borders (only for selected segments, drawn over static image)
             for layer in layers where layer.type == "segment" {
-                let pixels = layer.decompressedPixels
-                guard !pixels.isEmpty else { continue }
-
                 let segmentId = layer.metaData?.segmentId
                 let isSelected = segmentId.map { selectedSegmentIds.contains($0) } ?? false
-                let baseColor = segmentColor(segmentId: segmentId)
-                let color = isSelected ? baseColor.opacity(0.9) : baseColor.opacity(0.6)
-                let material = layer.metaData?.material
-
-                drawPixelsWithMaterial(context: context, pixels: pixels, color: color, material: material, params: p, pixelSize: pixelSize)
-
-                // Draw selection border
                 if isSelected {
+                    let pixels = layer.decompressedPixels
+                    guard !pixels.isEmpty else { continue }
+
+                    let baseColor = segmentColor(segmentId: segmentId)
+                    let selectedColor = baseColor.opacity(0.9)
+                    drawPixels(context: context, pixels: pixels, color: selectedColor, params: p, pixelSize: pixelSize)
                     drawSegmentBorder(context: context, pixels: pixels, params: p, pixelSize: pixelSize)
                 }
             }
 
-            // Draw walls (thinner)
-            drawWalls(context: context, layers: layers, color: Color(white: 0.25), params: p, pixelSize: pixelSize)
-
-            // Draw entities
+            // DYNAMIC: Entities (path, charger, robot)
             if let entities = map.entities {
                 for entity in entities where entity.type == "path" || entity.type == "predicted_path" {
                     drawPath(context: context, entity: entity, params: p, pixelSize: pixelSize)
@@ -89,7 +99,7 @@ struct InteractiveMapView: View {
                 }
             }
 
-            // Draw existing restrictions (API coordinates are in mm, need to convert to pixels)
+            // DYNAMIC: Existing restrictions
             if let restrictions = existingRestrictions {
                 for wall in restrictions.virtualWalls {
                     drawVirtualWall(context: context, wall: wall, params: p, pixelSize: pixelSize, isNew: false)
@@ -102,7 +112,7 @@ struct InteractiveMapView: View {
                 }
             }
 
-            // Draw newly created zones/restrictions (these are already in API mm coords)
+            // DYNAMIC: New zones/restrictions + drawing preview
             for zone in drawnZones {
                 drawCleaningZone(context: context, zone: zone, params: p, pixelSize: pixelSize)
             }
@@ -116,7 +126,6 @@ struct InteractiveMapView: View {
                 drawVirtualWall(context: context, wall: wall, params: p, pixelSize: pixelSize, isNew: true)
             }
 
-            // Draw current drawing preview (not for goTo/savePreset - those use SwiftUI overlay)
             if let start = currentDrawStart, let end = currentDrawEnd, editMode != .goTo && editMode != .savePreset {
                 drawCurrentDrawing(context: context, start: start, end: end, mode: editMode, size: size)
             }

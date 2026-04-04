@@ -222,6 +222,7 @@ struct MapContentView: View {
                                 segments: viewModel.segments,
                                 selectedSegmentIds: $viewModel.selectedSegmentIds,
                                 viewSize: geometry.size,
+                                staticLayerImage: viewModel.staticLayerImage,
                                 drawnZones: viewModel.drawnZones,
                                 drawnNoGoAreas: viewModel.drawnNoGoAreas,
                                 drawnNoMopAreas: viewModel.drawnNoMopAreas,
