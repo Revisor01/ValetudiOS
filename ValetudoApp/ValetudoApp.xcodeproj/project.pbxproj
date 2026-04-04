@@ -59,6 +59,7 @@
 		DA136B4862BD6BD33702E71A /* IntensityControlView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 172B1FB7678A953A4655A3EE /* IntensityControlView.swift */; };
 		DB3194EBB4566F919E12A364 /* NWBrowserService.swift in Sources */ = {isa = PBXBuildFile; fileRef = B65C57A11EEEF91115F0C845 /* NWBrowserService.swift */; };
 		DDD26A60B887E1133DD2E18B /* AddRobotView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3BEF0FC2A1B164BA6099BBC /* AddRobotView.swift */; };
+		DE94B163C104E2E22A076D08 /* MapGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 276033B5B7CFD4CEB45479EA /* MapGeometry.swift */; };
 		E3B89B8282E352373120510B /* RobotManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4BE7F0D27E21AAB984042AF4 /* RobotManager.swift */; };
 		E729DF2F6C2B31C596133D84 /* RobotDetailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 207A76A1020CA2C1DEB44125 /* RobotDetailViewModelTests.swift */; };
 		EF03FC536C8B10A814C55E48 /* ConsumablesView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F24988119F831BB0A8B779FA /* ConsumablesView.swift */; };
@@ -92,6 +93,7 @@
 		1FBC2DF8B34C8EB854C9C1D2 /* RobotSettingsSections.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotSettingsSections.swift; sourceTree = "<group>"; };
 		207A76A1020CA2C1DEB44125 /* RobotDetailViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotDetailViewModelTests.swift; sourceTree = "<group>"; };
 		21BF56FF46BA4144DBD73CA4 /* KeychainStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainStore.swift; sourceTree = "<group>"; };
+		276033B5B7CFD4CEB45479EA /* MapGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapGeometry.swift; sourceTree = "<group>"; };
 		28A30679F5032173015E8B86 /* ObstaclePhotoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObstaclePhotoView.swift; sourceTree = "<group>"; };
 		29662D61BFED0893E6E573CB /* TimerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimerTests.swift; sourceTree = "<group>"; };
 		2F02071A0C637423ED754AC4 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
@@ -215,6 +217,7 @@
 			isa = PBXGroup;
 			children = (
 				EECFDCDDB1ADB346E675933D /* Constants.swift */,
+				276033B5B7CFD4CEB45479EA /* MapGeometry.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -424,6 +427,7 @@
 				A2F93F458EDD354944B50689 /* ManualControlView.swift in Sources */,
 				3692C118EEE4D844F681DC5A /* MapCacheService.swift in Sources */,
 				34B0559E0C4C96150C6F7076 /* MapControlBarsView.swift in Sources */,
+				DE94B163C104E2E22A076D08 /* MapGeometry.swift in Sources */,
 				463715B3BAE62493A0D01D8B /* MapInteractiveView.swift in Sources */,
 				CB68130A422E30CC0C51BF78 /* MapMiniMapView.swift in Sources */,
 				B77910FB25419990C9E3CD03 /* MapSheetsView.swift in Sources */,

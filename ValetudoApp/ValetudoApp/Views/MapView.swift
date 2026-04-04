@@ -26,15 +26,6 @@ struct RestrictionIdentifier: Equatable {
     let index: Int
 }
 
-// MARK: - Map Calculation Parameters
-struct MapParams {
-    let scale: CGFloat
-    let offsetX: CGFloat
-    let offsetY: CGFloat
-    let minX: Int
-    let minY: Int
-}
-
 // MARK: - Map Tab View (for Tab Bar)
 struct MapTabView: View {
     @Environment(RobotManager.self) var robotManager
@@ -456,27 +447,20 @@ struct MapContentView: View {
 
     // MARK: - Coordinate Transformation
     // Convert screen coordinates to map coordinates (accounting for zoom/pan)
+    // Delegates to free function screenToMapCoords(_:scale:offset:viewSize:) in MapGeometry.swift
     func screenToMapCoords(_ point: CGPoint, viewSize: CGSize) -> CGPoint {
-        // Inverse of scaleEffect(scale).offset(offset)
-        // Screen coord = (map coord * scale) + offset + center adjustment
-        // Map coord = (screen coord - offset - center adjustment) / scale
-        let centerX = viewSize.width / 2
-        let centerY = viewSize.height / 2
-
-        let mapX = (point.x - offset.width - centerX) / scale + centerX
-        let mapY = (point.y - offset.height - centerY) / scale + centerY
-
-        return CGPoint(x: mapX, y: mapY)
+        CGPoint(
+            x: (point.x - offset.width - viewSize.width / 2) / scale + viewSize.width / 2,
+            y: (point.y - offset.height - viewSize.height / 2) / scale + viewSize.height / 2
+        )
     }
 
+    // Delegates to free function mapToScreenCoords(_:scale:offset:viewSize:) in MapGeometry.swift
     func mapToScreenCoords(_ point: CGPoint, viewSize: CGSize) -> CGPoint {
-        let centerX = viewSize.width / 2
-        let centerY = viewSize.height / 2
-
-        let screenX = (point.x - centerX) * scale + centerX + offset.width
-        let screenY = (point.y - centerY) * scale + centerY + offset.height
-
-        return CGPoint(x: screenX, y: screenY)
+        CGPoint(
+            x: (point.x - viewSize.width / 2) * scale + viewSize.width / 2 + offset.width,
+            y: (point.y - viewSize.height / 2) * scale + viewSize.height / 2 + offset.height
+        )
     }
 
     // MARK: - Drawing Overlay
@@ -789,37 +773,31 @@ struct MapContentView: View {
         currentDrawEnd = nil
     }
 
+    // Delegates to free function calculateMapParams(layers:pixelSize:size:padding:) in MapGeometry.swift with padding: 20
     func calculateMapParams(layers: [MapLayer], pixelSize: Int, size: CGSize) -> MapParams? {
         var minX = Int.max, maxX = Int.min
         var minY = Int.max, maxY = Int.min
-
+        let padding: CGFloat = 20
         for layer in layers {
             let pixels = layer.decompressedPixels
             guard !pixels.isEmpty else { continue }
             var i = 0
             while i < pixels.count - 1 {
-                minX = min(minX, pixels[i])
-                maxX = max(maxX, pixels[i])
-                minY = min(minY, pixels[i + 1])
-                maxY = max(maxY, pixels[i + 1])
+                minX = min(minX, pixels[i]); maxX = max(maxX, pixels[i])
+                minY = min(minY, pixels[i + 1]); maxY = max(maxY, pixels[i + 1])
                 i += 2
             }
         }
-
         guard minX < Int.max else { return nil }
-
-        let contentWidth = CGFloat(maxX - minX + pixelSize)
-        let contentHeight = CGFloat(maxY - minY + pixelSize)
-        let padding: CGFloat = 20
-        let availableWidth = size.width - padding * 2
-        let availableHeight = size.height - padding * 2
-        let scaleX = availableWidth / contentWidth
-        let scaleY = availableHeight / contentHeight
-        let scale = min(scaleX, scaleY)
-        let offsetX = padding + (availableWidth - contentWidth * scale) / 2 - CGFloat(minX) * scale
-        let offsetY = padding + (availableHeight - contentHeight * scale) / 2 - CGFloat(minY) * scale
-
-        return MapParams(scale: scale, offsetX: offsetX, offsetY: offsetY, minX: minX, minY: minY)
+        let cW = CGFloat(maxX - minX + pixelSize), cH = CGFloat(maxY - minY + pixelSize)
+        let aW = size.width - padding * 2, aH = size.height - padding * 2
+        let scale = min(aW / cW, aH / cH)
+        return MapParams(
+            scale: scale,
+            offsetX: padding + (aW - cW * scale) / 2 - CGFloat(minX) * scale,
+            offsetY: padding + (aH - cH * scale) / 2 - CGFloat(minY) * scale,
+            minX: minX, minY: minY
+        )
     }
 
     // MARK: - Gestures

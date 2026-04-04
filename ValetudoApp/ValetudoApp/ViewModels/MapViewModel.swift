@@ -316,34 +316,10 @@ final class MapViewModel {
 
         let pixelSize = map.pixelSize ?? 5
 
-        // Calculate map params the same way as finishDrawing/calculateMapParams
-        var minX = Int.max, maxX = Int.min
-        var minY = Int.max, maxY = Int.min
-
-        for layer in layers {
-            let pixels = layer.decompressedPixels
-            var i = 0
-            while i < pixels.count - 1 {
-                minX = Swift.min(minX, pixels[i])
-                maxX = Swift.max(maxX, pixels[i])
-                minY = Swift.min(minY, pixels[i + 1])
-                maxY = Swift.max(maxY, pixels[i + 1])
-                i += 2
-            }
-        }
-
-        guard minX < Int.max else { return }
-
-        let contentWidth = CGFloat(maxX - minX + pixelSize)
-        let contentHeight = CGFloat(maxY - minY + pixelSize)
-        let padding: CGFloat = 20
-        let availableWidth = viewSize.width - padding * 2
-        let availableHeight = viewSize.height - padding * 2
-        let scaleX = availableWidth / contentWidth
-        let scaleY = availableHeight / contentHeight
-        let mapScale = Swift.min(scaleX, scaleY)
-        let offsetX = padding + (availableWidth - contentWidth * mapScale) / 2 - CGFloat(minX) * mapScale
-        let offsetY = padding + (availableHeight - contentHeight * mapScale) / 2 - CGFloat(minY) * mapScale
+        guard let params = calculateMapParams(layers: layers, pixelSize: pixelSize, size: viewSize) else { return }
+        let mapScale = params.scale
+        let offsetX = params.offsetX
+        let offsetY = params.offsetY
 
         // start/end are already in map coordinates (from screenToMapCoords)
         // Convert directly to pixel coordinates — no gesture transform removal needed

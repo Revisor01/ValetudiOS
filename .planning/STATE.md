@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v3.0.0
-milestone_name: Quality, Performance & Hardening
-status: planning
-last_updated: "2026-04-04T23:00:00.000Z"
-last_activity: 2026-04-04
+milestone: v1.2.0
+milestone_name: Quality & API Completeness
+status: executing
+last_updated: "2026-04-04T20:03:12.227Z"
+last_activity: 2026-04-04 -- Phase 22 execution started
 progress:
-  total_phases: 8
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_phases: 30
+  completed_phases: 20
+  total_plans: 50
+  completed_plans: 47
 ---
 
 # Project State
@@ -19,14 +19,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Milestone v3.0.0 — Quality, Performance & Hardening
+**Current focus:** Phase 22 — Map Geometry Unification
 
 ## Current Position
 
-Phase: 22
-Plan: Not started
-Status: Ready to plan
-Last activity: 2026-04-04
+Phase: 22 (Map Geometry Unification) — EXECUTING
+Plan: 1 of 2
+Status: Executing Phase 22
+Last activity: 2026-04-04 -- Phase 22 execution started
 
 Progress: [........] 0/8 phases complete
 

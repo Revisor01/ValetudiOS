@@ -303,40 +303,6 @@ struct InteractiveMapView: View {
         return infos
     }
 
-    // MARK: - Map Calculations
-    private func calculateMapParams(layers: [MapLayer], pixelSize: Int, size: CGSize) -> MapParams? {
-        var minX = Int.max, maxX = Int.min
-        var minY = Int.max, maxY = Int.min
-
-        for layer in layers {
-            let pixels = layer.decompressedPixels
-            guard !pixels.isEmpty else { continue }
-            var i = 0
-            while i < pixels.count - 1 {
-                minX = min(minX, pixels[i])
-                maxX = max(maxX, pixels[i])
-                minY = min(minY, pixels[i + 1])
-                maxY = max(maxY, pixels[i + 1])
-                i += 2
-            }
-        }
-
-        guard minX < Int.max else { return nil }
-
-        let contentWidth = CGFloat(maxX - minX + pixelSize)
-        let contentHeight = CGFloat(maxY - minY + pixelSize)
-        let padding: CGFloat = 20
-        let availableWidth = size.width - padding * 2
-        let availableHeight = size.height - padding * 2
-        let scaleX = availableWidth / contentWidth
-        let scaleY = availableHeight / contentHeight
-        let scale = min(scaleX, scaleY)
-        let offsetX = padding + (availableWidth - contentWidth * scale) / 2 - CGFloat(minX) * scale
-        let offsetY = padding + (availableHeight - contentHeight * scale) / 2 - CGFloat(minY) * scale
-
-        return MapParams(scale: scale, offsetX: offsetX, offsetY: offsetY, minX: minX, minY: minY)
-    }
-
     // MARK: - Drawing Functions
     private func drawLayersDecompressed(context: GraphicsContext, layers: [MapLayer], type: String, color: Color, params: MapParams, pixelSize: Int) {
         for layer in layers where layer.type == type {

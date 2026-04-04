@@ -571,7 +571,7 @@ struct SplitMapView: View {
             let pixelSize = map.pixelSize ?? 5
             guard let layers = map.layers, !layers.isEmpty else { return }
 
-            guard let params = calculateParams(layers: layers, pixelSize: pixelSize, size: size) else { return }
+            guard let params = calculateMapParams(layers: layers, pixelSize: pixelSize, size: size) else { return }
 
             // Draw floor
             for layer in layers where layer.type == "floor" {
@@ -606,38 +606,6 @@ struct SplitMapView: View {
             }
         }
         .background(Color(.systemGray6))
-    }
-
-    private func calculateParams(layers: [MapLayer], pixelSize: Int, size: CGSize) -> MapParams? {
-        var minX = Int.max, maxX = Int.min
-        var minY = Int.max, maxY = Int.min
-
-        for layer in layers {
-            let pixels = layer.decompressedPixels
-            var i = 0
-            while i < pixels.count - 1 {
-                minX = min(minX, pixels[i])
-                maxX = max(maxX, pixels[i])
-                minY = min(minY, pixels[i + 1])
-                maxY = max(maxY, pixels[i + 1])
-                i += 2
-            }
-        }
-
-        guard minX < Int.max else { return nil }
-
-        let contentWidth = CGFloat(maxX - minX + pixelSize)
-        let contentHeight = CGFloat(maxY - minY + pixelSize)
-        let padding: CGFloat = 20
-        let availableWidth = size.width - padding * 2
-        let availableHeight = size.height - padding * 2
-        let scaleX = availableWidth / contentWidth
-        let scaleY = availableHeight / contentHeight
-        let scale = min(scaleX, scaleY)
-        let offsetX = padding + (availableWidth - contentWidth * scale) / 2 - CGFloat(minX) * scale
-        let offsetY = padding + (availableHeight - contentHeight * scale) / 2 - CGFloat(minY) * scale
-
-        return MapParams(scale: scale, offsetX: offsetX, offsetY: offsetY, minX: minX, minY: minY)
     }
 
     private func drawPixels(context: GraphicsContext, pixels: [Int], color: Color, params: MapParams, pixelSize: Int) {
