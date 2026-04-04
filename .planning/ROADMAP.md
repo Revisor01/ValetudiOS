@@ -130,7 +130,10 @@ Plans:
   1. Tap auf die Fläche eines Raums (nicht das Label) wählt den Raum aus — der Raum wechselt in den selektierten Zustand
   2. Tap auf die Raumfläche funktioniert auch wenn Room-Labels in den Einstellungen ausgeblendet sind
   3. Tap auf eine Stelle ohne Raumfläche (leere Karte, Wand) wählt keinen Raum aus — kein unbeabsichtigter Toggle
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 20-01-PLAN.md — SpatialTapGesture auf Canvas + handleCanvasTap Pixel-Lookup fuer Flaechen-Tap-Auswahl
 **UI hint**: yes
 
 ### Phase 21: Cleaning Order
