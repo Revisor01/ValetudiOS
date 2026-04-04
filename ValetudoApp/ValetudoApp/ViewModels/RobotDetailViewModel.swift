@@ -174,18 +174,30 @@ final class RobotDetailViewModel {
 
     private func loadCapabilities() async {
         guard let api = api else { return }
+
+        // Cache-Check
+        if let cached = robotManager.cachedCapabilities(for: robot.id) {
+            applyCapabilities(cached)
+            return
+        }
+
         do {
             let capabilities = try await api.getCapabilities()
-            hasManualControl = DebugConfig.showAllCapabilities || capabilities.contains("HighResolutionManualControlCapability")
-            hasAutoEmptyTrigger = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockManualTriggerCapability")
-            hasMopDockClean = DebugConfig.showAllCapabilities || capabilities.contains("MopDockCleanManualTriggerCapability")
-            hasMopDockDry = DebugConfig.showAllCapabilities || capabilities.contains("MopDockDryManualTriggerCapability")
-            hasEvents = true // Events are always available (no capability gate in Valetudo)
-            hasCleanRoute = DebugConfig.showAllCapabilities || capabilities.contains("CleanRouteControlCapability")
-            hasObstacleImages = DebugConfig.showAllCapabilities || capabilities.contains("ObstacleImagesCapability")
+            robotManager.cacheCapabilities(capabilities, for: robot.id)
+            applyCapabilities(capabilities)
         } catch {
             logger.error("Failed to load capabilities: \(error, privacy: .public)")
         }
+    }
+
+    private func applyCapabilities(_ capabilities: [String]) {
+        hasManualControl = DebugConfig.showAllCapabilities || capabilities.contains("HighResolutionManualControlCapability")
+        hasAutoEmptyTrigger = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockManualTriggerCapability")
+        hasMopDockClean = DebugConfig.showAllCapabilities || capabilities.contains("MopDockCleanManualTriggerCapability")
+        hasMopDockDry = DebugConfig.showAllCapabilities || capabilities.contains("MopDockDryManualTriggerCapability")
+        hasEvents = true // Events are always available (no capability gate in Valetudo)
+        hasCleanRoute = DebugConfig.showAllCapabilities || capabilities.contains("CleanRouteControlCapability")
+        hasObstacleImages = DebugConfig.showAllCapabilities || capabilities.contains("ObstacleImagesCapability")
     }
 
     private func loadFanSpeedPresets() async {
@@ -298,6 +310,11 @@ final class RobotDetailViewModel {
         guard let api = api else { return }
         if updateService == nil {
             updateService = UpdateService(api: api)
+            updateService?.onRebootComplete = { [weak self] in
+                guard let self = self else { return }
+                self.robotManager.invalidateCapabilities(for: self.robot.id)
+                self.logger.info("Capabilities cache invalidated after OTA reboot for robot \(self.robot.id, privacy: .public)")
+            }
         }
     }
 

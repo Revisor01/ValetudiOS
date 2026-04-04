@@ -46,6 +46,11 @@ class RobotManager {
     private let notificationService = NotificationService.shared
     @ObservationIgnored private let sseManager = SSEConnectionManager()
 
+    // MARK: - Capabilities Cache (DEBT-06)
+    @ObservationIgnored private var capabilitiesCache: [UUID: [String]] = [:]
+    @ObservationIgnored private var capabilitiesCacheDate: [UUID: Date] = [:]
+    private let capabilitiesTTL: TimeInterval = 86400 // 24 Stunden
+
     init() {
         loadRobots()
         startRefreshing()
@@ -102,6 +107,24 @@ class RobotManager {
 
     func getRobotName(for id: UUID) -> String {
         robots.first { $0.id == id }?.name ?? "Robot"
+    }
+
+    // MARK: - Capabilities Cache
+
+    func cachedCapabilities(for robotId: UUID) -> [String]? {
+        guard let date = capabilitiesCacheDate[robotId],
+              Date().timeIntervalSince(date) < capabilitiesTTL else { return nil }
+        return capabilitiesCache[robotId]
+    }
+
+    func cacheCapabilities(_ capabilities: [String], for robotId: UUID) {
+        capabilitiesCache[robotId] = capabilities
+        capabilitiesCacheDate[robotId] = Date()
+    }
+
+    func invalidateCapabilities(for robotId: UUID) {
+        capabilitiesCache.removeValue(forKey: robotId)
+        capabilitiesCacheDate.removeValue(forKey: robotId)
     }
 
     // MARK: - Status Refresh

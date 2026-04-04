@@ -122,9 +122,15 @@ final class RobotSettingsViewModel {
             if !DebugConfig.showAllCapabilities { hasPersistentMap = false }
         }
 
-        // Check capabilities
+        // Check capabilities (Cache-first, DEBT-06)
         do {
-            let capabilities = try await api.getCapabilities()
+            let capabilities: [String]
+            if let cached = robotManager.cachedCapabilities(for: robot.id) {
+                capabilities = cached
+            } else {
+                capabilities = try await api.getCapabilities()
+                robotManager.cacheCapabilities(capabilities, for: robot.id)
+            }
             hasMappingPass = DebugConfig.showAllCapabilities || capabilities.contains("MappingPassCapability")
             hasAutoEmptyDock = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockAutoEmptyIntervalControlCapability")
             hasQuirks = DebugConfig.showAllCapabilities || capabilities.contains("QuirksCapability")

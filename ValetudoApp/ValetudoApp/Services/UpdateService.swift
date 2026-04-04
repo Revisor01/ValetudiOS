@@ -48,6 +48,9 @@ class UpdateService {
     @ObservationIgnored private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
     @ObservationIgnored private var lastCheckDate: Date?
 
+    /// Wird aufgerufen wenn der Roboter nach einem OTA-Update erfolgreich neu gestartet hat
+    var onRebootComplete: (() -> Void)?
+
     init(api: ValetudoAPI) {
         self.api = api
     }
@@ -232,6 +235,7 @@ class UpdateService {
                     let _ = try await api.getValetudoVersion()
                     // Roboter antwortet wieder — Erfolg
                     setPhase(.idle)
+                    onRebootComplete?()
                     return
                 } catch {
                     // Netzwerkfehler waehrend Reboot ist ERWARTET — weiter pollen
