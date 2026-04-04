@@ -4,7 +4,7 @@ import SwiftUI
 struct InteractiveMapView: View {
     let map: RobotMap
     let segments: [Segment]
-    @Binding var selectedSegmentIds: Set<String>
+    @Binding var selectedSegmentIds: [String]
     let viewSize: CGSize
 
     // Drawing overlays
@@ -182,9 +182,9 @@ struct InteractiveMapView: View {
 
     private func toggleSegment(_ id: String) {
         if selectedSegmentIds.contains(id) {
-            selectedSegmentIds.remove(id)
+            selectedSegmentIds.removeAll(where: { $0 == id })
         } else {
-            selectedSegmentIds.insert(id)
+            selectedSegmentIds.append(id)
         }
     }
 

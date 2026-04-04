@@ -343,7 +343,7 @@ extension MapContentView {
                         icon: "arrow.triangle.merge",
                         color: .green
                     ) {
-                        Task { await viewModel.joinRooms(ids: Array(viewModel.selectedSegmentIds)) }
+                        Task { await viewModel.joinRooms(ids: viewModel.selectedSegmentIds) }
                     }
                 }
             }
