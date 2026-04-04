@@ -191,9 +191,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [x] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
-- [x] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
-- [x] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
+- [ ] 25-01-PLAN.md — RobotDetailView Section-Extraktion in Views/Detail/ (VIEW-01)
+- [ ] 25-02-PLAN.md — RobotSettingsSections Dateitrennung in Views/Settings/ (VIEW-02)
+- [ ] 25-03-PLAN.md — MapContentView Reduktion durch Extension-Dateien (VIEW-03)
 
 ### Phase 24: Map Performance
 **Goal**: Map-Rendering ist effizient — SSE statt Polling, schnelles Hit-Testing, gecachte Berechnungen und vorgerenderte statische Layer
@@ -225,9 +225,9 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [x] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
-- [x] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
-- [x] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
+- [ ] 25-01-PLAN.md — RobotDetailView Section-Extraktion in Views/Detail/ (VIEW-01)
+- [ ] 25-02-PLAN.md — RobotSettingsSections Dateitrennung in Views/Settings/ (VIEW-02)
+- [ ] 25-03-PLAN.md — MapContentView Reduktion durch Extension-Dateien (VIEW-03)
 
 ### Phase 26: Security Hardening
 **Goal**: Benutzer wird über unsichere Verbindungen informiert und sensible Daten sind verschlüsselt gespeichert
