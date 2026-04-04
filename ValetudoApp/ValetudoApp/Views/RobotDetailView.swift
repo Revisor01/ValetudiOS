@@ -1001,9 +1001,15 @@ extension RobotDetailView {
                                 Text(segment.displayName)
                                     .foregroundStyle(.primary)
                                 Spacer()
-                                if viewModel.selectedSegments.contains(segment.id) {
-                                    Image(systemName: "checkmark.circle.fill")
-                                        .foregroundStyle(.blue)
+                                if let index = viewModel.selectedSegments.firstIndex(of: segment.id) {
+                                    ZStack {
+                                        Circle()
+                                            .fill(Color.blue)
+                                            .frame(width: 24, height: 24)
+                                        Text("\(index + 1)")
+                                            .font(.system(size: 14, weight: .bold))
+                                            .foregroundStyle(.white)
+                                    }
                                 } else {
                                     Image(systemName: "circle")
                                         .foregroundStyle(.secondary)
