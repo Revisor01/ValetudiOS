@@ -44,7 +44,7 @@ final class MapViewModel {
     var renameSegmentId: String?
     var renameNewName = ""
     var splitSegmentId: String?
-    var selectedSegmentIds: Set<String> = []
+    var selectedSegmentIds: [String] = []
 
     // MARK: - GoTo State
     var goToMarkerPosition: CGPoint?
@@ -192,7 +192,7 @@ final class MapViewModel {
         defer { isCleaning = false }
 
         do {
-            try await api.cleanSegments(ids: Array(selectedSegmentIds), iterations: selectedIterations)
+            try await api.cleanSegments(ids: selectedSegmentIds, iterations: selectedIterations)
             selectedSegmentIds.removeAll()
             selectedIterations = 1
             await robotManager.refreshRobot(robot.id)

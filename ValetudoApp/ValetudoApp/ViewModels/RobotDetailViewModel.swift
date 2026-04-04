@@ -15,7 +15,7 @@ final class RobotDetailViewModel {
     // MARK: - Data state
     var segments: [Segment] = []
     var consumables: [Consumable] = []
-    var selectedSegments: Set<String> = []
+    var selectedSegments: [String] = []
     var selectedIterations: Int = 1
     var isLoading = false
 
@@ -339,7 +339,7 @@ final class RobotDetailViewModel {
         isLoading = true
         defer { isLoading = false }
         do {
-            try await api.cleanSegments(ids: Array(selectedSegments), iterations: selectedIterations)
+            try await api.cleanSegments(ids: selectedSegments, iterations: selectedIterations)
             selectedSegments.removeAll()
             selectedIterations = 1
             await robotManager.refreshRobot(robot.id)
@@ -350,9 +350,9 @@ final class RobotDetailViewModel {
 
     func toggleSegment(_ id: String) {
         if selectedSegments.contains(id) {
-            selectedSegments.remove(id)
+            selectedSegments.removeAll(where: { $0 == id })
         } else {
-            selectedSegments.insert(id)
+            selectedSegments.append(id)
         }
     }
 
