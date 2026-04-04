@@ -9,7 +9,7 @@ Requirements for Quality, Performance & Hardening. Each maps to roadmap phases.
 
 ### Tech Debt Elimination
 
-- [ ] **DEBT-01**: `calculateMapParams` existiert nur einmal als zentrale Funktion — keine duplizierten Kopien in MapView, MapInteractiveView, MapMiniMapView oder MapViewModel
+- [x] **DEBT-01**: `calculateMapParams` existiert nur einmal als zentrale Funktion — keine duplizierten Kopien in MapView, MapInteractiveView, MapMiniMapView oder MapViewModel
 - [x] **DEBT-02**: Room-Selection-State (`selectedSegmentIds`) ist in einer einzigen Quelle zentralisiert — MapViewModel und RobotDetailViewModel lesen/schreiben denselben State
 - [ ] **DEBT-03**: Kein `try?` mehr in benutzer-initierten Aktionen (join, split, rename, clean) — Fehler werden dem Benutzer angezeigt
 - [ ] **DEBT-04**: DebugConfig maskiert keine API-Fehler mehr — Fehler werden immer geloggt, Debug-Flag steuert nur Mock-Daten
@@ -30,7 +30,7 @@ Requirements for Quality, Performance & Hardening. Each maps to roadmap phases.
 - [ ] **VIEW-01**: RobotDetailView ist in eigenständige Section-Views aufgeteilt — keine Datei über 400 Zeilen
 - [ ] **VIEW-02**: RobotSettingsSections.swift ist in einzelne Dateien pro Sub-View aufgeteilt (Settings/-Verzeichnis)
 - [ ] **VIEW-03**: MapContentView-State ist in MapViewModel zentralisiert — Control Bars mutieren keinen View-State direkt
-- [ ] **VIEW-04**: Koordinaten-Transforms sind in einer einzigen, testbaren Utility zentralisiert — keine duplizierten Transforms
+- [x] **VIEW-04**: Koordinaten-Transforms sind in einer einzigen, testbaren Utility zentralisiert — keine duplizierten Transforms
 
 ### Security
 
@@ -72,7 +72,7 @@ Requirements for Quality, Performance & Hardening. Each maps to roadmap phases.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| DEBT-01 | Phase 22 | Pending |
+| DEBT-01 | Phase 22 | Complete |
 | DEBT-02 | Phase 22 | Complete |
 | DEBT-03 | Phase 23 | Pending |
 | DEBT-04 | Phase 23 | Pending |
@@ -87,7 +87,7 @@ Requirements for Quality, Performance & Hardening. Each maps to roadmap phases.
 | VIEW-01 | Phase 25 | Pending |
 | VIEW-02 | Phase 25 | Pending |
 | VIEW-03 | Phase 25 | Pending |
-| VIEW-04 | Phase 25 | Pending |
+| VIEW-04 | Phase 22 | Complete |
 | SEC-01 | Phase 26 | Pending |
 | SEC-02 | Phase 26 | Pending |
 | SEC-03 | Phase 26 | Pending |
