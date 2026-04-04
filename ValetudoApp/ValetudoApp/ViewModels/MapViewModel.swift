@@ -1,5 +1,6 @@
 import SwiftUI
 import Foundation
+import UIKit
 import os
 import Observation
 
@@ -33,6 +34,10 @@ final class MapViewModel {
     // MARK: - Cached Computations (PERF-01, PERF-03)
     @ObservationIgnored var segmentPixelSets: [String: Set<Int>] = [:]
     var cachedSegmentInfos: [SegmentInfo] = []
+
+    // MARK: - Static Layer Pre-rendering (PERF-04)
+    var staticLayerImage: CGImage?
+    @ObservationIgnored private var lastRenderSize: CGSize = .zero
 
     // MARK: - Capabilities
     var hasZoneCleaning = false
@@ -158,6 +163,9 @@ final class MapViewModel {
             segments = loadedSegments
             rebuildSegmentPixelSets()
             updateCachedSegmentInfos()
+            if lastRenderSize.width > 0 {
+                rebuildStaticLayerImage(size: lastRenderSize)
+            }
             loadError = nil
             isOffline = false
             isLoading = false
@@ -201,6 +209,9 @@ final class MapViewModel {
                             self.map = newMap
                             self.rebuildSegmentPixelSets()
                             self.updateCachedSegmentInfos()
+                            if self.lastRenderSize.width > 0 {
+                                self.rebuildStaticLayerImage(size: self.lastRenderSize)
+                            }
                             self.isOffline = false
                             await MapCacheService.shared.saveIfChanged(newMap, for: self.robot.id)
                         } catch {
@@ -210,6 +221,9 @@ final class MapViewModel {
                                 self.map = fallbackMap
                                 self.rebuildSegmentPixelSets()
                                 self.updateCachedSegmentInfos()
+                                if self.lastRenderSize.width > 0 {
+                                    self.rebuildStaticLayerImage(size: self.lastRenderSize)
+                                }
                                 self.isOffline = false
                                 await MapCacheService.shared.saveIfChanged(fallbackMap, for: self.robot.id)
                             }
@@ -225,6 +239,9 @@ final class MapViewModel {
                         self.map = newMap
                         self.rebuildSegmentPixelSets()
                         self.updateCachedSegmentInfos()
+                        if self.lastRenderSize.width > 0 {
+                            self.rebuildStaticLayerImage(size: self.lastRenderSize)
+                        }
                         self.isOffline = false
                         await MapCacheService.shared.saveIfChanged(newMap, for: self.robot.id)
                     } else {
@@ -315,6 +332,133 @@ final class MapViewModel {
         cachedSegmentInfos = infos
     }
 
+    // MARK: - Static Layer Segment Colors
+
+    private static let segmentUIColors: [UIColor] = [
+        UIColor(red: 0.65, green: 0.80, blue: 0.92, alpha: 1),
+        UIColor(red: 0.70, green: 0.88, blue: 0.75, alpha: 1),
+        UIColor(red: 0.92, green: 0.78, blue: 0.72, alpha: 1),
+        UIColor(red: 0.82, green: 0.75, blue: 0.90, alpha: 1),
+        UIColor(red: 0.90, green: 0.85, blue: 0.65, alpha: 1),
+        UIColor(red: 0.70, green: 0.85, blue: 0.85, alpha: 1),
+        UIColor(red: 0.90, green: 0.72, blue: 0.78, alpha: 1),
+        UIColor(red: 0.78, green: 0.88, blue: 0.72, alpha: 1),
+    ]
+
+    private static func segmentUIColor(segmentId: String?) -> UIColor {
+        if let id = segmentId, let num = Int(id) {
+            return segmentUIColors[num % segmentUIColors.count]
+        }
+        return segmentUIColors[0]
+    }
+
+    // MARK: - Static Layer Pre-rendering
+
+    func rebuildStaticLayerImage(size: CGSize) {
+        guard size.width > 0, size.height > 0 else { return }
+        guard let map = map, let layers = map.layers, !layers.isEmpty else {
+            staticLayerImage = nil
+            return
+        }
+
+        lastRenderSize = size
+        let pixelSize = map.pixelSize ?? 5
+        guard let params = calculateMapParams(layers: layers, pixelSize: pixelSize, size: size) else { return }
+
+        let layersCopy = layers
+        let scale = params.scale
+        let offsetX = params.offsetX
+        let offsetY = params.offsetY
+        let pxSize = pixelSize
+
+        Task.detached(priority: .userInitiated) {
+            let renderer = UIGraphicsImageRenderer(size: size)
+            let uiImage = renderer.image { ctx in
+                let cgCtx = ctx.cgContext
+
+                let pixelScale = scale * CGFloat(pxSize)
+
+                // Floor
+                for layer in layersCopy where layer.type == "floor" {
+                    let pixels = layer.decompressedPixels
+                    cgCtx.setFillColor(UIColor(white: 0.92, alpha: 1).cgColor)
+                    var i = 0
+                    while i < pixels.count - 1 {
+                        let x = CGFloat(pixels[i]) * scale + offsetX
+                        let y = CGFloat(pixels[i + 1]) * scale + offsetY
+                        cgCtx.fill(CGRect(x: x, y: y, width: pixelScale + 0.5, height: pixelScale + 0.5))
+                        i += 2
+                    }
+                }
+
+                // Segments (unselected base color with material texture)
+                for layer in layersCopy where layer.type == "segment" {
+                    let pixels = layer.decompressedPixels
+                    guard !pixels.isEmpty else { continue }
+                    let baseColor = MapViewModel.segmentUIColor(segmentId: layer.metaData?.segmentId).withAlphaComponent(0.6)
+                    let material = layer.metaData?.material
+
+                    let textureInterval: Int
+                    let isHorizontal: Bool
+                    let isVertical: Bool
+                    switch material {
+                    case "tile":
+                        textureInterval = 4; isHorizontal = true; isVertical = true
+                    case "wood", "wood_horizontal":
+                        textureInterval = 3; isHorizontal = true; isVertical = false
+                    case "wood_vertical":
+                        textureInterval = 3; isHorizontal = false; isVertical = true
+                    default:
+                        textureInterval = 0; isHorizontal = false; isVertical = false
+                    }
+
+                    let accentColor = baseColor.withAlphaComponent(0.85 * 0.6)
+
+                    var i = 0
+                    while i < pixels.count - 1 {
+                        let px = pixels[i]
+                        let py = pixels[i + 1]
+                        let x = CGFloat(px) * scale + offsetX
+                        let y = CGFloat(py) * scale + offsetY
+                        let rect = CGRect(x: x, y: y, width: pixelScale + 0.5, height: pixelScale + 0.5)
+
+                        let shouldAccent: Bool
+                        if textureInterval > 0 {
+                            shouldAccent = (isHorizontal && py % textureInterval == 0) || (isVertical && px % textureInterval == 0)
+                        } else {
+                            shouldAccent = false
+                        }
+
+                        cgCtx.setFillColor(shouldAccent ? accentColor.cgColor : baseColor.cgColor)
+                        cgCtx.fill(rect)
+                        i += 2
+                    }
+                }
+
+                // Walls (thin, matching InteractiveMapView.drawWalls)
+                let wallColor = UIColor(white: 0.25, alpha: 1).cgColor
+                let normalScale = scale * CGFloat(pxSize)
+                let wallScale = normalScale * 0.2
+                cgCtx.setFillColor(wallColor)
+                for layer in layersCopy where layer.type == "wall" {
+                    let pixels = layer.decompressedPixels
+                    guard !pixels.isEmpty else { continue }
+                    var i = 0
+                    while i < pixels.count - 1 {
+                        let x = CGFloat(pixels[i]) * scale + offsetX + normalScale * 0.4
+                        let y = CGFloat(pixels[i + 1]) * scale + offsetY + normalScale * 0.4
+                        cgCtx.fill(CGRect(x: x, y: y, width: wallScale, height: wallScale))
+                        i += 2
+                    }
+                }
+            }
+
+            await MainActor.run { [weak self] in
+                self?.staticLayerImage = uiImage.cgImage
+            }
+        }
+    }
+
     // MARK: - Cleaning Actions
     func cleanSelectedRooms() async {
         guard let api = api, !selectedSegmentIds.isEmpty else { return }
@@ -398,6 +542,9 @@ final class MapViewModel {
 
             segments = newSegments
             updateCachedSegmentInfos()
+            if lastRenderSize.width > 0 {
+                rebuildStaticLayerImage(size: lastRenderSize)
+            }
             mapRefreshId = UUID()
             showRenameSheet = false
             editMode = .none
@@ -428,6 +575,9 @@ final class MapViewModel {
                 self.map = newMap
                 self.rebuildSegmentPixelSets()
                 self.updateCachedSegmentInfos()
+                if self.lastRenderSize.width > 0 {
+                    self.rebuildStaticLayerImage(size: self.lastRenderSize)
+                }
             } catch {
                 logger.error("Map reload after join failed: \(error, privacy: .public)")
                 errorRouter?.show(error)
@@ -436,6 +586,9 @@ final class MapViewModel {
                 let newSegments = try await api.getSegments()
                 self.segments = newSegments
                 self.updateCachedSegmentInfos()
+                if self.lastRenderSize.width > 0 {
+                    self.rebuildStaticLayerImage(size: self.lastRenderSize)
+                }
                 logger.debug("joinSelectedSegments: Reloaded \(newSegments.count, privacy: .public) segments")
             } catch {
                 logger.error("Segments reload after join failed: \(error, privacy: .public)")
@@ -486,6 +639,9 @@ final class MapViewModel {
                 self.map = newMap
                 self.rebuildSegmentPixelSets()
                 self.updateCachedSegmentInfos()
+                if self.lastRenderSize.width > 0 {
+                    self.rebuildStaticLayerImage(size: self.lastRenderSize)
+                }
             } catch {
                 logger.error("Map reload after split failed: \(error, privacy: .public)")
                 errorRouter?.show(error)
@@ -494,6 +650,9 @@ final class MapViewModel {
                 let newSegments = try await api.getSegments()
                 self.segments = newSegments
                 self.updateCachedSegmentInfos()
+                if self.lastRenderSize.width > 0 {
+                    self.rebuildStaticLayerImage(size: self.lastRenderSize)
+                }
                 logger.debug("performSplit: Reloaded \(newSegments.count, privacy: .public) segments")
             } catch {
                 logger.error("Segments reload after split failed: \(error, privacy: .public)")

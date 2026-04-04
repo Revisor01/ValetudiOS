@@ -356,9 +356,11 @@ struct MapContentView: View {
                 }
                 .onAppear {
                     currentViewSize = geometry.size
+                    viewModel.rebuildStaticLayerImage(size: geometry.size)
                 }
                 .onChange(of: geometry.size) { _, newSize in
                     currentViewSize = newSize
+                    viewModel.rebuildStaticLayerImage(size: newSize)
                 }
             }
 
