@@ -2,14 +2,14 @@
 gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
-status: idle
-last_updated: "2026-04-04T23:30:00.000Z"
-last_activity: 2026-04-04 -- Phase 23 completed (all 5 success criteria verified)
+status: executing
+last_updated: "2026-04-04T23:27:54.750Z"
+last_activity: 2026-04-04
 progress:
-  total_phases: 24
+  total_phases: 30
   completed_phases: 22
-  total_plans: 53
-  completed_plans: 52
+  total_plans: 56
+  completed_plans: 53
 ---
 
 # Project State
@@ -19,14 +19,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 24 — map-performance (next)
+**Current focus:** Phase 24 — map-performance
 
 ## Current Position
 
-Phase: 23 (error-handling-robustness-patterns) — COMPLETED
-Plan: 3 of 3
-Status: Phase 23 verified and complete
-Last activity: 2026-04-04 -- Phase 23 completed
+Phase: 24 (map-performance) — EXECUTING
+Plan: 2 of 3
+Status: Ready to execute
+Last activity: 2026-04-04
 
 Progress: [........] 0/8 phases complete
 
@@ -42,6 +42,8 @@ Progress: [........] 0/8 phases complete
 - Phase 28 (Tests) braucht Phase 22 (extrahierte Transforms) + Phase 23 (UpdateService patterns)
 - Phase 29 (UX Robustness) braucht Phase 23 (ErrorRouter)
 - [Phase 22-map-geometry-unification]: didSet sync pattern chosen for room selection — @Binding requires stored property; RobotManager is now single source of truth for all per-robot session state
+- [Phase 24-map-performance]: data.hashValue used for cache dedup in MapCacheService — avoids CryptoKit, acceptable collision risk
+- [Phase 24-map-performance]: SSE stream replaces 2s polling in MapViewModel — exponential backoff 2s/5s/30s, HTTP fallback on failure
 
 ### Pending Todos
 

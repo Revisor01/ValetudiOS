@@ -20,10 +20,10 @@ Requirements for Quality, Performance & Hardening. Each maps to roadmap phases.
 ### Performance
 
 - [ ] **PERF-01**: Map-Tap-Hit-Testing nutzt Spatial Lookup (Dictionary/Bounding Box) statt linearem Pixel-Scan — Tap-Response unter 16ms
-- [ ] **PERF-02**: Map-Updates kommen via SSE-Stream statt HTTP-Polling — `streamMapLines()` API-Endpoint wird genutzt
+- [x] **PERF-02**: Map-Updates kommen via SSE-Stream statt HTTP-Polling — `streamMapLines()` API-Endpoint wird genutzt
 - [ ] **PERF-03**: `segmentInfos()` wird pro Map-Update einmal berechnet und gecacht — nicht bei jedem Overlay-Render
 - [ ] **PERF-04**: Statische Map-Layer (Floor, Walls, Segments) werden als CGImage vorgerendert — Canvas zeichnet nur dynamische Elemente pro Frame
-- [ ] **PERF-05**: MapCacheService schreibt nur bei tatsächlicher Datenänderung auf Disk — nicht bei jedem Poll-Zyklus
+- [x] **PERF-05**: MapCacheService schreibt nur bei tatsächlicher Datenänderung auf Disk — nicht bei jedem Poll-Zyklus
 
 ### View Decomposition
 
@@ -80,10 +80,10 @@ Requirements for Quality, Performance & Hardening. Each maps to roadmap phases.
 | DEBT-06 | Phase 23 | Pending |
 | DEBT-07 | Phase 23 | Pending |
 | PERF-01 | Phase 24 | Pending |
-| PERF-02 | Phase 24 | Pending |
+| PERF-02 | Phase 24 | Complete |
 | PERF-03 | Phase 24 | Pending |
 | PERF-04 | Phase 24 | Pending |
-| PERF-05 | Phase 24 | Pending |
+| PERF-05 | Phase 24 | Complete |
 | VIEW-01 | Phase 25 | Pending |
 | VIEW-02 | Phase 25 | Pending |
 | VIEW-03 | Phase 25 | Pending |
