@@ -119,6 +119,12 @@ struct InteractiveMapView: View {
                 drawCurrentDrawing(context: context, start: start, end: end, mode: editMode, size: size)
             }
         }
+        .gesture(
+            SpatialTapGesture()
+                .onEnded { value in
+                    handleCanvasTap(at: value.location, size: viewSize)
+                }
+        )
         .overlay {
             // Tap targets and labels (only when visible)
             if showRoomLabels {
@@ -180,6 +186,35 @@ struct InteractiveMapView: View {
         } else {
             selectedSegmentIds.insert(id)
         }
+    }
+
+    // MARK: - Canvas Tap Hit-Testing
+    private func handleCanvasTap(at location: CGPoint, size: CGSize) {
+        guard editMode == .none || editMode == .roomEdit else { return }
+        guard let layers = map.layers else { return }
+
+        let pixelSize = map.pixelSize ?? 5
+        guard let p = calculateMapParams(layers: layers, pixelSize: pixelSize, size: size) else { return }
+
+        // Reverse transform: Canvas coordinate -> pixel coordinate
+        let pixelX = Int(((location.x - p.offsetX) / p.scale).rounded())
+        let pixelY = Int(((location.y - p.offsetY) / p.scale).rounded())
+
+        // Segment lookup: first layer wins on overlap (per user decision)
+        for layer in layers where layer.type == "segment" {
+            let pixels = layer.decompressedPixels
+            var i = 0
+            while i < pixels.count - 1 {
+                if pixels[i] == pixelX && pixels[i + 1] == pixelY {
+                    if let segmentId = layer.metaData?.segmentId {
+                        toggleSegment(segmentId)
+                    }
+                    return
+                }
+                i += 2
+            }
+        }
+        // No hit — no toggle, no unintended state change
     }
 
     // MARK: - Segment Info
