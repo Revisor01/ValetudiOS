@@ -57,7 +57,7 @@
 
 **Milestone Goal:** Raumauswahl per Tap auf die Raumfläche ermöglichen und die Auswahlreihenfolge als Reinigungsreihenfolge an die Valetudo API übergeben.
 
-- [ ] **Phase 20: Room Tap Selection** - Hit-Testing auf Raumpolygone in der Canvas implementieren, sodass Tap auf die Fläche einen Raum auswählt
+- [x] **Phase 20: Room Tap Selection** - Hit-Testing auf Raumpolygone in der Canvas implementieren, sodass Tap auf die Fläche einen Raum auswählt (completed 2026-04-04)
 - [ ] **Phase 21: Cleaning Order** - Auswahlreihenfolge als nummerierte Zahlen auf der Karte anzeigen und beim API-Aufruf übergeben
 
 ## Phase Details
@@ -133,7 +133,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 20-01-PLAN.md — SpatialTapGesture auf Canvas + handleCanvasTap Pixel-Lookup fuer Flaechen-Tap-Auswahl
+- [x] 20-01-PLAN.md — SpatialTapGesture auf Canvas + handleCanvasTap Pixel-Lookup fuer Flaechen-Tap-Auswahl
 **UI hint**: yes
 
 ### Phase 21: Cleaning Order
@@ -415,7 +415,7 @@ v2.2.0: 20 -> 21
 | 17. Background Monitoring | 2/2 | Complete    | 2026-04-02 |
 | 18. Map Caching | 2/2 | Complete    | 2026-04-02 |
 | 19. Observable Migration | 2/2 | Complete    | 2026-04-02 |
-| 20. Room Tap Selection | 0/? | Not started | - |
+| 20. Room Tap Selection | 1/1 | Complete    | 2026-04-04 |
 | 21. Cleaning Order | 0/? | Not started | - |
 
 ## Backlog

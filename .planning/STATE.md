@@ -1,15 +1,15 @@
 ---
 gsd_state_version: 1.0
-milestone: v2.2.0
-milestone_name: Room Interaction & Cleaning Order
-status: roadmap_ready
-last_updated: "2026-04-04"
+milestone: v1.2.0
+milestone_name: Quality & API Completeness
+status: executing
+last_updated: "2026-04-04T08:59:06.539Z"
 last_activity: 2026-04-04
 progress:
-  total_phases: 2
-  completed_phases: 0
-  total_plans: 0
-  completed_plans: 0
+  total_phases: 21
+  completed_phases: 19
+  total_plans: 46
+  completed_plans: 45
 ---
 
 # Project State
@@ -19,14 +19,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** v2.2.0 — Room Interaction & Cleaning Order (Phases 20-21)
+**Current focus:** Phase 20 — Room Tap Selection
 
 ## Current Position
 
-Phase: Phase 20 — Room Tap Selection (not started)
-Plan: —
-Status: Roadmap ready, planning next
-Last activity: 2026-04-04 — Roadmap v2.2.0 created (Phases 20-21)
+Phase: 999.1
+Plan: Not started
+Status: Executing Phase 20
+Last activity: 2026-04-04
 
 Progress: [....................] 0/2 phases complete
 
