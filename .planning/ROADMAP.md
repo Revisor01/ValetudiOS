@@ -208,9 +208,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [x] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
-- [x] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
-- [x] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
+- [ ] 24-01-PLAN.md — SSE Map-Streaming + MapCacheService Hash-Deduplication (PERF-02, PERF-05)
+- [ ] 24-02-PLAN.md — Spatial Lookup Hit-Testing + segmentInfos-Caching (PERF-01, PERF-03)
+- [ ] 24-03-PLAN.md — Static Layer CGImage Pre-Rendering (PERF-04)
 
 ### Phase 25: View Architecture
 **Goal**: Keine View-Datei über 400 Zeilen — alle großen Views sind in eigenständige, fokussierte Sub-Views aufgeteilt
