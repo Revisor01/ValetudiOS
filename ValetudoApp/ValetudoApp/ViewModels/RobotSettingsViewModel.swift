@@ -71,7 +71,7 @@ final class RobotSettingsViewModel {
 
     // MARK: - UI state
     var isLoading = false
-    var isInitialLoad = true
+    private(set) var settingsLoaded = false
     var volumeChanged = false
 
     // ErrorRouter — injected from View
@@ -91,8 +91,12 @@ final class RobotSettingsViewModel {
     // MARK: - Data Loading
     func loadSettings() async {
         guard let api = api else { return }
+        settingsLoaded = false
         isLoading = true
-        defer { isLoading = false }
+        defer {
+            isLoading = false
+            settingsLoaded = true
+        }
 
         // Load speaker volume
         do {
@@ -308,8 +312,6 @@ final class RobotSettingsViewModel {
             }
         }
 
-        // Mark initial load as complete to enable onChange handlers
-        isInitialLoad = false
     }
 
     // MARK: - Actions

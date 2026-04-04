@@ -77,7 +77,7 @@ struct RobotSettingsView: View {
                             }
                         }
                         .onChange(of: viewModel.carpetMode) { _, newValue in
-                            guard !viewModel.isInitialLoad else { return }
+                            guard viewModel.settingsLoaded else { return }
                             Task { await viewModel.setCarpetMode(newValue) }
                         }
                     }
@@ -91,7 +91,7 @@ struct RobotSettingsView: View {
                             }
                         }
                         .onChange(of: viewModel.obstacleAvoidance) { _, newValue in
-                            guard !viewModel.isInitialLoad else { return }
+                            guard viewModel.settingsLoaded else { return }
                             Task { await viewModel.setObstacleAvoidance(newValue) }
                         }
                     }
@@ -105,7 +105,7 @@ struct RobotSettingsView: View {
                             }
                         }
                         .onChange(of: viewModel.petObstacleAvoidance) { _, newValue in
-                            guard !viewModel.isInitialLoad else { return }
+                            guard viewModel.settingsLoaded else { return }
                             Task { await viewModel.setPetObstacleAvoidance(newValue) }
                         }
                     }
@@ -119,7 +119,7 @@ struct RobotSettingsView: View {
                             }
                         }
                         .onChange(of: viewModel.collisionAvoidance) { _, newValue in
-                            guard !viewModel.isInitialLoad else { return }
+                            guard viewModel.settingsLoaded else { return }
                             Task { await viewModel.setCollisionAvoidance(newValue) }
                         }
                     }
@@ -133,7 +133,7 @@ struct RobotSettingsView: View {
                             }
                         }
                         .onChange(of: viewModel.floorMaterialNavigation) { _, newValue in
-                            guard !viewModel.isInitialLoad else { return }
+                            guard viewModel.settingsLoaded else { return }
                             Task { await viewModel.setFloorMaterialNavigation(newValue) }
                         }
                     }
@@ -151,7 +151,7 @@ struct RobotSettingsView: View {
                             }
                         }
                         .onChange(of: viewModel.carpetSensorMode) { _, newValue in
-                            guard !viewModel.isInitialLoad && !newValue.isEmpty else { return }
+                            guard viewModel.settingsLoaded && !newValue.isEmpty else { return }
                             Task { await viewModel.setCarpetSensorMode(newValue) }
                         }
                     }
@@ -171,7 +171,7 @@ struct RobotSettingsView: View {
                         }
                     }
                     .onChange(of: viewModel.keyLock) { _, newValue in
-                        guard !viewModel.isInitialLoad else { return }
+                        guard viewModel.settingsLoaded else { return }
                         Task { await viewModel.setKeyLock(newValue) }
                     }
                 } header: {
@@ -193,7 +193,7 @@ struct RobotSettingsView: View {
                             }
                         }
                         .onChange(of: viewModel.persistentMap) { _, newValue in
-                            guard !viewModel.isInitialLoad else { return }
+                            guard viewModel.settingsLoaded else { return }
                             Task { await viewModel.setPersistentMap(newValue) }
                         }
                     }
@@ -339,7 +339,7 @@ struct RobotSettingsView: View {
                         }
                     }
                     .onChange(of: viewModel.currentVoicePackId) { _, newValue in
-                        guard !viewModel.isInitialLoad && !newValue.isEmpty else { return }
+                        guard viewModel.settingsLoaded && !newValue.isEmpty else { return }
                         Task { await viewModel.setVoicePack(newValue) }
                     }
                     .disabled(viewModel.isSettingVoicePack)

@@ -776,7 +776,7 @@ struct StationSettingsView: View {
     @Environment(RobotManager.self) var robotManager
 
     @State private var isLoading = false
-    @State private var isInitialLoad = true
+    @State private var stationLoaded = false
 
     // Capabilities
     @State private var hasAutoEmptyDock = DebugConfig.showAllCapabilities
@@ -828,7 +828,7 @@ struct StationSettingsView: View {
                             }
                         }
                         .onChange(of: currentAutoEmptyDockDuration) { _, newValue in
-                            guard !isInitialLoad && !newValue.isEmpty else { return }
+                            guard stationLoaded && !newValue.isEmpty else { return }
                             Task { await setAutoEmptyDockDuration(newValue) }
                         }
                     }
@@ -851,7 +851,7 @@ struct StationSettingsView: View {
                             }
                         }
                         .onChange(of: mopDockAutoDrying) { _, newValue in
-                            guard !isInitialLoad else { return }
+                            guard stationLoaded else { return }
                             Task { await setMopDockAutoDrying(newValue) }
                         }
                     }
@@ -869,7 +869,7 @@ struct StationSettingsView: View {
                             }
                         }
                         .onChange(of: currentWashTemperature) { _, newValue in
-                            guard !isInitialLoad && !newValue.isEmpty else { return }
+                            guard stationLoaded && !newValue.isEmpty else { return }
                             Task { await setWashTemperature(newValue) }
                         }
                     }
@@ -887,7 +887,7 @@ struct StationSettingsView: View {
                             }
                         }
                         .onChange(of: currentMopDockDryingTime) { _, newValue in
-                            guard !isInitialLoad && !newValue.isEmpty else { return }
+                            guard stationLoaded && !newValue.isEmpty else { return }
                             Task { await setDryingTime(newValue) }
                         }
                     }
@@ -922,6 +922,7 @@ struct StationSettingsView: View {
 
     private func loadSettings() async {
         guard let api = api else { return }
+        stationLoaded = false
         isLoading = true
         defer { isLoading = false }
 
@@ -1003,7 +1004,7 @@ struct StationSettingsView: View {
             }
         }
 
-        isInitialLoad = false
+        stationLoaded = true
     }
 
     private func setMopDockAutoDrying(_ enabled: Bool) async {
