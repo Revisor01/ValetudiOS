@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: executing
-last_updated: "2026-04-04T20:03:12.227Z"
-last_activity: 2026-04-04 -- Phase 22 execution started
+last_updated: "2026-04-04T20:23:02.873Z"
+last_activity: 2026-04-04
 progress:
-  total_phases: 30
-  completed_phases: 20
+  total_phases: 23
+  completed_phases: 21
   total_plans: 50
-  completed_plans: 47
+  completed_plans: 49
 ---
 
 # Project State
@@ -24,9 +24,9 @@ See: .planning/PROJECT.md (updated 2026-04-04)
 ## Current Position
 
 Phase: 22 (Map Geometry Unification) — EXECUTING
-Plan: 1 of 2
-Status: Executing Phase 22
-Last activity: 2026-04-04 -- Phase 22 execution started
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-04-04
 
 Progress: [........] 0/8 phases complete
 
@@ -41,6 +41,7 @@ Progress: [........] 0/8 phases complete
 - Phase 27 (Accessibility) braucht Phase 25 (View Architecture) — Labels auf dekomponierte Views
 - Phase 28 (Tests) braucht Phase 22 (extrahierte Transforms) + Phase 23 (UpdateService patterns)
 - Phase 29 (UX Robustness) braucht Phase 23 (ErrorRouter)
+- [Phase 22-map-geometry-unification]: didSet sync pattern chosen for room selection — @Binding requires stored property; RobotManager is now single source of truth for all per-robot session state
 
 ### Pending Todos
 

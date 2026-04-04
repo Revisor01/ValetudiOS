@@ -65,7 +65,7 @@
 
 **Milestone Goal:** Die App auf Produktionsqualität bringen — alle Tech Debt eliminieren, Map-Rendering auf Performance trimmen, Views sauber dekomponieren, Security-Warnungen einbauen, VoiceOver-Accessibility nachrüsten, Test-Coverage für kritische Pfade aufbauen und Robustness-Lücken schließen.
 
-- [ ] **Phase 22: Map Geometry Unification** - calculateMapParams deduplizieren, Koordinaten-Transforms in zentrale Utility, Room-Selection-State zentralisieren
+- [x] **Phase 22: Map Geometry Unification** - calculateMapParams deduplizieren, Koordinaten-Transforms in zentrale Utility, Room-Selection-State zentralisieren (completed 2026-04-04)
 - [ ] **Phase 23: Error Handling & Robustness Patterns** - try?-Suppressions durch echte Fehlerbehandlung ersetzen, DebugConfig-Masking fixen, isInitialLoad-Pattern ersetzen, Capability-Refresh und StoreKit-Validierung
 - [ ] **Phase 24: Map Performance** - SSE Map-Streaming, Spatial Lookup für Hit-Testing, segmentInfos-Caching, CGImage Pre-Rendering für statische Layer, MapCache-Throttling
 - [ ] **Phase 25: View Architecture** - RobotDetailView und RobotSettingsSections in eigenständige Dateien aufbrechen, MapContentView-State in ViewModel zentralisieren
@@ -175,8 +175,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 22-01-PLAN.md -- MapGeometry.swift: calculateMapParams + Koordinaten-Transforms deduplizieren (DEBT-01, VIEW-04)
-- [ ] 22-02-PLAN.md -- Room-Selection-State in RobotManager zentralisieren (DEBT-02)
+- [x] 22-01-PLAN.md -- MapGeometry.swift: calculateMapParams + Koordinaten-Transforms deduplizieren (DEBT-01, VIEW-04)
+- [x] 22-02-PLAN.md -- Room-Selection-State in RobotManager zentralisieren (DEBT-02)
 
 ### Phase 23: Error Handling & Robustness Patterns
 **Goal**: Kein API-Fehler wird mehr stillschweigend verschluckt, Debug-Mode maskiert keine echten Fehler, und Settings-Initialization ist robust
@@ -552,7 +552,7 @@ v3.0.0: 22 -> 23 + 24 + 25 + 26 (parallel nach 22) -> 27 (nach 25) -> 28 (nach 2
 | 19. Observable Migration | 2/2 | Complete    | 2026-04-02 |
 | 20. Room Tap Selection | 1/1 | Complete    | 2026-04-04 |
 | 21. Cleaning Order | 2/2 | Complete    | 2026-04-04 |
-| 22. Map Geometry Unification | 0/2 | Planning    | - |
+| 22. Map Geometry Unification | 2/2 | Complete   | 2026-04-04 |
 
 ## Backlog
 

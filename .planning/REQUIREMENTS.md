@@ -10,7 +10,7 @@ Requirements for Quality, Performance & Hardening. Each maps to roadmap phases.
 ### Tech Debt Elimination
 
 - [ ] **DEBT-01**: `calculateMapParams` existiert nur einmal als zentrale Funktion — keine duplizierten Kopien in MapView, MapInteractiveView, MapMiniMapView oder MapViewModel
-- [ ] **DEBT-02**: Room-Selection-State (`selectedSegmentIds`) ist in einer einzigen Quelle zentralisiert — MapViewModel und RobotDetailViewModel lesen/schreiben denselben State
+- [x] **DEBT-02**: Room-Selection-State (`selectedSegmentIds`) ist in einer einzigen Quelle zentralisiert — MapViewModel und RobotDetailViewModel lesen/schreiben denselben State
 - [ ] **DEBT-03**: Kein `try?` mehr in benutzer-initierten Aktionen (join, split, rename, clean) — Fehler werden dem Benutzer angezeigt
 - [ ] **DEBT-04**: DebugConfig maskiert keine API-Fehler mehr — Fehler werden immer geloggt, Debug-Flag steuert nur Mock-Daten
 - [ ] **DEBT-05**: `isInitialLoad`-Pattern in RobotSettingsViewModel durch robusteres Two-Phase-Pattern ersetzt
@@ -73,7 +73,7 @@ Requirements for Quality, Performance & Hardening. Each maps to roadmap phases.
 | Requirement | Phase | Status |
 |-------------|-------|--------|
 | DEBT-01 | Phase 22 | Pending |
-| DEBT-02 | Phase 22 | Pending |
+| DEBT-02 | Phase 22 | Complete |
 | DEBT-03 | Phase 23 | Pending |
 | DEBT-04 | Phase 23 | Pending |
 | DEBT-05 | Phase 23 | Pending |
