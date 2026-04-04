@@ -75,6 +75,9 @@ final class MapViewModel {
     // MARK: - Error State
     var errorMessage: String? = nil
 
+    // MARK: - ErrorRouter
+    var errorRouter: ErrorRouter?
+
     // MARK: - Offline State
     var isOffline: Bool = false
 
@@ -298,12 +301,20 @@ final class MapViewModel {
             logger.debug("joinSelectedSegments: API call successful")
             selectedSegmentIds.removeAll()
 
-            if let newMap = try? await api.getMap() {
+            do {
+                let newMap = try await api.getMap()
                 self.map = newMap
+            } catch {
+                logger.error("Map reload after join failed: \(error, privacy: .public)")
+                errorRouter?.show(error)
             }
-            if let newSegments = try? await api.getSegments() {
+            do {
+                let newSegments = try await api.getSegments()
                 self.segments = newSegments
                 logger.debug("joinSelectedSegments: Reloaded \(newSegments.count, privacy: .public) segments")
+            } catch {
+                logger.error("Segments reload after join failed: \(error, privacy: .public)")
+                errorRouter?.show(error)
             }
         } catch {
             logger.error("joinSelectedSegments FAILED: \(error, privacy: .public)")
@@ -345,12 +356,20 @@ final class MapViewModel {
             try await api.splitSegment(segmentId: segmentId, pointA: pointA, pointB: pointB)
             logger.debug("performSplit: API call successful")
 
-            if let newMap = try? await api.getMap() {
+            do {
+                let newMap = try await api.getMap()
                 self.map = newMap
+            } catch {
+                logger.error("Map reload after split failed: \(error, privacy: .public)")
+                errorRouter?.show(error)
             }
-            if let newSegments = try? await api.getSegments() {
+            do {
+                let newSegments = try await api.getSegments()
                 self.segments = newSegments
                 logger.debug("performSplit: Reloaded \(newSegments.count, privacy: .public) segments")
+            } catch {
+                logger.error("Segments reload after split failed: \(error, privacy: .public)")
+                errorRouter?.show(error)
             }
 
             splitSegmentId = nil

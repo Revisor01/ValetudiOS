@@ -170,6 +170,7 @@ struct MapPreviewView: View {
 // MARK: - Map Content View (shared between Tab and Sheet)
 struct MapContentView: View {
     @Environment(RobotManager.self) var robotManager
+    @Environment(ErrorRouter.self) var errorRouter
     let robot: RobotConfig
     let isFullscreen: Bool
 
@@ -388,6 +389,7 @@ struct MapContentView: View {
             }
         }
         .task {
+            viewModel.errorRouter = errorRouter
             await viewModel.loadMap()
             viewModel.startMapRefresh()
         }

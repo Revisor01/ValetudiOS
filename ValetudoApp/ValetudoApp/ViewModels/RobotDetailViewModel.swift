@@ -37,6 +37,9 @@ final class RobotDetailViewModel {
     var hasCleanRoute = DebugConfig.showAllCapabilities
     var hasObstacleImages = DebugConfig.showAllCapabilities
 
+    // ErrorRouter — injected from View
+    var errorRouter: ErrorRouter?
+
     // UpdateService — Single Source of Truth (STATE-04)
     private(set) var updateService: UpdateService?
 
@@ -337,7 +340,12 @@ final class RobotDetailViewModel {
 
     func locate() async {
         guard let api = api else { return }
-        try? await api.locate()
+        do {
+            try await api.locate()
+        } catch {
+            logger.error("locate failed: \(error, privacy: .public)")
+            errorRouter?.show(error)
+        }
     }
 
     func cleanSelectedRooms() async {

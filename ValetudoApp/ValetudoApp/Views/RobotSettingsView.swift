@@ -7,6 +7,7 @@ struct RobotSettingsView: View {
     let robot: RobotConfig
     let updateService: UpdateService?
     @Environment(RobotManager.self) var robotManager
+    @Environment(ErrorRouter.self) var errorRouter
     @State private var viewModel: RobotSettingsViewModel
 
     // Pure UI presentation state (alert toggles only)
@@ -430,6 +431,7 @@ struct RobotSettingsView: View {
         }
         .navigationTitle(String(localized: "settings.section_robot"))
         .task {
+            viewModel.errorRouter = errorRouter
             await viewModel.loadSettings()
         }
         .refreshable {

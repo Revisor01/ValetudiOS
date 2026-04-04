@@ -2,6 +2,7 @@ import SwiftUI
 
 struct RobotDetailView: View {
     @State private var viewModel: RobotDetailViewModel
+    @Environment(ErrorRouter.self) var errorRouter
 
     @State private var showFullMap = false
     @State private var showUpdateWarning = false
@@ -290,6 +291,7 @@ struct RobotDetailView: View {
         .navigationBarBackButtonHidden(showUpdateOverlay)
         .interactiveDismissDisabled(showUpdateOverlay)
         .task {
+            viewModel.errorRouter = errorRouter
             await viewModel.loadData()
         }
         .refreshable {

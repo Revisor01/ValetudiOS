@@ -74,6 +74,9 @@ final class RobotSettingsViewModel {
     var isInitialLoad = true
     var volumeChanged = false
 
+    // ErrorRouter — injected from View
+    var errorRouter: ErrorRouter?
+
     // MARK: - Computed
     var api: ValetudoAPI? {
         robotManager.getAPI(for: robot.id)
@@ -95,6 +98,7 @@ final class RobotSettingsViewModel {
         do {
             volume = Double(try await api.getSpeakerVolume())
         } catch {
+            logger.error("getSpeakerVolume failed: \(error, privacy: .public)")
             if !DebugConfig.showAllCapabilities { hasVolumeControl = false }
         }
 
@@ -102,6 +106,7 @@ final class RobotSettingsViewModel {
         do {
             carpetMode = try await api.getCarpetMode()
         } catch {
+            logger.error("getCarpetMode failed: \(error, privacy: .public)")
             if !DebugConfig.showAllCapabilities { hasCarpetMode = false }
         }
 
@@ -109,6 +114,7 @@ final class RobotSettingsViewModel {
         do {
             persistentMap = try await api.getPersistentMap()
         } catch {
+            logger.error("getPersistentMap failed: \(error, privacy: .public)")
             if !DebugConfig.showAllCapabilities { hasPersistentMap = false }
         }
 
@@ -135,6 +141,7 @@ final class RobotSettingsViewModel {
             hasVoicePack = DebugConfig.showAllCapabilities || capabilities.contains("VoicePackManagementCapability")
             hasAutoEmptyDockDuration = DebugConfig.showAllCapabilities || capabilities.contains("AutoEmptyDockAutoEmptyDurationControlCapability")
         } catch {
+            logger.error("getCapabilities failed: \(error, privacy: .public)")
             hasMappingPass = DebugConfig.showAllCapabilities
         }
 
@@ -143,6 +150,7 @@ final class RobotSettingsViewModel {
             do {
                 keyLock = try await api.getKeyLock()
             } catch {
+                logger.error("getKeyLock failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasKeyLock = false }
             }
         }
@@ -152,6 +160,7 @@ final class RobotSettingsViewModel {
             do {
                 obstacleAvoidance = try await api.getObstacleAvoidance()
             } catch {
+                logger.error("getObstacleAvoidance failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasObstacleAvoidance = false }
             }
         }
@@ -161,6 +170,7 @@ final class RobotSettingsViewModel {
             do {
                 petObstacleAvoidance = try await api.getPetObstacleAvoidance()
             } catch {
+                logger.error("getPetObstacleAvoidance failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasPetObstacleAvoidance = false }
             }
         }
@@ -173,6 +183,7 @@ final class RobotSettingsViewModel {
                     carpetSensorMode = try await api.getCarpetSensorMode()
                 }
             } catch {
+                logger.error("getCarpetSensorMode failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities {
                     hasCarpetSensorMode = false
                 }
@@ -185,6 +196,7 @@ final class RobotSettingsViewModel {
             do {
                 collisionAvoidance = try await api.getCollisionAvoidantNavigation()
             } catch {
+                logger.error("getCollisionAvoidantNavigation failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasCollisionAvoidance = false }
             }
         }
@@ -194,6 +206,7 @@ final class RobotSettingsViewModel {
             do {
                 floorMaterialNavigation = try await api.getFloorMaterialNavigation()
             } catch {
+                logger.error("getFloorMaterialNavigation failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasFloorMaterialNavigation = false }
             }
         }
@@ -203,6 +216,7 @@ final class RobotSettingsViewModel {
             do {
                 mopDockAutoDrying = try await api.getMopDockAutoDrying()
             } catch {
+                logger.error("getMopDockAutoDrying failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasMopDockAutoDrying = false }
             }
         }
@@ -217,6 +231,7 @@ final class RobotSettingsViewModel {
                     currentWashTemperature = tempAttr.value ?? ""
                 }
             } catch {
+                logger.error("getMopDockWashTemperature failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasMopDockWashTemperature = false }
                 mopDockWashTemperaturePresets = []
             }
@@ -235,9 +250,9 @@ final class RobotSettingsViewModel {
                     currentMopDockDryingTime = first
                 }
             } catch {
+                logger.error("getMopDockDryingTime failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasMopDockDryingTime = false }
                 mopDockDryingTimePresets = []
-                logger.debug("Mop dock drying time not supported: \(error, privacy: .public)")
             }
         }
 
@@ -246,8 +261,8 @@ final class RobotSettingsViewModel {
             do {
                 mapSnapshots = try await api.getMapSnapshots()
             } catch {
+                logger.error("getMapSnapshots failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasMapSnapshots = false }
-                logger.debug("Map snapshots not supported: \(error, privacy: .public)")
             }
         }
 
@@ -257,8 +272,8 @@ final class RobotSettingsViewModel {
                 let state = try await api.getPendingMapChange()
                 pendingMapChangeEnabled = state.enabled
             } catch {
+                logger.error("getPendingMapChange failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasPendingMapChange = false }
-                logger.debug("Pending map change not supported: \(error, privacy: .public)")
             }
         }
 
@@ -269,8 +284,8 @@ final class RobotSettingsViewModel {
                 voicePacks = state.supportedLanguages
                 currentVoicePackId = state.currentLanguage.id
             } catch {
+                logger.error("getVoicePackState failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasVoicePack = false }
-                logger.debug("Voice pack not supported: \(error, privacy: .public)")
             }
         }
 
@@ -287,9 +302,9 @@ final class RobotSettingsViewModel {
                     currentAutoEmptyDockDuration = first
                 }
             } catch {
+                logger.error("getAutoEmptyDockDuration failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasAutoEmptyDockDuration = false }
                 autoEmptyDockDurationPresets = []
-                logger.debug("Auto empty dock duration not supported: \(error, privacy: .public)")
             }
         }
 
@@ -493,9 +508,14 @@ final class RobotSettingsViewModel {
             logger.info("Voice pack set to: \(id, privacy: .public)")
         } catch {
             logger.error("Failed to set voice pack: \(error, privacy: .public)")
+            errorRouter?.show(error)
             // Reload current state on error
-            if let state = try? await api.getVoicePackState() {
+            do {
+                let state = try await api.getVoicePackState()
                 currentVoicePackId = state.currentLanguage.id
+            } catch {
+                logger.error("getVoicePackState failed in setVoicePack: \(error, privacy: .public)")
+                errorRouter?.show(error)
             }
         }
     }
@@ -507,8 +527,13 @@ final class RobotSettingsViewModel {
         defer { isRestoringSnapshot = false }
         do {
             try await api.restoreMapSnapshot(id: snapshot.id)
-            mapSnapshots = (try? await api.getMapSnapshots()) ?? mapSnapshots
             logger.info("Restored map snapshot: \(snapshot.id, privacy: .public)")
+            do {
+                mapSnapshots = try await api.getMapSnapshots()
+            } catch {
+                logger.error("getMapSnapshots reload failed: \(error, privacy: .public)")
+                // mapSnapshots bleibt unveraendert — kein errorRouter noetig, ist nur ein Reload
+            }
         } catch {
             logger.error("Failed to restore snapshot: \(error, privacy: .public)")
         }
