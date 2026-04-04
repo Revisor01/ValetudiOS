@@ -73,11 +73,13 @@ struct SegmentCleanRequest: Codable {
     let action: String
     let segment_ids: [String]
     let iterations: Int
+    let customOrder: Bool?
 
-    init(segmentIds: [String], iterations: Int = 1) {
+    init(segmentIds: [String], iterations: Int = 1, customOrder: Bool? = nil) {
         self.action = "start_segment_action"
         self.segment_ids = segmentIds
         self.iterations = iterations
+        self.customOrder = customOrder
     }
 }
 

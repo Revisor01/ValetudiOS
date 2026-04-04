@@ -192,7 +192,7 @@ final class MapViewModel {
         defer { isCleaning = false }
 
         do {
-            try await api.cleanSegments(ids: selectedSegmentIds, iterations: selectedIterations)
+            try await api.cleanSegments(ids: selectedSegmentIds, iterations: selectedIterations, customOrder: selectedSegmentIds.count > 1)
             selectedSegmentIds.removeAll()
             selectedIterations = 1
             await robotManager.refreshRobot(robot.id)

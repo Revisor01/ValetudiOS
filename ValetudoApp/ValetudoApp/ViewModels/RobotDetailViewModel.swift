@@ -339,7 +339,7 @@ final class RobotDetailViewModel {
         isLoading = true
         defer { isLoading = false }
         do {
-            try await api.cleanSegments(ids: selectedSegments, iterations: selectedIterations)
+            try await api.cleanSegments(ids: selectedSegments, iterations: selectedIterations, customOrder: selectedSegments.count > 1)
             selectedSegments.removeAll()
             selectedIterations = 1
             await robotManager.refreshRobot(robot.id)

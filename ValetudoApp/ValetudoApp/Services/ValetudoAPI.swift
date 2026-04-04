@@ -189,8 +189,8 @@ extension ValetudoAPI {
         try await requestVoid("/robot/capabilities/BasicControlCapability", body: body)
     }
 
-    func cleanSegments(ids: [String], iterations: Int = 1) async throws {
-        let body = try JSONEncoder().encode(SegmentCleanRequest(segmentIds: ids, iterations: iterations))
+    func cleanSegments(ids: [String], iterations: Int = 1, customOrder: Bool = false) async throws {
+        let body = try JSONEncoder().encode(SegmentCleanRequest(segmentIds: ids, iterations: iterations, customOrder: customOrder ? true : nil))
         try await requestVoid("/robot/capabilities/MapSegmentationCapability", body: body)
     }
 
