@@ -66,7 +66,7 @@
 **Milestone Goal:** Die App auf Produktionsqualität bringen — alle Tech Debt eliminieren, Map-Rendering auf Performance trimmen, Views sauber dekomponieren, Security-Warnungen einbauen, VoiceOver-Accessibility nachrüsten, Test-Coverage für kritische Pfade aufbauen und Robustness-Lücken schließen.
 
 - [x] **Phase 22: Map Geometry Unification** - calculateMapParams deduplizieren, Koordinaten-Transforms in zentrale Utility, Room-Selection-State zentralisieren (completed 2026-04-04)
-- [ ] **Phase 23: Error Handling & Robustness Patterns** - try?-Suppressions durch echte Fehlerbehandlung ersetzen, DebugConfig-Masking fixen, isInitialLoad-Pattern ersetzen, Capability-Refresh und StoreKit-Validierung
+- [x] **Phase 23: Error Handling & Robustness Patterns** - try?-Suppressions durch echte Fehlerbehandlung ersetzen, DebugConfig-Masking fixen, isInitialLoad-Pattern ersetzen, Capability-Refresh und StoreKit-Validierung (completed 2026-04-04)
 - [ ] **Phase 24: Map Performance** - SSE Map-Streaming, Spatial Lookup für Hit-Testing, segmentInfos-Caching, CGImage Pre-Rendering für statische Layer, MapCache-Throttling
 - [ ] **Phase 25: View Architecture** - RobotDetailView und RobotSettingsSections in eigenständige Dateien aufbrechen, MapContentView-State in ViewModel zentralisieren
 - [ ] **Phase 26: Security Hardening** - HTTP-Warnung, SSL-Bypass-Warnung, Robot-Config verschlüsselt speichern
@@ -191,9 +191,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
-- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
-- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
+- [x] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
+- [x] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
+- [x] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
 
 ### Phase 24: Map Performance
 **Goal**: Map-Rendering ist effizient — SSE statt Polling, schnelles Hit-Testing, gecachte Berechnungen und vorgerenderte statische Layer
@@ -208,9 +208,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
-- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
-- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
+- [x] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
+- [x] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
+- [x] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
 
 ### Phase 25: View Architecture
 **Goal**: Keine View-Datei über 400 Zeilen — alle großen Views sind in eigenständige, fokussierte Sub-Views aufgeteilt
@@ -225,9 +225,9 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
-- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
-- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
+- [x] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
+- [x] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
+- [x] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
 
 ### Phase 26: Security Hardening
 **Goal**: Benutzer wird über unsichere Verbindungen informiert und sensible Daten sind verschlüsselt gespeichert
