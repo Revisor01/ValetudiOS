@@ -80,10 +80,22 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 
 ## Current State
 
-**Shipped:** v2.1.0 (2026-04-02)
-**Version:** 2.1.0 — Architecture & Background
+**Shipped:** v2.2.0 (2026-04-04)
+**Version:** 2.2.0 — Room Interaction & Cleaning Order
 
-Die App nutzt moderne @Observable-Architektur (iOS 17+), hat Geräte-Infos logisch im Roboter-Detail, prüft den Roboter-Status im Hintergrund mit lokalen Notifications, und cacht Karten für Offline-Zugriff. Basiert auf vollständiger Valetudo API-Abdeckung, SSE-Echtzeit-Updates, mDNS-Discovery, 57 Unit-Tests und dreisprachiger Lokalisierung (DE/EN/FR).
+Die App ermöglicht Raumauswahl per Tap auf die Raumfläche (nicht nur Labels), zeigt die Reinigungsreihenfolge als nummerierte Badges auf der Karte und in der Raumliste, und übergibt die gewählte Reihenfolge mit `customOrder: true` an die Valetudo API. Basiert auf moderner @Observable-Architektur (iOS 17+), vollständiger Valetudo API-Abdeckung, SSE-Echtzeit-Updates, mDNS-Discovery, 57 Unit-Tests und dreisprachiger Lokalisierung (DE/EN/FR).
+
+<details>
+<summary>v2.2.0 Milestone (completed)</summary>
+
+**Goal:** Raumauswahl per Flächen-Tap und Reinigungsreihenfolge
+
+**Delivered:**
+- SpatialTapGesture mit Pixel-Lookup auf Canvas für Raumauswahl per Fläche
+- Set→Array Migration für deterministische Auswahlreihenfolge
+- Nummerierte blaue Badges (1, 2, 3) auf Karte und in Raumliste
+- customOrder API-Parameter für tatsächliche Einhaltung der Reinigungsreihenfolge
+</details>
 
 <details>
 <summary>v2.1.0 Milestone (completed)</summary>
