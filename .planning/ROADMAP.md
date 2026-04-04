@@ -419,7 +419,7 @@ v2.2.0: 20 -> 21
 | 18. Map Caching | 2/2 | Complete    | 2026-04-02 |
 | 19. Observable Migration | 2/2 | Complete    | 2026-04-02 |
 | 20. Room Tap Selection | 1/1 | Complete    | 2026-04-04 |
-| 21. Cleaning Order | 2/2 | Complete   | 2026-04-04 |
+| 21. Cleaning Order | 2/2 | Complete    | 2026-04-04 |
 
 ## Backlog
 
