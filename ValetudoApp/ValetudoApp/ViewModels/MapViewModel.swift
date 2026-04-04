@@ -3,6 +3,15 @@ import Foundation
 import os
 import Observation
 
+// MARK: - SegmentInfo
+
+struct SegmentInfo: Identifiable {
+    let id: String
+    let name: String
+    let midX: Int
+    let midY: Int
+}
+
 // MARK: - MapViewModel
 
 @MainActor
@@ -20,6 +29,10 @@ final class MapViewModel {
     var isLoading = true
     var mapRefreshId = UUID()
     var loadError: String?
+
+    // MARK: - Cached Computations (PERF-01, PERF-03)
+    @ObservationIgnored var segmentPixelSets: [String: Set<Int>] = [:]
+    var cachedSegmentInfos: [SegmentInfo] = []
 
     // MARK: - Capabilities
     var hasZoneCleaning = false
@@ -143,6 +156,8 @@ final class MapViewModel {
 
             map = loadedMap
             segments = loadedSegments
+            rebuildSegmentPixelSets()
+            updateCachedSegmentInfos()
             loadError = nil
             isOffline = false
             isLoading = false
@@ -184,6 +199,8 @@ final class MapViewModel {
                         do {
                             let newMap = try JSONDecoder().decode(RobotMap.self, from: jsonData)
                             self.map = newMap
+                            self.rebuildSegmentPixelSets()
+                            self.updateCachedSegmentInfos()
                             self.isOffline = false
                             await MapCacheService.shared.saveIfChanged(newMap, for: self.robot.id)
                         } catch {
@@ -191,6 +208,8 @@ final class MapViewModel {
                             logger.warning("Map SSE decode failed, falling back to HTTP GET: \(error.localizedDescription, privacy: .public)")
                             if let fallbackMap = try? await api.getMap() {
                                 self.map = fallbackMap
+                                self.rebuildSegmentPixelSets()
+                                self.updateCachedSegmentInfos()
                                 self.isOffline = false
                                 await MapCacheService.shared.saveIfChanged(fallbackMap, for: self.robot.id)
                             }
@@ -204,6 +223,8 @@ final class MapViewModel {
                     // Einmaliger HTTP-Poll als Fallback
                     if let newMap = try? await api.getMap() {
                         self.map = newMap
+                        self.rebuildSegmentPixelSets()
+                        self.updateCachedSegmentInfos()
                         self.isOffline = false
                         await MapCacheService.shared.saveIfChanged(newMap, for: self.robot.id)
                     } else {
@@ -234,6 +255,64 @@ final class MapViewModel {
     func stopMapRefresh() {
         refreshTask?.cancel()
         refreshTask = nil
+    }
+
+    // MARK: - Performance Caching
+
+    private func rebuildSegmentPixelSets() {
+        guard let layers = map?.layers else {
+            segmentPixelSets = [:]
+            return
+        }
+        var sets: [String: Set<Int>] = [:]
+        for layer in layers where layer.type == "segment" {
+            guard let id = layer.metaData?.segmentId else { continue }
+            let pixels = layer.decompressedPixels
+            var set = Set<Int>(minimumCapacity: pixels.count / 2)
+            var i = 0
+            while i < pixels.count - 1 {
+                set.insert(pixels[i] &<< 16 | pixels[i + 1])
+                i += 2
+            }
+            sets[id] = set
+        }
+        segmentPixelSets = sets
+    }
+
+    private func updateCachedSegmentInfos() {
+        guard let layers = map?.layers else {
+            cachedSegmentInfos = []
+            return
+        }
+        var infos: [SegmentInfo] = []
+        for layer in layers where layer.type == "segment" {
+            guard let segmentId = layer.metaData?.segmentId else { continue }
+            var midX: Int? = layer.dimensions?.x?.mid
+            var midY: Int? = layer.dimensions?.y?.mid
+            if midX == nil || midY == nil {
+                let pixels = layer.decompressedPixels
+                if pixels.count >= 2 {
+                    var sumX = 0, sumY = 0, count = 0
+                    var i = 0
+                    while i < pixels.count - 1 {
+                        sumX += pixels[i]
+                        sumY += pixels[i + 1]
+                        count += 1
+                        i += 2
+                    }
+                    if count > 0 {
+                        midX = midX ?? (sumX / count)
+                        midY = midY ?? (sumY / count)
+                    }
+                }
+            }
+            guard let finalMidX = midX, let finalMidY = midY else { continue }
+            let name = segments.first { $0.id == segmentId }?.displayName
+                ?? layer.metaData?.name
+                ?? String(localized: "map.room") + " \(segmentId)"
+            infos.append(SegmentInfo(id: segmentId, name: name, midX: finalMidX, midY: finalMidY))
+        }
+        cachedSegmentInfos = infos
     }
 
     // MARK: - Cleaning Actions
@@ -318,6 +397,7 @@ final class MapViewModel {
             logger.debug("renameSegment: Segments reloaded, count=\(newSegments.count, privacy: .public)")
 
             segments = newSegments
+            updateCachedSegmentInfos()
             mapRefreshId = UUID()
             showRenameSheet = false
             editMode = .none
@@ -346,6 +426,8 @@ final class MapViewModel {
             do {
                 let newMap = try await api.getMap()
                 self.map = newMap
+                self.rebuildSegmentPixelSets()
+                self.updateCachedSegmentInfos()
             } catch {
                 logger.error("Map reload after join failed: \(error, privacy: .public)")
                 errorRouter?.show(error)
@@ -353,6 +435,7 @@ final class MapViewModel {
             do {
                 let newSegments = try await api.getSegments()
                 self.segments = newSegments
+                self.updateCachedSegmentInfos()
                 logger.debug("joinSelectedSegments: Reloaded \(newSegments.count, privacy: .public) segments")
             } catch {
                 logger.error("Segments reload after join failed: \(error, privacy: .public)")
@@ -401,6 +484,8 @@ final class MapViewModel {
             do {
                 let newMap = try await api.getMap()
                 self.map = newMap
+                self.rebuildSegmentPixelSets()
+                self.updateCachedSegmentInfos()
             } catch {
                 logger.error("Map reload after split failed: \(error, privacy: .public)")
                 errorRouter?.show(error)
@@ -408,6 +493,7 @@ final class MapViewModel {
             do {
                 let newSegments = try await api.getSegments()
                 self.segments = newSegments
+                self.updateCachedSegmentInfos()
                 logger.debug("performSplit: Reloaded \(newSegments.count, privacy: .public) segments")
             } catch {
                 logger.error("Segments reload after split failed: \(error, privacy: .public)")
