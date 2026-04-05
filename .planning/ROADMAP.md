@@ -70,7 +70,7 @@
 - [x] **Phase 24: Map Performance** - SSE Map-Streaming, Spatial Lookup für Hit-Testing, segmentInfos-Caching, CGImage Pre-Rendering für statische Layer, MapCache-Throttling (completed 2026-04-04)
 - [x] **Phase 25: View Architecture** - RobotDetailView und RobotSettingsSections in eigenständige Dateien aufbrechen, MapContentView-State in ViewModel zentralisieren (completed 2026-04-05)
 - [x] **Phase 26: Security Hardening** - HTTP-Warnung, SSL-Bypass-Warnung, Robot-Config verschlüsselt speichern (completed 2026-04-05)
-- [ ] **Phase 27: Accessibility** - VoiceOver-Labels für alle Controls, Status-Header, Consumables, Icon-Buttons und Map-Canvas
+- [x] **Phase 27: Accessibility** - VoiceOver-Labels für alle Controls, Status-Header, Consumables, Icon-Buttons und Map-Canvas (completed 2026-04-05)
 - [ ] **Phase 28: Test Coverage Expansion** - Unit-Tests für Koordinaten-Transforms, UpdateService State Machine, SSE-Reconnection, MapCacheService
 - [ ] **Phase 29: UX Robustness** - ErrorRouter systematisch verdrahten, Confirmation-Dialogs für destruktive Aktionen, Multi-Robot-Polling-Optimierung
 
@@ -258,7 +258,7 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 27-01-PLAN.md — Accessibility-Labels fuer Controls, Status-Header, Consumables, Listen-Buttons (A11Y-01, A11Y-02, A11Y-03, A11Y-04)
+- [x] 27-01-PLAN.md — Accessibility-Labels fuer Controls, Status-Header, Consumables, Listen-Buttons (A11Y-01, A11Y-02, A11Y-03, A11Y-04)
 - [x] 27-02-PLAN.md — Accessibility-Labels fuer Map-Canvas, Room-Chips, Map-Toolbar, Restriction-Overlays (A11Y-04, A11Y-05)
 
 ### Phase 28: Test Coverage Expansion

@@ -70,7 +70,7 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 - [x] Map Performance: SSE Map-Streaming, Spatial Hit-Testing, segmentInfos-Cache, CGImage Pre-Rendering -- v3.0.0 Phase 24
 - [x] View Architecture: RobotDetailView/SettingsSections dekomponiert, MapContentView-State in ViewModel -- v3.0.0 Phase 25
 - [x] Security: HTTP-Warnung, SSL-Bypass-Warnung, verschlüsselte Config-Speicherung -- v3.0.0 Phase 26
-- [ ] Accessibility: VoiceOver-Labels für Controls, Status, Consumables, Map-Canvas -- v3.0.0 Phase 27
+- [x] Accessibility: VoiceOver-Labels für Controls, Status, Consumables, Map-Canvas -- v3.0.0 Phase 27
 - [ ] Test Coverage: Unit-Tests für Transforms, UpdateService, SSE, MapCache -- v3.0.0 Phase 28
 - [ ] UX Robustness: ErrorRouter verdrahtet, Confirmation-Dialogs, Multi-Robot-Polling -- v3.0.0 Phase 29
 
