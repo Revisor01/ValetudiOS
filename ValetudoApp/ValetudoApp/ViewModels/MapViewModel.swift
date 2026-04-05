@@ -159,10 +159,18 @@ final class MapViewModel {
                 logger.error("Segments failed: \(error, privacy: .public)")
             }
 
+            // Compute heavy caches off main thread (loadMap runs on @MainActor)
+            let pixelSets = await Task.detached(priority: .userInitiated) {
+                Self.buildSegmentPixelSets(from: loadedMap)
+            }.value
+            let segInfos = await Task.detached(priority: .userInitiated) {
+                Self.buildSegmentInfos(from: loadedMap, segments: loadedSegments)
+            }.value
+
             map = loadedMap
             segments = loadedSegments
-            rebuildSegmentPixelSets()
-            updateCachedSegmentInfos()
+            segmentPixelSets = pixelSets
+            cachedSegmentInfos = segInfos
             if lastRenderSize.width > 0 {
                 rebuildStaticLayerImage(size: lastRenderSize)
             }
