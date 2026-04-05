@@ -176,7 +176,7 @@ struct MapPreviewView: View {
 
 // MARK: - Map Content View (shared between Tab and Sheet)
 struct MapContentView: View {
-    @Environment(ErrorRouter.self) var errorRouter
+    // @Environment(ErrorRouter.self) var errorRouter  // TEMPORARILY DISABLED FOR DEBUG
     let robot: RobotConfig
     let isFullscreen: Bool
 
