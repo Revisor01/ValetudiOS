@@ -43,6 +43,7 @@ class RobotManager {
     @ObservationIgnored private var previousStates: [UUID: RobotStatus] = [:]
     @ObservationIgnored private var lastConsumableCheck: [UUID: Date] = [:]
     private let storageKey = "valetudo_robots"
+    private let robotIdsKey = "valetudo_robot_ids"
     private let notificationService = NotificationService.shared
     @ObservationIgnored private let sseManager = SSEConnectionManager()
 
@@ -93,6 +94,7 @@ class RobotManager {
         // Disconnect SSE before clearing state so stream cleanup completes
         Task { await sseManager.disconnect(robotId: id) }
         KeychainStore.delete(for: id)
+        KeychainStore.deleteRobotConfig(for: id)
         robots.removeAll { $0.id == id }
         apis.removeValue(forKey: id)
         robotStates.removeValue(forKey: id)
@@ -304,38 +306,61 @@ class RobotManager {
 
     // MARK: - Persistence
     private func loadRobots() {
-        guard let data = UserDefaults.standard.data(forKey: storageKey),
-              let decoded = try? JSONDecoder().decode([RobotConfig].self, from: data) else { return }
+        var loadedRobots: [RobotConfig] = []
 
-        var migratedRobots = decoded
-        var migrationOccurred = false
-
-        for (index, robot) in decoded.enumerated() {
-            // Skip if already in Keychain
-            guard KeychainStore.password(for: robot.id) == nil else {
-                apis[robot.id] = ValetudoAPI(config: migratedRobots[index])
-                continue
+        // Primaerer Pfad: Lade aus Keychain via ID-Liste
+        if let idsData = UserDefaults.standard.data(forKey: robotIdsKey),
+           let ids = try? JSONDecoder().decode([UUID].self, from: idsData) {
+            let configs = ids.compactMap { KeychainStore.robotConfig(for: $0) }
+            // Wenn IDs vorhanden aber keine Configs gefunden: ID-Liste ist stale, ignorieren
+            if !ids.isEmpty && !configs.isEmpty {
+                loadedRobots = configs
             }
-
-            // Migrate password from UserDefaults JSON blob to Keychain
-            if let legacyPassword = robot.password, !legacyPassword.isEmpty {
-                let saved = KeychainStore.save(password: legacyPassword, for: robot.id)
-                // Read-back verification — only mark migration if verified in Keychain
-                if saved, KeychainStore.password(for: robot.id) != nil {
-                    migratedRobots[index].password = nil
-                    migrationOccurred = true
-                }
-            }
-            apis[robot.id] = ValetudoAPI(config: migratedRobots[index])
         }
 
-        robots = migratedRobots
-        if migrationOccurred { saveRobots() } // Re-save without passwords in blob
+        // Fallback: Migration von UserDefaults (bestehende Installs)
+        if loadedRobots.isEmpty,
+           let data = UserDefaults.standard.data(forKey: storageKey),
+           let decoded = try? JSONDecoder().decode([RobotConfig].self, from: data) {
+
+            var migratedRobots = decoded
+            for (index, robot) in decoded.enumerated() {
+                // Passwort in Keychain migrieren (falls noch nicht geschehen)
+                if KeychainStore.password(for: robot.id) == nil,
+                   let legacyPassword = robot.password, !legacyPassword.isEmpty {
+                    KeychainStore.save(password: legacyPassword, for: robot.id)
+                }
+                migratedRobots[index].password = nil
+
+                // Config in Keychain speichern
+                KeychainStore.saveRobotConfig(migratedRobots[index], for: robot.id)
+            }
+
+            // Robot-ID-Liste in UserDefaults speichern
+            if let idsData = try? JSONEncoder().encode(decoded.map { $0.id }) {
+                UserDefaults.standard.set(idsData, forKey: robotIdsKey)
+            }
+
+            // Alten UserDefaults-Blob loeschen
+            UserDefaults.standard.removeObject(forKey: storageKey)
+
+            loadedRobots = migratedRobots
+        }
+
+        robots = loadedRobots
+        for robot in robots {
+            apis[robot.id] = ValetudoAPI(config: robot)
+        }
     }
 
     private func saveRobots() {
-        if let encoded = try? JSONEncoder().encode(robots) {
-            UserDefaults.standard.set(encoded, forKey: storageKey)
+        // Config-Blobs einzeln in Keychain speichern
+        for robot in robots {
+            KeychainStore.saveRobotConfig(robot, for: robot.id)
+        }
+        // ID-Liste in UserDefaults (nur UUIDs, nicht sensibel)
+        if let idsData = try? JSONEncoder().encode(robots.map { $0.id }) {
+            UserDefaults.standard.set(idsData, forKey: robotIdsKey)
         }
     }
 }
