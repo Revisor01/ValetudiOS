@@ -262,7 +262,7 @@ class UpdateService {
 
     private func mapUpdaterState(_ state: UpdaterState) -> UpdatePhase {
         switch state.stateType {
-        case "ValetudoUpdaterIdleState":
+        case "ValetudoUpdaterIdleState", "ValetudoUpdaterNoUpdateRequiredState":
             return .idle
         case "ValetudoUpdaterApprovalPendingState":
             return .updateAvailable

@@ -746,7 +746,7 @@ struct UpdaterState: Codable {
     }
 
     var isIdle: Bool {
-        stateType == "ValetudoUpdaterIdleState"
+        stateType == "ValetudoUpdaterIdleState" || stateType == "ValetudoUpdaterNoUpdateRequiredState"
     }
 }
 
