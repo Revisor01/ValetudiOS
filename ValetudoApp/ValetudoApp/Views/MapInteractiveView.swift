@@ -130,6 +130,8 @@ struct InteractiveMapView: View {
                 drawCurrentDrawing(context: context, start: start, end: end, mode: editMode, size: size)
             }
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(String(localized: "map.canvas_label"))
         .gesture(
             SpatialTapGesture()
                 .onEnded { value in
@@ -187,6 +189,10 @@ struct InteractiveMapView: View {
                         .clipShape(Capsule())
                         .shadow(color: .black.opacity(0.15), radius: 2, x: 0, y: 1)
                     }
+                    .accessibilityLabel(info.name)
+                    .accessibilityHint(isSelected
+                        ? String(localized: "map.room_deselect_hint")
+                        : String(localized: "map.room_select_hint"))
                     .buttonStyle(.plain)
                     .position(x: x, y: y)
                 }
