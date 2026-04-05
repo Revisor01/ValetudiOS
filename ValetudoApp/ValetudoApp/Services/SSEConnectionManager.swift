@@ -1,4 +1,5 @@
 import Foundation
+import Network
 import os
 
 actor SSEConnectionManager {
@@ -7,6 +8,19 @@ actor SSEConnectionManager {
 
     private var tasks: [UUID: Task<Void, Never>] = [:]
     private var isConnected: [UUID: Bool] = [:]
+
+    // Stored connect params for reconnect-on-network-change
+    private struct ConnectionParams {
+        let api: ValetudoAPI
+        let onAttributesUpdate: @Sendable ([RobotAttribute]) -> Void
+        let onConnectionChange: @Sendable (Bool) -> Void
+    }
+    private var connectionParams: [UUID: ConnectionParams] = [:]
+
+    // NWPathMonitor for detecting network path changes
+    private var pathMonitor: NWPathMonitor?
+    private var pathMonitorQueue: DispatchQueue?
+    private var lastPathStatus: NWPath.Status = .requiresConnection
 
     // MARK: - Public Interface
 
@@ -25,6 +39,13 @@ actor SSEConnectionManager {
         tasks[robotId] = nil
         isConnected[robotId] = false
 
+        // Store params for potential reconnect on network change
+        connectionParams[robotId] = ConnectionParams(
+            api: api,
+            onAttributesUpdate: onAttributesUpdate,
+            onConnectionChange: onConnectionChange
+        )
+
         let task = Task {
             await self.streamWithReconnect(
                 robotId: robotId,
@@ -34,13 +55,21 @@ actor SSEConnectionManager {
             )
         }
         tasks[robotId] = task
+
+        // Start path monitor if not already running
+        startPathMonitorIfNeeded()
     }
 
     func disconnect(robotId: UUID) {
         tasks[robotId]?.cancel()
         tasks.removeValue(forKey: robotId)
         isConnected.removeValue(forKey: robotId)
+        connectionParams.removeValue(forKey: robotId)
         logger.info("SSE disconnected for robot \(robotId, privacy: .public)")
+
+        if tasks.isEmpty {
+            stopPathMonitor()
+        }
     }
 
     func disconnectAll() {
@@ -49,7 +78,69 @@ actor SSEConnectionManager {
         }
         tasks.removeAll()
         isConnected.removeAll()
+        connectionParams.removeAll()
+        stopPathMonitor()
         logger.info("SSE disconnected for all robots")
+    }
+
+    // MARK: - NWPathMonitor
+
+    private func startPathMonitorIfNeeded() {
+        guard pathMonitor == nil else { return }
+
+        let monitor = NWPathMonitor()
+        let queue = DispatchQueue(label: "SSEPathMonitor", qos: .utility)
+        pathMonitor = monitor
+        pathMonitorQueue = queue
+
+        monitor.pathUpdateHandler = { [weak self] path in
+            guard let self else { return }
+            Task {
+                await self.handlePathUpdate(path)
+            }
+        }
+        monitor.start(queue: queue)
+        logger.info("SSE NWPathMonitor started")
+    }
+
+    private func stopPathMonitor() {
+        pathMonitor?.cancel()
+        pathMonitor = nil
+        pathMonitorQueue = nil
+        logger.info("SSE NWPathMonitor stopped")
+    }
+
+    private func handlePathUpdate(_ path: NWPath) {
+        let previousStatus = lastPathStatus
+        lastPathStatus = path.status
+
+        // Reconnect when network becomes available after being unavailable
+        guard path.status == .satisfied, previousStatus != .satisfied else { return }
+
+        logger.info("SSE network path restored — reconnecting all active SSE streams")
+        reconnectAll()
+    }
+
+    private func reconnectAll() {
+        let snapshot = connectionParams
+
+        for (robotId, params) in snapshot {
+            // Cancel existing task
+            tasks[robotId]?.cancel()
+            tasks[robotId] = nil
+            isConnected[robotId] = false
+
+            let task = Task {
+                await self.streamWithReconnect(
+                    robotId: robotId,
+                    api: params.api,
+                    onAttributesUpdate: params.onAttributesUpdate,
+                    onConnectionChange: params.onConnectionChange
+                )
+            }
+            tasks[robotId] = task
+            logger.info("SSE reconnect triggered for robot \(robotId, privacy: .public) after network change")
+        }
     }
 
     // MARK: - Private Streaming

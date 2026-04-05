@@ -141,7 +141,7 @@ struct SettingsView: View {
                         Text("settings.license_footer")
                         HStack(spacing: 4) {
                             Text("Made with")
-                            Image(systemName: "dove.fill")
+                            Image(systemName: "bird")
                                 .foregroundStyle(.secondary)
                             Text("in Hennstedt")
                         }
