@@ -81,7 +81,7 @@
 
 - [x] **Phase 30: Bug Fixes** - Support-Symbol-Fix und SSE Zombie-Socket-Reconnection reparieren, bevor Screenshots und Review-Einreichung erfolgen (completed 2026-04-05)
 - [x] **Phase 31: Web-Präsenz** - Privacy Policy (DSGVO + Apple-konform) und App-Beschreibung auf simonluthe.de schreiben (completed 2026-04-05)
-- [ ] **Phase 32: App Store Listing** - Titel, Untertitel, Keywords, Beschreibung (DE+EN), Screenshots-Anleitung und Review Notes erstellen
+- [x] **Phase 32: App Store Listing** - Titel, Untertitel, Keywords, Beschreibung (DE+EN), Screenshots-Anleitung und Review Notes erstellen (completed 2026-04-05)
 
 ## Phase Details
 
@@ -621,7 +621,7 @@ v4.0.0: 30 -> 31 -> 32
 | 29. UX Robustness | 2/2 | Complete | 2026-04-05 |
 | 30. Bug Fixes | 1/1 | Complete   | 2026-04-05 |
 | 31. Web-Präsenz | 1/1 | Complete   | 2026-04-05 |
-| 32. App Store Listing | 0/TBD | Not started | - |
+| 32. App Store Listing | 1/1 | Complete   | 2026-04-05 |
 
 ## Backlog
 
