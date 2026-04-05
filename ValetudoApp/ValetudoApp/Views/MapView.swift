@@ -191,15 +191,12 @@ struct MapContentView: View {
     @State var currentViewSize: CGSize = .zero
 
     init(robot: RobotConfig, robotManager: RobotManager, isFullscreen: Bool = false) {
-        print(">>> MapContentView.init START")
         self.robot = robot
         self.isFullscreen = isFullscreen
         _viewModel = State(initialValue: MapViewModel(robot: robot, robotManager: robotManager, isFullscreen: isFullscreen))
-        print(">>> MapContentView.init END")
     }
 
     var body: some View {
-        let _ = print(">>> MapContentView.body START")
         VStack(spacing: 0) {
             // Map
             GeometryReader { geometry in
@@ -357,8 +354,8 @@ struct MapContentView: View {
 // MARK: - Map View (Sheet/Modal version - uses MapContentView)
 struct MapView: View {
     @Environment(\.dismiss) var dismiss
-    @Environment(RobotManager.self) var robotManager
     let robot: RobotConfig
+    let robotManager: RobotManager
 
     var body: some View {
         NavigationStack {
@@ -381,6 +378,6 @@ struct MapView: View {
 }
 
 #Preview {
-    MapView(robot: RobotConfig(name: "Test", host: "192.168.0.35"))
+    MapView(robot: RobotConfig(name: "Test", host: "192.168.0.35"), robotManager: RobotManager())
         .environment(RobotManager())
 }

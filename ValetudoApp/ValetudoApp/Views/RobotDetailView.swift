@@ -93,7 +93,7 @@ struct RobotDetailView: View {
         }
         .navigationTitle(viewModel.robot.name)
         .sheet(isPresented: $showFullMap) {
-            MapView(robot: viewModel.robot)
+            MapView(robot: viewModel.robot, robotManager: viewModel.robotManager)
         }
         .alert(String(localized: "update.warning_title"), isPresented: $showUpdateWarning) {
             Button(String(localized: "update.cancel"), role: .cancel) { }
