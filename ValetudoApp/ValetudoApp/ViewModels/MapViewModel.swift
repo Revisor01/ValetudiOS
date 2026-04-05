@@ -348,7 +348,7 @@ final class MapViewModel {
         UIColor(red: 0.78, green: 0.88, blue: 0.72, alpha: 1),
     ]
 
-    private static func segmentUIColor(segmentId: String?) -> UIColor {
+    nonisolated private static func segmentUIColor(segmentId: String?) -> UIColor {
         if let id = segmentId, let num = Int(id) {
             return segmentUIColors[num % segmentUIColors.count]
         }
