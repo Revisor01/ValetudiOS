@@ -216,15 +216,7 @@ struct MapContentView: View {
             }
             .onDisappear {
                 viewModel.stopMapRefresh()
-        }
-        .modifier(MapSheetsModifier(
-            viewModel: viewModel,
-            robot: robot,
-            currentViewSize: currentViewSize,
-            calculateMapParams: { layers, pixelSize, size in
-                calculateMapParams(layers: layers, pixelSize: pixelSize, size: size)
             }
-        ))
     }
 
 }
@@ -236,10 +228,9 @@ struct MapView: View {
     let robotManager: RobotManager
 
     var body: some View {
-        let _ = print(">>> MapView.body START")
         NavigationStack {
-            Text("MapView WITHOUT MapContentView")
-                .navigationTitle("Map Test")
+            MapContentView(robot: robot, robotManager: robotManager, isFullscreen: true)
+                .navigationTitle(String(localized: "map.title"))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
