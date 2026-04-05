@@ -9,6 +9,7 @@
 - [x] **v2.1.0 Architecture & Background** - Phases 16-19 (completed 2026-04-02)
 - [x] **v2.2.0 Room Interaction & Cleaning Order** - Phases 20-21 (completed 2026-04-04)
 - [x] **v3.0.0 Quality, Performance & Hardening** - Phases 22-29 (completed 2026-04-05)
+- 🚧 **v4.0.0 App Store Release** - Phases 30-32 (in progress)
 
 ## Phases
 
@@ -73,6 +74,14 @@
 - [x] **Phase 27: Accessibility** - VoiceOver-Labels für alle Controls, Status-Header, Consumables, Icon-Buttons und Map-Canvas (completed 2026-04-05)
 - [x] **Phase 28: Test Coverage Expansion** - Unit-Tests für Koordinaten-Transforms, UpdateService State Machine, SSE-Reconnection, MapCacheService (completed 2026-04-05)
 - [x] **Phase 29: UX Robustness** - ErrorRouter systematisch verdrahten, Confirmation-Dialogs für destruktive Aktionen, Multi-Robot-Polling-Optimierung (completed 2026-04-05)
+
+### 🚧 v4.0.0 App Store Release (In Progress)
+
+**Milestone Goal:** App Store-Einreichung vorbereiten — Bug Fixes im App-Code, Website-Präsenz (Privacy Policy + App-Beschreibung) und vollständiges App Store Listing (Texte, Keywords, Screenshots-Anleitung, Review Notes).
+
+- [ ] **Phase 30: Bug Fixes** - Support-Symbol-Fix und SSE Zombie-Socket-Reconnection reparieren, bevor Screenshots und Review-Einreichung erfolgen
+- [ ] **Phase 31: Web-Präsenz** - Privacy Policy (DSGVO + Apple-konform) und App-Beschreibung auf simonluthe.de schreiben
+- [ ] **Phase 32: App Store Listing** - Titel, Untertitel, Keywords, Beschreibung (DE+EN), Screenshots-Anleitung und Review Notes erstellen
 
 ## Phase Details
 
@@ -528,6 +537,39 @@ Plans:
 Plans:
 - [x] 15-01-PLAN.md — Download-ProgressView, Error-Banner mit Retry und Update-Check-Throttling (1x/Stunde)
 
+### Phase 30: Bug Fixes
+**Goal**: Die App zeigt das Support-Symbol korrekt an und SSE-Verbindungen überleben Netzwerk-Wechsel ohne Zombie-Sockets
+**Depends on**: Nothing (first phase of new milestone)
+**Requirements**: FIX-01, FIX-02
+**Success Criteria** (what must be TRUE):
+  1. SupportView zeigt die Taube korrekt — das Symbol ist sichtbar und nicht durch einen Rendering-Fehler ausgeblendet
+  2. Nach einem VPN- oder WLAN-Wechsel reconnectet die SSE-Verbindung automatisch — der Roboter-Status aktualisiert sich wieder, ohne dass die App neu gestartet werden muss
+  3. App kompiliert fehlerfrei und alle bestehenden Tests bleiben grün
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 31: Web-Präsenz
+**Goal**: simonluthe.de/apps/valetudios/ ist mit DSGVO-konformer Datenschutzerklärung und attraktiver App-Beschreibung befüllt
+**Depends on**: Phase 30
+**Requirements**: WEB-01, WEB-02
+**Success Criteria** (what must be TRUE):
+  1. https://simonluthe.de/apps/valetudios/datenschutz/ zeigt eine vollständige Datenschutzerklärung, die LAN-Kommunikation, Keychain-Speicherung, SSE-Streaming, keine Analytics und keine Cloud nennt
+  2. https://simonluthe.de/apps/valetudios/ zeigt eine Projektseite mit Feature-Übersicht, Download-Link-Platzhalter und Links zu Datenschutz und Impressum
+  3. Beide Seiten sind auf simonluthe.de live erreichbar und korrekt gerendert
+**Plans**: TBD
+
+### Phase 32: App Store Listing
+**Goal**: Alle App Store Connect-Pflichtfelder sind ausgefüllt und Apple kann die App ohne Rückfragen reviewen
+**Depends on**: Phase 31
+**Requirements**: STORE-01, STORE-02, STORE-03, STORE-04
+**Success Criteria** (what must be TRUE):
+  1. App Store Connect hat Titel, Untertitel und Beschreibungstext in Deutsch und Englisch — der Text ist in beiden Sprachen vollständig ausgefüllt
+  2. Keywords-Felder in App Store Connect sind mit maximal 100 Zeichen je Sprache (DE + EN) befüllt
+  3. Review Notes enthalten eine klare Anleitung für Apple: Valetudo-Server nötig, LAN-only, wie ein Test-Setup aussieht
+  4. Screenshots-Anleitung liegt vor: welche Screens, welche Gerätegrößen, welche App-Zustände für aussagekräftige Bilder nötig sind
+**Plans**: TBD
+
+
 ## Progress
 
 **Execution Order:**
@@ -538,6 +580,7 @@ v2.0.0: 12 -> 13 -> 14 -> 15 (completed)
 v2.1.0: 16 -> 17 + 18 + 19 (17/18/19 koennen parallel nach 16)
 v2.2.0: 20 -> 21
 v3.0.0: 22 -> 23 + 24 + 25 + 26 (parallel nach 22) -> 27 (nach 25) -> 28 (nach 22+23) -> 29 (nach 23)
+v4.0.0: 30 -> 31 -> 32
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -563,6 +606,16 @@ v3.0.0: 22 -> 23 + 24 + 25 + 26 (parallel nach 22) -> 27 (nach 25) -> 28 (nach 2
 | 20. Room Tap Selection | 1/1 | Complete    | 2026-04-04 |
 | 21. Cleaning Order | 2/2 | Complete    | 2026-04-04 |
 | 22. Map Geometry Unification | 2/2 | Complete    | 2026-04-04 |
+| 23. Error Handling & Robustness Patterns | 3/3 | Complete | 2026-04-04 |
+| 24. Map Performance | 3/3 | Complete | 2026-04-04 |
+| 25. View Architecture | 3/3 | Complete | 2026-04-05 |
+| 26. Security Hardening | 2/2 | Complete | 2026-04-05 |
+| 27. Accessibility | 2/2 | Complete | 2026-04-05 |
+| 28. Test Coverage Expansion | 2/2 | Complete | 2026-04-05 |
+| 29. UX Robustness | 2/2 | Complete | 2026-04-05 |
+| 30. Bug Fixes | 0/TBD | Not started | - |
+| 31. Web-Präsenz | 0/TBD | Not started | - |
+| 32. App Store Listing | 0/TBD | Not started | - |
 
 ## Backlog
 

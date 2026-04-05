@@ -37,18 +37,18 @@ Requirements for App Store Release. Each maps to roadmap phases.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| WEB-01 | TBD | Pending |
-| WEB-02 | TBD | Pending |
-| STORE-01 | TBD | Pending |
-| STORE-02 | TBD | Pending |
-| STORE-03 | TBD | Pending |
-| STORE-04 | TBD | Pending |
-| FIX-01 | TBD | Pending |
-| FIX-02 | TBD | Pending |
+| FIX-01 | Phase 30 | Pending |
+| FIX-02 | Phase 30 | Pending |
+| WEB-01 | Phase 31 | Pending |
+| WEB-02 | Phase 31 | Pending |
+| STORE-01 | Phase 32 | Pending |
+| STORE-02 | Phase 32 | Pending |
+| STORE-03 | Phase 32 | Pending |
+| STORE-04 | Phase 32 | Pending |
 
 **Coverage:**
 - v4.0.0 requirements: 8 total
-- Mapped to phases: 0 (roadmap pending)
+- Mapped to phases: 8/8 (100%)
 
 ---
 *Requirements defined: 2026-04-05*
