@@ -78,6 +78,7 @@ extension ValetudoAPI {
 
     // MARK: - Base Request
     private func request<T: Decodable>(_ endpoint: String, method: String = "GET", body: Data? = nil) async throws -> T {
+        print(">>> API request ENTER: \(endpoint)")
         guard let baseURL = config.baseURL,
               let url = URL(string: "/api/v2\(endpoint)", relativeTo: baseURL) else {
             throw APIError.invalidURL
@@ -99,7 +100,9 @@ extension ValetudoAPI {
             request.httpBody = body
         }
 
+        print(">>> API request SENDING: \(endpoint)")
         let (data, response) = try await session.data(for: request)
+        print(">>> API request RECEIVED: \(endpoint) (\(data.count) bytes)")
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.invalidResponse
@@ -616,6 +619,7 @@ extension ValetudoAPI {
 
     // MARK: - SSE Streaming
     func streamStateLines() async throws -> URLSession.AsyncBytes {
+        print(">>> API streamStateLines ENTER")
         guard let baseURL = config.baseURL,
               let url = URL(string: "/api/v2/robot/state/attributes/sse", relativeTo: baseURL) else {
             throw APIError.invalidURL
