@@ -20,8 +20,8 @@ class RobotManager {
     }
 
     // MARK: - Centralized Room Selection (DEBT-02)
-    var roomSelections: [UUID: [String]] = [:]
-    var iterationSelections: [UUID: Int] = [:]
+    @ObservationIgnored var roomSelections: [UUID: [String]] = [:]
+    @ObservationIgnored var iterationSelections: [UUID: Int] = [:]
 
     func toggleRoom(_ id: String, for robotId: UUID) {
         var current = roomSelections[robotId] ?? []
