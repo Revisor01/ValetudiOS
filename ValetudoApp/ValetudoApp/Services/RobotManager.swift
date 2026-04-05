@@ -10,6 +10,15 @@ class RobotManager {
     var robotStates: [UUID: RobotStatus] = [:]
     var robotUpdateAvailable: [UUID: Bool] = [:]
 
+    // MARK: - Active Robot (ROBUST-03)
+    var activeRobotId: UUID? {
+        didSet {
+            if oldValue != activeRobotId {
+                restartRefreshing()
+            }
+        }
+    }
+
     // MARK: - Centralized Room Selection (DEBT-02)
     var roomSelections: [UUID: [String]] = [:]
     var iterationSelections: [UUID: Int] = [:]
@@ -131,6 +140,11 @@ class RobotManager {
 
     // MARK: - Status Refresh
 
+    private func restartRefreshing() {
+        refreshTask?.cancel()
+        startRefreshing()
+    }
+
     private func startRefreshing() {
         refreshTask = Task {
             while !Task.isCancelled {
@@ -158,8 +172,13 @@ class RobotManager {
                 }
 
                 // Poll only robots without active SSE (fallback)
+                // When activeRobotId is set, only poll the active robot
+                let robotsToPoll = activeRobotId != nil
+                    ? robots.filter { $0.id == activeRobotId }
+                    : robots
+
                 await withTaskGroup(of: Void.self) { group in
-                    for robot in robots {
+                    for robot in robotsToPoll {
                         group.addTask {
                             let sseActive = await self.sseManager.isSSEActive(for: robot.id)
                             if !sseActive {

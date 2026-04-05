@@ -39,6 +39,7 @@ struct ContentView: View {
         }
         .supportReminder()
         .onChange(of: selectedRobotId) { _, newId in
+            robotManager.activeRobotId = newId
             // When robot is deselected and we're on map tab, switch to robots tab
             if newId == nil && selectedTab == 1 {
                 selectedTab = 0
