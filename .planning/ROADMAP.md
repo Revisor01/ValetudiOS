@@ -284,13 +284,12 @@ Plans:
   1. ErrorRouter ist in RobotDetailView und MapContentView für alle benutzer-initiierten Aktionen verdrahtet
   2. Stop während aktiver Reinigung und Consumable-Reset zeigen Confirmation-Dialog
   3. Nur der aktuell sichtbare Roboter pollt die Map
-**Plans**: 3 plans
+**Plans**: 2 plans
 **UI hint**: yes
 
 Plans:
-- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
-- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
-- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
+- [ ] 29-01-PLAN.md — ErrorRouter-Verdrahtung + Confirmation-Dialogs (ROBUST-01, ROBUST-02)
+- [ ] 29-02-PLAN.md — Multi-Robot-Polling-Optimierung mit activeRobotId (ROBUST-03)
 
 ### Phase 1: Foundation
 **Goal**: Alle Inhalte der App nutzen sicheren Credential-Speicher, strukturiertes Logging und sichtbare Fehlermeldungen
