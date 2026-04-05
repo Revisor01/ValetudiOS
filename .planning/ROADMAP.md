@@ -68,7 +68,7 @@
 - [x] **Phase 22: Map Geometry Unification** - calculateMapParams deduplizieren, Koordinaten-Transforms in zentrale Utility, Room-Selection-State zentralisieren (completed 2026-04-04)
 - [x] **Phase 23: Error Handling & Robustness Patterns** - try?-Suppressions durch echte Fehlerbehandlung ersetzen, DebugConfig-Masking fixen, isInitialLoad-Pattern ersetzen, Capability-Refresh und StoreKit-Validierung (completed 2026-04-04)
 - [x] **Phase 24: Map Performance** - SSE Map-Streaming, Spatial Lookup für Hit-Testing, segmentInfos-Caching, CGImage Pre-Rendering für statische Layer, MapCache-Throttling (completed 2026-04-04)
-- [ ] **Phase 25: View Architecture** - RobotDetailView und RobotSettingsSections in eigenständige Dateien aufbrechen, MapContentView-State in ViewModel zentralisieren
+- [x] **Phase 25: View Architecture** - RobotDetailView und RobotSettingsSections in eigenständige Dateien aufbrechen, MapContentView-State in ViewModel zentralisieren (completed 2026-04-05)
 - [ ] **Phase 26: Security Hardening** - HTTP-Warnung, SSL-Bypass-Warnung, Robot-Config verschlüsselt speichern
 - [ ] **Phase 27: Accessibility** - VoiceOver-Labels für alle Controls, Status-Header, Consumables, Icon-Buttons und Map-Canvas
 - [ ] **Phase 28: Test Coverage Expansion** - Unit-Tests für Koordinaten-Transforms, UpdateService State Machine, SSE-Reconnection, MapCacheService
@@ -191,9 +191,9 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 25-01-PLAN.md — RobotDetailView Section-Extraktion in Views/Detail/ (VIEW-01)
-- [ ] 25-02-PLAN.md — RobotSettingsSections Dateitrennung in Views/Settings/ (VIEW-02)
-- [ ] 25-03-PLAN.md — MapContentView Reduktion durch Extension-Dateien (VIEW-03)
+- [x] 25-01-PLAN.md — RobotDetailView Section-Extraktion in Views/Detail/ (VIEW-01)
+- [x] 25-02-PLAN.md — RobotSettingsSections Dateitrennung in Views/Settings/ (VIEW-02)
+- [x] 25-03-PLAN.md — MapContentView Reduktion durch Extension-Dateien (VIEW-03)
 
 ### Phase 24: Map Performance
 **Goal**: Map-Rendering ist effizient — SSE statt Polling, schnelles Hit-Testing, gecachte Berechnungen und vorgerenderte statische Layer
@@ -225,9 +225,9 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 25-01-PLAN.md — RobotDetailView Section-Extraktion in Views/Detail/ (VIEW-01)
-- [ ] 25-02-PLAN.md — RobotSettingsSections Dateitrennung in Views/Settings/ (VIEW-02)
-- [ ] 25-03-PLAN.md — MapContentView Reduktion durch Extension-Dateien (VIEW-03)
+- [x] 25-01-PLAN.md — RobotDetailView Section-Extraktion in Views/Detail/ (VIEW-01)
+- [x] 25-02-PLAN.md — RobotSettingsSections Dateitrennung in Views/Settings/ (VIEW-02)
+- [x] 25-03-PLAN.md — MapContentView Reduktion durch Extension-Dateien (VIEW-03)
 
 ### Phase 26: Security Hardening
 **Goal**: Benutzer wird über unsichere Verbindungen informiert und sensible Daten sind verschlüsselt gespeichert
