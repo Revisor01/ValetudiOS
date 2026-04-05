@@ -472,7 +472,7 @@ final class MapViewModel {
             await robotManager.refreshRobot(robot.id)
         } catch {
             logger.error("cleanSelectedRooms FAILED: \(error.localizedDescription, privacy: .public)")
-            errorMessage = error.localizedDescription
+            errorRouter?.show(error)
         }
     }
 
@@ -483,6 +483,7 @@ final class MapViewModel {
             await robotManager.refreshRobot(robot.id)
         } catch {
             logger.error("Zone cleaning FAILED: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -496,6 +497,7 @@ final class MapViewModel {
             await robotManager.refreshRobot(robot.id)
         } catch {
             logger.error("GoTo failed: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
         cancelEditMode()
     }
@@ -553,6 +555,7 @@ final class MapViewModel {
             renameNewName = ""
         } catch {
             logger.error("renameSegment FAILED: \(error, privacy: .public)")
+            errorRouter?.show(error)
             showRenameSheet = false
             editMode = .none
             selectedSegmentIds.removeAll()
@@ -596,6 +599,7 @@ final class MapViewModel {
             }
         } catch {
             logger.error("joinSelectedSegments FAILED: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -664,6 +668,7 @@ final class MapViewModel {
             editMode = .none
         } catch {
             logger.error("performSplit FAILED: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -691,6 +696,7 @@ final class MapViewModel {
             existingRestrictions = restrictions
         } catch {
             logger.error("Delete restriction FAILED: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -710,6 +716,7 @@ final class MapViewModel {
             existingRestrictions = restrictions
         } catch {
             logger.error("saveRestrictions FAILED: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -743,6 +750,7 @@ final class MapViewModel {
                     await robotManager.refreshRobot(robot.id)
                 } catch {
                     logger.error("confirmEditMode: Zone cleaning FAILED: \(error, privacy: .public)")
+                    errorRouter?.show(error)
                 }
             }
 

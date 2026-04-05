@@ -352,6 +352,7 @@ final class RobotDetailViewModel {
             await robotManager.refreshRobot(robot.id)
         } catch {
             logger.error("Action failed: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -376,6 +377,7 @@ final class RobotDetailViewModel {
             await robotManager.refreshRobot(robot.id)
         } catch {
             logger.error("Clean failed: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -396,6 +398,7 @@ final class RobotDetailViewModel {
             await robotManager.refreshRobot(robot.id)
         } catch {
             logger.error("Failed to set fan speed: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -406,6 +409,7 @@ final class RobotDetailViewModel {
             await robotManager.refreshRobot(robot.id)
         } catch {
             logger.error("Failed to set water usage: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -416,6 +420,7 @@ final class RobotDetailViewModel {
             await robotManager.refreshRobot(robot.id)
         } catch {
             logger.error("Failed to set operation mode: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -429,6 +434,7 @@ final class RobotDetailViewModel {
             try await api.triggerAutoEmptyDock()
         } catch {
             logger.error("Failed to trigger auto empty: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -440,6 +446,7 @@ final class RobotDetailViewModel {
             try await api.triggerMopDockClean()
         } catch {
             logger.error("Failed to trigger mop clean: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -451,6 +458,7 @@ final class RobotDetailViewModel {
             try await api.triggerMopDockDry()
         } catch {
             logger.error("Failed to trigger mop dry: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -463,6 +471,7 @@ final class RobotDetailViewModel {
             await loadConsumables()
         } catch {
             logger.error("Failed to reset consumable: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -475,6 +484,7 @@ final class RobotDetailViewModel {
             events.removeAll { $0.id == event.id }
         } catch {
             logger.error("Failed to dismiss event: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
@@ -487,6 +497,7 @@ final class RobotDetailViewModel {
             currentCleanRoute = route
         } catch {
             logger.error("Failed to set clean route: \(error, privacy: .public)")
+            errorRouter?.show(error)
         }
     }
 
