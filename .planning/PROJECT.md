@@ -72,7 +72,7 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 - [x] Security: HTTP-Warnung, SSL-Bypass-Warnung, verschlüsselte Config-Speicherung -- v3.0.0 Phase 26
 - [x] Accessibility: VoiceOver-Labels für Controls, Status, Consumables, Map-Canvas -- v3.0.0 Phase 27
 - [x] Test Coverage: Unit-Tests für Transforms, UpdateService, SSE, MapCache -- v3.0.0 Phase 28
-- [ ] UX Robustness: ErrorRouter verdrahtet, Confirmation-Dialogs, Multi-Robot-Polling -- v3.0.0 Phase 29
+- [x] UX Robustness: ErrorRouter verdrahtet, Confirmation-Dialogs, Multi-Robot-Polling -- v3.0.0 Phase 29
 
 ### Validated (v1.4.0)
 

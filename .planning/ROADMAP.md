@@ -72,7 +72,7 @@
 - [x] **Phase 26: Security Hardening** - HTTP-Warnung, SSL-Bypass-Warnung, Robot-Config verschlüsselt speichern (completed 2026-04-05)
 - [x] **Phase 27: Accessibility** - VoiceOver-Labels für alle Controls, Status-Header, Consumables, Icon-Buttons und Map-Canvas (completed 2026-04-05)
 - [x] **Phase 28: Test Coverage Expansion** - Unit-Tests für Koordinaten-Transforms, UpdateService State Machine, SSE-Reconnection, MapCacheService (completed 2026-04-05)
-- [ ] **Phase 29: UX Robustness** - ErrorRouter systematisch verdrahten, Confirmation-Dialogs für destruktive Aktionen, Multi-Robot-Polling-Optimierung
+- [x] **Phase 29: UX Robustness** - ErrorRouter systematisch verdrahten, Confirmation-Dialogs für destruktive Aktionen, Multi-Robot-Polling-Optimierung (completed 2026-04-05)
 
 ## Phase Details
 
@@ -288,8 +288,8 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 29-01-PLAN.md — ErrorRouter-Verdrahtung + Confirmation-Dialogs (ROBUST-01, ROBUST-02)
-- [ ] 29-02-PLAN.md — Multi-Robot-Polling-Optimierung mit activeRobotId (ROBUST-03)
+- [x] 29-01-PLAN.md — ErrorRouter-Verdrahtung + Confirmation-Dialogs (ROBUST-01, ROBUST-02)
+- [x] 29-02-PLAN.md — Multi-Robot-Polling-Optimierung mit activeRobotId (ROBUST-03)
 
 ### Phase 1: Foundation
 **Goal**: Alle Inhalte der App nutzen sicheren Credential-Speicher, strukturiertes Logging und sichtbare Fehlermeldungen
