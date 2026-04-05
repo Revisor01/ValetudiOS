@@ -237,13 +237,12 @@ Plans:
   1. Bei HTTP-Verbindung zeigt die Robot-Detail-View einen Security-Indikator
   2. Wenn ignoreCertificateErrors aktiviert ist, zeigt die Robot-Konfiguration eine deutliche Warnung
   3. Robot-Config wird in Keychain oder verschlüsseltem Storage gespeichert
-**Plans**: 3 plans
+**Plans**: 2 plans
 **UI hint**: yes
 
 Plans:
-- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
-- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
-- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
+- [ ] 26-01-PLAN.md — HTTP-Indikator in StatusHeader, SSL-Warnung in Add/EditRobotView (SEC-01, SEC-02)
+- [ ] 26-02-PLAN.md — KeychainStore Config-API + RobotManager Keychain-Migration (SEC-03)
 
 ### Phase 27: Accessibility
 **Goal**: Die App ist mit VoiceOver grundlegend bedienbar — alle interaktiven Elemente haben beschreibende Labels
