@@ -14,6 +14,22 @@ struct RobotConfig: Codable, Identifiable, Equatable, Hashable {
         return URL(string: "\(scheme)://\(host)")
     }
 
+    /// Whether this robot is on a local network (private IP or .local mDNS)
+    var isLocalNetwork: Bool {
+        let h = host.lowercased()
+        // mDNS / .local hostnames
+        if h.hasSuffix(".local") { return true }
+        // Private IPv4 ranges
+        if h.starts(with: "192.168.") || h.starts(with: "10.") { return true }
+        if h.starts(with: "172.") {
+            let parts = h.split(separator: ".")
+            if parts.count >= 2, let second = Int(parts[1]), (16...31).contains(second) { return true }
+        }
+        // Link-local
+        if h.starts(with: "169.254.") { return true }
+        return false
+    }
+
     init(id: UUID = UUID(), name: String, host: String, username: String? = nil, password: String? = nil, useSSL: Bool = false, ignoreCertificateErrors: Bool = false) {
         self.id = id
         self.name = name

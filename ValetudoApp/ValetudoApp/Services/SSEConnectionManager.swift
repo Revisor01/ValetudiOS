@@ -12,15 +12,20 @@ actor SSEConnectionManager {
     // Stored connect params for reconnect-on-network-change
     private struct ConnectionParams {
         let api: ValetudoAPI
+        let isLocalNetwork: Bool
         let onAttributesUpdate: @Sendable ([RobotAttribute]) -> Void
         let onConnectionChange: @Sendable (Bool) -> Void
     }
     private var connectionParams: [UUID: ConnectionParams] = [:]
 
+    // Robots that exhausted retries — won't reconnect until network changes
+    private var suspended: Set<UUID> = []
+
     // NWPathMonitor for detecting network path changes
     private var pathMonitor: NWPathMonitor?
     private var pathMonitorQueue: DispatchQueue?
     private var lastPathStatus: NWPath.Status = .satisfied
+    private var hasWiFi: Bool = true
 
     // MARK: - Public Interface
 
@@ -28,12 +33,34 @@ actor SSEConnectionManager {
         isConnected[robotId] == true
     }
 
+    func isSuspended(for robotId: UUID) -> Bool {
+        suspended.contains(robotId)
+    }
+
     func connect(
         robotId: UUID,
         api: ValetudoAPI,
+        isLocalNetwork: Bool,
         onAttributesUpdate: @escaping @Sendable ([RobotAttribute]) -> Void,
         onConnectionChange: @escaping @Sendable (Bool) -> Void
     ) {
+        // Skip local robots when not on WiFi — they're unreachable
+        if isLocalNetwork && !hasWiFi {
+            logger.info("SSE skipping local robot \(robotId, privacy: .public) — no WiFi")
+            // Store params so we reconnect when WiFi returns
+            connectionParams[robotId] = ConnectionParams(
+                api: api,
+                isLocalNetwork: isLocalNetwork,
+                onAttributesUpdate: onAttributesUpdate,
+                onConnectionChange: onConnectionChange
+            )
+            startPathMonitorIfNeeded()
+            return
+        }
+
+        // Don't reconnect suspended robots (they exhausted retries)
+        if suspended.contains(robotId) { return }
+
         // Cancel any existing task for this robot
         tasks[robotId]?.cancel()
         tasks[robotId] = nil
@@ -42,6 +69,7 @@ actor SSEConnectionManager {
         // Store params for potential reconnect on network change
         connectionParams[robotId] = ConnectionParams(
             api: api,
+            isLocalNetwork: isLocalNetwork,
             onAttributesUpdate: onAttributesUpdate,
             onConnectionChange: onConnectionChange
         )
@@ -65,9 +93,10 @@ actor SSEConnectionManager {
         tasks.removeValue(forKey: robotId)
         isConnected.removeValue(forKey: robotId)
         connectionParams.removeValue(forKey: robotId)
+        suspended.remove(robotId)
         logger.info("SSE disconnected for robot \(robotId, privacy: .public)")
 
-        if tasks.isEmpty {
+        if tasks.isEmpty && connectionParams.isEmpty {
             stopPathMonitor()
         }
     }
@@ -79,6 +108,7 @@ actor SSEConnectionManager {
         tasks.removeAll()
         isConnected.removeAll()
         connectionParams.removeAll()
+        suspended.removeAll()
         stopPathMonitor()
         logger.info("SSE disconnected for all robots")
     }
@@ -112,12 +142,24 @@ actor SSEConnectionManager {
 
     private func handlePathUpdate(_ path: NWPath) {
         let previousStatus = lastPathStatus
+        let previousWiFi = hasWiFi
         lastPathStatus = path.status
+        hasWiFi = path.usesInterfaceType(.wifi)
 
-        // Reconnect when network becomes available after being unavailable
-        guard path.status == .satisfied, previousStatus != .satisfied else { return }
+        // Reconnect when network becomes available or WiFi returns
+        let networkRestored = path.status == .satisfied && previousStatus != .satisfied
+        let wifiRestored = hasWiFi && !previousWiFi
 
-        logger.info("SSE network path restored — reconnecting all active SSE streams")
+        guard networkRestored || wifiRestored else { return }
+
+        if wifiRestored {
+            logger.info("SSE WiFi restored — clearing suspended robots and reconnecting")
+        } else {
+            logger.info("SSE network path restored — reconnecting all active SSE streams")
+        }
+
+        // Clear suspensions — give all robots a fresh chance
+        suspended.removeAll()
         reconnectAll()
     }
 
@@ -125,6 +167,12 @@ actor SSEConnectionManager {
         let snapshot = connectionParams
 
         for (robotId, params) in snapshot {
+            // Skip local robots when not on WiFi
+            if params.isLocalNetwork && !hasWiFi {
+                logger.info("SSE skipping reconnect for local robot \(robotId, privacy: .public) — no WiFi")
+                continue
+            }
+
             // Cancel existing task
             tasks[robotId]?.cancel()
             tasks[robotId] = nil
@@ -145,7 +193,7 @@ actor SSEConnectionManager {
 
     // MARK: - Private Streaming
 
-    private let maxRetries = 20
+    private let maxRetries = 5
 
     private func streamWithReconnect(
         robotId: UUID,
@@ -191,15 +239,17 @@ actor SSEConnectionManager {
                 isConnected[robotId] = false
                 onConnectionChange(false)
 
-                // Exponential backoff: 1s → 5s → 30s (capped)
+                // Exponential backoff: 2s → 5s → 15s → 30s → 60s
                 retryCount += 1
                 let delay: Double
                 switch retryCount {
-                case 1:  delay = 1
+                case 1:  delay = 2
                 case 2:  delay = 5
-                default: delay = 30
+                case 3:  delay = 15
+                case 4:  delay = 30
+                default: delay = 60
                 }
-                logger.info("SSE retry \(retryCount, privacy: .public) for robot \(robotId, privacy: .public) — waiting \(delay, privacy: .public)s")
+                logger.info("SSE retry \(retryCount, privacy: .public)/\(self.maxRetries, privacy: .public) for robot \(robotId, privacy: .public) — waiting \(delay, privacy: .public)s")
 
                 do {
                     try await Task.sleep(for: .seconds(delay))
@@ -214,7 +264,8 @@ actor SSEConnectionManager {
         // Cleanup on exit
         isConnected[robotId] = false
         if retryCount >= maxRetries {
-            logger.warning("SSE retry limit (\(self.maxRetries, privacy: .public)) reached for robot \(robotId, privacy: .public) — falling back to polling")
+            suspended.insert(robotId)
+            logger.warning("SSE suspended robot \(robotId, privacy: .public) after \(self.maxRetries, privacy: .public) retries — will retry on network change")
         }
         logger.info("SSE stream ended for robot \(robotId, privacy: .public)")
     }

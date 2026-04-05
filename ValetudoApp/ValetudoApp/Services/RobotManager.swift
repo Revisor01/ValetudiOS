@@ -152,11 +152,13 @@ class RobotManager {
                 for robot in robots {
                     guard let api = apis[robot.id] else { continue }
                     let sseActive = await sseManager.isSSEActive(for: robot.id)
-                    if !sseActive {
+                    let sseSuspended = await sseManager.isSuspended(for: robot.id)
+                    if !sseActive && !sseSuspended {
                         let robotId = robot.id
                         await sseManager.connect(
                             robotId: robotId,
                             api: api,
+                            isLocalNetwork: robot.isLocalNetwork,
                             onAttributesUpdate: { [weak self] attrs in
                                 Task { @MainActor [weak self] in
                                     self?.applyAttributeUpdate(attrs, for: robotId)
@@ -181,7 +183,8 @@ class RobotManager {
                     for robot in robotsToPoll {
                         group.addTask {
                             let sseActive = await self.sseManager.isSSEActive(for: robot.id)
-                            if !sseActive {
+                            let sseSuspended = await self.sseManager.isSuspended(for: robot.id)
+                            if !sseActive && !sseSuspended {
                                 await self.refreshRobot(robot.id)
                             }
                         }

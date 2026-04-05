@@ -146,12 +146,10 @@ struct SettingsView: View {
                             Text("in Hennstedt")
                         }
                         .font(.caption)
-                        .foregroundStyle(.secondary)
                         .padding(.top, 8)
                         Text("Friede. Schalom. Salam.")
                             .font(.caption2)
                             .italic()
-                            .foregroundStyle(.tertiary)
                     }
                 }
             }
