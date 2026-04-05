@@ -210,14 +210,16 @@ final class MapViewModel {
                             // Decode and compute caches off main thread
                             let newMap = try JSONDecoder().decode(RobotMap.self, from: jsonData)
                             let pixelSets = Self.buildSegmentPixelSets(from: newMap)
+                            let currentSegments = await MainActor.run { self.segments }
+                            let segInfos = Self.buildSegmentInfos(from: newMap, segments: currentSegments)
                             let renderSize = await MainActor.run { self.lastRenderSize }
 
-                            // Apply state on main actor
+                            // Apply state on main actor (lightweight — no decompression here)
                             await MainActor.run { [weak self] in
                                 guard let self else { return }
                                 self.map = newMap
                                 self.segmentPixelSets = pixelSets
-                                self.updateCachedSegmentInfos()
+                                self.cachedSegmentInfos = segInfos
                                 self.isOffline = false
                                 if renderSize.width > 0 {
                                     self.rebuildStaticLayerImage(size: renderSize)
@@ -229,12 +231,14 @@ final class MapViewModel {
                             log.warning("Map SSE decode failed, falling back to HTTP GET: \(error.localizedDescription, privacy: .public)")
                             if let fallbackMap = try? await api.getMap() {
                                 let pixelSets = Self.buildSegmentPixelSets(from: fallbackMap)
+                                let fbSegments = await MainActor.run { self.segments }
+                                let fbSegInfos = Self.buildSegmentInfos(from: fallbackMap, segments: fbSegments)
                                 let renderSize = await MainActor.run { self.lastRenderSize }
                                 await MainActor.run { [weak self] in
                                     guard let self else { return }
                                     self.map = fallbackMap
                                     self.segmentPixelSets = pixelSets
-                                    self.updateCachedSegmentInfos()
+                                    self.cachedSegmentInfos = fbSegInfos
                                     self.isOffline = false
                                     if renderSize.width > 0 {
                                         self.rebuildStaticLayerImage(size: renderSize)
@@ -252,12 +256,14 @@ final class MapViewModel {
                     // Einmaliger HTTP-Poll als Fallback
                     if let newMap = try? await api.getMap() {
                         let pixelSets = Self.buildSegmentPixelSets(from: newMap)
+                        let errSegments = await MainActor.run { self.segments }
+                        let errSegInfos = Self.buildSegmentInfos(from: newMap, segments: errSegments)
                         let renderSize = await MainActor.run { self.lastRenderSize }
                         await MainActor.run { [weak self] in
                             guard let self else { return }
                             self.map = newMap
                             self.segmentPixelSets = pixelSets
-                            self.updateCachedSegmentInfos()
+                            self.cachedSegmentInfos = errSegInfos
                             self.isOffline = false
                             if renderSize.width > 0 {
                                 self.rebuildStaticLayerImage(size: renderSize)
@@ -328,11 +334,19 @@ final class MapViewModel {
         segmentPixelSets = Self.buildSegmentPixelSets(from: map)
     }
 
+    /// Computes segment infos from map layers. Called on main actor to apply result.
     private func updateCachedSegmentInfos() {
-        guard let layers = map?.layers else {
+        guard let map = map else {
             cachedSegmentInfos = []
             return
         }
+        cachedSegmentInfos = Self.buildSegmentInfos(from: map, segments: segments)
+    }
+
+    /// Static helper: builds segment infos from a RobotMap.
+    /// Marked nonisolated so it can be called from Task.detached without hopping to @MainActor.
+    nonisolated static func buildSegmentInfos(from map: RobotMap, segments: [Segment]) -> [SegmentInfo] {
+        guard let layers = map.layers else { return [] }
         var infos: [SegmentInfo] = []
         for layer in layers where layer.type == "segment" {
             guard let segmentId = layer.metaData?.segmentId else { continue }
@@ -358,10 +372,10 @@ final class MapViewModel {
             guard let finalMidX = midX, let finalMidY = midY else { continue }
             let name = segments.first { $0.id == segmentId }?.displayName
                 ?? layer.metaData?.name
-                ?? String(localized: "map.room") + " \(segmentId)"
+                ?? "Room \(segmentId)"
             infos.append(SegmentInfo(id: segmentId, name: name, midX: finalMidX, midY: finalMidY))
         }
-        cachedSegmentInfos = infos
+        return infos
     }
 
     // MARK: - Static Layer Segment Colors
