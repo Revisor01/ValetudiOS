@@ -220,7 +220,9 @@ class RobotManager {
             checkStateChanges(robotName: robotName, previous: previousState, current: newStatus)
 
             previousStates[id] = robotStates[id]
-            robotStates[id] = newStatus
+            if robotStates[id] != newStatus {
+                robotStates[id] = newStatus
+            }
 
             // Check for updates and consumables (in background, don't block refresh)
             Task {
@@ -233,7 +235,10 @@ class RobotManager {
                 notificationService.notifyRobotOffline(robotName: robotName)
             }
             previousStates[id] = robotStates[id]
-            robotStates[id] = RobotStatus(isOnline: false)
+            let offlineStatus = RobotStatus(isOnline: false)
+            if robotStates[id] != offlineStatus {
+                robotStates[id] = offlineStatus
+            }
         }
     }
 
@@ -249,7 +254,9 @@ class RobotManager {
         let robotName = getRobotName(for: id)
         checkStateChanges(robotName: robotName, previous: previousStates[id], current: newStatus)
         previousStates[id] = robotStates[id]
-        robotStates[id] = newStatus
+        if robotStates[id] != newStatus {
+            robotStates[id] = newStatus
+        }
     }
 
     private func sseConnectionChanged(_ connected: Bool, for id: UUID) {
@@ -265,7 +272,10 @@ class RobotManager {
         do {
             let updaterState = try await api.getUpdaterState()
             await MainActor.run {
-                self.robotUpdateAvailable[id] = updaterState.isUpdateAvailable
+                let newValue = updaterState.isUpdateAvailable
+                if self.robotUpdateAvailable[id] != newValue {
+                    self.robotUpdateAvailable[id] = newValue
+                }
             }
         } catch {
             logger.warning("checkUpdaterState: Not supported or failed for robot \(id, privacy: .public): \(error.localizedDescription, privacy: .public)")
@@ -385,7 +395,7 @@ class RobotManager {
 }
 
 // MARK: - Robot Status
-struct RobotStatus {
+struct RobotStatus: Equatable {
     let isOnline: Bool
     let attributes: [RobotAttribute]
     let info: RobotInfo?

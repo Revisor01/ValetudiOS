@@ -2,7 +2,7 @@ import Foundation
 import Observation
 
 // MARK: - Robot Info
-struct RobotInfo: Codable {
+struct RobotInfo: Codable, Equatable {
     let manufacturer: String?
     let modelName: String?
     let implementation: String?
@@ -15,7 +15,7 @@ struct RobotStateResponse: Codable {
 }
 
 // MARK: - Attributes
-struct RobotAttribute: Codable {
+struct RobotAttribute: Codable, Equatable {
     let `__class`: String
     let type: String?
     let subType: String?

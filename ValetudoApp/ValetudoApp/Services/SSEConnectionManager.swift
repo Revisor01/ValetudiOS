@@ -20,7 +20,7 @@ actor SSEConnectionManager {
     // NWPathMonitor for detecting network path changes
     private var pathMonitor: NWPathMonitor?
     private var pathMonitorQueue: DispatchQueue?
-    private var lastPathStatus: NWPath.Status = .requiresConnection
+    private var lastPathStatus: NWPath.Status = .satisfied
 
     // MARK: - Public Interface
 
@@ -145,6 +145,8 @@ actor SSEConnectionManager {
 
     // MARK: - Private Streaming
 
+    private let maxRetries = 20
+
     private func streamWithReconnect(
         robotId: UUID,
         api: ValetudoAPI,
@@ -154,7 +156,7 @@ actor SSEConnectionManager {
         let decoder = JSONDecoder()
         var retryCount = 0
 
-        while !Task.isCancelled {
+        while !Task.isCancelled && retryCount < maxRetries {
             do {
                 let bytes = try await api.streamStateLines()
 
@@ -211,6 +213,9 @@ actor SSEConnectionManager {
 
         // Cleanup on exit
         isConnected[robotId] = false
+        if retryCount >= maxRetries {
+            logger.warning("SSE retry limit (\(self.maxRetries, privacy: .public)) reached for robot \(robotId, privacy: .public) — falling back to polling")
+        }
         logger.info("SSE stream ended for robot \(robotId, privacy: .public)")
     }
 }
