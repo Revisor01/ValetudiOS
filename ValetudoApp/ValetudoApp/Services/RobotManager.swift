@@ -146,11 +146,17 @@ class RobotManager {
     }
 
     private func startRefreshing() {
-        refreshTask = Task {
+        // Capture everything needed before detaching
+        let robotsCopy = robots
+        let apisCopy = apis
+        let sseManager = sseManager
+        let activeId = activeRobotId
+
+        refreshTask = Task.detached(priority: .utility) { [weak self] in
             while !Task.isCancelled {
                 // Connect SSE for each robot that doesn't have an active connection yet
-                for robot in robots {
-                    guard let api = apis[robot.id] else { continue }
+                for robot in robotsCopy {
+                    guard let api = apisCopy[robot.id] else { continue }
                     let sseActive = await sseManager.isSSEActive(for: robot.id)
                     if !sseActive {
                         let robotId = robot.id
@@ -172,17 +178,17 @@ class RobotManager {
                 }
 
                 // Poll only robots without active SSE (fallback)
-                // When activeRobotId is set, only poll the active robot
-                let robotsToPoll = activeRobotId != nil
-                    ? robots.filter { $0.id == activeRobotId }
-                    : robots
+                let currentActiveId = await MainActor.run { self?.activeRobotId }
+                let robotsToPoll = currentActiveId != nil
+                    ? robotsCopy.filter { $0.id == currentActiveId }
+                    : robotsCopy
 
                 await withTaskGroup(of: Void.self) { group in
                     for robot in robotsToPoll {
                         group.addTask {
-                            let sseActive = await self.sseManager.isSSEActive(for: robot.id)
+                            let sseActive = await sseManager.isSSEActive(for: robot.id)
                             if !sseActive {
-                                await self.refreshRobot(robot.id)
+                                await self?.refreshRobot(robot.id)
                             }
                         }
                     }
