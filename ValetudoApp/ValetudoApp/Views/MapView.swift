@@ -182,41 +182,27 @@ struct MapContentView: View {
 
     @State var viewModel: MapViewModel
 
-    // MARK: - Gesture / View-local state (inherently view-bound)
     @State var scale: CGFloat = 1.0
     @State var lastScale: CGFloat = 1.0
     @State var offset: CGSize = .zero
     @State var lastOffset: CGSize = .zero
-
-    // Drawing state (gesture-local, frame-dependent)
     @State var currentDrawStart: CGPoint?
     @State var currentDrawEnd: CGPoint?
     @State var isDraggingSplitStart = false
     @State var isDraggingSplitEnd = false
-
-    // Store current view size for coordinate calculations
     @State var currentViewSize: CGSize = .zero
 
     init(robot: RobotConfig, robotManager: RobotManager, isFullscreen: Bool = false) {
         self.robot = robot
         self.isFullscreen = isFullscreen
         _viewModel = State(initialValue: MapViewModel(robot: robot, robotManager: robotManager, isFullscreen: isFullscreen))
+        print(">>> MapContentView init DONE — viewModel created")
     }
 
     var body: some View {
-        Text("MAP TEST — sheet opened successfully")
+        Text("MAP TEST — VIEWMODEL CREATED, body is just Text")
             .font(.title)
             .padding()
-            .task {
-                print(">>> SIMPLE BODY .task START — NOT calling loadMap")
-                // viewModel.errorRouter = errorRouter
-                // await viewModel.loadMap()
-                // viewModel.startMapRefresh()
-                print(">>> SIMPLE BODY .task END")
-            }
-            .onDisappear {
-                viewModel.stopMapRefresh()
-            }
     }
 
 }
