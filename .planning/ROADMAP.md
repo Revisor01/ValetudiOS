@@ -270,12 +270,11 @@ Plans:
   2. Unit-Tests für UpdateService decken alle 8 Phase-Transitions und Error-Recovery ab
   3. Unit-Tests für SSE-Reconnection validieren Backoff-Timing
   4. Unit-Tests für MapCacheService decken Save/Load-Zyklus und Corrupted-Cache ab
-**Plans**: 3 plans
+**Plans**: 2 plans
 
 Plans:
-- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
-- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
-- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
+- [ ] 28-01-PLAN.md — MapGeometry/HitTest/SSE-Backoff/MapCacheService Tests (TEST-01, TEST-03, TEST-04)
+- [ ] 28-02-PLAN.md — UpdateService Protocol-Extraktion + State-Machine Tests (TEST-02)
 
 ### Phase 29: UX Robustness
 **Goal**: Fehler werden konsistent angezeigt, destruktive Aktionen erfordern Bestätigung, Multi-Robot-Polling ist optimiert
