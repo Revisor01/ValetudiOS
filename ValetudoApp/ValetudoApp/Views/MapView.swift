@@ -169,7 +169,6 @@ struct MapPreviewView: View {
 
 // MARK: - Map Content View (shared between Tab and Sheet)
 struct MapContentView: View {
-    @Environment(RobotManager.self) var robotManager
     @Environment(ErrorRouter.self) var errorRouter
     let robot: RobotConfig
     let isFullscreen: Bool
@@ -362,7 +361,6 @@ struct MapView: View {
     let robot: RobotConfig
 
     var body: some View {
-        let _ = print(">>> MapView(sheet).body START")
         NavigationStack {
             MapContentView(robot: robot, robotManager: robotManager, isFullscreen: true)
                 .navigationTitle(String(localized: "map.title"))
