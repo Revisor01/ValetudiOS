@@ -204,153 +204,18 @@ struct MapContentView: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            // Map
-            GeometryReader { geometry in
-                ZStack {
-                    Color(uiColor: .systemGroupedBackground)
-                        .ignoresSafeArea()
-
-                    if viewModel.isLoading && viewModel.map == nil {
-                        ProgressView()
-                            .scaleEffect(1.5)
-                    } else if let map = viewModel.map {
-                        let params = viewModel.cachedMapParams
-
-                        ZStack {
-                            InteractiveMapView(
-                                map: map,
-                                segments: viewModel.segments,
-                                selectedSegmentIds: $viewModel.selectedSegmentIds,
-                                viewSize: geometry.size,
-                                staticLayerImage: viewModel.staticLayerImage,
-                                drawnZones: viewModel.drawnZones,
-                                drawnNoGoAreas: viewModel.drawnNoGoAreas,
-                                drawnNoMopAreas: viewModel.drawnNoMopAreas,
-                                drawnVirtualWalls: viewModel.drawnVirtualWalls,
-                                existingRestrictions: viewModel.existingRestrictions,
-                                currentDrawStart: currentDrawStart,
-                                currentDrawEnd: currentDrawEnd,
-                                editMode: viewModel.editMode,
-                                showRoomLabels: viewModel.showRoomLabels,
-                                segmentPixelSets: viewModel.segmentPixelSets,
-                                cachedSegmentInfos: viewModel.cachedSegmentInfos
-                            )
-                            .id(viewModel.mapRefreshId) // Force redraw when segments change
-                            .scaleEffect(scale)
-                            .offset(offset)
-
-                            // Drawing overlay for edit modes
-                            if viewModel.editMode != .none && viewModel.editMode != .roomEdit && viewModel.editMode != .deleteRestriction {
-                                // For splitRoom with existing line, show drag handles
-                                if viewModel.editMode == .splitRoom && currentDrawStart != nil && currentDrawEnd != nil {
-                                    splitLineHandles(geometry: geometry)
-                                } else if viewModel.editMode != .splitRoom || currentDrawStart == nil {
-                                    drawingOverlay(geometry: geometry)
-                                }
-                            }
-
-                            // GoTo/SavePreset marker (draggable circle)
-                            if let p = params {
-                                let pxSize = map.pixelSize ?? 5
-                                goToMarkerOverlay(params: p, pixelSize: pxSize, geometry: geometry)
-
-                                // Preset markers (when toggled visible)
-                                presetMarkersOverlay(params: p, pixelSize: pxSize, geometry: geometry)
-                            }
-
-                            // Restriction delete targets
-                            if viewModel.editMode == .deleteRestriction, let p = params, let restrictions = viewModel.existingRestrictions {
-                                restrictionDeleteOverlay(params: p, restrictions: restrictions, viewSize: geometry.size)
-                            }
-
-                            // Offline banner
-                            if viewModel.isOffline {
-                                VStack {
-                                    HStack(spacing: 6) {
-                                        Image(systemName: "wifi.slash")
-                                            .font(.caption)
-                                        Text(String(localized: "map.offline"))
-                                            .font(.caption)
-                                            .fontWeight(.medium)
-                                    }
-                                    .padding(.horizontal, 12)
-                                    .padding(.vertical, 6)
-                                    .background(.ultraThinMaterial)
-                                    .clipShape(Capsule())
-                                    .padding(.top, 8)
-                                    Spacer()
-                                }
-                            }
-                        }
-                        .gesture(combinedGesture)
-                    } else {
-                        ContentUnavailableView(
-                            viewModel.loadError ?? String(localized: "map.unavailable"),
-                            systemImage: "map"
-                        )
-                    }
-
-                }
-                .onAppear {
-                    currentViewSize = geometry.size
-                    viewModel.updateCachesForSize(geometry.size)
-                }
-                .onChange(of: geometry.size) { _, newSize in
-                    currentViewSize = newSize
-                    viewModel.updateCachesForSize(newSize)
-                }
+        Text("MAP TEST — sheet opened successfully")
+            .font(.title)
+            .padding()
+            .task {
+                print(">>> SIMPLE BODY .task START")
+                viewModel.errorRouter = errorRouter
+                await viewModel.loadMap()
+                print(">>> SIMPLE BODY .task loadMap DONE")
+                viewModel.startMapRefresh()
             }
-
-            // Bottom bar
-            selectedRoomsBar
-        }
-        .toolbar {
-            ToolbarItem(placement: .primaryAction) {
-                HStack(spacing: 16) {
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            viewModel.showRoomLabels.toggle()
-                        }
-                    } label: {
-                        Image(systemName: viewModel.showRoomLabels ? "tag.fill" : "tag")
-                            .font(.system(size: 14))
-                    }
-                    .accessibilityLabel(viewModel.showRoomLabels
-                        ? String(localized: "map.hide_room_labels")
-                        : String(localized: "map.show_room_labels"))
-
-                    Button {
-                        withAnimation(.spring) {
-                            scale = 1.0
-                            offset = .zero
-                            lastScale = 1.0
-                            lastOffset = .zero
-                        }
-                    } label: {
-                        Image(systemName: "arrow.counterclockwise.circle.fill")
-                    }
-                    .accessibilityLabel(String(localized: "map.reset_view"))
-                }
-            }
-        }
-        .task {
-            // Debug: check if main thread is alive
-            let timer = DispatchSource.makeTimerSource(queue: .main)
-            timer.schedule(deadline: .now(), repeating: 1.0)
-            timer.setEventHandler { print(">>> MAIN THREAD ALIVE \(Date())") }
-            timer.resume()
-
-            print(">>> MapContentView.task START (main thread: \(Thread.isMainThread))")
-            viewModel.errorRouter = errorRouter
-            print(">>> MapContentView.task calling loadMap")
-            await viewModel.loadMap()
-            print(">>> MapContentView.task loadMap DONE, calling startMapRefresh")
-            viewModel.startMapRefresh()
-            print(">>> MapContentView.task END")
-        }
-        .onDisappear {
-            viewModel.stopMapRefresh()
+            .onDisappear {
+                viewModel.stopMapRefresh()
         }
         .modifier(MapSheetsModifier(
             viewModel: viewModel,
