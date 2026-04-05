@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: executing
-last_updated: "2026-04-05T00:52:49.116Z"
-last_activity: 2026-04-05 -- Phase 28 execution started
+last_updated: "2026-04-05T01:16:34.616Z"
+last_activity: 2026-04-05 -- Phase 29 execution started
 progress:
   total_phases: 30
-  completed_phases: 26
-  total_plans: 65
-  completed_plans: 62
-  percent: 95
+  completed_phases: 27
+  total_plans: 67
+  completed_plans: 64
+  percent: 96
 ---
 
 # Project State
@@ -20,14 +20,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 28 — test-coverage-expansion
+**Current focus:** Phase 29 — ux-robustness
 
 ## Current Position
 
-Phase: 28 (test-coverage-expansion) — EXECUTING
+Phase: 29 (ux-robustness) — EXECUTING
 Plan: 1 of 2
-Status: Executing Phase 28
-Last activity: 2026-04-05 -- Phase 28 execution started
+Status: Executing Phase 29
+Last activity: 2026-04-05 -- Phase 29 execution started
 
 Progress: [........] 0/8 phases complete
 
