@@ -34,8 +34,8 @@ Requirements for Quality, Performance & Hardening. Each maps to roadmap phases.
 
 ### Security
 
-- [ ] **SEC-01**: Benutzer sieht eine Warnung wenn die Verbindung über HTTP (ohne SSL) läuft
-- [ ] **SEC-02**: SSL-Zertifikat-Bypass zeigt eine deutliche Warnung in der Robot-Konfiguration
+- [x] **SEC-01**: Benutzer sieht eine Warnung wenn die Verbindung über HTTP (ohne SSL) läuft
+- [x] **SEC-02**: SSL-Zertifikat-Bypass zeigt eine deutliche Warnung in der Robot-Konfiguration
 - [ ] **SEC-03**: Robot-Config (Host, Username) wird verschlüsselt gespeichert — nicht in unverschlüsseltem UserDefaults
 
 ### Accessibility
@@ -88,8 +88,8 @@ Requirements for Quality, Performance & Hardening. Each maps to roadmap phases.
 | VIEW-02 | Phase 25 | Pending |
 | VIEW-03 | Phase 25 | Pending |
 | VIEW-04 | Phase 22 | Complete |
-| SEC-01 | Phase 26 | Pending |
-| SEC-02 | Phase 26 | Pending |
+| SEC-01 | Phase 26 | Complete |
+| SEC-02 | Phase 26 | Complete |
 | SEC-03 | Phase 26 | Pending |
 | A11Y-01 | Phase 27 | Pending |
 | A11Y-02 | Phase 27 | Pending |

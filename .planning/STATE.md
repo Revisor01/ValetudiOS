@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: executing
-last_updated: "2026-04-05T00:13:01.675Z"
-last_activity: 2026-04-05 -- Phase 26 execution started
+last_updated: "2026-04-05T00:20:05.827Z"
+last_activity: 2026-04-05
 progress:
   total_phases: 30
-  completed_phases: 24
+  completed_phases: 25
   total_plans: 61
-  completed_plans: 58
-  percent: 95
+  completed_plans: 60
+  percent: 98
 ---
 
 # Project State
@@ -25,9 +25,9 @@ See: .planning/PROJECT.md (updated 2026-04-04)
 ## Current Position
 
 Phase: 26 (security-hardening) — EXECUTING
-Plan: 1 of 2
-Status: Executing Phase 26
-Last activity: 2026-04-05 -- Phase 26 execution started
+Plan: 2 of 2
+Status: Ready to execute
+Last activity: 2026-04-05
 
 Progress: [........] 0/8 phases complete
 
@@ -47,6 +47,8 @@ Progress: [........] 0/8 phases complete
 - [Phase 24-map-performance]: SSE stream replaces 2s polling in MapViewModel — exponential backoff 2s/5s/30s, HTTP fallback on failure
 - [Phase 24-map-performance]: segmentPixelSets is @ObservationIgnored (hit-testing only), cachedSegmentInfos is observable (overlays re-render on change); SegmentInfo defined top-level in MapViewModel for public accessibility
 - [Phase 24-map-performance]: staticLayerImage CGImage pre-rendered on background thread via UIGraphicsImageRenderer, Canvas draws only dynamic elements per frame
+- [Phase 26-security-hardening]: Warning-Banner als eigene Section statt Footer-Text fuer visuelle Prominenz und Konsistenz
+- [Phase 26-security-hardening]: ignoreCertificateErrors wird auf false zurueckgesetzt wenn useSSL=false
 
 ### Pending Todos
 

@@ -69,7 +69,7 @@
 - [x] **Phase 23: Error Handling & Robustness Patterns** - try?-Suppressions durch echte Fehlerbehandlung ersetzen, DebugConfig-Masking fixen, isInitialLoad-Pattern ersetzen, Capability-Refresh und StoreKit-Validierung (completed 2026-04-04)
 - [x] **Phase 24: Map Performance** - SSE Map-Streaming, Spatial Lookup für Hit-Testing, segmentInfos-Caching, CGImage Pre-Rendering für statische Layer, MapCache-Throttling (completed 2026-04-04)
 - [x] **Phase 25: View Architecture** - RobotDetailView und RobotSettingsSections in eigenständige Dateien aufbrechen, MapContentView-State in ViewModel zentralisieren (completed 2026-04-05)
-- [ ] **Phase 26: Security Hardening** - HTTP-Warnung, SSL-Bypass-Warnung, Robot-Config verschlüsselt speichern
+- [x] **Phase 26: Security Hardening** - HTTP-Warnung, SSL-Bypass-Warnung, Robot-Config verschlüsselt speichern (completed 2026-04-05)
 - [ ] **Phase 27: Accessibility** - VoiceOver-Labels für alle Controls, Status-Header, Consumables, Icon-Buttons und Map-Canvas
 - [ ] **Phase 28: Test Coverage Expansion** - Unit-Tests für Koordinaten-Transforms, UpdateService State Machine, SSE-Reconnection, MapCacheService
 - [ ] **Phase 29: UX Robustness** - ErrorRouter systematisch verdrahten, Confirmation-Dialogs für destruktive Aktionen, Multi-Robot-Polling-Optimierung
@@ -241,8 +241,8 @@ Plans:
 **UI hint**: yes
 
 Plans:
-- [ ] 26-01-PLAN.md — HTTP-Indikator in StatusHeader, SSL-Warnung in Add/EditRobotView (SEC-01, SEC-02)
-- [ ] 26-02-PLAN.md — KeychainStore Config-API + RobotManager Keychain-Migration (SEC-03)
+- [x] 26-01-PLAN.md — HTTP-Indikator in StatusHeader, SSL-Warnung in Add/EditRobotView (SEC-01, SEC-02)
+- [x] 26-02-PLAN.md — KeychainStore Config-API + RobotManager Keychain-Migration (SEC-03)
 
 ### Phase 27: Accessibility
 **Goal**: Die App ist mit VoiceOver grundlegend bedienbar — alle interaktiven Elemente haben beschreibende Labels
