@@ -79,7 +79,7 @@
 
 **Milestone Goal:** App Store-Einreichung vorbereiten — Bug Fixes im App-Code, Website-Präsenz (Privacy Policy + App-Beschreibung) und vollständiges App Store Listing (Texte, Keywords, Screenshots-Anleitung, Review Notes).
 
-- [ ] **Phase 30: Bug Fixes** - Support-Symbol-Fix und SSE Zombie-Socket-Reconnection reparieren, bevor Screenshots und Review-Einreichung erfolgen
+- [x] **Phase 30: Bug Fixes** - Support-Symbol-Fix und SSE Zombie-Socket-Reconnection reparieren, bevor Screenshots und Review-Einreichung erfolgen (completed 2026-04-05)
 - [ ] **Phase 31: Web-Präsenz** - Privacy Policy (DSGVO + Apple-konform) und App-Beschreibung auf simonluthe.de schreiben
 - [ ] **Phase 32: App Store Listing** - Titel, Untertitel, Keywords, Beschreibung (DE+EN), Screenshots-Anleitung und Review Notes erstellen
 
@@ -547,7 +547,7 @@ Plans:
   3. App kompiliert fehlerfrei und alle bestehenden Tests bleiben grün
 **Plans**: 1 plan
 Plans:
-- [ ] 30-01-PLAN.md — SF Symbol-Fix (dove.fill → heart.fill) und NWPathMonitor fuer SSE-Reconnect bei Netzwerkwechsel
+- [x] 30-01-PLAN.md — SF Symbol-Fix (dove.fill → heart.fill) und NWPathMonitor fuer SSE-Reconnect bei Netzwerkwechsel
 **UI hint**: yes
 
 ### Phase 31: Web-Präsenz
@@ -619,7 +619,7 @@ v4.0.0: 30 -> 31 -> 32
 | 27. Accessibility | 2/2 | Complete | 2026-04-05 |
 | 28. Test Coverage Expansion | 2/2 | Complete | 2026-04-05 |
 | 29. UX Robustness | 2/2 | Complete | 2026-04-05 |
-| 30. Bug Fixes | 0/TBD | Not started | - |
+| 30. Bug Fixes | 1/1 | Complete   | 2026-04-05 |
 | 31. Web-Präsenz | 0/TBD | Not started | - |
 | 32. App Store Listing | 0/TBD | Not started | - |
 
