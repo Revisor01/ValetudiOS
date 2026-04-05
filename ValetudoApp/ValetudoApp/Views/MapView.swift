@@ -208,11 +208,11 @@ struct MapContentView: View {
             .font(.title)
             .padding()
             .task {
-                print(">>> SIMPLE BODY .task START")
-                viewModel.errorRouter = errorRouter
-                await viewModel.loadMap()
-                print(">>> SIMPLE BODY .task loadMap DONE")
-                viewModel.startMapRefresh()
+                print(">>> SIMPLE BODY .task START — NOT calling loadMap")
+                // viewModel.errorRouter = errorRouter
+                // await viewModel.loadMap()
+                // viewModel.startMapRefresh()
+                print(">>> SIMPLE BODY .task END")
             }
             .onDisappear {
                 viewModel.stopMapRefresh()
