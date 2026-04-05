@@ -4,14 +4,14 @@ milestone: v4.0.0
 milestone_name: App Store Release
 status: executing
 stopped_at: Roadmap v4.0.0 erstellt
-last_updated: "2026-04-05T18:22:00.415Z"
-last_activity: 2026-04-05 -- Phase 30 execution started
+last_updated: "2026-04-05T18:35:40.979Z"
+last_activity: 2026-04-05 -- Phase 31 execution started
 progress:
   total_phases: 33
-  completed_phases: 0
+  completed_phases: 1
   total_plans: 1
-  completed_plans: 0
-  percent: 0
+  completed_plans: 1
+  percent: 100
 ---
 
 # Project State
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-05)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 30 — bug-fixes
+**Current focus:** Phase 31 — web-praesenz
 
 ## Current Position
 
-Phase: 30 (bug-fixes) — EXECUTING
+Phase: 31 (web-praesenz) — EXECUTING
 Plan: 1 of 1
-Status: Executing Phase 30
-Last activity: 2026-04-05 -- Phase 30 execution started
+Status: Executing Phase 31
+Last activity: 2026-04-05 -- Phase 31 execution started
 
 Progress: [░░░░░░░░░░] 0%
 
