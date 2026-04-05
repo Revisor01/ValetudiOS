@@ -100,6 +100,10 @@ actor SSEConnectionManager {
             }
         }
         monitor.start(queue: queue)
+        // Initialise lastPathStatus from the current path immediately after start so the
+        // first pathUpdateHandler callback does not see a false .requiresConnection →
+        // .satisfied transition and trigger a spurious reconnectAll().
+        lastPathStatus = monitor.currentPath.status
         logger.info("SSE NWPathMonitor started")
     }
 

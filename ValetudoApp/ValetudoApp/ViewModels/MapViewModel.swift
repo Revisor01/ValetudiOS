@@ -185,9 +185,11 @@ final class MapViewModel {
 
     func startMapRefresh() {
         refreshTask?.cancel()
-        refreshTask = Task { [weak self] in
+        let robotId = robot.id
+        let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "MapViewModel")
+        refreshTask = Task.detached(priority: .userInitiated) { [weak self] in
             guard let self else { return }
-            guard let api = self.api else { return }
+            guard let api = await self.api else { return }
 
             var retryCount = 0
 
@@ -195,7 +197,7 @@ final class MapViewModel {
                 do {
                     let bytes = try await api.streamMapLines()
                     retryCount = 0
-                    logger.info("Map SSE connected for \(self.robot.id, privacy: .public)")
+                    log.info("Map SSE connected for \(robotId, privacy: .public)")
 
                     for try await line in bytes.lines {
                         if Task.isCancelled { break }
@@ -205,27 +207,40 @@ final class MapViewModel {
                               let jsonData = jsonString.data(using: .utf8) else { continue }
 
                         do {
+                            // Decode and compute caches off main thread
                             let newMap = try JSONDecoder().decode(RobotMap.self, from: jsonData)
-                            self.map = newMap
-                            self.rebuildSegmentPixelSets()
-                            self.updateCachedSegmentInfos()
-                            if self.lastRenderSize.width > 0 {
-                                self.rebuildStaticLayerImage(size: self.lastRenderSize)
+                            let pixelSets = Self.buildSegmentPixelSets(from: newMap)
+                            let renderSize = await MainActor.run { self.lastRenderSize }
+
+                            // Apply state on main actor
+                            await MainActor.run { [weak self] in
+                                guard let self else { return }
+                                self.map = newMap
+                                self.segmentPixelSets = pixelSets
+                                self.updateCachedSegmentInfos()
+                                self.isOffline = false
+                                if renderSize.width > 0 {
+                                    self.rebuildStaticLayerImage(size: renderSize)
+                                }
                             }
-                            self.isOffline = false
-                            await MapCacheService.shared.saveIfChanged(newMap, for: self.robot.id)
+                            await MapCacheService.shared.saveIfChanged(newMap, for: robotId)
                         } catch {
                             // SSE event war kein vollstaendiges RobotMap — fallback: einzelner HTTP-GET
-                            logger.warning("Map SSE decode failed, falling back to HTTP GET: \(error.localizedDescription, privacy: .public)")
+                            log.warning("Map SSE decode failed, falling back to HTTP GET: \(error.localizedDescription, privacy: .public)")
                             if let fallbackMap = try? await api.getMap() {
-                                self.map = fallbackMap
-                                self.rebuildSegmentPixelSets()
-                                self.updateCachedSegmentInfos()
-                                if self.lastRenderSize.width > 0 {
-                                    self.rebuildStaticLayerImage(size: self.lastRenderSize)
+                                let pixelSets = Self.buildSegmentPixelSets(from: fallbackMap)
+                                let renderSize = await MainActor.run { self.lastRenderSize }
+                                await MainActor.run { [weak self] in
+                                    guard let self else { return }
+                                    self.map = fallbackMap
+                                    self.segmentPixelSets = pixelSets
+                                    self.updateCachedSegmentInfos()
+                                    self.isOffline = false
+                                    if renderSize.width > 0 {
+                                        self.rebuildStaticLayerImage(size: renderSize)
+                                    }
                                 }
-                                self.isOffline = false
-                                await MapCacheService.shared.saveIfChanged(fallbackMap, for: self.robot.id)
+                                await MapCacheService.shared.saveIfChanged(fallbackMap, for: robotId)
                             }
                         }
                     }
@@ -233,30 +248,40 @@ final class MapViewModel {
                 } catch is CancellationError {
                     break
                 } catch {
-                    logger.warning("Map SSE error: \(error.localizedDescription, privacy: .public) — falling back to HTTP poll")
+                    log.warning("Map SSE error: \(error.localizedDescription, privacy: .public) — falling back to HTTP poll")
                     // Einmaliger HTTP-Poll als Fallback
                     if let newMap = try? await api.getMap() {
-                        self.map = newMap
-                        self.rebuildSegmentPixelSets()
-                        self.updateCachedSegmentInfos()
-                        if self.lastRenderSize.width > 0 {
-                            self.rebuildStaticLayerImage(size: self.lastRenderSize)
+                        let pixelSets = Self.buildSegmentPixelSets(from: newMap)
+                        let renderSize = await MainActor.run { self.lastRenderSize }
+                        await MainActor.run { [weak self] in
+                            guard let self else { return }
+                            self.map = newMap
+                            self.segmentPixelSets = pixelSets
+                            self.updateCachedSegmentInfos()
+                            self.isOffline = false
+                            if renderSize.width > 0 {
+                                self.rebuildStaticLayerImage(size: renderSize)
+                            }
                         }
-                        self.isOffline = false
-                        await MapCacheService.shared.saveIfChanged(newMap, for: self.robot.id)
+                        await MapCacheService.shared.saveIfChanged(newMap, for: robotId)
                     } else {
                         // HTTP-Poll auch fehlgeschlagen
-                        if self.map == nil, let cachedMap = await MapCacheService.shared.load(for: self.robot.id) {
-                            self.map = cachedMap
-                            self.isOffline = true
-                        } else if self.map != nil {
-                            self.isOffline = true
+                        let hasMap = await MainActor.run { self.map != nil }
+                        if !hasMap {
+                            if let cachedMap = await MapCacheService.shared.load(for: robotId) {
+                                await MainActor.run { [weak self] in
+                                    self?.map = cachedMap
+                                    self?.isOffline = true
+                                }
+                            }
+                        } else {
+                            await MainActor.run { [weak self] in self?.isOffline = true }
                         }
                     }
 
                     retryCount += 1
                     let delay: Double = retryCount == 1 ? 2 : retryCount == 2 ? 5 : 30
-                    logger.info("Map SSE retry \(retryCount, privacy: .public) — waiting \(delay, privacy: .public)s")
+                    log.info("Map SSE retry \(retryCount, privacy: .public) — waiting \(delay, privacy: .public)s")
                     do {
                         try await Task.sleep(for: .seconds(delay))
                     } catch is CancellationError {
@@ -276,11 +301,10 @@ final class MapViewModel {
 
     // MARK: - Performance Caching
 
-    private func rebuildSegmentPixelSets() {
-        guard let layers = map?.layers else {
-            segmentPixelSets = [:]
-            return
-        }
+    /// Static helper: builds segment pixel sets from a RobotMap.
+    /// Marked nonisolated so it can be called from Task.detached without hopping to @MainActor.
+    nonisolated static func buildSegmentPixelSets(from map: RobotMap) -> [String: Set<Int>] {
+        guard let layers = map.layers else { return [:] }
         var sets: [String: Set<Int>] = [:]
         for layer in layers where layer.type == "segment" {
             guard let id = layer.metaData?.segmentId else { continue }
@@ -293,7 +317,15 @@ final class MapViewModel {
             }
             sets[id] = set
         }
-        segmentPixelSets = sets
+        return sets
+    }
+
+    private func rebuildSegmentPixelSets() {
+        guard let map else {
+            segmentPixelSets = [:]
+            return
+        }
+        segmentPixelSets = Self.buildSegmentPixelSets(from: map)
     }
 
     private func updateCachedSegmentInfos() {
