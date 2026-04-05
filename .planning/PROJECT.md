@@ -62,17 +62,20 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 - Reinigungsreihenfolge: Zahlen 1, 2, 3 auf der Karte beim Raumauswählen -- v2.2.0 Phase 21
 - Raumauswahl ohne Labels: Tap auf Raumfläche statt nur auf Label -- v2.2.0 Phase 20
 
+### Validated (v3.0.0)
+
+- Map Geometry: calculateMapParams dedupliziert, Koordinaten-Transforms zentral, Room-Selection-State einheitlich -- v3.0.0 Phase 22
+- Error Handling: Stille try?-Fehler eliminiert, DebugConfig-Masking gefixt, isInitialLoad ersetzt, Capability-Refresh -- v3.0.0 Phase 23
+- Map Performance: SSE Map-Streaming, Spatial Hit-Testing, segmentInfos-Cache, CGImage Pre-Rendering -- v3.0.0 Phase 24
+- View Architecture: RobotDetailView/SettingsSections dekomponiert, MapView Extensions extrahiert -- v3.0.0 Phase 25
+- Security: HTTP-Warnung, SSL-Bypass-Warnung, verschlüsselte Config-Speicherung im Keychain -- v3.0.0 Phase 26
+- Accessibility: VoiceOver-Labels für Controls, Status, Consumables, Map-Canvas -- v3.0.0 Phase 27
+- Test Coverage: 86 neue Unit-Tests für Transforms, UpdateService, SSE, MapCache -- v3.0.0 Phase 28
+- UX Robustness: ErrorRouter in 20 Aktionen verdrahtet, Confirmation-Dialogs, Multi-Robot-Polling -- v3.0.0 Phase 29
+
 ### Active
 
-<!-- v3.0.0 — Quality, Performance & Hardening -->
-- [x] Map Geometry: calculateMapParams dedupliziert, Koordinaten-Transforms zentral, Room-Selection-State einheitlich -- v3.0.0 Phase 22
-- [x] Error Handling: Stille try?-Fehler eliminiert, DebugConfig-Masking gefixt, isInitialLoad ersetzt, Capability-Refresh -- v3.0.0 Phase 23
-- [x] Map Performance: SSE Map-Streaming, Spatial Hit-Testing, segmentInfos-Cache, CGImage Pre-Rendering -- v3.0.0 Phase 24
-- [x] View Architecture: RobotDetailView/SettingsSections dekomponiert, MapContentView-State in ViewModel -- v3.0.0 Phase 25
-- [x] Security: HTTP-Warnung, SSL-Bypass-Warnung, verschlüsselte Config-Speicherung -- v3.0.0 Phase 26
-- [x] Accessibility: VoiceOver-Labels für Controls, Status, Consumables, Map-Canvas -- v3.0.0 Phase 27
-- [x] Test Coverage: Unit-Tests für Transforms, UpdateService, SSE, MapCache -- v3.0.0 Phase 28
-- [x] UX Robustness: ErrorRouter verdrahtet, Confirmation-Dialogs, Multi-Robot-Polling -- v3.0.0 Phase 29
+(Keine aktiven Requirements — nächster Milestone noch nicht definiert)
 
 ### Validated (v1.4.0)
 
@@ -91,11 +94,26 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 
 ## Current State
 
-**Shipped:** v2.2.0 (2026-04-04)
-**In Progress:** v3.0.0 — Quality, Performance & Hardening (8 Phasen, 31 Requirements)
-**Version:** 2.2.0 — Room Interaction & Cleaning Order
+**Shipped:** v3.0.0 (2026-04-05)
+**Version:** 3.0.0 — Quality, Performance & Hardening
 
-Die App ermöglicht Raumauswahl per Tap auf die Raumfläche (nicht nur Labels), zeigt die Reinigungsreihenfolge als nummerierte Badges auf der Karte und in der Raumliste, und übergibt die gewählte Reihenfolge mit `customOrder: true` an die Valetudo API. Basiert auf moderner @Observable-Architektur (iOS 17+), vollständiger Valetudo API-Abdeckung, SSE-Echtzeit-Updates, mDNS-Discovery, 57 Unit-Tests und dreisprachiger Lokalisierung (DE/EN/FR).
+Die App ist auf Produktionsqualität gebracht: SSE-basiertes Map-Streaming statt HTTP-Polling, O(1) Hit-Testing mit CGImage Pre-Rendering, vollständige ErrorRouter-Verdrahtung, VoiceOver-Accessibility, Robot-Config im Keychain verschlüsselt, 143 Unit-Tests. Views sind sauber dekomponiert (RobotDetailView 88% kleiner), alle try?-Suppressions eliminiert, und Multi-Robot-Polling auf den aktiven Roboter beschränkt.
+
+<details>
+<summary>v3.0.0 Milestone (completed)</summary>
+
+**Goal:** Produktionsqualität — Tech Debt, Performance, Security, Accessibility, Tests, Robustness
+
+**Delivered:**
+- SSE Map-Streaming mit Fallback-Polling und CGImage Pre-Rendering
+- O(1) Spatial Hit-Testing via packed Set-Lookup
+- ErrorRouter in allen 20 User-Aktionen verdrahtet
+- Robot-Config verschlüsselt im Keychain (SEC-03)
+- VoiceOver-Labels für alle interaktiven Elemente
+- 86 neue Unit-Tests (57→143)
+- View-Decomposition: RobotDetailView 1210→143 Zeilen
+- Multi-Robot-Polling auf aktiven Roboter beschränkt
+</details>
 
 <details>
 <summary>v2.2.0 Milestone (completed)</summary>
@@ -171,9 +189,9 @@ Die App ermöglicht Raumauswahl per Tap auf die Raumfläche (nicht nur Labels), 
 - **Stack:** Swift 5.9, SwiftUI, iOS 17+, Zero externe Dependencies
 - **Architektur:** MVVM mit ViewModels (@MainActor @Observable) + zentralem RobotManager
 - **API:** Valetudo REST API v2, Basic Auth, optionales SSL
-- **Persistenz:** UserDefaults + Keychain (Credentials) + FileManager (Map Cache), kein CoreData
-- **Tests:** 57 Unit-Tests (ViewModel + API-Layer)
-- **Version:** v2.1.0, Xcode 15+, XcodeGen
+- **Persistenz:** Keychain (Credentials + Robot-Config) + UserDefaults (UUID-Index) + FileManager (Map Cache)
+- **Tests:** 143 Unit-Tests (ViewModel, API, MapGeometry, UpdateService, SSE, MapCache)
+- **Version:** v3.0.0, Xcode 15+, XcodeGen
 - **Lokalisierung:** Deutsch, Englisch, Französisch
 - **Robot:** Primär getestet mit Roborock S5 Max
 
@@ -189,7 +207,7 @@ Die App ermöglicht Raumauswahl per Tap auf die Raumfläche (nicht nur Labels), 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
 | Keine externen Dependencies | Weniger Wartung, kein Supply-Chain-Risiko | -- Pending |
-| UserDefaults statt CoreData | Einfachheit, kleine Datenmengen | -- Revisit (Credentials sollten in Keychain) |
+| Keychain für Robot-Config | Credentials + Config verschlüsselt, UUID-Index in UserDefaults | ✓ Good (v3.0.0) |
 | Actor-basierte API | Thread-Safety bei concurrent requests | -- Good |
 | XcodeGen | Merge-Konflikt-freie Projektkonfiguration | -- Good |
 
@@ -211,4 +229,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 — Milestone v2.2.0 started*
+*Last updated: 2026-04-05 — after v3.0.0 milestone*
