@@ -252,10 +252,21 @@ class RobotManager {
             attributes: attrs,
             info: existingInfo
         )
-        let robotName = getRobotName(for: id)
-        checkStateChanges(robotName: robotName, previous: previousStates[id], current: newStatus)
-        previousStates[id] = robotStates[id]
-        robotStates[id] = newStatus
+
+        // Only update if status actually changed — avoids triggering @Observable
+        // change notifications on every SSE event (which causes re-render storms)
+        let oldStatus = robotStates[id]
+        let statusChanged = oldStatus?.statusValue != newStatus.statusValue
+            || oldStatus?.batteryLevel != newStatus.batteryLevel
+            || oldStatus?.batteryStatus != newStatus.batteryStatus
+            || oldStatus?.isOnline != newStatus.isOnline
+
+        if statusChanged {
+            let robotName = getRobotName(for: id)
+            checkStateChanges(robotName: robotName, previous: previousStates[id], current: newStatus)
+            previousStates[id] = robotStates[id]
+            robotStates[id] = newStatus
+        }
     }
 
     private func sseConnectionChanged(_ connected: Bool, for id: UUID) {
