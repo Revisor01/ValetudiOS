@@ -192,12 +192,15 @@ struct MapContentView: View {
     @State var currentViewSize: CGSize = .zero
 
     init(robot: RobotConfig, robotManager: RobotManager, isFullscreen: Bool = false) {
+        print(">>> MapContentView.init START")
         self.robot = robot
         self.isFullscreen = isFullscreen
         _viewModel = State(initialValue: MapViewModel(robot: robot, robotManager: robotManager, isFullscreen: isFullscreen))
+        print(">>> MapContentView.init END")
     }
 
     var body: some View {
+        let _ = print(">>> MapContentView.body START")
         VStack(spacing: 0) {
             // Map
             GeometryReader { geometry in
@@ -329,9 +332,13 @@ struct MapContentView: View {
             }
         }
         .task {
+            print(">>> MapContentView.task START")
             viewModel.errorRouter = errorRouter
+            print(">>> MapContentView.task calling loadMap")
             await viewModel.loadMap()
+            print(">>> MapContentView.task loadMap DONE, calling startMapRefresh")
             viewModel.startMapRefresh()
+            print(">>> MapContentView.task END")
         }
         .onDisappear {
             viewModel.stopMapRefresh()
@@ -355,6 +362,7 @@ struct MapView: View {
     let robot: RobotConfig
 
     var body: some View {
+        let _ = print(">>> MapView(sheet).body START")
         NavigationStack {
             MapContentView(robot: robot, robotManager: robotManager, isFullscreen: true)
                 .navigationTitle(String(localized: "map.title"))

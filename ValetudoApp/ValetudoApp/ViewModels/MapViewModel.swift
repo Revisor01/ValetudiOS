@@ -125,7 +125,9 @@ final class MapViewModel {
 
     // MARK: - Data Loading
     func loadMap() async {
+        print(">>> loadMap START")
         guard let api = api else {
+            print(">>> loadMap: no API")
             loadError = "No API available"
             isLoading = false
             return
@@ -133,36 +135,46 @@ final class MapViewModel {
 
         if map == nil { isLoading = true }
 
+        print(">>> loadMap: fetching capabilities")
         do {
             let capabilities = try await api.getCapabilities()
+            print(">>> loadMap: capabilities OK")
             hasZoneCleaning = capabilities.contains("ZoneCleaningCapability")
             hasVirtualRestrictions = capabilities.contains("CombinedVirtualRestrictionsCapability")
             hasGoTo = capabilities.contains("GoToLocationCapability")
             hasSegmentRename = capabilities.contains("MapSegmentRenameCapability")
             hasSegmentEdit = capabilities.contains("MapSegmentEditCapability")
         } catch {
+            print(">>> loadMap: capabilities FAILED")
             logger.warning("loadMap: Capability check failed: \(error.localizedDescription, privacy: .public)")
         }
 
         if hasVirtualRestrictions {
+            print(">>> loadMap: fetching restrictions")
             do {
                 let restrictions = try await api.getVirtualRestrictions()
                 existingRestrictions = restrictions
+                print(">>> loadMap: restrictions OK")
             } catch {
                 logger.error("Virtual restrictions failed: \(error, privacy: .public)")
             }
         }
 
+        print(">>> loadMap: fetching map")
         do {
             let loadedMap = try await api.getMap()
+            print(">>> loadMap: map OK, fetching segments")
             var loadedSegments: [Segment] = []
             do {
                 loadedSegments = try await api.getSegments()
+                print(">>> loadMap: segments OK (\(loadedSegments.count))")
             } catch {
+                print(">>> loadMap: segments FAILED")
                 logger.error("Segments failed: \(error, privacy: .public)")
             }
 
             // Compute heavy caches off main thread (loadMap runs on @MainActor)
+            print(">>> loadMap: starting Task.detached for caches")
             let pxSize = loadedMap.pixelSize ?? 5
             let renderSize = lastRenderSize
             let (pixelSets, segInfos, mapParams) = await Task.detached(priority: .userInitiated) {
@@ -173,6 +185,7 @@ final class MapViewModel {
                     : nil
                 return (ps, si, mp)
             }.value
+            print(">>> loadMap: caches DONE, applying state")
 
             map = loadedMap
             segments = loadedSegments
@@ -185,8 +198,11 @@ final class MapViewModel {
             loadError = nil
             isOffline = false
             isLoading = false
+            print(">>> loadMap: state applied, saving cache")
             await MapCacheService.shared.save(loadedMap, for: robot.id)
+            print(">>> loadMap COMPLETE")
         } catch {
+            print(">>> loadMap: CATCH error: \(error.localizedDescription)")
             // Kein erfolgreicher Load — Cache laden falls vorhanden
             if let cachedMap = await MapCacheService.shared.load(for: robot.id), self.map == nil {
                 self.map = cachedMap
