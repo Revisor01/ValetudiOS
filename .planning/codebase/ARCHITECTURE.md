@@ -4,240 +4,189 @@
 
 ## Pattern Overview
 
-**Overall:** MVVM (Model-View-ViewModel) with Swift Observation framework and actor-based concurrency
+**Overall:** MVVM with SwiftUI + Centralized State Management
 
 **Key Characteristics:**
-- SwiftUI with `@Observable` macro (Swift Observation framework, not legacy `ObservableObject`)
-- `@MainActor` annotation on all ViewModels and managers for thread safety
-- Three primary ViewModels managing distinct domains (Map, RobotDetail, RobotSettings)
-- Actor-based network layer (`ValetudoAPI`) for thread-safe concurrent requests
-- Server-Sent Events (SSE) streaming for real-time robot state updates with auto-reconnect
-- Environment-based dependency injection (`@Environment(RobotManager.self)`)
-- Keychain-backed credential storage for robot authentication
-- Ordered arrays (`[String]`) for room selection to support cleaning order
+- Single source of truth via `RobotManager` (Observable, MainActor-bound)
+- View Models mediate between Views and Services
+- SSE (Server-Sent Events) streaming for real-time updates, with HTTP polling fallback
+- Decentralized network access via `ValetudoAPI` (actor-isolated for thread safety)
+- Environment-based dependency injection for RobotManager and ErrorRouter
 
 ## Layers
 
-**Presentation (Views):**
-- Purpose: SwiftUI views rendering UI state from ViewModels
-- Location: `ValetudoApp/ValetudoApp/Views/`
-- Contains: 20 view files organized by feature; large views split into companion files (e.g., `RobotDetailView.swift` + `RobotDetailSections.swift`)
-- Depends on: ViewModels, Models
-- Used by: SwiftUI scene graph, environment propagation
-- Map views further split: `MapView.swift` (main content + coordinate transforms), `MapInteractiveView.swift` (Canvas rendering), `MapControlBarsView.swift` (bottom toolbar), `MapSheetsView.swift` (modal sheets), `MapMiniMapView.swift` (preview)
+**Presentation Layer (Views):**
+- Purpose: Display UI and handle user interaction
+- Location: `ValetudoApp/Views/`, `ValetudoApp/Views/Settings/`, `ValetudoApp/Views/Detail/`
+- Contains: SwiftUI View structs implementing UI for tabs, robot list, map, settings
+- Depends on: ViewModels, RobotManager (via @Environment), ErrorRouter
+- Used by: ContentView (tab orchestration), Navigation stacks
 
-**ViewModels:**
-- Purpose: State management, user interaction handling, API orchestration
-- Location: `ValetudoApp/ValetudoApp/ViewModels/`
-- Contains: `MapViewModel`, `RobotDetailViewModel`, `RobotSettingsViewModel`
-- Depends on: RobotManager, ValetudoAPI, Models
-- Used by: Views via `@State private var viewModel` initialization
-- Pattern: `@MainActor @Observable final class` with direct property access (no `@Published` needed)
-- All ViewModels receive `robot: RobotConfig` and `robotManager: RobotManager` in init
+**Presentation Logic Layer (ViewModels):**
+- Purpose: Coordinate data binding and business logic for Views
+- Location: `ValetudoApp/ViewModels/`
+- Contains: RobotDetailViewModel, MapViewModel, RobotSettingsViewModel
+- Depends on: RobotManager, ValetudoAPI, Services (UpdateService, etc.)
+- Used by: Detail and Map views via @State initialization
 
-**Services & Managers:**
-- Purpose: Stateful service orchestration and cross-cutting concerns
-- Location: `ValetudoApp/ValetudoApp/Services/`
+**Application State Layer (RobotManager):**
+- Purpose: Centralized state container for robot configurations, statuses, room selections
+- Location: `ValetudoApp/Services/RobotManager.swift`
+- Contains: robot list, robot states (status/battery/cleaning), update availability, room/iteration selections
+- Depends on: ValetudoAPI, SSEConnectionManager, KeychainStore, NotificationService, UpdateService
+- Used by: Views, ViewModels via @Environment(RobotManager.self)
+
+**Network/API Layer:**
+- Purpose: REST API communication and real-time streaming
+- Location: `ValetudoApp/Services/ValetudoAPI.swift`, `ValetudoApp/Services/SSEConnectionManager.swift`
+- Contains: HTTP requests (GET, POST, PUT), JSON parsing, SSL/TLS handling, SSE connection pooling
+- Depends on: URLSession, RobotConfig (configuration data)
+- Used by: RobotManager (refresh polling), ViewModels (imperative actions)
+
+**Service Layer:**
+- Purpose: Cross-cutting concerns and specialized operations
+- Location: `ValetudoApp/Services/`
 - Contains:
-  - `RobotManager` (`@MainActor @Observable class`): Central state holder for all robots, manages API instances, periodic refresh, SSE lifecycle
-  - `ValetudoAPI` (`actor`): Thread-safe network client for Valetudo REST API v2
-  - `SSEConnectionManager` (`actor`): Per-robot SSE connections with exponential backoff reconnect
-  - `NotificationService` (`@MainActor @Observable` singleton): Push notification scheduling and action handling
-  - `BackgroundMonitorService` (singleton): BGAppRefreshTask for background robot polling every 15 minutes
-  - `MapCacheService` (singleton): Disk-based map JSON cache for offline display
-  - `UpdateService` (`@MainActor @Observable`): OTA update lifecycle (check/download/apply/reboot)
-  - `NetworkScanner` / `NWBrowserService`: Device discovery via Bonjour mDNS
-  - `KeychainStore` (struct): Secure credential persistence
-  - `SupportManager` (`@MainActor @Observable` singleton): StoreKit donation/support tracking
+  - `KeychainStore`: Secure password storage
+  - `NotificationService`: Push notifications and local alerts
+  - `UpdateService`: Firmware update orchestration
+  - `BackgroundMonitorService`: Background task scheduling
+  - `MapCacheService`: Map image caching and persistence
+  - `SupportManager`: StoreKit transactions
+- Depends on: RobotManager, ValetudoAPI, System frameworks
+- Used by: RobotManager, ViewModels
 
-**Models:**
-- Purpose: Data structures for API responses, internal state, and UI representation
-- Location: `ValetudoApp/ValetudoApp/Models/`
-- Contains:
-  - `RobotConfig`: Robot connection metadata (host, auth, SSL settings) with custom Codable for backward compat
-  - `RobotState.swift`: `RobotAttribute`, `RobotInfo`, `Segment`, `BasicAction`, request/response structs (~877 lines, largest model file)
-  - `RobotMap.swift`: Map layers with run-length decompression cache (`MapLayerCache` reference type), entities, zones, virtual restrictions
-  - `Timer.swift`: Timer scheduling model (`ValetudoTimer`, `CreateTimerRequest`)
-  - `Consumable.swift`: Consumable wear tracking with computed `remainingPercent`
-- Depends on: None (pure data structures)
-- Used by: Services, ViewModels, Views
-
-**Helpers & Utilities:**
-- Purpose: Cross-cutting utilities and shared UI logic
-- Location: `ValetudoApp/ValetudoApp/Helpers/` and `ValetudoApp/ValetudoApp/Utilities/`
-- Contains:
-  - `ErrorRouter.swift`: Centralized error alert with optional retry action, injected via `@Environment(ErrorRouter.self)`
-  - `DebugConfig.swift`: Single flag `showAllCapabilities` to show all UI sections during development
-  - `PresetHelpers.swift`: Display name and color mapping for preset strings (fan speed, water usage, operation mode)
-  - `Constants.swift`: GitHub API URLs, StoreKit product IDs, external links
-
-**Intents:**
-- Purpose: Siri Shortcuts and AppIntents integration
-- Location: `ValetudoApp/ValetudoApp/Intents/`
-- Contains: `RobotEntity`, `RoomEntity`, `EntityQuery` implementations, `StartCleaningIntent`, `StopCleaningIntent`, etc.
-- Access: Reads `RobotConfig` from UserDefaults independently (not tied to live RobotManager)
+**Data/Model Layer:**
+- Purpose: Data structures and codable representations
+- Location: `ValetudoApp/Models/`
+- Contains: RobotConfig, RobotState, RobotMap, Consumable, Timer, Segment structures
+- Depends on: Foundation only
+- Used by: All layers for serialization/deserialization
 
 ## Data Flow
 
-**App Initialization:**
-1. `AppDelegate.didFinishLaunchingWithOptions` registers BGTask handler and sets up `UNUserNotificationCenter`
-2. `ValetudoApp.body` creates `@State private var robotManager = RobotManager()`
-3. `RobotManager.init()` loads robots from UserDefaults, creates `ValetudoAPI` per robot, starts 5-second refresh loop
-4. `robotManager` injected into views via `.environment(robotManager)`
-5. `ErrorRouter` created as second `@State` and injected similarly
-6. `NotificationService.robotManagerRef` set in `.onAppear` for notification action routing
+**Real-Time Status Updates:**
 
-**Real-Time Updates (SSE):**
-1. `RobotManager.startRefreshing()` loop checks each robot for active SSE
-2. If not active, calls `sseManager.connect(robotId:api:onAttributesUpdate:onConnectionChange:)`
-3. `SSEConnectionManager` spawns Task calling `streamWithReconnect`
-4. Task reads `api.streamStateLines()` -> `/api/v2/robot/state/attributes/sse`
-5. Each `data:` line parsed as `[RobotAttribute]` JSON
-6. `onAttributesUpdate` callback fires on MainActor -> `RobotManager.applyAttributeUpdate()`
-7. `RobotManager.robotStates[id]` updated -> Views re-render via Observation
-8. Connection dropout -> SSE marked inactive -> next refresh loop iteration polls and reconnects
+1. RobotManager.startRefreshing() → connects SSEConnectionManager for each robot
+2. SSEConnectionManager.connect() → opens persistent SSE stream via ValetudoAPI
+3. SSE events arrive → onAttributesUpdate callback → RobotManager.applyAttributeUpdate()
+4. RobotManager updates robotStates[UUID] → @Observable triggers UI refresh
+5. Views re-render via SwiftUI's observation system
 
-**Map Refresh Flow:**
-1. `MapContentView.task` calls `viewModel.loadMap()` then `viewModel.startMapRefresh()`
-2. `loadMap()`: fetches capabilities, virtual restrictions, map data, segments in sequence
-3. `startMapRefresh()`: 2-second polling loop fetching `api.getMap()`
-4. On failure: loads cached map from `MapCacheService`, sets `isOffline = true`
-5. On success: updates `map` property, saves to cache, clears offline flag
+**Fallback Polling (when SSE unavailable):**
 
-**Room Selection & Cleaning (v2.2.0 pattern):**
-1. User taps room on map -> `SpatialTapGesture` in `InteractiveMapView` triggers
-2. `selectedSegmentIds: [String]` (ordered array, not Set) is toggled via `toggleSegment()`
-3. Order of taps determines cleaning order (first tapped = cleaned first)
-4. Bottom bar shows selected rooms with numbered badges indicating order
-5. "Start" sends `api.cleanSegments(ids: selectedSegmentIds, customOrder: true)` preserving order
+1. startRefreshing() polls every 5 seconds → RobotManager.refreshRobot(robotId)
+2. ValetudoAPI.getAttributes() → HTTP GET /api/v0/robot/state
+3. RobotStatus computed from attributes → robotStates[UUID] updated
+4. Same UI refresh as SSE path
+
+**Robot Control Actions:**
+
+1. User taps button → View calls await viewModel.action()
+2. ViewModel calls await robotManager.api.call() or imperative RobotManager method
+3. ValetudoAPI sends REST request (POST /api/v0/robot/action/*)
+4. Response triggers immediate refresh via SSE or next poll cycle
+5. UI updates via robotStates reactive binding
+
+**Room Selection State:**
+
+1. User toggles room in map → MapViewModel.selectedSegmentIds setter triggers
+2. MapViewModel.selectedSegmentIds didSet → robotManager.roomSelections[robotId] = selectedSegmentIds
+3. RobotDetailViewModel reflects change via selectedSegments didSet
+4. State persists in RobotManager for cross-view access
+5. Passed to API when cleaning by room is initiated
 
 **State Management:**
-- `RobotManager` holds authoritative state: `robots: [RobotConfig]`, `robotStates: [UUID: RobotStatus]`, `robotUpdateAvailable: [UUID: Bool]`
-- ViewModels access state via computed properties: `var status: RobotStatus? { robotManager.robotStates[robot.id] }`
-- ViewModels maintain local state for UI-specific concerns (editMode, drawing state, loading flags)
-- Two-way sync: ViewModel reads `robotManager.robotStates`, writes via API calls that trigger `robotManager.refreshRobot()`
-- Persistence: `RobotConfig` array in UserDefaults; passwords in Keychain; map cache in Documents/MapCache/
+
+- Robot list and configs: RobotManager.robots (persisted to UserDefaults via saveRobots/loadRobots)
+- Robot statuses: RobotManager.robotStates (ephemeral, rebuilt from SSE/polling)
+- UI state (selections, sheets): Local @State in Views and ViewModels
+- Sensitive data (passwords): iOS Keychain via KeychainStore
+- Map cache: MapCacheService filesystem storage
 
 ## Key Abstractions
 
-**ValetudoAPI (actor):**
-- Purpose: All network communication to Valetudo REST API v2
-- Location: `ValetudoApp/ValetudoApp/Services/ValetudoAPI.swift` (815 lines)
-- Pattern: One actor instance per `RobotConfig`, held in `RobotManager.apis[UUID]`
-- Core methods: `request<T>()` (generic GET/PUT/POST), `requestVoid()` (no response body), `streamStateLines()` / `streamMapLines()` (SSE)
-- Thread safety: Actor isolation ensures serial execution of all network operations per robot
-- SSL: Optional self-signed certificate bypass via `SSLSessionDelegate` inner class
-- Auth: HTTP Basic Auth header built from `config.username` + `KeychainStore.password(for: config.id)`
+**RobotManager:**
+- Purpose: Single source of truth for all robot data and multi-robot coordination
+- Examples: `ValetudoApp/Services/RobotManager.swift`
+- Pattern: @Observable class with @MainActor isolation, persistent storage, SSE/polling orchestration
 
-**SSEConnectionManager (actor):**
-- Purpose: Lifecycle management for SSE streaming connections
-- Location: `ValetudoApp/ValetudoApp/Services/SSEConnectionManager.swift`
-- Pattern: Single instance in `RobotManager`, manages per-robot Tasks
-- Thread safety: Actor serializes `connect`/`disconnect`/`isSSEActive` queries
-- Reconnection: Automatic with backoff, cancellation-safe cleanup
+**ValetudoAPI:**
+- Purpose: Encapsulate REST protocol and session management
+- Examples: `ValetudoApp/Services/ValetudoAPI.swift`
+- Pattern: Actor-isolated class for thread safety, supports SSL/self-signed certs, request/response decoding
 
-**RobotManager (@MainActor @Observable):**
-- Purpose: Single source of truth for robot configuration and runtime state
-- Location: `ValetudoApp/ValetudoApp/Services/RobotManager.swift` (359 lines)
-- State: `robots` (config array), `robotStates` (status dict), `robotUpdateAvailable` (update flags)
-- Lifecycle: Loads from UserDefaults on init, re-saves on add/update/remove
-- Refresh: 5-second polling loop; SSE-connected robots skip polling
-- Password migration: Automatic migration from legacy UserDefaults JSON to Keychain on load
-- Dependency injection: Passed to all views/ViewModels via `@Environment(RobotManager.self)`
+**ViewModel Pattern:**
+- Purpose: Bridge Views and RobotManager with local UI state
+- Examples: `ValetudoApp/ViewModels/RobotDetailViewModel.swift`, `MapViewModel.swift`, `RobotSettingsViewModel.swift`
+- Pattern: @Observable @MainActor classes initialized in @State, coordinate capabilities and data loading
 
-**MapViewModel (@MainActor @Observable):**
-- Purpose: Map rendering state, edit modes, room selection, restrictions, go-to presets
-- Location: `ValetudoApp/ValetudoApp/ViewModels/MapViewModel.swift` (500 lines)
-- Edit modes: `MapEditMode` enum (none, zone, noGoArea, noMopArea, virtualWall, goTo, savePreset, roomEdit, splitRoom, deleteRestriction)
-- Room selection: `selectedSegmentIds: [String]` as ordered array for cleaning order support
-- Drawing state: `drawnZones`, `drawnNoGoAreas`, `drawnNoMopAreas`, `drawnVirtualWalls` arrays
-- Preset store: `GoToPresetStore` for named go-to locations
+**ErrorRouter:**
+- Purpose: Global error handling and retry logic
+- Examples: `ValetudoApp/Helpers/ErrorRouter.swift`
+- Pattern: Observable singleton passed via @Environment, alert presentation triggered by currentError state
 
-**RobotDetailViewModel (@MainActor @Observable):**
-- Purpose: Robot control actions, segment cleaning, consumables, events, statistics, update management
-- Location: `ValetudoApp/ValetudoApp/ViewModels/RobotDetailViewModel.swift` (476 lines)
-- Room selection: `selectedSegments: [String]` (ordered array for cleaning order)
-- Update service: Holds optional `UpdateService` instance as single source of truth (STATE-04 pattern)
-- Capability flags: Boolean properties gated by `DebugConfig.showAllCapabilities || capabilities.contains(...)`
-- Live stats: Optional 5-second polling task for active cleaning statistics
-
-**RobotSettingsViewModel (@MainActor @Observable):**
-- Purpose: Robot-specific toggles, presets, map management
-- Location: `ValetudoApp/ValetudoApp/ViewModels/RobotSettingsViewModel.swift` (543 lines)
-- Pattern: Loads all settings in `loadSettings()` with individual do/catch per capability
-- `isInitialLoad` flag prevents onChange handlers from firing during load
-
-**ErrorRouter (@MainActor @Observable):**
-- Purpose: Centralized error alert with optional retry
-- Location: `ValetudoApp/ValetudoApp/Helpers/ErrorRouter.swift`
-- Usage: `errorRouter.show(error, retry: { await action() })`; `.withErrorAlert(router:)` modifier on root views
+**SSEConnectionManager:**
+- Purpose: Manage persistent streaming connections per robot
+- Examples: `ValetudoApp/Services/SSEConnectionManager.swift`
+- Pattern: Actor-isolated pool of concurrent Tasks, reconnection logic, callback-based updates
 
 ## Entry Points
 
-**App Entry:**
-- Location: `ValetudoApp/ValetudoApp/ValetudoApp.swift`
-- Triggers: System app launch
-- Responsibilities: Register BGTask handler, instantiate RobotManager and ErrorRouter, show onboarding or main ContentView
+**Application:**
+- Location: `ValetudoApp/ValetudoApp.swift`
+- Triggers: App launch (UIApplicationDelegate lifecycle)
+- Responsibilities: Initialize AppDelegate for background task registration, create RobotManager, inject environment, route to Onboarding or ContentView
 
-**Tab Navigation:**
-- Location: `ValetudoApp/ValetudoApp/ContentView.swift`
-- Structure: `TabView` with 3 tabs:
-  - Tab 0 (Robots): `NavigationStack` > `RobotListView` > `RobotDetailView`
-  - Tab 1 (Map): `MapTabView` - only visible when a robot is selected via `selectedRobotId`
-  - Tab 2 (Settings): `SettingsView`
-- Robot selection: `selectedRobotId: UUID?` binding shared between `RobotListView` and Map tab
+**Root Content:**
+- Location: `ValetudoApp/ContentView.swift`
+- Triggers: After onboarding completion
+- Responsibilities: Tab bar orchestration (Robots/Map/Settings), robot selection, map tab visibility
 
-**Navigation (Robot Detail):**
-- Location: `ValetudoApp/ValetudoApp/Views/RobotListView.swift`
-- Pattern: `.navigationDestination(item: $navigateToRobot)` pushes `RobotDetailView`
-- `RobotDetailView` contains inline map preview, control buttons, and NavigationLinks to sub-pages:
-  - `RobotSettingsView` (robot-specific settings, Device Info as sub-page)
-  - `ConsumablesView`, `TimersView`, `StatisticsView`, `ManualControlView`, `RoomsManagementView`
+**Robot Detail:**
+- Location: `ValetudoApp/Views/RobotDetailView.swift`
+- Triggers: User selects robot from list
+- Responsibilities: Display robot status, control buttons, room/zone/settings access, update warnings
 
-**Notification Response:**
-- Location: `ValetudoApp/ValetudoApp/ValetudoApp.swift` AppDelegate
-- Triggers: User taps notification action
-- Flow: `AppDelegate.userNotificationCenter(didReceive:)` -> `NotificationService.handleNotificationResponse(actionIdentifier:)` -> dispatches robot action via `robotManagerRef`
-
-**Background Refresh:**
-- Location: `ValetudoApp/ValetudoApp/Services/BackgroundMonitorService.swift`
-- Triggers: iOS BGTaskScheduler every ~15 minutes
-- Responsibilities: Check all robots, send notifications for state changes
+**Map:**
+- Location: `ValetudoApp/Views/MapView.swift`
+- Triggers: User selects Map tab (when robot selected) or opens full map from detail
+- Responsibilities: Interactive map rendering, zone/wall drawing, room editing, GoTo preset management
 
 ## Error Handling
 
-**Strategy:** Per-call try/catch with silent degradation for non-critical features
+**Strategy:** Structured error types with user-facing localization, retry capability via ErrorRouter
 
 **Patterns:**
-- Network errors (`APIError` enum): `invalidURL`, `networkError`, `invalidResponse`, `httpError(Int)`, `decodingError`
-- ViewModel pattern: Each API call wrapped in do/catch; errors logged via `os.Logger`; non-critical failures silently ignored
-- ErrorRouter: Available but used sparingly; most errors are logged and silently degraded (e.g., capability not supported -> hide UI section)
-- Capability detection: Try-catch to detect unsupported capabilities; on failure, set `hasFeature = false` to hide UI
-- SSE errors: Logged, trigger reconnect cycle; polling fallback for robots without active SSE
-- Offline handling: Map falls back to `MapCacheService` disk cache; `isOffline` flag shows banner
+
+- **Network Errors:** APIError enum (invalidURL, networkError, httpError, decodingError) → caught in RobotManager.refreshRobot() → robotStates marked offline → offline UI
+- **Robot Offline:** Network failure → RobotStatus(isOnline: false) → notifyRobotOffline() → push notification
+- **API Validation Failures:** HTTP 4xx/5xx → APIError.httpError(code) → ErrorRouter.show() with user message and optional retry
+- **Decoding Failures:** Malformed JSON → APIError.decodingError() → logged, error shown, robot treated as offline
+- **Capability Loading:** ValetudoAPI.getCapabilities() failures cached for 24hrs → allows UI to gracefully degrade
 
 ## Cross-Cutting Concerns
 
 **Logging:**
-- Framework: `os.Logger` (Apple unified logging)
-- Pattern: Each class/actor/struct creates `Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "ComponentName")`
-- Privacy: Sensitive data marked `.private`, identifiers marked `.public`
+- Approach: os.Logger (Apple's unified logging) with subsystem "com.valetudio" and categories per module
+- Examples: RobotManager, MapViewModel, ValetudoAPI, SSEConnectionManager
+- Access: Console.app with filter (subsystem:com.valetudio) in development
 
 **Validation:**
-- Request payloads built via Codable structs (e.g., `SegmentCleanRequest`, `PresetControlRequest`)
-- Response validation: HTTP status code check (200-299) in `request()` method
-- URL validation: Explicit nil check on `config.baseURL` and `URL(string:relativeTo:)`
+- Approach: Model-level validation in Codable init/CodingKeys
+- Examples: RobotConfig ignores passwords in CodingKeys (passwords stored in Keychain), MapLayer supports both raw and compressed pixels
+- UI validation: ViewModel methods check state before API calls (e.g., selectedSegments not empty for room clean)
 
 **Authentication:**
-- Storage: Passwords in Keychain via `KeychainStore` (never in UserDefaults)
-- Migration: Automatic from legacy UserDefaults JSON to Keychain on `loadRobots()`
-- Transmission: HTTP Basic Auth header in each request (Base64 username:password)
-- SSL: Per-robot `useSSL` and `ignoreCertificateErrors` flags
+- Approach: Optional username/password in RobotConfig, stored separately (username in UserDefaults, password in Keychain)
+- Implementation: URLSession Basic Auth via ValetudoAPI.request() headers
+- SSL/Certs: SSLSessionDelegate allows self-signed certificates when ignoreCertificateErrors = true
 
-**Localization:**
-- Pattern: `String(localized: "key")` throughout all views
-- File: `ValetudoApp/ValetudoApp/Resources/Localizable.xcstrings`
-- Languages: German (de) and English (en)
+**Performance Optimization:**
+- Segment pixel caching: MapLayerCache on MapLayer struct (class reference for mutability in let contexts)
+- Capabilities caching: 24-hour TTL in RobotManager.capabilitiesCache
+- Map re-render prevention: MapViewModel.staticLayerImage pre-renders static layers, Canvas redraws only dynamic elements
+- Selective polling: Only poll robots without active SSE; when activeRobotId set, skip background robots
 
 ---
 

@@ -5,237 +5,240 @@
 ## Naming Patterns
 
 **Files:**
-- PascalCase for all Swift files: `RobotDetailViewModel.swift`, `MapInteractiveView.swift`, `ValetudoAPI.swift`
-- Test files suffix with `Tests`: `TimerTests.swift`, `KeychainStoreTests.swift`, `MapLayerTests.swift`
-- Views named by feature + suffix: `RobotDetailView.swift`, `MapControlBarsView.swift`, `MapSheetsView.swift`
-- Section extraction files use `Sections` suffix: `RobotDetailSections.swift`, `RobotSettingsSections.swift`
+- PascalCase for all Swift files matching their primary type/class name
+  - Example: `RobotDetailViewModel.swift`, `MapGeometry.swift`, `ValetudoAPI.swift`
+- Subdirectories organized by layer (Views, ViewModels, Models, Services, Utilities, Helpers, Intents)
+- Test files match source files with "Tests" suffix
+  - Example: `MapGeometryTests.swift` tests `MapGeometry.swift`
 
 **Functions:**
-- camelCase for all functions: `loadSegments()`, `refreshData()`, `cleanSelectedRooms()`
-- Async functions explicitly marked `async`: `func loadData() async`, `func refreshRobot(_ id: UUID) async`
-- Private helpers use `private func`: `private func loadSegments() async`
-- Test functions: `test{Behavior}` pattern: `testLocalToUtcRoundTrip()`, `testCancelEditModeResetsState()`
-- Factory functions: `make{Type}()` pattern in tests: `makeRobotConfig()`, `makeConsumable(type:subType:value:unit:)`
+- camelCase for function and method names
+- Descriptive names capturing intent and return type
+- Private helper functions prefixed with `private func`
+  - Example: `makeRobotConfig()`, `makeConsumable(type:subType:value:unit:)` in tests
+- Async functions with clear operation names (e.g., `checkForUpdates()`, `startDownload()`, `loadRobots()`)
 
 **Variables:**
-- camelCase for all variables: `segments`, `consumables`, `isLoading`, `fanSpeedPresets`
-- Boolean properties use `is`, `has` prefixes: `isLoading`, `isCleaning`, `hasZoneCleaning`, `hasConsumableWarning`
-- Private backing fields with underscore: `_sseSession`
-- `@ObservationIgnored` for non-reactive private state: `@ObservationIgnored private var refreshTask: Task<Void, Never>?`
-- Collections default to empty: `var segments: [Segment] = []`, `var selectedSegmentIds: [String] = []`
+- camelCase for properties and local variables
+- Clear semantic names avoiding abbreviations
+  - Example: `selectedSegments`, `fanSpeedPresets`, `isLoading`, `hasManualControl`
+- Private properties prefixed with underscore when needed for implementation details
+  - Example: `_sseSession`, `_sessionDelegate`, `_retryCount`
+- Observable properties marked with `@MainActor` when managing UI state
+- Ignore non-observable internal state with `@ObservationIgnored`
 
 **Types:**
-- PascalCase for all types: `RobotDetailViewModel`, `MapEditMode`, `CleaningZone`
-- Enums: PascalCase type name, camelCase cases: `enum MapEditMode { case none, zone, noGoArea }`
-- Error enums: PascalCase with `Error` suffix: `enum APIError: LocalizedError`
-- Request/response types named by purpose: `SegmentCleanRequest`, `EnabledResponse`, `PresetControlRequest`
-- Helper enums as namespaces (caseless): `enum Constants { }`, `enum DebugConfig { }`, `enum PresetHelpers { }`
+- PascalCase for structs, classes, enums, protocols
+  - Example: `RobotConfig`, `MapLayer`, `UpdateService`, `ErrorRouter`
+- Enum cases follow type convention for wrapper types, lowercase for status values
+  - Example: `enum StatusValue: String { case idle, cleaning, paused }`
+  - Example: `enum BasicAction: String, Codable { case start, stop, pause, home }`
+- Extension naming uses extended type + purpose
+  - Example: `extension Consumable { var displayName: String }`
+  - Example: `extension String { var localizedConsumableType: String }`
 
 ## Code Style
 
 **Formatting:**
-- 4-space indentation (Xcode default)
-- Blank line between `// MARK: -` sections
-- Trailing closures for SwiftUI modifiers and single-expression blocks
-- No external linter (SwiftLint/SwiftFormat not used)
+- No explicit formatter configuration found; follows Xcode conventions
+- 4-space indentation (standard Swift)
+- Opening braces on same line for functions/classes
+- Trailing closures for single argument functions
+- Explicit newlines before new logical sections
 
-**Type Preferences:**
-- Structs for data models: `RobotConfig`, `Consumable`, `MapLayer`, `Segment`
-- Classes only when reference semantics needed: `MapLayerCache` (caching), `AppDelegate`
-- `final class` for ViewModels: `final class RobotDetailViewModel`
-- `actor` for thread-safe services: `actor ValetudoAPI`, `actor SSEConnectionManager`
-- `enum` as namespace for static helpers: `enum PresetHelpers`, `enum Constants`
-
-**MARK Sections:**
-Use `// MARK: - SectionName` to organize code within files:
-```swift
-// MARK: - Configuration
-// MARK: - Map Data State
-// MARK: - Capabilities
-// MARK: - Edit Mode State
-// MARK: - Data Loading
-// MARK: - Cleaning Actions
-// MARK: - Persistence
-```
-
-## SwiftUI Patterns
-
-**Observation Framework (Swift 5.9+):**
-- Use `@Observable` macro (NOT `ObservableObject` / `@Published`):
-```swift
-@MainActor
-@Observable
-final class MapViewModel {
-    var map: RobotMap?       // Automatically observed
-    var segments: [Segment] = []
-    @ObservationIgnored private var refreshTask: Task<Void, Never>?
-}
-```
-- Pass via `@Environment`: `.environment(robotManager)` in parent, `@Environment(RobotManager.self) var robotManager` in child
-- Use `@State private var viewModel` in Views to own ViewModel lifecycle:
-```swift
-struct RobotDetailView: View {
-    @State private var viewModel: RobotDetailViewModel
-    init(robot: RobotConfig, robotManager: RobotManager) {
-        _viewModel = State(initialValue: RobotDetailViewModel(robot: robot, robotManager: robotManager))
-    }
-}
-```
-
-**View Composition:**
-- Extract sections into separate files when views exceed ~300 lines: `RobotDetailSections.swift`, `RobotSettingsSections.swift`
-- Sheet views in dedicated file: `MapSheetsView.swift` contains `MapRenameSheet`, `SaveGoToPresetSheet`
-- Control bars extracted: `MapControlBarsView.swift`
-- Use `@ViewBuilder` for conditional subviews:
-```swift
-@ViewBuilder
-private var tapTargetsOverlay: some View {
-    GeometryReader { geometry in
-        // ...
-    }
-}
-```
-
-**Canvas Rendering (Map):**
-- Use SwiftUI `Canvas` for high-performance pixel-based map rendering (not SwiftUI shapes)
-- `SpatialTapGesture` for hit-testing room selection on canvas
-- `GeometryReader` for overlay positioning that needs size context
-- `.overlay { }` blocks for SwiftUI elements layered on Canvas
-
-**Localization:**
-- Use `String(localized:)` for all user-facing strings: `String(localized: "tab.robots")`
-- Interpolation: `String(localized: "rooms.rename_message \(segmentName)")`
-- String catalog: `ValetudoApp/Resources/Localizable.xcstrings`
-- Never use raw strings in UI; all labels must be localized
-
-**Navigation:**
-- `TabView` with `NavigationStack` per tab in `ContentView.swift`
-- `NavigationStack` for drill-down navigation within features
-- `.sheet()` for modal presentations (rename, presets, settings)
-- `.presentationDetents([.medium])` for half-sheet modals
+**Linting:**
+- No `.swiftlint.yml` or linting configuration detected
+- Code relies on Xcode warnings and manual review
+- Project uses Swift 5.9 (set in `project.yml`)
+- Deployment target: iOS 17.0
 
 ## Import Organization
 
 **Order:**
-1. `import Foundation` or `import SwiftUI` (primary framework first)
-2. Other Apple frameworks: `import os`, `import Security`, `import BackgroundTasks`, `import UserNotifications`
-3. No third-party dependencies (zero external packages)
+1. Foundation (system frameworks)
+2. SwiftUI and UI frameworks
+3. Observation/concurrency frameworks
+4. Logging (os)
+5. Custom types and services (no explicit imports, same module)
 
-**Test Imports:**
+**Examples:**
 ```swift
-import XCTest
-@testable import ValetudoApp
+import BackgroundTasks  // System frameworks first
+import SwiftUI          // UI frameworks
+import UserNotifications  // Additional system
+import os              // Logging
+import Observation     // State management
+
+import Foundation      // Codable support
+import Foundation
+import SwiftUI
+import os
+import Observation
 ```
+
+**Path Aliases:**
+- No path aliases configured in project
+- Relative imports within module using `@testable import ValetudoApp`
 
 ## Error Handling
 
-**API Errors:**
-```swift
-enum APIError: LocalizedError {
-    case invalidURL
-    case networkError(Error)
-    case invalidResponse
-    case httpError(Int)
-    case decodingError(Error)
+**Patterns:**
+- Typed error enums extending `LocalizedError` for user-facing errors
+  - Example: `enum APIError: LocalizedError` with `errorDescription` property
+- Throws syntax for functions that may fail
+  - Example: `func request<T: Decodable>(...) async throws -> T`
+- Try-catch for recovery or fallback behavior
+- Guard statements with early returns for preconditions
+  - Example: `guard let baseURL = config.baseURL, let url = URL(...) else { throw APIError.invalidURL }`
+- Error routing through `ErrorRouter` for UI display in `ValetudoApp.swift`
+- Task wrapping with error suppression for non-critical background tasks
+  - Example: `Task { await refreshRobot(config.id) }` without try-catch
 
-    var errorDescription: String? {
-        switch self {
-        case .invalidURL: return "Invalid URL"
-        case .networkError(let error): return error.localizedDescription
-        case .invalidResponse: return "Invalid response"
-        case .httpError(let code): return "HTTP Error: \(code)"
-        case .decodingError(let error): return "Decoding error: \(error.localizedDescription)"
-        }
-    }
+**HTTP Error Handling:**
+```swift
+guard (200...299).contains(httpResponse.statusCode) else {
+    throw APIError.httpError(httpResponse.statusCode)
 }
 ```
 
-**Error Routing (centralized alert):**
-- `ErrorRouter` (`ValetudoApp/Helpers/ErrorRouter.swift`) uses `@Observable` and optional retry action
-- Applied globally: `.withErrorAlert(router: errorRouter)` on root view
-- ViewModels can call `errorRouter.show(error, retry: { ... })`
-
-**ViewModel Error Handling:**
-- `do/catch` blocks with logger output: `logger.error("Failed to load segments: \(error, privacy: .public)")`
-- Non-critical failures silently logged (consumables, stats): `// Silently fail - not all robots support this`
-- Guard early: `guard let api = api else { return }`
-- Use `defer` for loading state cleanup: `defer { isLoading = false }`
-
-**Graceful Degradation:**
-- Offline fallback with map cache: load from `MapCacheService` when API fails
-- Capability-gated features: check `capabilities.contains("...")` before showing UI
-- `DebugConfig.showAllCapabilities` flag to force-show all features during development
+**Decoding Error Handling:**
+```swift
+do {
+    let result = try decoder.decode(T.self, from: data)
+    return result
+} catch {
+    throw APIError.decodingError(error)
+}
+```
 
 ## Logging
 
-**Framework:** `os.Logger` (Apple Unified Logging)
+**Framework:** `os.Logger` (Apple's unified logging system)
 
-**Logger Creation Pattern:**
+**Pattern:**
 ```swift
-private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "MapViewModel")
+private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "ComponentName")
 ```
 
-**Log Levels:**
-- `logger.error()` - failures that affect functionality
-- `logger.warning()` - recoverable issues, offline fallback
-- `logger.debug()` - detailed operational info (API calls, state changes)
-- `logger.info()` - significant events (SSE connect/disconnect)
-
-**Privacy:**
-- Always use `privacy: .public` for error messages: `\(error, privacy: .public)`
-- Use `privacy: .private` for request bodies: `\(bodyString, privacy: .private)`
-- IDs and coordinates use `privacy: .public` for debugging
+**Usage:**
+- Debug logs for request details and state changes
+- logger.debug("Request: \(method) \(url.path, privacy: .public)")
+- Privacy levels: `.public` for URLs, `.private` for sensitive data
+- Logs in:
+  - `ValetudoAPI.swift` - request/response logging
+  - `RobotDetailViewModel.swift` - state changes
+  - View files - lifecycle and user actions
+  - Services (RobotManager, UpdateService) - operational events
 
 ## Comments
 
-**MARK Sections:** Required for organizing code within files (see MARK Sections above)
+**When to Comment:**
+- Explain WHY, not WHAT (code shows what, comments explain intent)
+- Algorithm decisions that aren't obvious
+- Workarounds or hacks with justification
+- Complex coordinate transforms or calculations
+- State machine transitions
 
-**Documentation Comments:**
-- `///` triple-slash for public API and complex logic
-- Document "why" not "what": `/// Cache class for MapLayer pixel decompression. Using a class (reference type) allows caching on structs passed as let in SwiftUI Canvas closures`
-- Inline comments for non-obvious logic: `// API returns 1/0 as Int, handle both Bool and Int`
-- German comments acceptable for developer notes: `// Kein erfolgreicher Load - Cache laden falls vorhanden`
+**Examples from codebase:**
+```swift
+// BGTask-Handler registrieren — MUSS in didFinishLaunchingWithOptions passieren
+BGTaskScheduler.shared.register(...)
+
+// Initiales Scheduling (fuer frische Installationen die noch nie in den Hintergrund gingen)
+BackgroundMonitorService.shared.scheduleBackgroundRefresh()
+
+// completionHandler sofort aufrufen — Task laeuft im Hintergrund
+completionHandler()
+```
+
+**JSDoc/TSDoc:**
+- Not used; Swift prefers doc comments with `///` sparingly
+- Function purposes documented through clear naming and parameter names
+- Complex functions include one-line summary
+  - Example: `/// Converts a screen coordinate (accounting for pinch/pan gesture state) to map canvas coordinates.`
 
 ## Function Design
 
-**Size:** Keep functions focused; extract helpers when logic exceeds ~30 lines
+**Size:** 
+- Most functions 10-40 lines
+- Private helpers kept compact (3-15 lines)
+- Async functions may be longer due to state management
+- Example: `calculateMapParams()` is 30 lines with clear sections
 
 **Parameters:**
-- Guard early with `guard let`: `guard let api = api else { return }`
-- Use default parameters: `func cleanSegments(ids: [String], iterations: Int = 1, customOrder: Bool = false)`
-- Tuples for grouped returns: `(hour: Int, minute: Int)`
+- Named parameters for clarity over positional
+- Default values for optional parameters (e.g., `padding: CGFloat = 20`)
+- No parameter abbreviations; full descriptive names
+- Private helper functions accept minimal parameters
+  - Example: `makeConsumable(type:subType:value:unit:)` factory function
 
-**Async Patterns:**
-- `async let` for parallel loading:
-```swift
-async let segmentsTask: () = loadSegments()
-async let consumablesTask: () = loadConsumables()
-_ = await (segmentsTask, consumablesTask)
-```
-- `Task { }` for fire-and-forget side effects
-- `Task.sleep(for: .seconds(N))` for polling intervals
-- Cancel management: store `Task` reference, call `.cancel()` in cleanup
-
-**Ordered Collections:**
-- Use `[String]` arrays (not `Set`) when order matters (room cleaning order)
-- `selectedSegmentIds: [String]` preserves selection order
-- Append-based selection: `selectedSegmentIds.append(id)` to track order
+**Return Values:**
+- Explicit return types for public functions
+- Single responsibility: one main output per function
+- Optional returns (`-> T?`) for operations that may fail gracefully
+- Typed errors for operations that must fail (async throws)
+- Void return for state mutations (e.g., `func addRobot(_:)`, `func clearRoomSelection(for:)`)
 
 ## Module Design
 
-**Access Control:**
-- Default internal visibility (no explicit `internal` keyword)
-- `private` for implementation details
-- `fileprivate` for file-scoped helpers: `fileprivate func computeDecompressedPixels()`
-- `private(set)` for read-only published state: `private(set) var updateService: UpdateService?`
-- `final` on all ViewModels to prevent subclassing
+**Exports:**
+- No explicit public/private declarations in main module (single app target)
+- Test target uses `@testable import ValetudoApp` for private access
+- All public types defined at file scope, no nested types except helpers
 
-**Dependency Injection:**
-- ViewModels accept dependencies via `init`: `init(robot: RobotConfig, robotManager: RobotManager)`
-- Services use singleton pattern: `NotificationService.shared`, `MapCacheService.shared`, `BackgroundMonitorService.shared`
-- `RobotManager` is the central state holder, passed via `@Environment`
+**Barrel Files:**
+- No barrel files or index patterns found
+- Each file exports one primary type plus related helpers
+  - Example: `RobotState.swift` exports 60+ related types in MARK sections
 
-**No Barrel Files:** Each type is imported directly via `@testable import ValetudoApp`
+**Organization Within Files:**
+- MARK comments divide logical sections
+- Hierarchical structure: main type first, then helpers, then extensions
+- Example structure from `RobotState.swift`:
+  ```swift
+  // MARK: - Robot Info
+  struct RobotInfo: Codable { ... }
+  
+  // MARK: - Robot State
+  struct RobotStateResponse: Codable { ... }
+  
+  // MARK: - Attributes
+  struct RobotAttribute: Codable { ... }
+  ```
+
+**Observation Pattern:**
+- Classes managing state use `@Observable` macro from Observation framework
+- Combine with `@MainActor` for thread-safe UI updates
+  - Example: `@MainActor @Observable final class RobotDetailViewModel`
+- Observable properties automatically notify SwiftUI of changes
+- Non-observable properties marked with `@ObservationIgnored` for implementation details
+  - Example: `@ObservationIgnored private var statsPollingTask: Task<Void, Never>?`
+
+## Memory and Resource Management
+
+**Property Observers:**
+- Use `didSet` for side effects when properties change
+  - Example: `var selectedSegments: [String] = [] { didSet { robotManager.roomSelections[robot.id] = selectedSegments } }`
+  - Example: `var activeRobotId: UUID? { didSet { if oldValue != activeRobotId { restartRefreshing() } } }`
+- Explicit state synchronization between ViewModels and central RobotManager
+
+**Task Lifecycle:**
+- Long-running tasks stored in properties for cancellation
+  - Example: `@ObservationIgnored private var refreshTask: Task<Void, Never>?`
+- Cleanup in `deinit`: `deinit { refreshTask?.cancel() }`
+- Background Tasks managed through AppDelegate with BGTaskScheduler
+
+## String Handling
+
+**Localization:**
+- All user-facing strings use `String(localized: "key.name")`
+- Localization keys follow dot notation: `status.idle`, `consumable.brush`, `settings.auto_empty_interval`
+- No hardcoded English strings in production code
+
+**String Manipulation:**
+- `.lowercased()` for case-insensitive comparison
+- `.trimmingCharacters(in: .whitespaces)` for input validation
+- `.replacingOccurrences(of:with:)` for formatting (e.g., underscore to space)
 
 ---
 

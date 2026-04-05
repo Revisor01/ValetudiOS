@@ -5,268 +5,273 @@
 ## Directory Layout
 
 ```
-valetudo-app/
-├── .planning/                             # GSD planning documents
-│   └── codebase/                          # Architecture analysis docs
-├── AppStoreMetadata/                      # App Store screenshots & metadata
+ValetudoApp/
 ├── ValetudoApp/
-│   ├── ValetudoApp.xcodeproj/             # Xcode project config
-│   │   └── xcshareddata/xcschemes/        # Shared build schemes
-│   ├── ValetudoApp/                       # Main source code
-│   │   ├── ValetudoApp.swift              # @main App entry, AppDelegate
-│   │   ├── ContentView.swift              # Root TabView (Robots, Map, Settings)
-│   │   ├── Helpers/                       # Cross-cutting utilities
-│   │   │   ├── DebugConfig.swift          # Debug feature flags
-│   │   │   ├── ErrorRouter.swift          # Centralized error alert + retry
-│   │   │   └── PresetHelpers.swift        # Preset display name/color mapping
-│   │   ├── Intents/                       # Siri Shortcuts
-│   │   │   └── RobotIntents.swift         # AppIntents entities & actions
-│   │   ├── Media.xcassets/                # App icons & images
-│   │   │   └── AppIcon.appiconset/
-│   │   ├── Models/                        # Data structures
-│   │   │   ├── Consumable.swift           # Consumable wear tracking
-│   │   │   ├── RobotConfig.swift          # Robot connection config
-│   │   │   ├── RobotMap.swift             # Map layers, entities, zones
-│   │   │   ├── RobotState.swift           # Attributes, segments, requests
-│   │   │   └── Timer.swift                # Timer scheduling model
-│   │   ├── Resources/                     # Localization & fonts
-│   │   │   ├── Fonts/                     # Custom font files
-│   │   │   └── Localizable.xcstrings      # String catalog (de + en)
-│   │   ├── Services/                      # Business logic & network
-│   │   │   ├── BackgroundMonitorService.swift  # BGTask background polling
-│   │   │   ├── KeychainStore.swift        # Secure credential storage
-│   │   │   ├── MapCacheService.swift       # Disk-based map JSON cache
-│   │   │   ├── NetworkScanner.swift        # Bonjour TCP scanner
-│   │   │   ├── NotificationService.swift   # Push notification lifecycle
-│   │   │   ├── NWBrowserService.swift      # Network.framework browser
-│   │   │   ├── RobotManager.swift          # Central app state holder
-│   │   │   ├── SSEConnectionManager.swift  # SSE streaming + reconnect
-│   │   │   ├── SupportManager.swift        # StoreKit donation tracking
-│   │   │   ├── UpdateService.swift         # OTA update lifecycle
-│   │   │   └── ValetudoAPI.swift           # REST API client (actor)
-│   │   ├── Utilities/                     # Constants & shared values
-│   │   │   └── Constants.swift            # URLs, StoreKit product IDs
-│   │   ├── ViewModels/                    # State management per feature
-│   │   │   ├── MapViewModel.swift         # Map editing, rooms, restrictions
-│   │   │   ├── RobotDetailViewModel.swift # Controls, segments, stats
-│   │   │   └── RobotSettingsViewModel.swift # Robot-specific toggles
-│   │   └── Views/                         # SwiftUI view components
-│   │       ├── AddRobotView.swift         # Robot setup (manual + discovery)
-│   │       ├── ConsumablesView.swift      # Consumable status & reset
-│   │       ├── DoNotDisturbView.swift     # DND schedule config
-│   │       ├── IntensityControlView.swift # Fan speed + water usage
-│   │       ├── ManualControlView.swift    # Joystick movement control
-│   │       ├── MapControlBarsView.swift   # Map bottom toolbar buttons
-│   │       ├── MapInteractiveView.swift   # Canvas-based map rendering
-│   │       ├── MapMiniMapView.swift       # Map preview (detail page)
-│   │       ├── MapSheetsView.swift        # Map modal sheets (rename, preset)
-│   │       ├── MapView.swift              # Map content + coordinate transforms
-│   │       ├── ObstaclePhotoView.swift    # Obstacle image gallery
-│   │       ├── OnboardingView.swift       # First-launch welcome flow
-│   │       ├── RobotDetailSections.swift  # Reusable detail UI components
-│   │       ├── RobotDetailView.swift      # Single robot control panel
-│   │       ├── RobotListView.swift        # Robot list with navigation
-│   │       ├── RobotSettingsSections.swift # Settings section components
-│   │       ├── RobotSettingsView.swift    # Per-robot configuration
-│   │       ├── RoomsManagementView.swift  # Room rename, join, split, material
-│   │       ├── SettingsView.swift         # App-level settings
-│   │       ├── StatisticsView.swift       # Cleaning statistics
-│   │       ├── SupportReminderView.swift  # Periodic support prompt
-│   │       ├── SupportView.swift          # Donation/support UI
-│   │       └── TimersView.swift           # Timer scheduling
-│   └── ValetudoAppTests/                  # Unit tests
-│       ├── ConsumableTests.swift
-│       ├── KeychainStoreTests.swift
-│       ├── MapLayerTests.swift
-│       ├── MapViewModelTests.swift
-│       ├── RobotDetailViewModelTests.swift
-│       ├── RobotSettingsViewModelTests.swift
-│       ├── TimerTests.swift
-│       └── ValetudoAPITests.swift
-├── AppIcon.png                            # Source app icon
-├── LICENSE
-└── README.md
+│   ├── ValetudoApp.swift              # App entry point, AppDelegate
+│   ├── ContentView.swift              # Root view (tab bar)
+│   ├── Helpers/                       # Utilities and routing
+│   │   ├── ErrorRouter.swift          # Global error handling
+│   │   ├── DebugConfig.swift          # Debug feature flags
+│   │   └── PresetHelpers.swift        # GoTo preset helpers
+│   ├── Intents/                       # Siri Shortcuts
+│   │   └── RobotIntents.swift
+│   ├── Models/                        # Data structures
+│   │   ├── RobotConfig.swift
+│   │   ├── RobotState.swift
+│   │   ├── RobotMap.swift
+│   │   ├── Consumable.swift
+│   │   └── Timer.swift
+│   ├── Services/                      # Core business logic
+│   │   ├── RobotManager.swift         # Central state container
+│   │   ├── ValetudoAPI.swift          # REST API client
+│   │   ├── SSEConnectionManager.swift # Real-time streaming
+│   │   ├── KeychainStore.swift        # Secure storage
+│   │   ├── NotificationService.swift  # Push/local notifications
+│   │   ├── UpdateService.swift        # Firmware updates
+│   │   ├── BackgroundMonitorService.swift
+│   │   ├── MapCacheService.swift
+│   │   ├── SupportManager.swift       # StoreKit
+│   │   ├── NetworkScanner.swift       # MDns discovery
+│   │   └── NWBrowserService.swift     # Network browsing
+│   ├── Utilities/                     # Helpers
+│   │   ├── Constants.swift
+│   │   └── MapGeometry.swift          # Coordinate math
+│   ├── ViewModels/                    # Presentation logic
+│   │   ├── RobotDetailViewModel.swift
+│   │   ├── MapViewModel.swift
+│   │   └── RobotSettingsViewModel.swift
+│   ├── Views/                         # UI components
+│   │   ├── RobotListView.swift
+│   │   ├── RobotDetailView.swift
+│   │   ├── AddRobotView.swift
+│   │   ├── MapView.swift              # Map container
+│   │   ├── MapInteractiveView.swift   # Interactive map
+│   │   ├── MapDrawingOverlay.swift    # Zone/wall drawing
+│   │   ├── MapMiniMapView.swift
+│   │   ├── MapControlBarsView.swift   # Map controls
+│   │   ├── MapOverlayViews.swift
+│   │   ├── MapSheetsView.swift
+│   │   ├── RoomsManagementView.swift  # Room editing
+│   │   ├── ConsumablesView.swift
+│   │   ├── SettingsView.swift
+│   │   ├── RobotSettingsView.swift
+│   │   ├── TimersView.swift
+│   │   ├── DoNotDisturbView.swift
+│   │   ├── StatisticsView.swift
+│   │   ├── ManualControlView.swift
+│   │   ├── IntensityControlView.swift
+│   │   ├── OnboardingView.swift
+│   │   ├── SupportView.swift
+│   │   ├── SupportReminderView.swift
+│   │   ├── ObstaclePhotoView.swift
+│   │   ├── RobotDetailSections.swift  # Composed sections
+│   │   ├── Detail/                    # Detail page sections
+│   │   │   ├── RobotStatusHeaderView.swift
+│   │   │   ├── RobotControlSectionView.swift
+│   │   │   ├── CleanRouteSectionView.swift
+│   │   │   ├── RoomsSectionView.swift
+│   │   │   ├── ConsumablesPreviewSectionView.swift
+│   │   │   ├── EventsSectionView.swift
+│   │   │   ├── ObstaclesSectionView.swift
+│   │   │   ├── StatisticsSectionView.swift
+│   │   │   ├── LiveStatsChipView.swift
+│   │   │   ├── AttachmentChipsView.swift
+│   │   │   ├── UpdateStatusBannerView.swift
+│   │   │   └── UpdateOverlayView.swift
+│   │   └── Settings/                  # Settings subviews
+│   │       ├── WifiSettingsView.swift
+│   │       ├── MQTTSettingsView.swift
+│   │       ├── StationSettingsView.swift
+│   │       ├── AutoEmptyDockSettingsView.swift
+│   │       ├── NTPSettingsView.swift
+│   │       └── QuirksView.swift
+│   ├── Resources/
+│   │   └── Fonts/
+│   ├── Media.xcassets                 # Images, icons
+│   ├── Info.plist
+│   └── ValetudoApp.xcodeproj/
+├── ValetudoAppTests/                  # Unit tests
+├── build/                             # Xcode build artifacts
+└── README.md                          # Project documentation
 ```
 
 ## Directory Purposes
 
-**Views/ (20 files, ~7500 lines):**
-- Purpose: SwiftUI view components rendering current state
-- Contains: `@State` properties, navigation, layout, user interaction handling
-- Key files: `RobotDetailView.swift` (1208 lines), `MapView.swift` (878 lines), `MapInteractiveView.swift` (710 lines)
-- Pattern: Views receive dependencies via environment or init parameters; no direct API calls
-- Split pattern: Large views have companion `*Sections.swift` files for reusable components
-- Map view family: `MapView.swift` (main container + gestures), `MapInteractiveView.swift` (Canvas pixel rendering), `MapControlBarsView.swift` (toolbar), `MapSheetsView.swift` (modals), `MapMiniMapView.swift` (preview)
+**ValetudoApp/:**
+- Purpose: Main application source code
+- Contains: Swift source files, assets, localization strings
+- Key files: `ValetudoApp.swift` (entry point), `ContentView.swift` (root UI), `RobotManager.swift` (state)
 
-**ViewModels/ (3 files, ~1519 lines):**
-- Purpose: State management and API orchestration for complex views
-- Contains: `@Observable` properties, async methods calling API, capability detection
-- Key files: `RobotSettingsViewModel.swift` (543 lines), `MapViewModel.swift` (500 lines), `RobotDetailViewModel.swift` (476 lines)
-- Pattern: `@MainActor @Observable final class` receiving `robot: RobotConfig` + `robotManager: RobotManager`
-- API access: `var api: ValetudoAPI? { robotManager.getAPI(for: robot.id) }`
+**Helpers/:**
+- Purpose: Cross-cutting utilities
+- Contains: ErrorRouter (global error handling), DebugConfig (feature flags), PresetHelpers (GoTo logic)
+- Key files: `ErrorRouter.swift` (error presentation), `DebugConfig.swift` (conditional features)
 
-**Models/ (5 files, ~1207 lines):**
-- Purpose: Decodable data structures mirroring API responses
-- Contains: Codable structs, enums, request/response types
-- Key files: `RobotState.swift` (877 lines - all attribute types, request structs, enums), `RobotMap.swift` (165 lines)
-- `RobotState.swift` contains: `RobotAttribute`, `RobotInfo`, `Segment`, `BasicAction`, `SegmentCleanRequest`, `GoToRequest`, zone/restriction types, statistics, MQTT/NTP config, WiFi status, quirks, events, and more
-- Caching: `MapLayerCache` (reference type) for run-length decompression memoization
+**Intents/:**
+- Purpose: Siri Shortcuts integration
+- Contains: AppIntents for voice control
+- Key files: `RobotIntents.swift`
 
-**Services/ (11 files, ~2879 lines):**
-- Purpose: Core business logic, network I/O, system integration
-- Key files: `ValetudoAPI.swift` (815 lines), `RobotManager.swift` (359 lines), `UpdateService.swift` (264 lines)
-- Concurrency: `ValetudoAPI` and `SSEConnectionManager` are actors; `RobotManager`, `NotificationService`, `UpdateService`, `SupportManager` are `@MainActor @Observable`
-- Singletons: `NotificationService.shared`, `BackgroundMonitorService.shared`, `MapCacheService.shared`, `SupportManager.shared`
+**Models/:**
+- Purpose: Data structures and Codable types
+- Contains: RobotConfig, RobotState, RobotMap, Consumable, Timer
+- Key files: All are direct representations of Valetudo API responses
 
-**Helpers/ (3 files):**
-- Purpose: Cross-cutting utilities and shared logic
-- `ErrorRouter.swift`: Error alert + retry; injected via `@Environment(ErrorRouter.self)`
-- `DebugConfig.swift`: Single `showAllCapabilities` flag to show all UI sections during development
-- `PresetHelpers.swift`: `PresetHelpers` and `OperationModeHelpers` enums for display name/icon/color mapping
+**Services/:**
+- Purpose: Business logic and system integration
+- Contains: 12 service classes handling API, state, notifications, storage
+- Key files:
+  - `RobotManager.swift` — Single source of truth for robot data
+  - `ValetudoAPI.swift` — REST client with SSL/auth support
+  - `SSEConnectionManager.swift` — Streaming connection pool
+  - `KeychainStore.swift` — Secure credential storage
+  - `NotificationService.swift` — Push notifications and state change alerts
+  - `UpdateService.swift` — Firmware update orchestration
 
-**Utilities/ (1 file):**
-- Purpose: App-wide constants
-- `Constants.swift`: GitHub API URL, Valetudo website URL, app GitHub URL, StoreKit product IDs
+**Utilities/:**
+- Purpose: Reusable helper functions
+- Contains: Constants, map coordinate math
+- Key files: `MapGeometry.swift` (pixel-to-coordinate conversion), `Constants.swift` (URLs, StoreKit IDs)
 
-**Intents/ (1 file):**
-- Purpose: Siri Shortcuts and App Intents
-- `RobotIntents.swift` (314 lines): `RobotEntity`, `RoomEntity`, entity queries, `StartCleaningIntent`, `StopCleaningIntent`, `PauseCleaningIntent`, `ReturnToHomeIntent`, `CleanRoomIntent`
+**ViewModels/:**
+- Purpose: Presentation logic and data binding
+- Contains: 3 main observable view models
+- Key files:
+  - `RobotDetailViewModel.swift` — Detail page state and actions
+  - `MapViewModel.swift` — Map rendering and interaction state
+  - `RobotSettingsViewModel.swift` — Settings form state
 
-**Resources/:**
-- `Localizable.xcstrings`: String catalog with German (de) and English (en) translations
-- `Fonts/`: Custom font files
+**Views/:**
+- Purpose: UI components
+- Contains: 60+ SwiftUI View structs organized by feature
+- Key files:
+  - Top-level: RobotListView, RobotDetailView, AddRobotView, MapView
+  - Detail/: Reusable sections for RobotDetailView
+  - Settings/: Robot-specific settings screens
+
+**Media.xcassets/:**
+- Purpose: App icons and assets
+- Contains: AppIcon set, any image assets
 
 ## Key File Locations
 
 **Entry Points:**
-- `ValetudoApp/ValetudoApp/ValetudoApp.swift`: `@main` App struct, AppDelegate, BGTask registration, scene setup
-- `ValetudoApp/ValetudoApp/ContentView.swift`: Root `TabView` with 3 tabs (Robots, Map, Settings)
+- `ValetudoApp/ValetudoApp.swift`: App launch, AppDelegate for background tasks
+- `ValetudoApp/ContentView.swift`: Tab bar root view
 
 **Configuration:**
-- `ValetudoApp/ValetudoApp/Models/RobotConfig.swift`: Robot connection metadata (host, username, SSL, ignoreCertErrors)
-- `ValetudoApp/ValetudoApp/Helpers/DebugConfig.swift`: Feature flag `showAllCapabilities`
-- `ValetudoApp/ValetudoApp/Utilities/Constants.swift`: App-wide constants (URLs, product IDs)
-- `ValetudoApp/ValetudoApp/Resources/Localizable.xcstrings`: All user-facing strings
+- `ValetudoApp/Models/RobotConfig.swift`: Robot connection details (URL, auth, SSL)
+- `ValetudoApp/Utilities/Constants.swift`: GitHub API URLs, StoreKit product IDs
 
 **Core Logic:**
-- `ValetudoApp/ValetudoApp/Services/RobotManager.swift`: Authoritative state for robots, status, APIs
-- `ValetudoApp/ValetudoApp/Services/ValetudoAPI.swift`: REST + SSE client (actor)
-- `ValetudoApp/ValetudoApp/Services/SSEConnectionManager.swift`: SSE lifecycle with reconnect
-- `ValetudoApp/ValetudoApp/ViewModels/MapViewModel.swift`: Map editing, room selection, restrictions
+- `ValetudoApp/Services/RobotManager.swift`: Central state, SSE/polling orchestration, robot lifecycle
+- `ValetudoApp/Services/ValetudoAPI.swift`: REST client, JSON parsing, SSL/auth handling
+- `ValetudoApp/Services/SSEConnectionManager.swift`: Real-time event streaming per robot
 
-**Map Rendering Pipeline:**
-- `ValetudoApp/ValetudoApp/Views/MapView.swift`: `MapContentView` (coordinate transforms, gesture handling, drawing overlay), `MapTabView`, `MapPreviewView`, `MapView` (sheet)
-- `ValetudoApp/ValetudoApp/Views/MapInteractiveView.swift`: `InteractiveMapView` (Canvas-based pixel rendering, room tap with SpatialTapGesture, labels, order badges)
-- `ValetudoApp/ValetudoApp/Views/MapControlBarsView.swift`: Bottom toolbar buttons for map actions
-- `ValetudoApp/ValetudoApp/Views/MapSheetsView.swift`: Modal sheets (rename room, save preset, manage presets)
-- `ValetudoApp/ValetudoApp/Views/MapMiniMapView.swift`: Small preview map used in detail view
-
-**Robot Detail Page:**
-- `ValetudoApp/ValetudoApp/Views/RobotDetailView.swift`: Main detail page (update banner, map preview, controls, rooms, stats)
-- `ValetudoApp/ValetudoApp/Views/RobotDetailSections.swift`: Reusable components (`ControlButton`, `PulseAnimation`, `RobotRowView`)
-- `ValetudoApp/ValetudoApp/Views/RobotSettingsView.swift`: Robot settings page (speaker, toggles, map management)
-- `ValetudoApp/ValetudoApp/Views/RobotSettingsSections.swift`: Settings section components (WiFi, quirks, MQTT, NTP, device info)
+**State & Data:**
+- `ValetudoApp/Models/RobotState.swift`: Status attributes (battery, cleaning state, etc.)
+- `ValetudoApp/Models/RobotMap.swift`: Map layers, segments, pixel decompression
+- `ValetudoApp/Services/MapCacheService.swift`: Map image persistence
 
 **Testing:**
-- `ValetudoApp/ValetudoAppTests/`: 8 test files covering API, ViewModels, models, Keychain
+- `ValetudoAppTests/`: Unit test directory (currently minimal)
 
 ## Naming Conventions
 
 **Files:**
-- Views: PascalCase + "View" suffix (e.g., `RobotListView.swift`, `MapView.swift`)
-- Section companions: PascalCase + "Sections" suffix (e.g., `RobotDetailSections.swift`, `RobotSettingsSections.swift`)
-- ViewModels: PascalCase + "ViewModel" suffix (e.g., `MapViewModel.swift`)
-- Services: PascalCase + "Manager"/"Service" suffix (e.g., `RobotManager.swift`, `UpdateService.swift`)
-- Models: PascalCase, domain-specific (e.g., `RobotConfig.swift`, `RobotState.swift`)
+- View files: `{Feature}View.swift` (e.g., `RobotListView.swift`, `MapView.swift`)
+- ViewModel files: `{Feature}ViewModel.swift` (e.g., `MapViewModel.swift`)
+- Service files: `{Feature}Service.swift` (e.g., `NotificationService.swift`, `UpdateService.swift`)
+- Model files: Singular noun (e.g., `RobotConfig.swift`, `Consumable.swift`)
+- Helper files: Descriptive name (e.g., `ErrorRouter.swift`, `PresetHelpers.swift`)
 
-**Code Identifiers:**
-- Classes/Structs: PascalCase (`RobotManager`, `ValetudoAPI`, `RobotConfig`)
-- Enums: PascalCase (`StatusValue`, `MapEditMode`, `BasicAction`, `UpdatePhase`)
-- Functions/Variables: camelCase (`startCleaning()`, `getRobotName(for:)`)
-- Constants: camelCase in enum namespace (`Constants.githubApiLatestReleaseUrl`)
-- Private backing: underscore prefix (`_sseSession`)
-- Localization keys: dot-separated lowercase (`"status.idle"`, `"map.tap_to_expand"`, `"rooms.rename"`)
+**Directories:**
+- Feature-based (Views/, Services/, Models/, ViewModels/)
+- Nested by feature within Views/ (Detail/, Settings/)
+
+**Code:**
+- Types: PascalCase (RobotManager, ValetudoAPI, ErrorRouter)
+- Variables/parameters: camelCase (selectedRobotId, robotStates, isOnline)
+- Constants: UPPER_CASE (taskIdentifier) or camelCase for enum cases
+- URL paths: Quoted strings with full path (e.g., "/api/v0/robot/state")
 
 ## Where to Add New Code
 
-**New Robot Capability (e.g., new Valetudo feature):**
-1. **Model**: Add request/response structs to `Models/RobotState.swift` (keep all API types in one file)
-2. **API**: Add methods to `Services/ValetudoAPI.swift` following existing pattern:
-   ```swift
-   func getNewFeature() async throws -> NewFeatureResponse {
-       try await request("/robot/capabilities/NewCapability")
-   }
-   func setNewFeature(value: String) async throws {
-       let body = try JSONEncoder().encode(["value": value])
-       try await requestVoid("/robot/capabilities/NewCapability", body: body)
-   }
-   ```
-3. **ViewModel**: Add capability flag + data property to the relevant ViewModel:
-   - Control actions -> `RobotDetailViewModel`
-   - Toggle settings -> `RobotSettingsViewModel`
-   - Map features -> `MapViewModel`
-4. **View**: Add section/row to the relevant view file
-5. **Capability detection**: Add `hasFeature = capabilities.contains("FeatureCapability")` in `loadCapabilities()`
+**New Feature (entire flow):**
+- Primary code: Create View file in `ValetudoApp/Views/{Feature}.swift`
+- ViewModel: `ValetudoApp/ViewModels/{Feature}ViewModel.swift` (if complex state)
+- API endpoints: Add method to `ValetudoApp/Services/ValetudoAPI.swift`
+- Models: Add struct to existing `ValetudoApp/Models/{Entity}.swift` or new file
+- Tests: Create `ValetudoAppTests/{Feature}Tests.swift`
+- Example: New room editing feature
+  - `Views/RoomsManagementView.swift` → `ViewModels/RoomsViewModel.swift` → Add API method to ValetudoAPI → Add data models → Test file
 
-**New View/Screen:**
-1. Create `Views/NewFeatureView.swift` as SwiftUI struct
-2. Accept `robot: RobotConfig` and access `@Environment(RobotManager.self) var robotManager`
-3. If complex state needed, create `ViewModels/NewFeatureViewModel.swift` as `@MainActor @Observable final class`
-4. Wire ViewModel: `@State private var viewModel: NewFeatureViewModel` initialized in `init()`
-5. Use localized strings: `String(localized: "feature.title")`
-6. Add navigation from parent view (NavigationLink in detail page, or new tab)
+**New Component/Module:**
+- Implementation: `ValetudoApp/Views/{ComponentName}.swift` for UI or `ValetudoApp/Services/{ServiceName}.swift` for logic
+- If it's a sub-component of a feature: Create in that feature's directory or use a suffix (e.g., `MapMiniMapView.swift` inside Views/)
+- Example: New control button
+  - Add to `RobotDetailSections.swift` or create `Views/Detail/{ControlName}View.swift`
 
-**New View Component (reusable):**
-1. If for detail page: add to `Views/RobotDetailSections.swift`
-2. If for settings: add to `Views/RobotSettingsSections.swift`
-3. If for map: add to `Views/MapControlBarsView.swift` or create new companion file
+**Utilities:**
+- Shared helpers: `ValetudoApp/Utilities/{HelperName}.swift`
+- Example: Map coordinate conversion function → Add to `MapGeometry.swift`
 
-**New Siri Shortcut:**
-1. Add Intent struct conforming to `AppIntent` in `Intents/RobotIntents.swift`
-2. Implement `perform()` method loading `RobotConfig` from UserDefaults and creating `ValetudoAPI`
-3. Define `ParameterSummary` for Shortcuts UI
+**Settings/Configuration:**
+- App-wide constants: `ValetudoApp/Utilities/Constants.swift`
+- Feature flags: `ValetudoApp/Helpers/DebugConfig.swift`
+- Robot-specific settings: Add property to `RobotConfig` struct
 
-**New Notification Type:**
-1. Add category in `NotificationService.setupCategories()`
-2. Add notification method in `NotificationService` (e.g., `notifyNewEvent(robotName:...)`)
-3. Call from `RobotManager.checkStateChanges()` or relevant polling location
-
-**New Test:**
-- Add test file to `ValetudoApp/ValetudoAppTests/` following pattern `FeatureTests.swift`
-- Test ViewModels by mocking API responses
-- Test models by decoding sample JSON
+**Networking:**
+- REST endpoints: Add method to `ValetudoAPI` as actor-isolated async function
+- Streaming logic: Add to `SSEConnectionManager` (already pooled per robot)
+- Request/response models: Add Codable struct to appropriate `ValetudoApp/Models/{Entity}.swift`
 
 ## Special Directories
 
-**Media.xcassets/:**
-- Purpose: Asset catalog for app icons and images
-- Generated: No (managed by Xcode)
-- Committed: Yes
-
 **build/:**
-- Purpose: Xcode build artifacts
-- Generated: Yes (by Xcode)
+- Purpose: Xcode build output (Debug, Release binaries and metadata)
+- Generated: Yes
 - Committed: No (.gitignore)
 
-**ValetudoApp.xcodeproj/xcshareddata/:**
-- Purpose: Shared build schemes
-- Generated: No (manually configured)
+**Media.xcassets/:**
+- Purpose: Image and icon assets
+- Generated: No (user-created)
 - Committed: Yes
 
-**ValetudoAppTests/:**
-- Purpose: Unit tests (8 test files)
-- Generated: No
-- Committed: Yes
+**ValetudoApp.xcodeproj/:**
+- Purpose: Xcode project metadata (build settings, schemes, workspace)
+- Generated: Partially (some user data like xcschemes)
+- Committed: Xcshareddata (schemes), project.pbxproj; xcuserdata ignored
 
-**AppStoreMetadata/:**
-- Purpose: App Store screenshots and metadata
-- Generated: No
-- Committed: Yes
+## Localization
 
-**.planning/:**
-- Purpose: GSD planning and codebase analysis documents
-- Generated: By Claude Code analysis
-- Committed: Yes
+**Structure:**
+- Strings are defined inline using `String(localized: "key")` syntax
+- Localization files are generated by Xcode and stored in project bundle
+- Supported languages: German (de), English (en)
+- Per-language folders: `build/.../de.lproj/`, `build/.../en.lproj/`
+
+## Dependencies
+
+**SwiftUI Framework:**
+- Uses: @State, @Environment, @Observable, @MainActor
+- Located: Standard Apple framework (iOS 17+)
+
+**Network Framework:**
+- URLSession (standard) for REST and SSE
+- Network framework for mDNS discovery (NWBrowser)
+
+**Local Storage:**
+- UserDefaults for robot list and settings
+- Keychain (via KeychainStore) for passwords
+- FileSystem for map cache (MapCacheService)
+
+**Notifications:**
+- UserNotifications framework for push/local notifications
+- BackgroundTasks for background refresh scheduling
+
+**StoreKit:**
+- Used by SupportManager for in-app purchases
 
 ---
 

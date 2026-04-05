@@ -5,324 +5,58 @@
 ## Test Framework
 
 **Runner:**
-- XCTest (Apple built-in, no external test dependencies)
-- Config: Xcode test target `ValetudoAppTests`
+- XCTest (Apple's native testing framework)
+- Config: `project.yml` defines test target `ValetudoAppTests`
+- iOS unit tests (bundle.unit-test type)
 
 **Assertion Library:**
-- XCTest built-in assertions
+- Native XCTest assertions (XCTAssert, XCTAssertEqual, XCTAssertTrue, XCTAssertNil, etc.)
+- Custom accuracy parameter for floating-point assertions
+  - Example: `XCTAssertEqual(result.scale, expectedScale, accuracy: 0.001)`
 
 **Run Commands:**
 ```bash
-# Run all tests
-xcodebuild test -project ValetudoApp/ValetudoApp.xcodeproj -scheme ValetudoApp -destination 'platform=iOS Simulator,name=iPhone 16'
-
-# Run specific test class
-xcodebuild test -project ValetudoApp/ValetudoApp.xcodeproj -scheme ValetudoApp \
-  -destination 'platform=iOS Simulator,name=iPhone 16' \
-  -only-testing ValetudoAppTests/TimerTests
-
-# Run specific test method
-xcodebuild test -project ValetudoApp/ValetudoApp.xcodeproj -scheme ValetudoApp \
-  -destination 'platform=iOS Simulator,name=iPhone 16' \
-  -only-testing ValetudoAppTests/TimerTests/testLocalToUtcRoundTrip
-
-# In Xcode: Cmd+U (all tests) or click diamond icon per test
+xcodebuild test -scheme ValetudoApp -destination 'platform=iOS Simulator,name=iPhone 16'  # Run all tests
+xcodebuild test -scheme ValetudoApp -only-testing ValetudoAppTests/MapGeometryTests  # Run specific suite
+xcodebuild test -scheme ValetudoApp 2>&1 | grep -E "Test Suite|passed|failed"  # View results
 ```
 
 ## Test File Organization
 
-**Location:** `ValetudoApp/ValetudoAppTests/` (separate from source)
+**Location:**
+- Co-located in separate test target: `ValetudoApp/ValetudoAppTests/`
+- Parallel structure to source: `RobotState.swift` → no test file (data structure), `MapGeometry.swift` → `MapGeometryTests.swift`
+- Test files mirror source organization by concern, not by layer
 
-**Naming:** `{SourceComponent}Tests.swift`
+**Naming:**
+- Test file: `{SourceFileName}Tests.swift`
+- Test class: `final class {SourceFileName}Tests: XCTestCase`
+- Test methods: `func test{Feature}_{Condition}_{ExpectedResult}()`
+  - Example: `testCalculateMapParamsReturnsNilForEmptyLayers()`
+  - Example: `testCheckForUpdates_withApprovalPendingState_transitionsToUpdateAvailable()`
 
 **Structure:**
 ```
-ValetudoApp/ValetudoAppTests/
-    ConsumableTests.swift          # 12 tests - Model: Consumable
-    KeychainStoreTests.swift       #  6 tests - Service: KeychainStore
-    MapLayerTests.swift            #  6 tests - Model: MapLayer decompression
-    MapViewModelTests.swift        #  5 tests - ViewModel: MapViewModel
-    RobotDetailViewModelTests.swift#  7 tests - ViewModel: RobotDetailViewModel
-    RobotSettingsViewModelTests.swift# 4 tests - ViewModel: RobotSettingsViewModel
-    TimerTests.swift               #  5 tests - Model: ValetudoTimer time conversion
-    ValetudoAPITests.swift         # 12 tests - Service: API errors + JSON decoding
+ValetudoAppTests/
+├── ConsumableTests.swift
+├── KeychainStoreTests.swift
+├── MapCacheServiceTests.swift
+├── MapGeometryTests.swift
+├── MapLayerTests.swift
+├── MapViewModelTests.swift
+├── RobotDetailViewModelTests.swift
+├── RobotSettingsViewModelTests.swift
+├── SSEConnectionManagerTests.swift
+├── TimerTests.swift
+├── UpdateServiceTests.swift
+└── ValetudoAPITests.swift
 ```
-
-**Total: 57 tests across 8 files**
 
 ## Test Structure
 
 **Suite Organization:**
-```swift
-import XCTest
-@testable import ValetudoApp
 
-final class ConsumableTests: XCTestCase {
-
-    // MARK: - Helpers
-
-    private func makeConsumable(type: String, subType: String? = nil, value: Int, unit: String) -> Consumable {
-        let remaining = ConsumableRemaining(value: value, unit: unit)
-        return Consumable(__class: nil, type: type, subType: subType, remaining: remaining)
-    }
-
-    // MARK: - remainingPercent
-
-    func testRemainingPercentWithPercentUnit() {
-        let consumable = makeConsumable(type: "brush", subType: "main", value: 75, unit: "percent")
-        XCTAssertEqual(consumable.remainingPercent, 75.0, accuracy: 0.001)
-    }
-
-    // MARK: - iconColor
-
-    func testIconColorGreen() {
-        let consumable = makeConsumable(type: "brush", subType: "main", value: 75, unit: "percent")
-        XCTAssertEqual(consumable.iconColor, .green)
-    }
-}
-```
-
-**Patterns:**
-- `final class` for all test classes (no subclassing)
-- `// MARK: - Helpers` section for factory functions
-- `// MARK: - {Topic}` sections to group related tests
-- Numbered test comments in ViewModel tests: `// MARK: - Test 1: Initialization default values`
-
-## Mocking
-
-**Framework:** None (no external mocking library)
-
-**Current Approach:**
-- Tests focus on pure functions, data models, and computed properties
-- No network mocking - API tests verify JSON decoding only, not HTTP calls
-- Real `KeychainStore` used with cleanup in `tearDown()`
-- ViewModels tested with real `RobotManager()` instances (no API calls triggered)
-
-**What to Mock (not yet implemented):**
-- `ValetudoAPI` is an `actor` - could be abstracted behind a protocol for ViewModel tests
-- `URLSession` for network-level testing (URLProtocol approach)
-- `KeychainStore` via protocol for unit isolation
-
-**What NOT to Mock:**
-- Pure data model calculations (test directly)
-- JSON decoding (test with inline JSON strings)
-- Computed properties on ViewModels (set properties directly, check computed output)
-
-## Fixtures and Factories
-
-**Factory Functions (per test class):**
-
-Model factories create objects directly:
-```swift
-// ConsumableTests.swift
-private func makeConsumable(type: String, subType: String? = nil, value: Int, unit: String) -> Consumable {
-    let remaining = ConsumableRemaining(value: value, unit: unit)
-    return Consumable(__class: nil, type: type, subType: subType, remaining: remaining)
-}
-```
-
-JSON-based factories for complex types:
-```swift
-// RobotDetailViewModelTests.swift
-private func makeAttribute(json: String) throws -> RobotAttribute {
-    let data = json.data(using: .utf8)!
-    return try JSONDecoder().decode(RobotAttribute.self, from: data)
-}
-
-// MapLayerTests.swift
-private func makeLayer(json: String) throws -> MapLayer {
-    let data = json.data(using: .utf8)!
-    return try JSONDecoder().decode(MapLayer.self, from: data)
-}
-```
-
-ViewModel factory (shared across ViewModel tests):
-```swift
-// Used in MapViewModelTests, RobotDetailViewModelTests, RobotSettingsViewModelTests
-private func makeRobotConfig() -> RobotConfig {
-    RobotConfig(
-        id: UUID(),
-        name: "Test Robot",
-        host: UUID().uuidString,  // Random host prevents state collision
-        useSSL: false
-    )
-}
-```
-
-**Inline JSON for Decoding Tests:**
-```swift
-let json = #"{"type":"filter","subType":null,"remaining":{"value":85,"unit":"percent"}}"#
-let data = Data(json.utf8)
-let consumable = try JSONDecoder().decode(Consumable.self, from: data)
-```
-
-**Location:** All factory functions are `private` within each test class. No shared test utilities file.
-
-## Coverage
-
-**Requirements:** None enforced (no coverage thresholds configured)
-
-**View Coverage:**
-```bash
-# Xcode: Product > Test (Cmd+U) then navigate to Report Navigator (Cmd+9)
-```
-
-## Test Types
-
-**Unit Tests (all 57 tests):**
-- Pure model logic: `ConsumableTests`, `TimerTests`, `MapLayerTests`
-- JSON decoding: `ValetudoAPITests` (decoding subset)
-- ViewModel state: `MapViewModelTests`, `RobotDetailViewModelTests`, `RobotSettingsViewModelTests`
-- Secure storage: `KeychainStoreTests`
-
-**Integration Tests:** Not present
-
-**E2E Tests:** Not present
-
-**UI Tests:** Not present (no XCUITest target)
-
-## Common Patterns
-
-**@MainActor Testing (ViewModels):**
-All ViewModel tests require `@MainActor` because ViewModels are `@MainActor`:
-```swift
-@MainActor
-func testInitializationDefaultValues() {
-    let config = makeRobotConfig()
-    let manager = RobotManager()
-    let viewModel = MapViewModel(robot: config, robotManager: manager, isFullscreen: false)
-
-    XCTAssertTrue(viewModel.isLoading)
-    XCTAssertNil(viewModel.map)
-    XCTAssertTrue(viewModel.segments.isEmpty)
-}
-```
-
-**Conditional Skip for Debug Mode:**
-Tests that depend on `DebugConfig.showAllCapabilities` being `false`:
-```swift
-@MainActor
-func testCapabilityFlagsDefaultFalse() {
-    guard !DebugConfig.showAllCapabilities else {
-        return  // Skip in debug mode
-    }
-    let viewModel = RobotDetailViewModel(robot: makeRobotConfig(), robotManager: RobotManager())
-    XCTAssertFalse(viewModel.hasCleanRoute)
-}
-```
-
-**State-Dependent Computed Property Testing:**
-Set ViewModel state directly, then assert computed properties:
-```swift
-@MainActor
-func testStatusCleaningState() throws {
-    let viewModel = RobotDetailViewModel(robot: makeRobotConfig(), robotManager: manager)
-    let cleaningAttr = try makeAttribute(json: """
-    {"__class":"StatusStateAttribute","value":"cleaning","flag":"none"}
-    """)
-    manager.robotStates[config.id] = RobotStatus(isOnline: true, attributes: [cleaningAttr])
-
-    XCTAssertTrue(viewModel.isCleaning)
-    XCTAssertTrue(viewModel.isRunning)
-    XCTAssertFalse(viewModel.isPaused)
-}
-```
-
-**Teardown Cleanup (Side Effects):**
-```swift
-private var testUUIDs: [UUID] = []
-
-override func tearDown() {
-    super.tearDown()
-    for uuid in testUUIDs {
-        KeychainStore.delete(for: uuid)
-    }
-    testUUIDs.removeAll()
-}
-```
-
-**Round-Trip / Property-Based Testing:**
-```swift
-func testLocalToUtcRoundTrip() {
-    let hours = [0, 1, 10, 12, 22, 23]
-    let minutes = [0, 15, 30, 45, 59]
-    for h in hours {
-        for m in minutes {
-            let local = ValetudoTimer.utcToLocal(hour: h, minute: m)
-            let backToUtc = ValetudoTimer.localToUTC(hour: local.hour, minute: local.minute)
-            XCTAssertEqual(backToUtc.hour, h, "Round-trip hour mismatch for \(h):\(m)")
-        }
-    }
-}
-```
-
-**Error Testing:**
-```swift
-func testAPIErrorHTTPErrorDescription() {
-    XCTAssertEqual(APIError.httpError(401).errorDescription, "HTTP Error: 401")
-    XCTAssertEqual(APIError.httpError(500).errorDescription, "HTTP Error: 500")
-}
-```
-
-**Floating-Point Assertions:**
-```swift
-XCTAssertEqual(consumable.remainingPercent, 50.0, accuracy: 0.001)
-```
-
-## Assertion Patterns
-
-Use the following XCTest assertions:
-- `XCTAssertEqual(_:_:)` - strict equality
-- `XCTAssertEqual(_:_:accuracy:)` - floating-point tolerance
-- `XCTAssertTrue(_:_:)` / `XCTAssertFalse(_:)` - boolean
-- `XCTAssertNil(_:_:)` - nil check
-- `XCTAssertGreaterThanOrEqual` / `XCTAssertLessThanOrEqual` / `XCTAssertLessThan` - range validation
-- Always add descriptive messages for loop-based assertions: `"Round-trip hour mismatch for \(h):\(m)"`
-
-## Test Coverage by Source File
-
-| Source File | Test File | Tests | Coverage |
-|---|---|---|---|
-| `Models/Consumable.swift` | `ConsumableTests.swift` | 12 | remainingPercent, iconColor |
-| `Models/Timer.swift` | `TimerTests.swift` | 5 | UTC/local conversion, round-trip, range |
-| `Models/RobotMap.swift` | `MapLayerTests.swift` | 6 | Pixel decompression (RLE) |
-| `Models/RobotState.swift` | `ValetudoAPITests.swift` | 3 | JSON decoding (partial) |
-| `Services/ValetudoAPI.swift` | `ValetudoAPITests.swift` | 9 | Error types, URL construction, decoding |
-| `Services/KeychainStore.swift` | `KeychainStoreTests.swift` | 6 | Save/retrieve/delete/overwrite |
-| `ViewModels/MapViewModel.swift` | `MapViewModelTests.swift` | 5 | Init defaults, capabilities, edit mode |
-| `ViewModels/RobotDetailViewModel.swift` | `RobotDetailViewModelTests.swift` | 7 | Init, capabilities, status, warnings |
-| `ViewModels/RobotSettingsViewModel.swift` | `RobotSettingsViewModelTests.swift` | 4 | Init, capabilities, empty state |
-
-## Test Coverage Gaps
-
-**Untested Source Files (significant):**
-
-| File | Lines | Risk | Priority |
-|---|---|---|---|
-| `Services/RobotManager.swift` | 360 | State lifecycle, SSE fallback, notifications | High |
-| `Services/SSEConnectionManager.swift` | ~150 | Reconnect logic, stream parsing | Medium |
-| `Services/NotificationService.swift` | ~200 | Notification scheduling, categories | Medium |
-| `Services/BackgroundMonitorService.swift` | ~100 | Background refresh scheduling | Low |
-| `Services/MapCacheService.swift` | ~80 | File I/O cache persistence | Medium |
-| `Services/UpdateService.swift` | ~150 | Multi-phase update state machine | Medium |
-| `Services/NetworkScanner.swift` | ~100 | Network discovery | Low |
-| `Services/NWBrowserService.swift` | ~80 | Bonjour discovery | Low |
-| `Intents/RobotIntents.swift` | ~100 | Siri/Shortcuts integration | Low |
-| `Views/*` (24 files) | ~9100 | No UI tests | Low |
-| `Models/RobotConfig.swift` | 44 | baseURL construction (partially tested via API tests) | Low |
-
-**Untested Logic in Tested Files:**
-- `ValetudoAPI`: No tests for actual HTTP requests (only decoding + error types)
-- `MapViewModel`: No tests for `loadMap()`, `cleanSelectedRooms()`, `goToPoint()` (require API mock)
-- `RobotDetailViewModel`: No tests for `loadData()`, `performAction()`, async data loading
-- Room selection order (`selectedSegmentIds` as ordered array) not tested
-
-## Adding New Tests
-
-**New Test File:**
-1. Create: `ValetudoApp/ValetudoAppTests/{Feature}Tests.swift`
-2. Add to Xcode project target `ValetudoAppTests`
-3. Follow this template:
+All test files follow this pattern:
 
 ```swift
 import XCTest
@@ -331,42 +65,284 @@ import XCTest
 final class {Feature}Tests: XCTestCase {
 
     // MARK: - Helpers
-
-    private func makeRobotConfig() -> RobotConfig {
-        RobotConfig(
-            id: UUID(),
-            name: "Test Robot",
-            host: UUID().uuidString,
-            useSSL: false
-        )
+    
+    private func make{Type}(...) -> {Type} {
+        // Factory function for test fixtures
     }
+    
+    // MARK: - {Feature Group 1}
+    
+    func test{Feature1}() { ... }
+    func test{Feature1Variant}() { ... }
+    
+    // MARK: - {Feature Group 2}
+    
+    func test{Feature2}() { ... }
+}
+```
 
-    // MARK: - Tests
+**Patterns:**
 
-    func testSomeBehavior() {
-        // Arrange
-        // Act
-        // Assert
+*Setup:* No explicit setup; tests use factory functions
+- Example: `makeConsumable(type:subType:value:unit:)` in `ConsumableTests.swift`
+- Example: `makeRobotConfig()` in `MapViewModelTests.swift`
+- Factory functions are private and named `make{Type}`
+
+*Teardown:* Not used; XCTest handles cleanup automatically
+
+*Assertion Pattern:* Direct assertions on computed properties
+```swift
+func testRemainingPercentWithPercentUnit() {
+    let consumable = makeConsumable(type: "brush", subType: "main", value: 75, unit: "percent")
+    XCTAssertEqual(consumable.remainingPercent, 75.0, accuracy: 0.001)
+}
+```
+
+*Async Testing:* Tests marked `@MainActor` for ViewModel tests, async functions with `await`
+```swift
+@MainActor
+func testInitializationDefaultValues() {
+    let config = makeRobotConfig()
+    let manager = RobotManager()
+    let viewModel = MapViewModel(robot: config, robotManager: manager, isFullscreen: false)
+    
+    XCTAssertTrue(viewModel.isLoading)
+}
+```
+
+## Mocking
+
+**Framework:** Manual mocking with protocol conformance
+
+**Patterns:**
+
+MockValetudoAPI protocol conformance:
+```swift
+final class MockValetudoAPI: ValetudoAPIProtocol, @unchecked Sendable {
+    var updaterStateToReturn: UpdaterState = ...
+    var versionToReturn: ValetudoVersion = ...
+    var shouldThrowOnCheck = false
+    var getUpdaterStateCallCount = 0
+    var stateSequence: [UpdaterState]? = nil
+    
+    func checkForUpdates() async throws {
+        if shouldThrowOnCheck { throw URLError(.badServerResponse) }
+    }
+    
+    func getUpdaterState() async throws -> UpdaterState {
+        getUpdaterStateCallCount += 1
+        if let seq = stateSequence, getUpdaterStateCallCount <= seq.count {
+            return seq[getUpdaterStateCallCount - 1]
+        }
+        return updaterStateToReturn
     }
 }
 ```
 
-**For ViewModel Tests:**
-- Mark ALL test methods `@MainActor`
-- Create `RobotManager()` for dependency
-- Guard on `DebugConfig.showAllCapabilities` for capability-dependent tests
-- Set state directly on ViewModel/Manager, then assert computed properties
+**What to Mock:**
+- External service dependencies (ValetudoAPI)
+- Network responses with multiple states/sequences
+- Error conditions (throw flags like `shouldThrowOnCheck`)
+- Dependencies injected via constructor
+- Services that depend on actual robot hardware
 
-**For Model Tests:**
-- Use inline JSON with raw string literals: `#"{ ... }"#`
-- Create `make{Type}()` factory functions
-- Test edge cases: zero, boundary, overflow, nil
-- Use `accuracy:` parameter for floating-point comparisons
+**What NOT to Mock:**
+- Pure data structures (Consumable, RobotConfig, etc.)
+- Utility functions (MapGeometry coordinate transforms)
+- View initialization (use real ViewModels with mocked dependencies)
+- Core computation logic (integer arithmetic, string formatting)
 
-**For Service Tests (if adding API mocking):**
-- Extract protocol from `ValetudoAPI` actor
-- Create `MockValetudoAPI` conforming to protocol
-- Inject mock into ViewModel via init
+## Fixtures and Factories
+
+**Test Data:**
+
+Factory pattern for creating test instances:
+
+```swift
+private func makeConsumable(type: String, subType: String? = nil, value: Int, unit: String) -> Consumable {
+    let remaining = ConsumableRemaining(value: value, unit: unit)
+    return Consumable(__class: nil, type: type, subType: subType, remaining: remaining)
+}
+
+private func makeRobotConfig() -> RobotConfig {
+    RobotConfig(
+        id: UUID(),
+        name: "Test Robot",
+        host: UUID().uuidString,
+        useSSL: false
+    )
+}
+
+private func makeLayer(pixels: [Int]) -> MapLayer {
+    let json = #"{"pixels": \#(pixels)}"#
+    let data = json.data(using: .utf8)!
+    return try! JSONDecoder().decode(MapLayer.self, from: data)
+}
+
+private func makeUpdaterState(_ className: String) -> UpdaterState {
+    UpdaterState(
+        __class: className,
+        busy: nil, currentVersion: nil, version: nil,
+        releaseTimestamp: nil, downloadUrl: nil, downloadPath: nil, metaData: nil
+    )
+}
+```
+
+**Location:**
+- Defined in `// MARK: - Helpers` section at top of test file
+- Always private functions
+- No test data files; all data generated in code
+
+## Coverage
+
+**Requirements:** Not enforced; no configuration found
+
+**View Coverage:**
+- Unit tests cover ViewModels and pure utility functions
+- Views not directly tested (rely on integration testing)
+- Example: `MapViewModelTests.swift` tests ViewModel state, not SwiftUI rendering
+
+**Tested Components:**
+- Utility functions: MapGeometry (200 lines of tests)
+- ViewModels: MapViewModel, RobotDetailViewModel, RobotSettingsViewModel
+- Models with complex logic: Consumable (remainingPercent, iconColor)
+- Services: UpdateService (state transitions), MapCacheService
+- Managers: SSEConnectionManager (backoff logic), RobotManager
+- Data models: Timer, MapLayer
+
+**Untested Areas:**
+- View rendering and layout
+- Network requests (mocked)
+- Real robot communication
+- UI interactions (gestures, animations)
+
+## Test Types
+
+**Unit Tests:**
+- Scope: Pure functions and computed properties
+- Approach: Direct assertion on output given input
+- Example: `testCalculateMapParamsReturnsNilForEmptyLayers()`
+- Example: `testRemainingPercentWithPercentUnit()`
+- Execution: Runs in isolation without network/disk I/O
+
+**Integration Tests:**
+- Scope: Service coordination (UpdateService polling, state transitions)
+- Approach: Verify state changes across multiple operations
+- Example: `testStartDownload_fromUpdateAvailable_transitionsToReadyToApply()` uses mock API but tests full flow
+- Example: `testCheckForUpdates_withApprovalPendingState_transitionsToUpdateAvailable()`
+- Execution: May use mocked dependencies but tests full workflows
+
+**E2E Tests:**
+- Framework: Not used
+- Scope: Full robot communication not covered in automated tests
+- Testing approach: Manual testing against real robots
+
+## Common Patterns
+
+**Async Testing:**
+
+No special async test support required; await within test method:
+```swift
+@MainActor
+func testInitializationDefaultValues() {
+    let config = makeRobotConfig()
+    let viewModel = MapViewModel(robot: config, robotManager: manager, isFullscreen: false)
+    // No async/await needed — ViewModel init is synchronous
+}
+```
+
+For async services, use standard async/await:
+```swift
+@MainActor
+func testCheckForUpdates_withApprovalPendingState_transitionsToUpdateAvailable() async throws {
+    let mock = MockValetudoAPI()
+    mock.updaterStateToReturn = makeUpdaterState("ValetudoUpdaterApprovalPendingState")
+    let service = UpdateService(api: mock)
+
+    await service.checkForUpdates()
+
+    XCTAssertEqual(service.phase, .updateAvailable)
+}
+```
+
+**Error Testing:**
+
+Pattern: Set flag, verify error phase:
+```swift
+func testCheckForUpdates_whenAPIThrows_transitionsToError() async throws {
+    let mock = MockValetudoAPI()
+    mock.shouldThrowOnCheck = true
+    let service = UpdateService(api: mock)
+
+    await service.checkForUpdates()
+
+    if case .error = service.phase {
+        // expected
+    } else {
+        XCTFail("Expected error phase, got \(service.phase)")
+    }
+}
+```
+
+Pattern: Verify exception thrown:
+```swift
+func testDecodingInvalidJSON() {
+    let json = "invalid json"
+    let data = json.data(using: .utf8)!
+    
+    XCTAssertThrowsError(try JSONDecoder().decode(RobotConfig.self, from: data)) { error in
+        XCTAssertTrue(error is DecodingError)
+    }
+}
+```
+
+**Boundary Testing:**
+
+Verify edge cases and limits:
+```swift
+func testBackoffCapAt30SecondsForHighRetryCount() {
+    for count in 3...20 {
+        XCTAssertEqual(backoffDelay(retryCount: count), 30.0, "retryCount=\(count) should be capped at 30s")
+    }
+}
+
+func testRemainingPercentCapsAt100() {
+    let consumable = makeConsumable(type: "brush", subType: "main", value: 20000, unit: "minutes")
+    XCTAssertEqual(consumable.remainingPercent, 100.0, accuracy: 0.001)
+}
+```
+
+**Roundtrip Testing:**
+
+Verify inverse operations:
+```swift
+func testScreenToMapAndBackIsIdentity() {
+    let viewSize = CGSize(width: 400, height: 400)
+    let scale = 1.5
+    let offset = CGSize(width: 30, height: -20)
+    let original = CGPoint(x: 150, y: 250)
+
+    let mapCoords = screenToMapCoords(original, scale: scale, offset: offset, viewSize: viewSize)
+    let backToScreen = mapToScreenCoords(mapCoords, scale: scale, offset: offset, viewSize: viewSize)
+
+    XCTAssertEqual(backToScreen.x, original.x, accuracy: 0.001)
+    XCTAssertEqual(backToScreen.y, original.y, accuracy: 0.001)
+}
+```
+
+**Sequence/State Testing:**
+
+Mock returns different values on successive calls:
+```swift
+mock.stateSequence = [
+    makeUpdaterState("ValetudoUpdaterApprovalPendingState"),
+    makeUpdaterState("ValetudoUpdaterApplyPendingState")
+]
+
+// First call gets Approval, second gets Apply
+await service.checkForUpdates()  // Uses first
+await service.startDownload()    // Uses second
+```
 
 ---
 
