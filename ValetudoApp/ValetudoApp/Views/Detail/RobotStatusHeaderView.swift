@@ -65,6 +65,7 @@ struct RobotStatusHeaderView: View {
                         .clipShape(Capsule())
                 }
                 .buttonStyle(.plain)
+                .accessibilityLabel(String(localized: "action.locate"))
             }
 
             // Battery pill (rightmost)
@@ -83,8 +84,11 @@ struct RobotStatusHeaderView: View {
                 .background(batteryColor(level: battery).opacity(0.12))
                 .clipShape(Capsule())
                 .fixedSize(horizontal: true, vertical: false)
+                .accessibilityLabel(String(localized: "battery.level"))
+                .accessibilityValue("\(battery)%")
             }
         }
+        .accessibilityElement(children: .contain)
     }
 
     private func localizedStatus(_ status: String) -> String {
