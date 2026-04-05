@@ -203,8 +203,12 @@ actor SSEConnectionManager {
                 isConnected[robotId] = false
                 onConnectionChange(false)
 
-                // Exponential backoff: 1s → 5s → 30s (capped)
+                // Exponential backoff: 1s → 5s → 30s (max 5 retries then stop)
                 retryCount += 1
+                if retryCount > 5 {
+                    logger.warning("SSE max retries reached for robot \(robotId, privacy: .public) — giving up, falling back to polling only")
+                    break
+                }
                 let delay: Double
                 switch retryCount {
                 case 1:  delay = 1
