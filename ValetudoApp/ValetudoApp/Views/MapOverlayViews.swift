@@ -114,6 +114,7 @@ extension MapContentView {
                         .foregroundStyle(.purple)
                 }
             }
+            .accessibilityLabel(String(localized: "map.delete_virtual_wall"))
             .buttonStyle(.plain)
             .position(screenPos)
         }
@@ -139,6 +140,7 @@ extension MapContentView {
                         .foregroundStyle(.red)
                 }
             }
+            .accessibilityLabel(String(localized: "map.delete_nogo_zone"))
             .buttonStyle(.plain)
             .position(screenPos)
         }
@@ -164,6 +166,7 @@ extension MapContentView {
                         .foregroundStyle(.blue)
                 }
             }
+            .accessibilityLabel(String(localized: "map.delete_nomop_zone"))
             .buttonStyle(.plain)
             .position(screenPos)
         }

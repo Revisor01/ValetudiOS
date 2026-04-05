@@ -314,6 +314,9 @@ struct MapContentView: View {
                         Image(systemName: viewModel.showRoomLabels ? "tag.fill" : "tag")
                             .font(.system(size: 14))
                     }
+                    .accessibilityLabel(viewModel.showRoomLabels
+                        ? String(localized: "map.hide_room_labels")
+                        : String(localized: "map.show_room_labels"))
 
                     Button {
                         withAnimation(.spring) {
@@ -325,6 +328,7 @@ struct MapContentView: View {
                     } label: {
                         Image(systemName: "arrow.counterclockwise.circle.fill")
                     }
+                    .accessibilityLabel(String(localized: "map.reset_view"))
                 }
             }
         }
@@ -367,6 +371,7 @@ struct MapView: View {
                             Image(systemName: "xmark")
                                 .fontWeight(.semibold)
                         }
+                        .accessibilityLabel(String(localized: "map.close"))
                     }
                 }
         }

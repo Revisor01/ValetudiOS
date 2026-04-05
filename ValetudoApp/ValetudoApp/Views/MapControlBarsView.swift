@@ -497,6 +497,7 @@ extension MapContentView {
                         .foregroundStyle(.blue)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
+                .accessibilityLabel(String(localized: "map.reset_split_line"))
                 .disabled(currentDrawStart == nil)
                 .opacity(currentDrawStart == nil ? 0.4 : 1.0)
 
