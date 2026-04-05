@@ -222,11 +222,18 @@ class RobotManager {
                 info: info
             )
 
-            // Check for state changes and send notifications
-            checkStateChanges(robotName: robotName, previous: previousState, current: newStatus)
+            // Only update Observable state if something actually changed
+            let oldStatus = robotStates[id]
+            let statusChanged = oldStatus?.statusValue != newStatus.statusValue
+                || oldStatus?.batteryLevel != newStatus.batteryLevel
+                || oldStatus?.batteryStatus != newStatus.batteryStatus
+                || oldStatus?.isOnline != newStatus.isOnline
 
-            previousStates[id] = robotStates[id]
-            robotStates[id] = newStatus
+            if statusChanged {
+                checkStateChanges(robotName: robotName, previous: previousState, current: newStatus)
+                previousStates[id] = robotStates[id]
+                robotStates[id] = newStatus
+            }
 
             // Check for updates and consumables (in background, don't block refresh)
             Task {
@@ -234,12 +241,15 @@ class RobotManager {
                 await self.checkConsumables(for: id)
             }
         } catch {
-            // Treat any error as offline signal — avoids double-request overhead of checkConnection()
-            if previousState?.isOnline == true {
-                notificationService.notifyRobotOffline(robotName: robotName)
+            // Treat any error as offline signal
+            let wasOnline = robotStates[id]?.isOnline == true
+            if wasOnline {
+                if previousState?.isOnline == true {
+                    notificationService.notifyRobotOffline(robotName: robotName)
+                }
+                previousStates[id] = robotStates[id]
+                robotStates[id] = RobotStatus(isOnline: false)
             }
-            previousStates[id] = robotStates[id]
-            robotStates[id] = RobotStatus(isOnline: false)
         }
     }
 
@@ -282,7 +292,10 @@ class RobotManager {
         do {
             let updaterState = try await api.getUpdaterState()
             await MainActor.run {
-                self.robotUpdateAvailable[id] = updaterState.isUpdateAvailable
+                let oldValue = self.robotUpdateAvailable[id]
+                if oldValue != updaterState.isUpdateAvailable {
+                    self.robotUpdateAvailable[id] = updaterState.isUpdateAvailable
+                }
             }
         } catch {
             logger.warning("checkUpdaterState: Not supported or failed for robot \(id, privacy: .public): \(error.localizedDescription, privacy: .public)")
