@@ -23,7 +23,7 @@ struct ContentView: View {
 
             // Map Tab - only shows when a robot is selected
             if let robot = selectedRobot {
-                MapTabView(robot: robot, robotManager: robotManager)
+                MapTabView(robot: robot)
                     .id("map-\(robot.id)") // Force complete refresh when robot changes
                     .tabItem {
                         Label(String(localized: "tab.map"), systemImage: "map.fill")

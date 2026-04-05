@@ -146,17 +146,11 @@ class RobotManager {
     }
 
     private func startRefreshing() {
-        // Capture everything needed before detaching
-        let robotsCopy = robots
-        let apisCopy = apis
-        let sseManager = sseManager
-        let activeId = activeRobotId
-
-        refreshTask = Task.detached(priority: .utility) { [weak self] in
+        refreshTask = Task {
             while !Task.isCancelled {
                 // Connect SSE for each robot that doesn't have an active connection yet
-                for robot in robotsCopy {
-                    guard let api = apisCopy[robot.id] else { continue }
+                for robot in robots {
+                    guard let api = apis[robot.id] else { continue }
                     let sseActive = await sseManager.isSSEActive(for: robot.id)
                     if !sseActive {
                         let robotId = robot.id
@@ -178,17 +172,17 @@ class RobotManager {
                 }
 
                 // Poll only robots without active SSE (fallback)
-                let currentActiveId = await MainActor.run { self?.activeRobotId }
-                let robotsToPoll = currentActiveId != nil
-                    ? robotsCopy.filter { $0.id == currentActiveId }
-                    : robotsCopy
+                // When activeRobotId is set, only poll the active robot
+                let robotsToPoll = activeRobotId != nil
+                    ? robots.filter { $0.id == activeRobotId }
+                    : robots
 
                 await withTaskGroup(of: Void.self) { group in
                     for robot in robotsToPoll {
                         group.addTask {
-                            let sseActive = await sseManager.isSSEActive(for: robot.id)
+                            let sseActive = await self.sseManager.isSSEActive(for: robot.id)
                             if !sseActive {
-                                await self?.refreshRobot(robot.id)
+                                await self.refreshRobot(robot.id)
                             }
                         }
                     }
@@ -222,18 +216,11 @@ class RobotManager {
                 info: info
             )
 
-            // Only update Observable state if something actually changed
-            let oldStatus = robotStates[id]
-            let statusChanged = oldStatus?.statusValue != newStatus.statusValue
-                || oldStatus?.batteryLevel != newStatus.batteryLevel
-                || oldStatus?.batteryStatus != newStatus.batteryStatus
-                || oldStatus?.isOnline != newStatus.isOnline
+            // Check for state changes and send notifications
+            checkStateChanges(robotName: robotName, previous: previousState, current: newStatus)
 
-            if statusChanged {
-                checkStateChanges(robotName: robotName, previous: previousState, current: newStatus)
-                previousStates[id] = robotStates[id]
-                robotStates[id] = newStatus
-            }
+            previousStates[id] = robotStates[id]
+            robotStates[id] = newStatus
 
             // Check for updates and consumables (in background, don't block refresh)
             Task {
@@ -241,15 +228,12 @@ class RobotManager {
                 await self.checkConsumables(for: id)
             }
         } catch {
-            // Treat any error as offline signal
-            let wasOnline = robotStates[id]?.isOnline == true
-            if wasOnline {
-                if previousState?.isOnline == true {
-                    notificationService.notifyRobotOffline(robotName: robotName)
-                }
-                previousStates[id] = robotStates[id]
-                robotStates[id] = RobotStatus(isOnline: false)
+            // Treat any error as offline signal — avoids double-request overhead of checkConnection()
+            if previousState?.isOnline == true {
+                notificationService.notifyRobotOffline(robotName: robotName)
             }
+            previousStates[id] = robotStates[id]
+            robotStates[id] = RobotStatus(isOnline: false)
         }
     }
 
@@ -262,21 +246,10 @@ class RobotManager {
             attributes: attrs,
             info: existingInfo
         )
-
-        // Only update if status actually changed — avoids triggering @Observable
-        // change notifications on every SSE event (which causes re-render storms)
-        let oldStatus = robotStates[id]
-        let statusChanged = oldStatus?.statusValue != newStatus.statusValue
-            || oldStatus?.batteryLevel != newStatus.batteryLevel
-            || oldStatus?.batteryStatus != newStatus.batteryStatus
-            || oldStatus?.isOnline != newStatus.isOnline
-
-        if statusChanged {
-            let robotName = getRobotName(for: id)
-            checkStateChanges(robotName: robotName, previous: previousStates[id], current: newStatus)
-            previousStates[id] = robotStates[id]
-            robotStates[id] = newStatus
-        }
+        let robotName = getRobotName(for: id)
+        checkStateChanges(robotName: robotName, previous: previousStates[id], current: newStatus)
+        previousStates[id] = robotStates[id]
+        robotStates[id] = newStatus
     }
 
     private func sseConnectionChanged(_ connected: Bool, for id: UUID) {
@@ -292,10 +265,7 @@ class RobotManager {
         do {
             let updaterState = try await api.getUpdaterState()
             await MainActor.run {
-                let oldValue = self.robotUpdateAvailable[id]
-                if oldValue != updaterState.isUpdateAvailable {
-                    self.robotUpdateAvailable[id] = updaterState.isUpdateAvailable
-                }
+                self.robotUpdateAvailable[id] = updaterState.isUpdateAvailable
             }
         } catch {
             logger.warning("checkUpdaterState: Not supported or failed for robot \(id, privacy: .public): \(error.localizedDescription, privacy: .public)")

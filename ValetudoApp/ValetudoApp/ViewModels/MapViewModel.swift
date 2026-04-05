@@ -99,9 +99,6 @@ final class MapViewModel {
     // MARK: - Offline State
     var isOffline: Bool = false
 
-    // MARK: - Cached Map Params (avoid RLE decompression in body)
-    var cachedMapParams: MapParams?
-
     // MARK: - Task Management
     @ObservationIgnored private var refreshTask: Task<Void, Never>?
 
@@ -125,9 +122,7 @@ final class MapViewModel {
 
     // MARK: - Data Loading
     func loadMap() async {
-        print(">>> loadMap START")
         guard let api = api else {
-            print(">>> loadMap: no API")
             loadError = "No API available"
             isLoading = false
             return
@@ -135,74 +130,47 @@ final class MapViewModel {
 
         if map == nil { isLoading = true }
 
-        print(">>> loadMap: fetching capabilities")
         do {
             let capabilities = try await api.getCapabilities()
-            print(">>> loadMap: capabilities OK")
             hasZoneCleaning = capabilities.contains("ZoneCleaningCapability")
             hasVirtualRestrictions = capabilities.contains("CombinedVirtualRestrictionsCapability")
             hasGoTo = capabilities.contains("GoToLocationCapability")
             hasSegmentRename = capabilities.contains("MapSegmentRenameCapability")
             hasSegmentEdit = capabilities.contains("MapSegmentEditCapability")
         } catch {
-            print(">>> loadMap: capabilities FAILED")
             logger.warning("loadMap: Capability check failed: \(error.localizedDescription, privacy: .public)")
         }
 
         if hasVirtualRestrictions {
-            print(">>> loadMap: fetching restrictions")
             do {
                 let restrictions = try await api.getVirtualRestrictions()
                 existingRestrictions = restrictions
-                print(">>> loadMap: restrictions OK")
             } catch {
                 logger.error("Virtual restrictions failed: \(error, privacy: .public)")
             }
         }
 
-        print(">>> loadMap: fetching map")
         do {
             let loadedMap = try await api.getMap()
-            print(">>> loadMap: map OK, fetching segments")
             var loadedSegments: [Segment] = []
             do {
                 loadedSegments = try await api.getSegments()
-                print(">>> loadMap: segments OK (\(loadedSegments.count))")
             } catch {
-                print(">>> loadMap: segments FAILED")
                 logger.error("Segments failed: \(error, privacy: .public)")
             }
 
-            // Compute heavy caches off main thread (loadMap runs on @MainActor)
-            print(">>> loadMap: starting Task.detached for caches")
-            let pxSize = loadedMap.pixelSize ?? 5
-            let renderSize = lastRenderSize
-            let (pixelSets, segInfos, mapParams) = await Task.detached(priority: .userInitiated) {
-                let ps = Self.buildSegmentPixelSets(from: loadedMap)
-                let si = Self.buildSegmentInfos(from: loadedMap, segments: loadedSegments)
-                let mp = renderSize.width > 0
-                    ? calculateMapParams(layers: loadedMap.layers ?? [], pixelSize: pxSize, size: renderSize)
-                    : nil
-                return (ps, si, mp)
-            }.value
-            print(">>> loadMap: caches DONE, applying state")
-
             map = loadedMap
             segments = loadedSegments
-            segmentPixelSets = pixelSets
-            cachedSegmentInfos = segInfos
-            cachedMapParams = mapParams
+            rebuildSegmentPixelSets()
+            updateCachedSegmentInfos()
             if lastRenderSize.width > 0 {
                 rebuildStaticLayerImage(size: lastRenderSize)
             }
             loadError = nil
             isOffline = false
             isLoading = false
-            print(">>> loadMap: state applied, saving cache")
             await MapCacheService.shared.save(loadedMap, for: robot.id)
-            print(">>> loadMap COMPLETE")
         } catch {
-            print(">>> loadMap: CATCH error: \(error.localizedDescription)")
             // Kein erfolgreicher Load — Cache laden falls vorhanden
             if let cachedMap = await MapCacheService.shared.load(for: robot.id), self.map == nil {
                 self.map = cachedMap
@@ -217,11 +185,9 @@ final class MapViewModel {
 
     func startMapRefresh() {
         refreshTask?.cancel()
-        let robotId = robot.id
-        let log = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "MapViewModel")
-        refreshTask = Task.detached(priority: .userInitiated) { [weak self] in
+        refreshTask = Task { [weak self] in
             guard let self else { return }
-            guard let api = await self.api else { return }
+            guard let api = self.api else { return }
 
             var retryCount = 0
 
@@ -229,7 +195,7 @@ final class MapViewModel {
                 do {
                     let bytes = try await api.streamMapLines()
                     retryCount = 0
-                    log.info("Map SSE connected for \(robotId, privacy: .public)")
+                    logger.info("Map SSE connected for \(self.robot.id, privacy: .public)")
 
                     for try await line in bytes.lines {
                         if Task.isCancelled { break }
@@ -239,49 +205,27 @@ final class MapViewModel {
                               let jsonData = jsonString.data(using: .utf8) else { continue }
 
                         do {
-                            // Decode and compute caches off main thread
                             let newMap = try JSONDecoder().decode(RobotMap.self, from: jsonData)
-                            let pixelSets = Self.buildSegmentPixelSets(from: newMap)
-                            let currentSegments = await MainActor.run { self.segments }
-                            let segInfos = Self.buildSegmentInfos(from: newMap, segments: currentSegments)
-                            let renderSize = await MainActor.run { self.lastRenderSize }
-                            let pxSize = newMap.pixelSize ?? 5
-                            let mapParams = renderSize.width > 0
-                                ? calculateMapParams(layers: newMap.layers ?? [], pixelSize: pxSize, size: renderSize)
-                                : nil
-
-                            // Apply state on main actor (lightweight — no decompression here)
-                            await MainActor.run { [weak self] in
-                                guard let self else { return }
-                                self.map = newMap
-                                self.segmentPixelSets = pixelSets
-                                self.cachedSegmentInfos = segInfos
-                                self.cachedMapParams = mapParams
-                                self.isOffline = false
-                                if renderSize.width > 0 {
-                                    self.rebuildStaticLayerImage(size: renderSize)
-                                }
+                            self.map = newMap
+                            self.rebuildSegmentPixelSets()
+                            self.updateCachedSegmentInfos()
+                            if self.lastRenderSize.width > 0 {
+                                self.rebuildStaticLayerImage(size: self.lastRenderSize)
                             }
-                            await MapCacheService.shared.saveIfChanged(newMap, for: robotId)
+                            self.isOffline = false
+                            await MapCacheService.shared.saveIfChanged(newMap, for: self.robot.id)
                         } catch {
                             // SSE event war kein vollstaendiges RobotMap — fallback: einzelner HTTP-GET
-                            log.warning("Map SSE decode failed, falling back to HTTP GET: \(error.localizedDescription, privacy: .public)")
+                            logger.warning("Map SSE decode failed, falling back to HTTP GET: \(error.localizedDescription, privacy: .public)")
                             if let fallbackMap = try? await api.getMap() {
-                                let pixelSets = Self.buildSegmentPixelSets(from: fallbackMap)
-                                let fbSegments = await MainActor.run { self.segments }
-                                let fbSegInfos = Self.buildSegmentInfos(from: fallbackMap, segments: fbSegments)
-                                let renderSize = await MainActor.run { self.lastRenderSize }
-                                await MainActor.run { [weak self] in
-                                    guard let self else { return }
-                                    self.map = fallbackMap
-                                    self.segmentPixelSets = pixelSets
-                                    self.cachedSegmentInfos = fbSegInfos
-                                    self.isOffline = false
-                                    if renderSize.width > 0 {
-                                        self.rebuildStaticLayerImage(size: renderSize)
-                                    }
+                                self.map = fallbackMap
+                                self.rebuildSegmentPixelSets()
+                                self.updateCachedSegmentInfos()
+                                if self.lastRenderSize.width > 0 {
+                                    self.rebuildStaticLayerImage(size: self.lastRenderSize)
                                 }
-                                await MapCacheService.shared.saveIfChanged(fallbackMap, for: robotId)
+                                self.isOffline = false
+                                await MapCacheService.shared.saveIfChanged(fallbackMap, for: self.robot.id)
                             }
                         }
                     }
@@ -289,42 +233,30 @@ final class MapViewModel {
                 } catch is CancellationError {
                     break
                 } catch {
-                    log.warning("Map SSE error: \(error.localizedDescription, privacy: .public) — falling back to HTTP poll")
+                    logger.warning("Map SSE error: \(error.localizedDescription, privacy: .public) — falling back to HTTP poll")
                     // Einmaliger HTTP-Poll als Fallback
                     if let newMap = try? await api.getMap() {
-                        let pixelSets = Self.buildSegmentPixelSets(from: newMap)
-                        let errSegments = await MainActor.run { self.segments }
-                        let errSegInfos = Self.buildSegmentInfos(from: newMap, segments: errSegments)
-                        let renderSize = await MainActor.run { self.lastRenderSize }
-                        await MainActor.run { [weak self] in
-                            guard let self else { return }
-                            self.map = newMap
-                            self.segmentPixelSets = pixelSets
-                            self.cachedSegmentInfos = errSegInfos
-                            self.isOffline = false
-                            if renderSize.width > 0 {
-                                self.rebuildStaticLayerImage(size: renderSize)
-                            }
+                        self.map = newMap
+                        self.rebuildSegmentPixelSets()
+                        self.updateCachedSegmentInfos()
+                        if self.lastRenderSize.width > 0 {
+                            self.rebuildStaticLayerImage(size: self.lastRenderSize)
                         }
-                        await MapCacheService.shared.saveIfChanged(newMap, for: robotId)
+                        self.isOffline = false
+                        await MapCacheService.shared.saveIfChanged(newMap, for: self.robot.id)
                     } else {
                         // HTTP-Poll auch fehlgeschlagen
-                        let hasMap = await MainActor.run { self.map != nil }
-                        if !hasMap {
-                            if let cachedMap = await MapCacheService.shared.load(for: robotId) {
-                                await MainActor.run { [weak self] in
-                                    self?.map = cachedMap
-                                    self?.isOffline = true
-                                }
-                            }
-                        } else {
-                            await MainActor.run { [weak self] in self?.isOffline = true }
+                        if self.map == nil, let cachedMap = await MapCacheService.shared.load(for: self.robot.id) {
+                            self.map = cachedMap
+                            self.isOffline = true
+                        } else if self.map != nil {
+                            self.isOffline = true
                         }
                     }
 
                     retryCount += 1
                     let delay: Double = retryCount == 1 ? 2 : retryCount == 2 ? 5 : 30
-                    log.info("Map SSE retry \(retryCount, privacy: .public) — waiting \(delay, privacy: .public)s")
+                    logger.info("Map SSE retry \(retryCount, privacy: .public) — waiting \(delay, privacy: .public)s")
                     do {
                         try await Task.sleep(for: .seconds(delay))
                     } catch is CancellationError {
@@ -344,10 +276,11 @@ final class MapViewModel {
 
     // MARK: - Performance Caching
 
-    /// Static helper: builds segment pixel sets from a RobotMap.
-    /// Marked nonisolated so it can be called from Task.detached without hopping to @MainActor.
-    nonisolated static func buildSegmentPixelSets(from map: RobotMap) -> [String: Set<Int>] {
-        guard let layers = map.layers else { return [:] }
+    private func rebuildSegmentPixelSets() {
+        guard let layers = map?.layers else {
+            segmentPixelSets = [:]
+            return
+        }
         var sets: [String: Set<Int>] = [:]
         for layer in layers where layer.type == "segment" {
             guard let id = layer.metaData?.segmentId else { continue }
@@ -360,30 +293,14 @@ final class MapViewModel {
             }
             sets[id] = set
         }
-        return sets
+        segmentPixelSets = sets
     }
 
-    private func rebuildSegmentPixelSets() {
-        guard let map else {
-            segmentPixelSets = [:]
-            return
-        }
-        segmentPixelSets = Self.buildSegmentPixelSets(from: map)
-    }
-
-    /// Computes segment infos from map layers. Called on main actor to apply result.
     private func updateCachedSegmentInfos() {
-        guard let map = map else {
+        guard let layers = map?.layers else {
             cachedSegmentInfos = []
             return
         }
-        cachedSegmentInfos = Self.buildSegmentInfos(from: map, segments: segments)
-    }
-
-    /// Static helper: builds segment infos from a RobotMap.
-    /// Marked nonisolated so it can be called from Task.detached without hopping to @MainActor.
-    nonisolated static func buildSegmentInfos(from map: RobotMap, segments: [Segment]) -> [SegmentInfo] {
-        guard let layers = map.layers else { return [] }
         var infos: [SegmentInfo] = []
         for layer in layers where layer.type == "segment" {
             guard let segmentId = layer.metaData?.segmentId else { continue }
@@ -409,29 +326,10 @@ final class MapViewModel {
             guard let finalMidX = midX, let finalMidY = midY else { continue }
             let name = segments.first { $0.id == segmentId }?.displayName
                 ?? layer.metaData?.name
-                ?? "Room \(segmentId)"
+                ?? String(localized: "map.room") + " \(segmentId)"
             infos.append(SegmentInfo(id: segmentId, name: name, midX: finalMidX, midY: finalMidY))
         }
-        return infos
-    }
-
-    // MARK: - Size-dependent Cache Update
-
-    /// Recalculates mapParams and rebuilds static layer image for a new view size.
-    /// MapParams calculation runs off main thread to avoid RLE decompression in body.
-    func updateCachesForSize(_ size: CGSize) {
-        lastRenderSize = size
-        guard let map = map, let layers = map.layers, !layers.isEmpty else { return }
-        let pxSize = map.pixelSize ?? 5
-        let layersCopy = layers
-
-        Task.detached(priority: .userInitiated) {
-            let params = calculateMapParams(layers: layersCopy, pixelSize: pxSize, size: size)
-            await MainActor.run { [weak self] in
-                self?.cachedMapParams = params
-            }
-        }
-        rebuildStaticLayerImage(size: size)
+        cachedSegmentInfos = infos
     }
 
     // MARK: - Static Layer Segment Colors
