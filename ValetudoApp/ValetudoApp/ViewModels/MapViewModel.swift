@@ -99,6 +99,9 @@ final class MapViewModel {
     // MARK: - Offline State
     var isOffline: Bool = false
 
+    // MARK: - Cached Map Params (avoid RLE decompression in body)
+    var cachedMapParams: MapParams?
+
     // MARK: - Task Management
     @ObservationIgnored private var refreshTask: Task<Void, Never>?
 
@@ -160,17 +163,22 @@ final class MapViewModel {
             }
 
             // Compute heavy caches off main thread (loadMap runs on @MainActor)
-            let pixelSets = await Task.detached(priority: .userInitiated) {
-                Self.buildSegmentPixelSets(from: loadedMap)
-            }.value
-            let segInfos = await Task.detached(priority: .userInitiated) {
-                Self.buildSegmentInfos(from: loadedMap, segments: loadedSegments)
+            let pxSize = loadedMap.pixelSize ?? 5
+            let renderSize = lastRenderSize
+            let (pixelSets, segInfos, mapParams) = await Task.detached(priority: .userInitiated) {
+                let ps = Self.buildSegmentPixelSets(from: loadedMap)
+                let si = Self.buildSegmentInfos(from: loadedMap, segments: loadedSegments)
+                let mp = renderSize.width > 0
+                    ? calculateMapParams(layers: loadedMap.layers ?? [], pixelSize: pxSize, size: renderSize)
+                    : nil
+                return (ps, si, mp)
             }.value
 
             map = loadedMap
             segments = loadedSegments
             segmentPixelSets = pixelSets
             cachedSegmentInfos = segInfos
+            cachedMapParams = mapParams
             if lastRenderSize.width > 0 {
                 rebuildStaticLayerImage(size: lastRenderSize)
             }
@@ -221,6 +229,10 @@ final class MapViewModel {
                             let currentSegments = await MainActor.run { self.segments }
                             let segInfos = Self.buildSegmentInfos(from: newMap, segments: currentSegments)
                             let renderSize = await MainActor.run { self.lastRenderSize }
+                            let pxSize = newMap.pixelSize ?? 5
+                            let mapParams = renderSize.width > 0
+                                ? calculateMapParams(layers: newMap.layers ?? [], pixelSize: pxSize, size: renderSize)
+                                : nil
 
                             // Apply state on main actor (lightweight — no decompression here)
                             await MainActor.run { [weak self] in
@@ -228,6 +240,7 @@ final class MapViewModel {
                                 self.map = newMap
                                 self.segmentPixelSets = pixelSets
                                 self.cachedSegmentInfos = segInfos
+                                self.cachedMapParams = mapParams
                                 self.isOffline = false
                                 if renderSize.width > 0 {
                                     self.rebuildStaticLayerImage(size: renderSize)
@@ -384,6 +397,25 @@ final class MapViewModel {
             infos.append(SegmentInfo(id: segmentId, name: name, midX: finalMidX, midY: finalMidY))
         }
         return infos
+    }
+
+    // MARK: - Size-dependent Cache Update
+
+    /// Recalculates mapParams and rebuilds static layer image for a new view size.
+    /// MapParams calculation runs off main thread to avoid RLE decompression in body.
+    func updateCachesForSize(_ size: CGSize) {
+        lastRenderSize = size
+        guard let map = map, let layers = map.layers, !layers.isEmpty else { return }
+        let pxSize = map.pixelSize ?? 5
+        let layersCopy = layers
+
+        Task.detached(priority: .userInitiated) {
+            let params = calculateMapParams(layers: layersCopy, pixelSize: pxSize, size: size)
+            await MainActor.run { [weak self] in
+                self?.cachedMapParams = params
+            }
+        }
+        rebuildStaticLayerImage(size: size)
     }
 
     // MARK: - Static Layer Segment Colors

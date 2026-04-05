@@ -209,12 +209,7 @@ struct MapContentView: View {
                         ProgressView()
                             .scaleEffect(1.5)
                     } else if let map = viewModel.map {
-                        let pixelSize = map.pixelSize ?? 5
-                        let params = calculateMapParams(
-                            layers: map.layers ?? [],
-                            pixelSize: pixelSize,
-                            size: geometry.size
-                        )
+                        let params = viewModel.cachedMapParams
 
                         ZStack {
                             InteractiveMapView(
@@ -251,10 +246,11 @@ struct MapContentView: View {
 
                             // GoTo/SavePreset marker (draggable circle)
                             if let p = params {
-                                goToMarkerOverlay(params: p, pixelSize: pixelSize, geometry: geometry)
+                                let pxSize = map.pixelSize ?? 5
+                                goToMarkerOverlay(params: p, pixelSize: pxSize, geometry: geometry)
 
                                 // Preset markers (when toggled visible)
-                                presetMarkersOverlay(params: p, pixelSize: pixelSize, geometry: geometry)
+                                presetMarkersOverlay(params: p, pixelSize: pxSize, geometry: geometry)
                             }
 
                             // Restriction delete targets
@@ -292,11 +288,11 @@ struct MapContentView: View {
                 }
                 .onAppear {
                     currentViewSize = geometry.size
-                    viewModel.rebuildStaticLayerImage(size: geometry.size)
+                    viewModel.updateCachesForSize(geometry.size)
                 }
                 .onChange(of: geometry.size) { _, newSize in
                     currentViewSize = newSize
-                    viewModel.rebuildStaticLayerImage(size: newSize)
+                    viewModel.updateCachesForSize(newSize)
                 }
             }
 
