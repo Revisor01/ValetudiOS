@@ -254,13 +254,12 @@ Plans:
   3. Consumable-Fortschrittsbalken haben .accessibilityValue mit Prozent
   4. Alle Icon-only-Buttons haben beschreibende Labels
   5. Map-Canvas hat .accessibilityElement Summary-Label
-**Plans**: 3 plans
+**Plans**: 2 plans
 **UI hint**: yes
 
 Plans:
-- [ ] 23-01-PLAN.md — ErrorRouter-Injection + try?-Ersetzung + DebugConfig-Logging (DEBT-03, DEBT-04)
-- [ ] 23-02-PLAN.md — Two-Phase-Load + Capabilities-TTL-Cache (DEBT-05, DEBT-06)
-- [ ] 23-03-PLAN.md — StoreKit Product ID Validierung (DEBT-07)
+- [ ] 27-01-PLAN.md — Accessibility-Labels fuer Controls, Status-Header, Consumables, Listen-Buttons (A11Y-01, A11Y-02, A11Y-03, A11Y-04)
+- [ ] 27-02-PLAN.md — Accessibility-Labels fuer Map-Canvas, Room-Chips, Map-Toolbar, Restriction-Overlays (A11Y-04, A11Y-05)
 
 ### Phase 28: Test Coverage Expansion
 **Goal**: Kritische Pfade sind durch automatisierte Tests abgesichert
