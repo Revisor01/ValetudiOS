@@ -545,7 +545,9 @@ Plans:
   1. SupportView zeigt die Taube korrekt — das Symbol ist sichtbar und nicht durch einen Rendering-Fehler ausgeblendet
   2. Nach einem VPN- oder WLAN-Wechsel reconnectet die SSE-Verbindung automatisch — der Roboter-Status aktualisiert sich wieder, ohne dass die App neu gestartet werden muss
   3. App kompiliert fehlerfrei und alle bestehenden Tests bleiben grün
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 30-01-PLAN.md — SF Symbol-Fix (dove.fill → heart.fill) und NWPathMonitor fuer SSE-Reconnect bei Netzwerkwechsel
 **UI hint**: yes
 
 ### Phase 31: Web-Präsenz
@@ -556,7 +558,9 @@ Plans:
   1. https://simonluthe.de/apps/valetudios/datenschutz/ zeigt eine vollständige Datenschutzerklärung, die LAN-Kommunikation, Keychain-Speicherung, SSE-Streaming, keine Analytics und keine Cloud nennt
   2. https://simonluthe.de/apps/valetudios/ zeigt eine Projektseite mit Feature-Übersicht, Download-Link-Platzhalter und Links zu Datenschutz und Impressum
   3. Beide Seiten sind auf simonluthe.de live erreichbar und korrekt gerendert
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 30-01-PLAN.md — SF Symbol-Fix (dove.fill → heart.fill) und NWPathMonitor fuer SSE-Reconnect bei Netzwerkwechsel
 
 ### Phase 32: App Store Listing
 **Goal**: Alle App Store Connect-Pflichtfelder sind ausgefüllt und Apple kann die App ohne Rückfragen reviewen
@@ -567,7 +571,9 @@ Plans:
   2. Keywords-Felder in App Store Connect sind mit maximal 100 Zeichen je Sprache (DE + EN) befüllt
   3. Review Notes enthalten eine klare Anleitung für Apple: Valetudo-Server nötig, LAN-only, wie ein Test-Setup aussieht
   4. Screenshots-Anleitung liegt vor: welche Screens, welche Gerätegrößen, welche App-Zustände für aussagekräftige Bilder nötig sind
-**Plans**: TBD
+**Plans**: 1 plan
+Plans:
+- [ ] 30-01-PLAN.md — SF Symbol-Fix (dove.fill → heart.fill) und NWPathMonitor fuer SSE-Reconnect bei Netzwerkwechsel
 
 
 ## Progress
