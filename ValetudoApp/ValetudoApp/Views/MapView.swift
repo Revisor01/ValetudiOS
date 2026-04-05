@@ -335,7 +335,13 @@ struct MapContentView: View {
             }
         }
         .task {
-            print(">>> MapContentView.task START")
+            // Debug: check if main thread is alive
+            let timer = DispatchSource.makeTimerSource(queue: .main)
+            timer.schedule(deadline: .now(), repeating: 1.0)
+            timer.setEventHandler { print(">>> MAIN THREAD ALIVE \(Date())") }
+            timer.resume()
+
+            print(">>> MapContentView.task START (main thread: \(Thread.isMainThread))")
             viewModel.errorRouter = errorRouter
             print(">>> MapContentView.task calling loadMap")
             await viewModel.loadMap()
