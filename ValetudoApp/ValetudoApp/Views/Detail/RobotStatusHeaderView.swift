@@ -43,6 +43,14 @@ struct RobotStatusHeaderView: View {
                     .foregroundStyle(.orange)
             }
 
+            // HTTP connection warning (SEC-01)
+            if !viewModel.robot.useSSL {
+                Image(systemName: "lock.open.fill")
+                    .font(.caption)
+                    .foregroundStyle(.orange)
+                    .accessibilityLabel(String(localized: "security.http_connection"))
+            }
+
             // Locate button (compact, before battery)
             if viewModel.status?.isOnline == true {
                 Button {

@@ -184,6 +184,8 @@ struct EditRobotView: View {
     @State private var useAuthentication: Bool
     @State private var username: String
     @State private var password: String
+    @State private var useSSL: Bool
+    @State private var ignoreCertificateErrors: Bool
     @State private var isTesting = false
     @State private var testResult: ConnectionTestResult?
 
@@ -194,6 +196,8 @@ struct EditRobotView: View {
         _useAuthentication = State(initialValue: !(robot.username?.isEmpty ?? true))
         _username = State(initialValue: robot.username ?? "")
         _password = State(initialValue: KeychainStore.password(for: robot.id) ?? "")
+        _useSSL = State(initialValue: robot.useSSL)
+        _ignoreCertificateErrors = State(initialValue: robot.ignoreCertificateErrors)
     }
 
     var body: some View {
@@ -214,6 +218,29 @@ struct EditRobotView: View {
                         TextField(String(localized: "robot.username"), text: $username)
                             .autocapitalization(.none)
                         SecureField(String(localized: "robot.password"), text: $password)
+                    }
+                }
+
+                Section {
+                    Toggle(String(localized: "settings.use_ssl"), isOn: $useSSL)
+
+                    if useSSL {
+                        Toggle(String(localized: "settings.ignore_certificate_errors"), isOn: $ignoreCertificateErrors)
+                    }
+                } header: {
+                    Text(String(localized: "settings.connection"))
+                }
+
+                if useSSL && ignoreCertificateErrors {
+                    Section {
+                        HStack(spacing: 8) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.orange)
+                            Text(String(localized: "settings.ignore_certificate_errors.warning"))
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 4)
                     }
                 }
 
@@ -272,7 +299,9 @@ struct EditRobotView: View {
             name: name,
             host: host,
             username: useAuthentication ? username : nil,
-            password: useAuthentication ? password : nil
+            password: useAuthentication ? password : nil,
+            useSSL: useSSL,
+            ignoreCertificateErrors: useSSL ? ignoreCertificateErrors : false
         )
         robotManager.updateRobot(updatedRobot)
         dismiss()
@@ -287,7 +316,9 @@ struct EditRobotView: View {
             name: name,
             host: host,
             username: useAuthentication ? username : nil,
-            password: useAuthentication ? password : nil
+            password: useAuthentication ? password : nil,
+            useSSL: useSSL,
+            ignoreCertificateErrors: useSSL ? ignoreCertificateErrors : false
         )
 
         let api = ValetudoAPI(config: testConfig)

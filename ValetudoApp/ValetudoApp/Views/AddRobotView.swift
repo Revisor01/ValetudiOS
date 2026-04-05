@@ -67,10 +67,18 @@ struct AddRobotView: View {
                     }
                 } header: {
                     Text(String(localized: "settings.connection"))
-                } footer: {
-                    if useSSL && ignoreCertificateErrors {
-                        Text(String(localized: "settings.ignore_certificate_errors.warning"))
-                            .foregroundStyle(.orange)
+                }
+
+                if useSSL && ignoreCertificateErrors {
+                    Section {
+                        HStack(spacing: 8) {
+                            Image(systemName: "exclamationmark.triangle.fill")
+                                .foregroundStyle(.orange)
+                            Text(String(localized: "settings.ignore_certificate_errors.warning"))
+                                .font(.footnote)
+                                .foregroundStyle(.secondary)
+                        }
+                        .padding(.vertical, 4)
                     }
                 }
 
