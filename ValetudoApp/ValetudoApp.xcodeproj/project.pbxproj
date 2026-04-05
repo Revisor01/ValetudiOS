@@ -49,6 +49,7 @@
 		812642A8D77C6E37764AC03D /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0EB9C50A27756E4D5EDFB505 /* MapView.swift */; };
 		88D83C367512AB1B5960D380 /* AutoEmptyDockSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 70B675F7989A2AC884174105 /* AutoEmptyDockSettingsView.swift */; };
 		8E7FB7D245E8323E351F68C8 /* DoNotDisturbView.swift in Sources */ = {isa = PBXBuildFile; fileRef = F59ACF682660288ABD2AB9E7 /* DoNotDisturbView.swift */; };
+		8F6D7422E6348F6AF68FADD7 /* MapGeometryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF2ECD98AE2E9729767F4CE8 /* MapGeometryTests.swift */; };
 		8F8EB3702AA2ADAC6889DC0D /* RobotConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1B5589AF6019A8A237268523 /* RobotConfig.swift */; };
 		9207AFBD4FCBC7AAFE751181 /* RobotListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5713E6238AD5A3F2420EE02B /* RobotListView.swift */; };
 		96B67D0CED1BE53C4F832F75 /* RobotControlSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = BC9669E5B86C35BACAFA25CF /* RobotControlSectionView.swift */; };
@@ -166,6 +167,7 @@
 		D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConsumableTests.swift; sourceTree = "<group>"; };
 		D4B8AD3F113C1AD37B4E5BBA /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		D8827C015A536153957BA6AC /* Timer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Timer.swift; sourceTree = "<group>"; };
+		DF2ECD98AE2E9729767F4CE8 /* MapGeometryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapGeometryTests.swift; sourceTree = "<group>"; };
 		DFCC182F1E0F5359E9BA5372 /* UpdateService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateService.swift; sourceTree = "<group>"; };
 		E0B69520E1BFEDF5824964BC /* DebugConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DebugConfig.swift; sourceTree = "<group>"; };
 		E2A0BADAA7A0164C077A6A9D /* StationSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StationSettingsView.swift; sourceTree = "<group>"; };
@@ -350,6 +352,7 @@
 			children = (
 				D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */,
 				C06AD3C1B9A930E3DFF22B33 /* KeychainStoreTests.swift */,
+				DF2ECD98AE2E9729767F4CE8 /* MapGeometryTests.swift */,
 				BDFE1B37CB17CC446C036D73 /* MapLayerTests.swift */,
 				9CA75525C383460748ED61C0 /* MapViewModelTests.swift */,
 				207A76A1020CA2C1DEB44125 /* RobotDetailViewModelTests.swift */,
@@ -476,6 +479,7 @@
 			files = (
 				7287C4B56D6A0CE743D38B28 /* ConsumableTests.swift in Sources */,
 				1F0534502B3DB53D433509DD /* KeychainStoreTests.swift in Sources */,
+				8F6D7422E6348F6AF68FADD7 /* MapGeometryTests.swift in Sources */,
 				BD5D356EA599C51A65452FA2 /* MapLayerTests.swift in Sources */,
 				5D3B904354FE1DCBB4A0859B /* MapViewModelTests.swift in Sources */,
 				E729DF2F6C2B31C596133D84 /* RobotDetailViewModelTests.swift in Sources */,

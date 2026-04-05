@@ -71,7 +71,7 @@
 - [x] **Phase 25: View Architecture** - RobotDetailView und RobotSettingsSections in eigenständige Dateien aufbrechen, MapContentView-State in ViewModel zentralisieren (completed 2026-04-05)
 - [x] **Phase 26: Security Hardening** - HTTP-Warnung, SSL-Bypass-Warnung, Robot-Config verschlüsselt speichern (completed 2026-04-05)
 - [x] **Phase 27: Accessibility** - VoiceOver-Labels für alle Controls, Status-Header, Consumables, Icon-Buttons und Map-Canvas (completed 2026-04-05)
-- [ ] **Phase 28: Test Coverage Expansion** - Unit-Tests für Koordinaten-Transforms, UpdateService State Machine, SSE-Reconnection, MapCacheService
+- [x] **Phase 28: Test Coverage Expansion** - Unit-Tests für Koordinaten-Transforms, UpdateService State Machine, SSE-Reconnection, MapCacheService (completed 2026-04-05)
 - [ ] **Phase 29: UX Robustness** - ErrorRouter systematisch verdrahten, Confirmation-Dialogs für destruktive Aktionen, Multi-Robot-Polling-Optimierung
 
 ## Phase Details
@@ -273,8 +273,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 28-01-PLAN.md — MapGeometry/HitTest/SSE-Backoff/MapCacheService Tests (TEST-01, TEST-03, TEST-04)
-- [ ] 28-02-PLAN.md — UpdateService Protocol-Extraktion + State-Machine Tests (TEST-02)
+- [x] 28-01-PLAN.md — MapGeometry/HitTest/SSE-Backoff/MapCacheService Tests (TEST-01, TEST-03, TEST-04)
+- [x] 28-02-PLAN.md — UpdateService Protocol-Extraktion + State-Machine Tests (TEST-02)
 
 ### Phase 29: UX Robustness
 **Goal**: Fehler werden konsistent angezeigt, destruktive Aktionen erfordern Bestätigung, Multi-Robot-Polling ist optimiert
