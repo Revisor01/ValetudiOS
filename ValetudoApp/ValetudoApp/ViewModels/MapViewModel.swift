@@ -232,6 +232,9 @@ final class MapViewModel {
 
                 } catch is CancellationError {
                     break
+                } catch let error as NSError where error.domain == NSURLErrorDomain && error.code == NSURLErrorCancelled {
+                    // URLSession task was cancelled (view dismissed) — exit cleanly
+                    break
                 } catch {
                     logger.warning("Map SSE error: \(error.localizedDescription, privacy: .public) — falling back to HTTP poll")
                     // Einmaliger HTTP-Poll als Fallback

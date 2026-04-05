@@ -234,6 +234,9 @@ actor SSEConnectionManager {
             } catch is CancellationError {
                 // Task was cancelled — exit cleanly without retry
                 break
+            } catch let error as NSError where error.domain == NSURLErrorDomain && error.code == NSURLErrorCancelled {
+                // URLSession task was cancelled — exit cleanly
+                break
             } catch {
                 logger.warning("SSE connection error for robot \(robotId, privacy: .public): \(error.localizedDescription, privacy: .public)")
                 isConnected[robotId] = false
