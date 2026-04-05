@@ -29,18 +29,19 @@ struct RestrictionIdentifier: Equatable {
 // MARK: - Map Tab View (for Tab Bar)
 struct MapTabView: View {
     let robot: RobotConfig
-    let robotManager: RobotManager
-    @State private var viewId = UUID()
+    @State private var viewModel: MapViewModel
+
+    init(robot: RobotConfig, robotManager: RobotManager) {
+        self.robot = robot
+        // Create ViewModel in init — body never touches robotManager
+        _viewModel = State(initialValue: MapViewModel(robot: robot, robotManager: robotManager, isFullscreen: true))
+    }
 
     var body: some View {
         NavigationStack {
-            MapContentView(robot: robot, robotManager: robotManager, isFullscreen: true)
-                .id(viewId)
+            MapContentView(viewModel: viewModel, robot: robot, isFullscreen: true)
                 .navigationTitle(String(localized: "map.title"))
                 .navigationBarTitleDisplayMode(.inline)
-        }
-        .onChange(of: robot.id) { _, _ in
-            viewId = UUID()
         }
     }
 }
@@ -175,10 +176,11 @@ struct MapPreviewView: View {
 
 // MARK: - Map Content View (shared between Tab and Sheet)
 struct MapContentView: View {
-    // @Environment(ErrorRouter.self) var errorRouter  // TEMPORARILY DISABLED FOR DEBUG
+    @Environment(ErrorRouter.self) var errorRouter
     let robot: RobotConfig
     let isFullscreen: Bool
 
+    // ViewModel passed from parent — body never touches RobotManager
     @State var viewModel: MapViewModel
 
     @State var scale: CGFloat = 1.0
@@ -191,15 +193,14 @@ struct MapContentView: View {
     @State var isDraggingSplitEnd = false
     @State var currentViewSize: CGSize = .zero
 
-    init(robot: RobotConfig, robotManager: RobotManager, isFullscreen: Bool = false) {
+    init(viewModel: MapViewModel, robot: RobotConfig, isFullscreen: Bool = false) {
         self.robot = robot
         self.isFullscreen = isFullscreen
-        _viewModel = State(initialValue: MapViewModel(robot: robot, robotManager: robotManager, isFullscreen: isFullscreen))
-        print(">>> MapContentView init DONE — viewModel created")
+        _viewModel = State(initialValue: viewModel)
     }
 
     var body: some View {
-        Text("MAP TEST — VIEWMODEL CREATED, body is just Text")
+        Text("MAP TEST — viewModel from parent")
             .font(.title)
             .padding()
     }
