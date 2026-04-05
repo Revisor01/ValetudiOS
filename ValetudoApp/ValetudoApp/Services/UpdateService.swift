@@ -30,6 +30,16 @@ enum UpdatePhase: Equatable {
     }
 }
 
+// MARK: - ValetudoAPIProtocol
+
+protocol ValetudoAPIProtocol: AnyObject, Sendable {
+    func checkForUpdates() async throws
+    func getUpdaterState() async throws -> UpdaterState
+    func downloadUpdate() async throws
+    func applyUpdate() async throws
+    func getValetudoVersion() async throws -> ValetudoVersion
+}
+
 // MARK: - UpdateService
 
 @MainActor
@@ -43,7 +53,7 @@ class UpdateService {
     private(set) var downloadProgress: Double = 0.0
 
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "UpdateService")
-    private let api: ValetudoAPI
+    private let api: any ValetudoAPIProtocol
     @ObservationIgnored private var pollingTask: Task<Void, Never>?
     @ObservationIgnored private var backgroundTaskID: UIBackgroundTaskIdentifier = .invalid
     @ObservationIgnored private var lastCheckDate: Date?
@@ -51,7 +61,7 @@ class UpdateService {
     /// Wird aufgerufen wenn der Roboter nach einem OTA-Update erfolgreich neu gestartet hat
     var onRebootComplete: (() -> Void)?
 
-    init(api: ValetudoAPI) {
+    init(api: any ValetudoAPIProtocol) {
         self.api = api
     }
 

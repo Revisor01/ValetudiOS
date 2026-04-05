@@ -27,6 +27,7 @@
 		3692C118EEE4D844F681DC5A /* MapCacheService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BF4588FA1C92BE6B69DEEFE /* MapCacheService.swift */; };
 		463715B3BAE62493A0D01D8B /* MapInteractiveView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 47A7ADB46F356027F35DDE05 /* MapInteractiveView.swift */; };
 		48E82472B522893504594AC9 /* RobotState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 602023483884AA7FC99EE28A /* RobotState.swift */; };
+		4A3C03AEB557F35B191CDFAC /* UpdateServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFE7E999A8E259B168B2F9D7 /* UpdateServiceTests.swift */; };
 		4F1CBBF41038293EA0F80B16 /* Consumable.swift in Sources */ = {isa = PBXBuildFile; fileRef = B313EE35A432692658D58220 /* Consumable.swift */; };
 		583401D717322CA5AE6527B8 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C082534D8ADAC8160B2405F /* NotificationService.swift */; };
 		5AEEB82CA45C29C587696C1B /* RobotIntents.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1A18570DE687AB149DC4A37C /* RobotIntents.swift */; };
@@ -149,6 +150,7 @@
 		A7F8D53EAFED098327775431 /* NTPSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NTPSettingsView.swift; sourceTree = "<group>"; };
 		A85C9582AEC53718BC544A5F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		AD2387AE1CFE8B8462ACDDB6 /* MapControlBarsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapControlBarsView.swift; sourceTree = "<group>"; };
+		AFE7E999A8E259B168B2F9D7 /* UpdateServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateServiceTests.swift; sourceTree = "<group>"; };
 		B30EFCF6ED7073460D5C1F3C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		B313EE35A432692658D58220 /* Consumable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Consumable.swift; sourceTree = "<group>"; };
 		B47F4D17ACA9DC7007F05B9E /* BackgroundMonitorService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundMonitorService.swift; sourceTree = "<group>"; };
@@ -353,6 +355,7 @@
 				207A76A1020CA2C1DEB44125 /* RobotDetailViewModelTests.swift */,
 				01D16364C1588D7F0AEB5FEE /* RobotSettingsViewModelTests.swift */,
 				29662D61BFED0893E6E573CB /* TimerTests.swift */,
+				AFE7E999A8E259B168B2F9D7 /* UpdateServiceTests.swift */,
 				67E063E08AD679C61BFC04E6 /* ValetudoAPITests.swift */,
 			);
 			path = ValetudoAppTests;
@@ -478,6 +481,7 @@
 				E729DF2F6C2B31C596133D84 /* RobotDetailViewModelTests.swift in Sources */,
 				B729DD529A0445E3996DD614 /* RobotSettingsViewModelTests.swift in Sources */,
 				D919418DE4EA629CDA129AFA /* TimerTests.swift in Sources */,
+				4A3C03AEB557F35B191CDFAC /* UpdateServiceTests.swift in Sources */,
 				2F9C24F46ECB55001E3C6191 /* ValetudoAPITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

@@ -813,3 +813,6 @@ struct VoicePackState: Codable {
         case supportedLanguages = "supported_languages"
     }
 }
+
+// MARK: - ValetudoAPIProtocol Conformance
+extension ValetudoAPI: ValetudoAPIProtocol {}
