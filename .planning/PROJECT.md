@@ -75,7 +75,13 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 
 ### Active
 
-(Keine aktiven Requirements — nächster Milestone noch nicht definiert)
+<!-- v4.0.0 — App Store Release -->
+- [ ] Privacy Policy: DSGVO + Apple-konforme Datenschutzerklärung auf simonluthe.de -- v4.0.0
+- [ ] App-Beschreibung: Attraktive Projektseite auf simonluthe.de/apps/valetudios/ -- v4.0.0
+- [ ] App Store Listing: Titel, Untertitel, Keywords, Beschreibungstext (DE + EN) -- v4.0.0
+- [ ] App Store Metadata: Screenshots-Anleitung, Review Notes -- v4.0.0
+- [ ] Support-Symbol Fix: Taube wird nicht angezeigt in SupportView -- v4.0.0
+- [ ] SSE Zombie-Socket: Reconnection bei VPN-/Netzwerk-Wechsel -- v4.0.0
 
 ### Validated (v1.4.0)
 
@@ -95,6 +101,7 @@ Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigke
 ## Current State
 
 **Shipped:** v3.0.0 (2026-04-05)
+**In Progress:** v4.0.0 — App Store Release
 **Version:** 3.0.0 — Quality, Performance & Hardening
 
 Die App ist auf Produktionsqualität gebracht: SSE-basiertes Map-Streaming statt HTTP-Polling, O(1) Hit-Testing mit CGImage Pre-Rendering, vollständige ErrorRouter-Verdrahtung, VoiceOver-Accessibility, Robot-Config im Keychain verschlüsselt, 143 Unit-Tests. Views sind sauber dekomponiert (RobotDetailView 88% kleiner), alle try?-Suppressions eliminiert, und Multi-Robot-Polling auf den aktiven Roboter beschränkt.
@@ -229,4 +236,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-05 — after v3.0.0 milestone*
+*Last updated: 2026-04-05 — Milestone v4.0.0 started*
