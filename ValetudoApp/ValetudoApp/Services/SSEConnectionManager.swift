@@ -20,7 +20,8 @@ actor SSEConnectionManager {
     // NWPathMonitor for detecting network path changes
     private var pathMonitor: NWPathMonitor?
     private var pathMonitorQueue: DispatchQueue?
-    private var lastPathStatus: NWPath.Status = .requiresConnection
+    private var lastPathStatus: NWPath.Status = .satisfied
+    private var pathMonitorReady = false
 
     // MARK: - Public Interface
 
@@ -99,11 +100,11 @@ actor SSEConnectionManager {
                 await self.handlePathUpdate(path)
             }
         }
+        // Start with pathMonitorReady=false — the first callback is always ignored
+        // to prevent the false .satisfied → .satisfied "restored" trigger on app start.
+        // After the first callback, we set pathMonitorReady=true and begin tracking changes.
+        pathMonitorReady = false
         monitor.start(queue: queue)
-        // Initialise lastPathStatus from the current path immediately after start so the
-        // first pathUpdateHandler callback does not see a false .requiresConnection →
-        // .satisfied transition and trigger a spurious reconnectAll().
-        lastPathStatus = monitor.currentPath.status
         logger.info("SSE NWPathMonitor started")
     }
 
@@ -115,6 +116,15 @@ actor SSEConnectionManager {
     }
 
     private func handlePathUpdate(_ path: NWPath) {
+        // Skip the very first callback — NWPathMonitor always fires once on start,
+        // which would cause a false-positive reconnect.
+        guard pathMonitorReady else {
+            lastPathStatus = path.status
+            pathMonitorReady = true
+            logger.debug("SSE NWPathMonitor initial status: \(path.status == .satisfied ? "satisfied" : "unsatisfied", privacy: .public)")
+            return
+        }
+
         let previousStatus = lastPathStatus
         lastPathStatus = path.status
 

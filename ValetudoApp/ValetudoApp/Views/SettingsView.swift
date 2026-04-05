@@ -142,7 +142,7 @@ struct SettingsView: View {
                         HStack(spacing: 4) {
                             Text("Made with")
                             Image(systemName: "bird")
-                                .foregroundStyle(.secondary)
+                                .foregroundStyle(.red)
                             Text("in Hennstedt")
                         }
                         .font(.caption)
