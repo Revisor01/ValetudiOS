@@ -291,8 +291,8 @@ final class RobotSettingsViewModel {
         if hasVoicePack {
             do {
                 let state = try await api.getVoicePackState()
-                voicePacks = state.supportedLanguages
-                currentVoicePackId = state.currentLanguage.id
+                voicePacks = state.supportedLanguages ?? []
+                currentVoicePackId = state.currentLanguage?.id ?? ""
             } catch {
                 logger.error("getVoicePackState failed: \(error, privacy: .public)")
                 if !DebugConfig.showAllCapabilities { hasVoicePack = false }
@@ -520,7 +520,7 @@ final class RobotSettingsViewModel {
             // Reload current state on error
             do {
                 let state = try await api.getVoicePackState()
-                currentVoicePackId = state.currentLanguage.id
+                currentVoicePackId = state.currentLanguage?.id ?? ""
             } catch {
                 logger.error("getVoicePackState failed in setVoicePack: \(error, privacy: .public)")
                 errorRouter?.show(error)

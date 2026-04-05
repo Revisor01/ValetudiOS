@@ -805,8 +805,8 @@ struct VoicePack: Codable, Identifiable {
 }
 
 struct VoicePackState: Codable {
-    let currentLanguage: VoicePack
-    let supportedLanguages: [VoicePack]
+    let currentLanguage: VoicePack?
+    let supportedLanguages: [VoicePack]?
 
     enum CodingKeys: String, CodingKey {
         case currentLanguage = "current_language"
