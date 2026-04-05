@@ -28,8 +28,8 @@ struct RestrictionIdentifier: Equatable {
 
 // MARK: - Map Tab View (for Tab Bar)
 struct MapTabView: View {
-    @Environment(RobotManager.self) var robotManager
     let robot: RobotConfig
+    let robotManager: RobotManager
     @State private var viewId = UUID()
 
     var body: some View {
@@ -40,7 +40,6 @@ struct MapTabView: View {
                 .navigationBarTitleDisplayMode(.inline)
         }
         .onChange(of: robot.id) { _, _ in
-            // Force complete view rebuild when robot changes
             viewId = UUID()
         }
     }
