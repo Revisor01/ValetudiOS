@@ -236,9 +236,10 @@ struct MapView: View {
     let robotManager: RobotManager
 
     var body: some View {
+        let _ = print(">>> MapView.body START")
         NavigationStack {
-            MapContentView(robot: robot, robotManager: robotManager, isFullscreen: true)
-                .navigationTitle(String(localized: "map.title"))
+            Text("MapView WITHOUT MapContentView")
+                .navigationTitle("Map Test")
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
@@ -248,7 +249,6 @@ struct MapView: View {
                             Image(systemName: "xmark")
                                 .fontWeight(.semibold)
                         }
-                        .accessibilityLabel(String(localized: "map.close"))
                     }
                 }
         }
