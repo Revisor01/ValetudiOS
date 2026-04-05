@@ -259,7 +259,7 @@ Plans:
 
 Plans:
 - [ ] 27-01-PLAN.md — Accessibility-Labels fuer Controls, Status-Header, Consumables, Listen-Buttons (A11Y-01, A11Y-02, A11Y-03, A11Y-04)
-- [ ] 27-02-PLAN.md — Accessibility-Labels fuer Map-Canvas, Room-Chips, Map-Toolbar, Restriction-Overlays (A11Y-04, A11Y-05)
+- [x] 27-02-PLAN.md — Accessibility-Labels fuer Map-Canvas, Room-Chips, Map-Toolbar, Restriction-Overlays (A11Y-04, A11Y-05)
 
 ### Phase 28: Test Coverage Expansion
 **Goal**: Kritische Pfade sind durch automatisierte Tests abgesichert

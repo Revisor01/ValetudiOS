@@ -43,8 +43,8 @@ Requirements for Quality, Performance & Hardening. Each maps to roadmap phases.
 - [ ] **A11Y-01**: Alle Control-Buttons (Start, Stop, Home, Dock-Actions) haben `.accessibilityLabel` mit Aktionsbeschreibung
 - [ ] **A11Y-02**: Status-Header (Batterie, Reinigungsstatus) hat `.accessibilityValue` für aktuellen Zustand
 - [ ] **A11Y-03**: Consumable-Fortschrittsbalken haben `.accessibilityValue` mit Prozentangabe
-- [ ] **A11Y-04**: Alle Icon-only-Buttons in der gesamten App haben beschreibende Accessibility-Labels
-- [ ] **A11Y-05**: Map-Canvas hat ein `.accessibilityElement` Summary-Label; Raumauswahl ist alternativ über Liste möglich (bereits vorhanden)
+- [x] **A11Y-04**: Alle Icon-only-Buttons in der gesamten App haben beschreibende Accessibility-Labels
+- [x] **A11Y-05**: Map-Canvas hat ein `.accessibilityElement` Summary-Label; Raumauswahl ist alternativ über Liste möglich (bereits vorhanden)
 
 ### Test Coverage
 
@@ -94,8 +94,8 @@ Requirements for Quality, Performance & Hardening. Each maps to roadmap phases.
 | A11Y-01 | Phase 27 | Pending |
 | A11Y-02 | Phase 27 | Pending |
 | A11Y-03 | Phase 27 | Pending |
-| A11Y-04 | Phase 27 | Pending |
-| A11Y-05 | Phase 27 | Pending |
+| A11Y-04 | Phase 27 | Complete |
+| A11Y-05 | Phase 27 | Complete |
 | TEST-01 | Phase 28 | Pending |
 | TEST-02 | Phase 28 | Pending |
 | TEST-03 | Phase 28 | Pending |

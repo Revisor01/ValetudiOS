@@ -3,14 +3,14 @@ gsd_state_version: 1.0
 milestone: v1.2.0
 milestone_name: Quality & API Completeness
 status: executing
-last_updated: "2026-04-05T00:20:05.827Z"
+last_updated: "2026-04-05T00:33:35.857Z"
 last_activity: 2026-04-05
 progress:
   total_phases: 30
   completed_phases: 25
-  total_plans: 61
-  completed_plans: 60
-  percent: 98
+  total_plans: 63
+  completed_plans: 61
+  percent: 97
 ---
 
 # Project State
@@ -20,11 +20,11 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-04)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 26 — security-hardening
+**Current focus:** Phase 27 — accessibility
 
 ## Current Position
 
-Phase: 26 (security-hardening) — EXECUTING
+Phase: 27 (accessibility) — EXECUTING
 Plan: 2 of 2
 Status: Ready to execute
 Last activity: 2026-04-05
@@ -49,6 +49,8 @@ Progress: [........] 0/8 phases complete
 - [Phase 24-map-performance]: staticLayerImage CGImage pre-rendered on background thread via UIGraphicsImageRenderer, Canvas draws only dynamic elements per frame
 - [Phase 26-security-hardening]: Warning-Banner als eigene Section statt Footer-Text fuer visuelle Prominenz und Konsistenz
 - [Phase 26-security-hardening]: ignoreCertificateErrors wird auf false zurueckgesetzt wenn useSSL=false
+- [Phase 27-accessibility]: children: .ignore auf Canvas statt .combine - Canvas hat keine sinnvollen VoiceOver-Kinder
+- [Phase 27-accessibility]: accessibilityHint mit Auswahl-Kontext auf Room-Buttons - VoiceOver liest aktuellen Status vor
 
 ### Pending Todos
 
