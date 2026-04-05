@@ -147,6 +147,21 @@ struct InteractiveMapView: View {
         .overlay {
             orderBadgesOverlay
         }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(canvasAccessibilityLabel)
+        .accessibilityAddTraits(.isImage)
+    }
+
+    private var canvasAccessibilityLabel: String {
+        if segments.isEmpty {
+            return String(localized: "map.accessibility_label_no_rooms")
+        }
+        let roomCount = segments.count
+        let selectedCount = selectedSegmentIds.count
+        if selectedCount > 0 {
+            return String(localized: "map.accessibility_label_rooms_selected \(roomCount) \(selectedCount)")
+        }
+        return String(localized: "map.accessibility_label_rooms \(roomCount)")
     }
 
     // MARK: - Tap Targets

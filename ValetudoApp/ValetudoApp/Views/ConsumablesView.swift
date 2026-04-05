@@ -100,6 +100,7 @@ struct ConsumableRow: View {
                 .font(.title2)
                 .foregroundStyle(consumable.iconColor)
                 .frame(width: 36)
+                .accessibilityHidden(true)
 
             // Name & Progress
             VStack(alignment: .leading, spacing: 6) {
@@ -122,6 +123,9 @@ struct ConsumableRow: View {
                 }
                 .frame(height: 8)
             }
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(consumable.displayName)
+            .accessibilityValue(String(format: "%.0f%%", consumable.remainingPercent))
 
             // Remaining value
             Text(consumable.remainingDisplay)
@@ -129,6 +133,7 @@ struct ConsumableRow: View {
                 .fontWeight(.semibold)
                 .foregroundStyle(progressColor)
                 .frame(minWidth: 44, alignment: .trailing)
+                .accessibilityHidden(true)
 
             // Reset button
             Button {
@@ -139,6 +144,7 @@ struct ConsumableRow: View {
                     .foregroundStyle(.blue)
             }
             .buttonStyle(.plain)
+            .accessibilityLabel(String(localized: "consumables.reset_title"))
         }
         .padding(.vertical, 4)
     }

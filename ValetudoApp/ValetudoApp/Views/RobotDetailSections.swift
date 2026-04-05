@@ -88,6 +88,7 @@ struct ControlButton<MenuContent: View>: View {
                 }
             }
         }
+        .accessibilityLabel(title)
     }
 }
 
@@ -322,5 +323,6 @@ struct DockActionButton: View {
             .foregroundStyle(color)
             .clipShape(RoundedRectangle(cornerRadius: 10))
         }
+        .accessibilityLabel(title)
     }
 }

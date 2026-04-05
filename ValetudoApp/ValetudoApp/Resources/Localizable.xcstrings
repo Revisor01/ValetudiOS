@@ -2831,6 +2831,75 @@
         }
       }
     },
+    "map.accessibility_label_no_rooms" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saugroboter-Karte, keine Räume erkannt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vacuum map, no rooms detected"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carte de l'aspirateur, aucune pièce détectée"
+          }
+        }
+      }
+    },
+    "map.accessibility_label_rooms %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saugroboter-Karte, %lld Räume"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vacuum map, %lld rooms"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carte de l'aspirateur, %lld pièces"
+          }
+        }
+      }
+    },
+    "map.accessibility_label_rooms_selected %lld %lld" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Saugroboter-Karte, %1$lld Räume, %2$lld ausgewählt"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Vacuum map, %1$lld rooms, %2$lld selected"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Carte de l'aspirateur, %1$lld pièces, %2$lld sélectionnées"
+          }
+        }
+      }
+    },
     "map.preset_move_hint" : {
       "extractionState" : "stale",
       "localizations" : {

@@ -41,6 +41,7 @@ struct MapControlButton: View {
             }
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(title)
     }
 }
 
@@ -68,6 +69,7 @@ struct RoomEditButton: View {
             .clipShape(RoundedRectangle(cornerRadius: 10))
         }
         .buttonStyle(.plain)
+        .accessibilityLabel(title)
     }
 }
 
