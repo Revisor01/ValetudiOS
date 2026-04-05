@@ -36,6 +36,7 @@
 		5CA62D98CD706CA8FD0A0737 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F02071A0C637423ED754AC4 /* StatisticsView.swift */; };
 		5D3B904354FE1DCBB4A0859B /* MapViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CA75525C383460748ED61C0 /* MapViewModelTests.swift */; };
 		65CDA694BCC22AD6CAD3E629 /* SupportManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5E86B5858DFF36ABA29E732F /* SupportManager.swift */; };
+		661AF0186DA3BD4B78F1842A /* SSEConnectionManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 83A69B28F35CD8F684A2FF5F /* SSEConnectionManagerTests.swift */; };
 		67058C5900194A806714D27C /* MapDrawingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74EFB08C6B48F9415A43E01B /* MapDrawingOverlay.swift */; };
 		6BE4BC052593841E0B70FE6F /* RobotDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBBA65057AA09088A3B6E843 /* RobotDetailViewModel.swift */; };
 		6CE25D859DBD613963C741F8 /* EventsSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0100DBD38ED71C4C01E1E3CB /* EventsSectionView.swift */; };
@@ -87,6 +88,7 @@
 		F52FE2EADA306DE60C4E65D9 /* NTPSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F8D53EAFED098327775431 /* NTPSettingsView.swift */; };
 		F733B7BBDFCBC3B580936D5B /* RobotSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D6AE0002BBCCDB7F2151021 /* RobotSettingsViewModel.swift */; };
 		F9183FE4D3062C00455D8123 /* ConsumablesPreviewSectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 994A51986573E27C730AB9FD /* ConsumablesPreviewSectionView.swift */; };
+		FB8C5E78715AEBEF5B4A7BE4 /* MapCacheServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 512D53EA1BD64BF36BFAA74A /* MapCacheServiceTests.swift */; };
 		FFECCF69B6C0CE99DDF1E747 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A85C9582AEC53718BC544A5F /* SettingsView.swift */; };
 /* End PBXBuildFile section */
 
@@ -127,6 +129,7 @@
 		4D6AE0002BBCCDB7F2151021 /* RobotSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotSettingsViewModel.swift; sourceTree = "<group>"; };
 		4D74E6E7081C7AE4DA22B562 /* TimersView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimersView.swift; sourceTree = "<group>"; };
 		4F05909B03F354CD7AC5E728 /* MQTTSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MQTTSettingsView.swift; sourceTree = "<group>"; };
+		512D53EA1BD64BF36BFAA74A /* MapCacheServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapCacheServiceTests.swift; sourceTree = "<group>"; };
 		5713E6238AD5A3F2420EE02B /* RobotListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotListView.swift; sourceTree = "<group>"; };
 		5E86B5858DFF36ABA29E732F /* SupportManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupportManager.swift; sourceTree = "<group>"; };
 		602023483884AA7FC99EE28A /* RobotState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotState.swift; sourceTree = "<group>"; };
@@ -138,6 +141,7 @@
 		70B675F7989A2AC884174105 /* AutoEmptyDockSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoEmptyDockSettingsView.swift; sourceTree = "<group>"; };
 		74EFB08C6B48F9415A43E01B /* MapDrawingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapDrawingOverlay.swift; sourceTree = "<group>"; };
 		81D82B708C9E0DA24CF922B2 /* RobotStatusHeaderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RobotStatusHeaderView.swift; sourceTree = "<group>"; };
+		83A69B28F35CD8F684A2FF5F /* SSEConnectionManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SSEConnectionManagerTests.swift; sourceTree = "<group>"; };
 		8489C5B4217131AFAA714813 /* PresetHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PresetHelpers.swift; sourceTree = "<group>"; };
 		8B35122CA897ECE8B3B52014 /* ManualControlView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ManualControlView.swift; sourceTree = "<group>"; };
 		98A5D2C3E4A261558B82597A /* UpdateOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateOverlayView.swift; sourceTree = "<group>"; };
@@ -352,11 +356,13 @@
 			children = (
 				D19BECB7EAC228CACDE27D45 /* ConsumableTests.swift */,
 				C06AD3C1B9A930E3DFF22B33 /* KeychainStoreTests.swift */,
+				512D53EA1BD64BF36BFAA74A /* MapCacheServiceTests.swift */,
 				DF2ECD98AE2E9729767F4CE8 /* MapGeometryTests.swift */,
 				BDFE1B37CB17CC446C036D73 /* MapLayerTests.swift */,
 				9CA75525C383460748ED61C0 /* MapViewModelTests.swift */,
 				207A76A1020CA2C1DEB44125 /* RobotDetailViewModelTests.swift */,
 				01D16364C1588D7F0AEB5FEE /* RobotSettingsViewModelTests.swift */,
+				83A69B28F35CD8F684A2FF5F /* SSEConnectionManagerTests.swift */,
 				29662D61BFED0893E6E573CB /* TimerTests.swift */,
 				AFE7E999A8E259B168B2F9D7 /* UpdateServiceTests.swift */,
 				67E063E08AD679C61BFC04E6 /* ValetudoAPITests.swift */,
@@ -479,11 +485,13 @@
 			files = (
 				7287C4B56D6A0CE743D38B28 /* ConsumableTests.swift in Sources */,
 				1F0534502B3DB53D433509DD /* KeychainStoreTests.swift in Sources */,
+				FB8C5E78715AEBEF5B4A7BE4 /* MapCacheServiceTests.swift in Sources */,
 				8F6D7422E6348F6AF68FADD7 /* MapGeometryTests.swift in Sources */,
 				BD5D356EA599C51A65452FA2 /* MapLayerTests.swift in Sources */,
 				5D3B904354FE1DCBB4A0859B /* MapViewModelTests.swift in Sources */,
 				E729DF2F6C2B31C596133D84 /* RobotDetailViewModelTests.swift in Sources */,
 				B729DD529A0445E3996DD614 /* RobotSettingsViewModelTests.swift in Sources */,
+				661AF0186DA3BD4B78F1842A /* SSEConnectionManagerTests.swift in Sources */,
 				D919418DE4EA629CDA129AFA /* TimerTests.swift in Sources */,
 				4A3C03AEB557F35B191CDFAC /* UpdateServiceTests.swift in Sources */,
 				2F9C24F46ECB55001E3C6191 /* ValetudoAPITests.swift in Sources */,

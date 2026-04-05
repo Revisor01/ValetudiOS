@@ -188,6 +188,7 @@ struct EditRobotView: View {
     @State private var ignoreCertificateErrors: Bool
     @State private var isTesting = false
     @State private var testResult: ConnectionTestResult?
+    @State private var showDeleteConfirmation = false
 
     init(robot: RobotConfig) {
         self.robot = robot
@@ -264,14 +265,21 @@ struct EditRobotView: View {
 
                 Section {
                     Button(role: .destructive) {
-                        robotManager.removeRobot(robot.id)
-                        dismiss()
+                        showDeleteConfirmation = true
                     } label: {
                         HStack {
                             Spacer()
                             Text(String(localized: "settings.delete_robot"))
                             Spacer()
                         }
+                    }
+                    .confirmationDialog(String(localized: "settings.delete_robot"), isPresented: $showDeleteConfirmation, titleVisibility: .visible) {
+                        Button(String(localized: "settings.delete_robot"), role: .destructive) {
+                            robotManager.removeRobot(robot.id)
+                            dismiss()
+                        }
+                    } message: {
+                        Text(String(localized: "settings.delete_robot_confirm"))
                     }
                 }
             }

@@ -250,35 +250,6 @@ extension MapContentView {
         currentDrawEnd = nil
     }
 
-    // MARK: - Map Parameters
-
-    /// Local MapParams calculation. Delegates to free function in MapGeometry.swift with padding: 20
-    func calculateMapParams(layers: [MapLayer], pixelSize: Int, size: CGSize) -> MapParams? {
-        var minX = Int.max, maxX = Int.min
-        var minY = Int.max, maxY = Int.min
-        let padding: CGFloat = 20
-        for layer in layers {
-            let pixels = layer.decompressedPixels
-            guard !pixels.isEmpty else { continue }
-            var i = 0
-            while i < pixels.count - 1 {
-                minX = min(minX, pixels[i]); maxX = max(maxX, pixels[i])
-                minY = min(minY, pixels[i + 1]); maxY = max(maxY, pixels[i + 1])
-                i += 2
-            }
-        }
-        guard minX < Int.max else { return nil }
-        let cW = CGFloat(maxX - minX + pixelSize), cH = CGFloat(maxY - minY + pixelSize)
-        let aW = size.width - padding * 2, aH = size.height - padding * 2
-        let scale = min(aW / cW, aH / cH)
-        return MapParams(
-            scale: scale,
-            offsetX: padding + (aW - cW * scale) / 2 - CGFloat(minX) * scale,
-            offsetY: padding + (aH - cH * scale) / 2 - CGFloat(minY) * scale,
-            minX: minX, minY: minY
-        )
-    }
-
     // MARK: - Combined Gesture
 
     var combinedGesture: some Gesture {
