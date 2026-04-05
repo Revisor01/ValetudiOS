@@ -132,6 +132,13 @@ struct MapPreviewView: View {
         .onDisappear {
             refreshTask?.cancel()
         }
+        .onChange(of: showFullMap) { _, isShowing in
+            if isShowing {
+                refreshTask?.cancel()
+            } else {
+                startLiveRefresh()
+            }
+        }
     }
 
     private func loadMap() async {
@@ -159,7 +166,7 @@ struct MapPreviewView: View {
                 try? await Task.sleep(for: .seconds(3))
                 if !Task.isCancelled, let api = api {
                     if let newMap = try? await api.getMap() {
-                        await MainActor.run { map = newMap }
+                        map = newMap
                     }
                 }
             }
