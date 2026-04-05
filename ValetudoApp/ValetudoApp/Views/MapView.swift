@@ -207,15 +207,24 @@ struct MapContentView: View {
 
 }
 
-// MARK: - Map View (Sheet/Modal version - uses MapContentView)
+// MARK: - Map View (Sheet/Modal version)
 struct MapView: View {
     @Environment(\.dismiss) var dismiss
     let robot: RobotConfig
-    let robotManager: RobotManager
+
+    // ViewModel created in init — body never reads robotManager
+    @State private var mapViewModel: MapViewModel
+
+    init(robot: RobotConfig, robotManager: RobotManager) {
+        self.robot = robot
+        _mapViewModel = State(initialValue: MapViewModel(robot: robot, robotManager: robotManager, isFullscreen: true))
+    }
 
     var body: some View {
         NavigationStack {
-            MapContentView(robot: robot, robotManager: robotManager, isFullscreen: true)
+            Text("MAP SHEET — viewModel in MapView, not MapContentView")
+                .font(.title2)
+                .padding()
                 .navigationTitle(String(localized: "map.title"))
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
