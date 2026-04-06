@@ -1,31 +1,40 @@
-# ValetudiOS - App Store Materialien
+# ValetudiOS — App Store Listing
 
 ## App Name
 **ValetudiOS**
 
-## Untertitel (30 Zeichen max)
-**Native Valetudo Steuerzentrale**
+## Subtitle (30 chars max)
+
+| Language | Text | Chars |
+|----------|------|-------|
+| DE | Native Valetudo Steuerzentrale | 30 |
+| EN | Native Valetudo Control Center | 30 |
+| FR | Centre de contrôle Valetudo | 27 |
 
 ---
 
-## Kurzbeschreibung (Promotional Text - 170 Zeichen)
+## Promotional Text (170 chars max)
 
-Die erste native iOS-App für Valetudo. Steuere deinen Saugroboter direkt, ohne Cloud, ohne Umwege. Volle Kontrolle in deinem lokalen Netzwerk.
+| Language | Text |
+|----------|------|
+| DE | Die erste native iOS-App für Valetudo. Steuere deinen Saugroboter direkt, ohne Cloud, ohne Umwege. Volle Kontrolle in deinem lokalen Netzwerk. |
+| EN | The first native iOS app for Valetudo. Control your robot vacuum directly �� no cloud, no detours. Full control on your local network. |
+| FR | La première app iOS native pour Valetudo. Contrôle ton aspirateur robot directement, sans cloud, sans détour. Contrôle total sur ton réseau local. |
 
 ---
 
-## Vollständige Beschreibung (4000 Zeichen max)
+## Full Description (4000 chars max)
 
 ### DEUTSCH
 
 **Die erste native iOS-App für Valetudo-Saugroboter.**
 
-ValetudiOS ist die Companion-App, die Valetudo-Nutzer verdienen: Eine echte, von Grund auf für iOS entwickelte App - keine Web-Wrapper, keine Electron-Ports, keine Kompromisse.
+ValetudiOS ist die Companion-App, die Valetudo-Nutzer verdienen: Eine echte, von Grund auf für iOS entwickelte App — keine Web-Wrapper, keine Electron-Ports, keine Kompromisse.
 
 **WARUM VALETUDIÖS?**
 
 • 100% Native Swift & SwiftUI
-Entwickelt mit den neuesten Apple-Technologien für ein flüssiges, responsives Erlebnis. Keine Web-Views, keine Ladezeiten - pure iOS-Performance.
+Entwickelt mit den neuesten Apple-Technologien für ein flüssiges, responsives Erlebnis. Keine Web-Views, keine Ladezeiten — pure iOS-Performance.
 
 • Keine Cloud, keine Datensammlung
 Deine Daten bleiben bei dir. ValetudiOS kommuniziert ausschließlich lokal mit deinen Robotern. Kein Tracking, keine Werbung, keine versteckten Dienste.
@@ -33,51 +42,55 @@ Deine Daten bleiben bei dir. ValetudiOS kommuniziert ausschließlich lokal mit d
 • Multi-Roboter-Support
 Verwalte alle deine Valetudo-Roboter in einer App. Perfekt für Smart Homes mit mehreren Etagen.
 
-**FEATURES**
+**INTERAKTIVE KARTE**
 
-Karten-Steuerung
-• Interaktive Live-Karte mit Pinch-to-Zoom
-• Raumauswahl per Tap - einzeln oder mehrere
-• Zonenreinigung: Zeichne eigene Bereiche
-• Virtuelle Wände & No-Go-Zonen
+• Live-Karte mit Echtzeit-Roboterposition und Pinch-to-Zoom
+• Räume direkt antippen — Reinigungsreihenfolge als nummerierte Badges
+• Zonenreinigung: Eigene Bereiche zeichnen
+• Virtuelle Wände & No-Go-Zonen erstellen
 • GoTo-Punkte speichern und anfahren
+• Karten-Snapshots sichern und wiederherstellen
+• Offline-Kartencache — Karte auch ohne Verbindung sichtbar
 
-Reinigungssteuerung
+**REINIGUNGSSTEUERUNG**
+
 • Start, Stop, Pause mit einem Tap
-• Raumreinigung mit wählbaren Durchgängen (1×, 2×, 3×)
+• Raumreinigung mit wählbaren Durchgängen und eigener Reihenfolge
 • Saugleistung & Wasserverbrauch anpassen
-• Betriebsmodi wechseln (Saugen, Wischen, Beides)
-
-Roboter-Management
-• Echtzeit-Status: Akku, Position, Aktivität
-• Verbrauchsmaterial-Tracking mit Warnungen
-• Reinigungsstatistiken & Historie
+• Manuelle Steuerung per Joystick
 • Timer für automatische Reinigungen
-• Dock-Funktionen (Auto-Leerung, Mop-Reinigung)
+• Nicht-stören-Modus mit Zeitplan
 
-System-Integration
+**ROBOTER-MANAGEMENT**
+
+• Echtzeit-Status per SSE — Akku, Position, Aktivität live
+• Verbrauchsmaterial-Tracking mit Warnungen bei niedrigem Stand
+• Reinigungsstatistiken & Historie
+• Firmware-Updates direkt aus der App mit Fortschrittsanzeige
+• Dock-Funktionen (Auto-Leerung, Mop-Trocknung)
+• Voice Packs wechseln
+• MQTT & NTP Konfiguration
+• WiFi-Management mit Signalstärke
+
+**APPLE-INTEGRATION**
+
 • Siri-Kurzbefehle für schnelle Aktionen
-• Push-Benachrichtigungen bei Ereignissen
-• Dark Mode Unterstützung
-• Widget-Support (coming soon)
+• Push-Benachrichtigungen: Reinigung fertig, Roboter steckt fest, Fehler
+• Hintergrund-Monitoring — Status-Updates auch bei geschlossener App
+• VoiceOver-Unterstützung für barrierefreie Bedienung
+• Dark Mode
+
+**AUTOMATISCHE ERKENNUNG**
+
+Roboter im Netzwerk werden automatisch per Bonjour (mDNS) und IP-Scan gefunden. Einfach App öffnen und losreinigen.
 
 **UNTERSTÜTZTE ROBOTER**
 
-Alle Roboter mit Valetudo-Firmware:
-• Roborock (S5, S5 Max, S6, S7, S8, Q-Serie)
-• Dreame (L10 Pro, Z10 Pro, L20 Ultra, X40)
-• Xiaomi & Viomi Modelle
-• Und viele weitere
-
-**VORAUSSETZUNGEN**
-
-• iOS 17.0 oder neuer
-• Valetudo 2024.06.0 oder neuer auf deinem Roboter
-• Roboter im lokalen WLAN erreichbar
+Alle Roboter mit Valetudo-Firmware: Roborock, Dreame, Xiaomi, Viomi und viele weitere.
 
 **DATENSCHUTZ**
 
-ValetudiOS ist DSGVO-konform. Keine Daten verlassen dein Gerät. Keine Analytics, keine Tracker, keine Cloud-Anbindung. Deine Privatsphäre ist garantiert.
+ValetudiOS ist DSGVO-konform. Keine Daten verlassen dein Gerät. Keine Analytics, keine Tracker, keine Cloud. Null externe Abhängigkeiten — auch kein SDK eines Drittanbieters.
 
 ---
 
@@ -85,12 +98,12 @@ ValetudiOS ist DSGVO-konform. Keine Daten verlassen dein Gerät. Keine Analytics
 
 **The first native iOS app for Valetudo robot vacuums.**
 
-ValetudiOS is the companion app Valetudo users deserve: A true native iOS app - no web wrappers, no Electron ports, no compromises.
+ValetudiOS is the companion app Valetudo users deserve: A true native iOS app — no web wrappers, no Electron ports, no compromises.
 
-**WHY VALETUDIÓS?**
+**WHY VALETUDIOS?**
 
 • 100% Native Swift & SwiftUI
-Built with the latest Apple technologies for a fluid, responsive experience. No web views, no loading times - pure iOS performance.
+Built with the latest Apple technologies for a fluid, responsive experience. No web views, no loading times — pure iOS performance.
 
 • No Cloud, No Data Collection
 Your data stays with you. ValetudiOS communicates exclusively locally with your robots. No tracking, no ads, no hidden services.
@@ -98,131 +111,232 @@ Your data stays with you. ValetudiOS communicates exclusively locally with your 
 • Multi-Robot Support
 Manage all your Valetudo robots in one app. Perfect for smart homes with multiple floors.
 
-**FEATURES**
+**INTERACTIVE MAP**
 
-Map Control
-• Interactive live map with pinch-to-zoom
-• Room selection by tap - single or multiple
+• Live map with real-time robot position and pinch-to-zoom
+• Tap rooms directly — cleaning order shown as numbered badges
 • Zone cleaning: Draw custom areas
-• Virtual walls & no-go zones
+• Create virtual walls & no-go zones
 • Save and navigate to GoTo points
+• Save and restore map snapshots
+• Offline map cache — map visible even without connection
 
-Cleaning Control
+**CLEANING CONTROL**
+
 • Start, stop, pause with one tap
-• Room cleaning with selectable passes (1×, 2×, 3×)
+• Room cleaning with selectable passes and custom order
 • Adjust suction power & water usage
-• Switch operation modes (vacuum, mop, both)
-
-Robot Management
-• Real-time status: battery, position, activity
-• Consumables tracking with warnings
-• Cleaning statistics & history
+• Manual joystick control
 • Timers for automatic cleanings
-• Dock functions (auto-empty, mop cleaning)
+• Do Not Disturb mode with schedule
 
-System Integration
+**ROBOT MANAGEMENT**
+
+• Real-time status via SSE — battery, position, activity live
+• Consumables tracking with low-level warnings
+• Cleaning statistics & history
+• Firmware updates directly from the app with progress display
+• Dock functions (auto-empty, mop drying)
+• Switch voice packs
+• MQTT & NTP configuration
+• WiFi management with signal strength
+
+**APPLE INTEGRATION**
+
 • Siri Shortcuts for quick actions
-• Push notifications for events
-• Dark Mode support
-• Widget support (coming soon)
+• Push notifications: Cleaning done, robot stuck, errors
+• Background monitoring — status updates even when app is closed
+• VoiceOver support for full accessibility
+• Dark Mode
+
+**AUTOMATIC DISCOVERY**
+
+Robots on your network are found automatically via Bonjour (mDNS) and IP scan. Just open the app and start cleaning.
+
+**SUPPORTED ROBOTS**
+
+All robots running Valetudo firmware: Roborock, Dreame, Xiaomi, Viomi, and many more.
 
 **PRIVACY**
 
-ValetudiOS is GDPR compliant. No data leaves your device. No analytics, no trackers, no cloud connection. Your privacy is guaranteed.
+ValetudiOS is GDPR compliant. No data leaves your device. No analytics, no trackers, no cloud. Zero external dependencies — not even a third-party SDK.
 
 ---
 
-## Keywords (100 Zeichen, kommasepariert)
+### FRANÇAIS
 
-valetudo,saugroboter,robot,vacuum,smart home,roborock,dreame,xiaomi,home automation,local control
+**La première app iOS native pour les aspirateurs robots Valetudo.**
+
+ValetudiOS est l'app compagnon que les utilisateurs de Valetudo méritent : une vraie app iOS native — pas de wrapper web, pas de port Electron, pas de compromis.
+
+**POURQUOI VALETUDIOS ?**
+
+• 100% Native Swift & SwiftUI
+Développée avec les dernières technologies Apple pour une expérience fluide et réactive. Pas de web views, pas de temps de chargement — la performance iOS pure.
+
+• Pas de cloud, pas de collecte de données
+Tes données restent chez toi. ValetudiOS communique exclusivement en local avec tes robots. Pas de tracking, pas de pub, pas de services cachés.
+
+• Support multi-robots
+Gère tous tes robots Valetudo dans une seule app. Parfait pour les maisons connectées avec plusieurs étages.
+
+**CARTE INTERACTIVE**
+
+• Carte en direct avec position du robot en temps réel et pinch-to-zoom
+• Touche les pièces directement — ordre de nettoyage affiché en badges numérotés
+• Nettoyage de zone : dessine tes propres zones
+• Crée des murs virtuels et des zones interdites
+• Enregistre et navigue vers des points GoTo
+• Sauvegarde et restaure des snapshots de carte
+• Cache de carte hors ligne — carte visible même sans connexion
+
+**CONTRÔLE DE NETTOYAGE**
+
+• Démarrer, arrêter, pause d'un seul tap
+• Nettoyage par pièce avec nombre de passages et ordre personnalisé
+• Ajuste la puissance d'aspiration et le débit d'eau
+• Contrôle manuel par joystick
+• Minuteries pour nettoyages automatiques
+• Mode Ne Pas Déranger avec horaire
+
+**GESTION DU ROBOT**
+
+• Statut en temps réel via SSE — batterie, position, activité en direct
+• Suivi des consommables avec alertes de niveau bas
+• Statistiques et historique de nettoyage
+• Mises à jour firmware directement depuis l'app avec affichage de progression
+• Fonctions dock (vidange auto, séchage de la serpillière)
+• Changer les packs vocaux
+• Configuration MQTT & NTP
+• Gestion WiFi avec force du signal
+
+**INTÉGRATION APPLE**
+
+• Raccourcis Siri pour les actions rapides
+• Notifications push : nettoyage terminé, robot bloqué, erreurs
+• Surveillance en arrière-plan — mises à jour même quand l'app est fermée
+• Support VoiceOver pour une accessibilité complète
+• Mode sombre
+
+**DÉCOUVERTE AUTOMATIQUE**
+
+Les robots sur ton réseau sont trouvés automatiquement via Bonjour (mDNS) et scan IP. Ouvre l'app et commence à nettoyer.
+
+**ROBOTS SUPPORTÉS**
+
+Tous les robots avec le firmware Valetudo : Roborock, Dreame, Xiaomi, Viomi et bien d'autres.
+
+**VIE PRIVÉE**
+
+ValetudiOS est conforme au RGPD. Aucune donnée ne quitte ton appareil. Pas d'analytics, pas de trackers, pas de cloud. Zéro dépendance externe — pas même un SDK tiers.
 
 ---
 
-## Was ist neu (What's New)
+## Keywords (100 chars, comma-separated)
 
-### Version 1.0
+| Language | Keywords |
+|----------|----------|
+| DE | valetudo,saugroboter,roboter,staubsauger,smart home,roborock,dreame,xiaomi,lokal,ohne cloud |
+| EN | valetudo,robot vacuum,smart home,roborock,dreame,xiaomi,local control,no cloud,home automation |
+| FR | valetudo,aspirateur robot,maison connectée,roborock,dreame,xiaomi,contrôle local,sans cloud |
+
+---
+
+## What's New — Version 1.0.0
+
+### DEUTSCH
 
 Erste Veröffentlichung von ValetudiOS!
 
-• Vollständige Kartensteuerung mit Räumen & Zonen
+• Interaktive Live-Karte mit Raum-Tap und Reinigungsreihenfolge
 • Multi-Roboter-Unterstützung
-• Echtzeit-Status & Statistiken
-• Verbrauchsmaterial-Tracking
-• Timer & Routinen
+• Echtzeit-Status via SSE (Server-Sent Events)
+• Zonenreinigung, virtuelle Wände & No-Go-Zonen
+• Manuelle Joystick-Steuerung
+• Verbrauchsmaterial-Tracking mit Warnungen
+• Firmware-Updates mit Fortschrittsanzeige
+• Push-Benachrichtigungen & Hintergrund-Monitoring
+• Offline-Kartencache
+• Timer & Nicht-stören-Modus
 • Siri-Kurzbefehle
-• Push-Benachrichtigungen
-• Deutsche & Englische Lokalisierung
+• VoiceOver-Unterstützung
+• Automatische Roboter-Erkennung (Bonjour & IP-Scan)
+• Deutsch, Englisch & Französisch
+• 100% lokal, DSGVO-konform, keine externen Abhängigkeiten
+
+### ENGLISH
+
+First release of ValetudiOS!
+
+• Interactive live map with room tap and cleaning order
+• Multi-robot support
+• Real-time status via SSE (Server-Sent Events)
+• Zone cleaning, virtual walls & no-go zones
+• Manual joystick control
+• Consumables tracking with warnings
+• Firmware updates with progress display
+• Push notifications & background monitoring
+• Offline map cache
+• Timers & Do Not Disturb mode
+• Siri Shortcuts
+• VoiceOver support
+• Automatic robot discovery (Bonjour & IP scan)
+• English, German & French
+• 100% local, GDPR compliant, zero external dependencies
+
+### FRANÇAIS
+
+Première version de ValetudiOS !
+
+• Carte interactive en direct avec sélection de pièces et ordre de nettoyage
+• Support multi-robots
+• Statut en temps réel via SSE (Server-Sent Events)
+• Nettoyage de zone, murs virtuels et zones interdites
+• Contrôle manuel par joystick
+• Suivi des consommables avec alertes
+• Mises à jour firmware avec affichage de progression
+• Notifications push et surveillance en arrière-plan
+• Cache de carte hors ligne
+• Minuteries et mode Ne Pas Déranger
+• Raccourcis Siri
+• Support VoiceOver
+• Découverte automatique des robots (Bonjour et scan IP)
+• Français, anglais et allemand
+• 100% local, conforme RGPD, zéro dépendance externe
 
 ---
 
-## Screenshot-Texte (für Overlays)
+## Screenshot Overlay Texts
 
-### Screenshot 1: Roboter-Übersicht
-**DE:** "Alle Roboter auf einen Blick"
-**EN:** "All robots at a glance"
-
-### Screenshot 2: Live-Karte
-**DE:** "Interaktive Karte mit Raumsteuerung"
-**EN:** "Interactive map with room control"
-
-### Screenshot 3: Raumreinigung
-**DE:** "Wähle Räume & Durchgänge"
-**EN:** "Select rooms & cleaning passes"
-
-### Screenshot 4: Zonenreinigung
-**DE:** "Zeichne eigene Reinigungszonen"
-**EN:** "Draw custom cleaning zones"
-
-### Screenshot 5: Verbrauchsmaterial
-**DE:** "Filter & Bürsten im Blick"
-**EN:** "Track filters & brushes"
-
-### Screenshot 6: Einstellungen
-**DE:** "Volle Kontrolle über deinen Roboter"
-**EN:** "Full control over your robot"
-
-### Screenshot 7: Siri-Kurzbefehle
-**DE:** "Hey Siri, starte den Staubsauger"
-**EN:** "Hey Siri, start vacuuming"
-
-### Screenshot 8: Dark Mode
-**DE:** "Perfekt für jede Tageszeit"
-**EN:** "Perfect for any time of day"
+| # | DE | EN | FR |
+|---|----|----|-----|
+| 1 | Alle Roboter auf einen Blick | All robots at a glance | Tous tes robots d'un coup d'œil |
+| 2 | Live-Karte mit Raumsteuerung | Live map with room control | Carte en direct avec contrôle des pièces |
+| 3 | Tippe Räume an, wähle die Reihenfolge | Tap rooms, choose the order | Touche les pièces, choisis l'ordre |
+| 4 | Zeichne eigene Reinigungszonen | Draw custom cleaning zones | Dessine tes propres zones |
+| 5 | Filter & Bürsten im Blick | Track filters & brushes | Suis tes filtres et brosses |
+| 6 | Volle Kontrolle über deinen Roboter | Full control over your robot | Contrôle total de ton robot |
+| 7 | Firmware-Updates direkt aus der App | Firmware updates right from the app | Mises à jour firmware depuis l'app |
+| 8 | Perfekt für jede Tageszeit | Perfect for any time of day | Parfait à toute heure |
 
 ---
 
-## Unique Selling Points (USPs) für Marketing
+## App Store Metadata
 
-1. **100% Native** - Erste echte iOS-App für Valetudo (kein Web-Wrapper)
-2. **100% Lokal** - Keine Cloud, keine Datensammlung, DSGVO-konform
-3. **100% Open** - Open Source auf GitHub
-4. **Multi-Roboter** - Alle Valetudo-Roboter in einer App
-5. **Apple-Integration** - Siri, Widgets, Notifications
-6. **Modern** - Swift 5, SwiftUI, iOS 17+ Designsprache
-
----
-
-## App Store Kategorien
-
-**Primär:** Dienstprogramme (Utilities)
-**Sekundär:** Lifestyle
+| Field | Value |
+|-------|-------|
+| **Primary Category** | Utilities |
+| **Secondary Category** | Lifestyle |
+| **Age Rating** | 4+ |
+| **Price** | Free |
+| **Support URL** | https://github.com/Revisor01/ValetudiOS/issues |
+| **Marketing URL** | https://github.com/Revisor01/ValetudiOS |
+| **Privacy Policy URL** | https://simonluthe.de/valetudios/privacy |
 
 ---
 
-## Altersfreigabe
+## Requirements
 
-4+ (Keine Einschränkungen)
-
----
-
-## Support-URL
-
-https://github.com/SimonLuworx/valetudo-app/issues
-
-## Marketing-URL
-
-https://github.com/SimonLuworx/valetudo-app
-
-## Datenschutz-URL
-
-https://github.com/SimonLuworx/valetudo-app#datenschutzerklärung
+- iOS 17.0+
+- Valetudo 2024.06.0+
+- Robot reachable on local network
