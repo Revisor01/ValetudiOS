@@ -127,9 +127,9 @@ extension ValetudoAPI {
         request.httpMethod = method
 
         // Debug: Log the request
-        logger.debug("Request: \(method, privacy: .public) \(url.path, privacy: .public)")
+        logger.info("Request: \(method, privacy: .public) \(url.absoluteString, privacy: .public)")
         if let body = body, let bodyString = String(data: body, encoding: .utf8) {
-            logger.debug("Request body: \(bodyString, privacy: .private)")
+            logger.info("Request body: \(bodyString, privacy: .public)")
         }
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
 
@@ -145,13 +145,18 @@ extension ValetudoAPI {
             request.httpBody = body
         }
 
-        let (_, response) = try await session.data(for: request)
+        let (data, response) = try await session.data(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.invalidResponse
         }
 
+        logger.info("Response: \(httpResponse.statusCode, privacy: .public) for \(method, privacy: .public) \(url.path, privacy: .public)")
+
         guard (200...299).contains(httpResponse.statusCode) else {
+            if let responseBody = String(data: data, encoding: .utf8), !responseBody.isEmpty {
+                logger.error("Response body (\(httpResponse.statusCode, privacy: .public)): \(responseBody, privacy: .public)")
+            }
             throw APIError.httpError(httpResponse.statusCode)
         }
     }
@@ -407,8 +412,18 @@ extension ValetudoAPI {
     }
 
     // MARK: - Manual Control
-    func manualControl(action: String, movementSpeed: Int? = nil, angle: Int? = nil, duration: Int? = nil) async throws {
-        let body = try JSONEncoder().encode(ManualControlRequest(action: action, movementSpeed: movementSpeed, angle: angle, duration: duration))
+    func enableManualControl() async throws {
+        let body = try JSONEncoder().encode(ManualControlRequest(action: "enable", movementCommand: nil))
+        try await requestVoid("/robot/capabilities/ManualControlCapability", body: body)
+    }
+
+    func disableManualControl() async throws {
+        let body = try JSONEncoder().encode(ManualControlRequest(action: "disable", movementCommand: nil))
+        try await requestVoid("/robot/capabilities/ManualControlCapability", body: body)
+    }
+
+    func manualControl(movementCommand: String) async throws {
+        let body = try JSONEncoder().encode(ManualControlRequest(action: "move", movementCommand: movementCommand))
         try await requestVoid("/robot/capabilities/ManualControlCapability", body: body)
     }
 
@@ -423,7 +438,7 @@ extension ValetudoAPI {
         try await requestVoid("/robot/capabilities/HighResolutionManualControlCapability", body: body)
     }
 
-    func highResManualControl(velocity: Int, angle: Int) async throws {
+    func highResManualControl(velocity: Double, angle: Double) async throws {
         let body = try JSONEncoder().encode(HighResManualControlRequest(action: "move", vector: HighResManualControlVector(velocity: velocity, angle: angle)))
         try await requestVoid("/robot/capabilities/HighResolutionManualControlCapability", body: body)
     }
@@ -596,7 +611,21 @@ extension ValetudoAPI {
     }
 
     func getUpdaterState() async throws -> UpdaterState {
-        try await request("/updater/state")
+        #if DEBUG
+        if ProcessInfo.processInfo.environment["SCREENSHOT_MODE"] == "1" {
+            return UpdaterState(
+                __class: "ValetudoUpdaterApprovalPendingState",
+                busy: false,
+                currentVersion: "2025.12.0",
+                version: "2026.04.0",
+                releaseTimestamp: "2026-04-10T00:00:00Z",
+                downloadUrl: "https://github.com/Hypfer/Valetudo/releases/download/2026.04.0/valetudo.upx",
+                downloadPath: nil,
+                metaData: nil
+            )
+        }
+        #endif
+        return try await request("/updater/state")
     }
 
     func checkForUpdates() async throws {

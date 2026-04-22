@@ -477,15 +477,11 @@ struct SplitSegmentRequest: Codable {
 // MARK: - Manual Control
 struct ManualControlRequest: Codable {
     let action: String
-    let movementSpeed: Int?
-    let angle: Int?
-    let duration: Int?
+    let movementCommand: String?
 
     enum CodingKeys: String, CodingKey {
         case action
-        case movementSpeed = "movement_speed"
-        case angle
-        case duration
+        case movementCommand = "movementCommand"
     }
 }
 
@@ -501,8 +497,8 @@ struct HighResManualControlRequest: Codable {
 }
 
 struct HighResManualControlVector: Codable {
-    let velocity: Int
-    let angle: Int
+    let velocity: Double
+    let angle: Double
 }
 
 // MARK: - Quirks

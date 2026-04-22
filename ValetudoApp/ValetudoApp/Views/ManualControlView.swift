@@ -10,6 +10,7 @@ struct ManualControlView: View {
     @State private var useHighRes = false
     @State private var touchOffset: CGSize = .zero
     @State private var isTouching = false
+    @State private var heartbeatTask: Task<Void, Never>? = nil
 
     private var api: ValetudoAPI? {
         robotManager.getAPI(for: robot.id)
@@ -19,15 +20,50 @@ struct ManualControlView: View {
     private let padSize: CGFloat = 280
     private let maxOffset: CGFloat = 100
 
-    // Calculate velocity and angle from touch offset
+    // RC-Car steering: joystick direction = where the robot goes
+    // Y-axis (up/down) = forward/backward speed
+    // X-axis (left/right) = steering direction (not pure rotation)
+    //
+    // When pushing straight up: velocity=1, angle=0 (forward)
+    // When pushing left: velocity is low, angle is high (tight turn left)
+    // When pushing diagonal up-left: velocity is high, angle moderate (drive + steer)
+    // This feels like walking behind the robot and steering it
+
+    private var velocityNormalized: Double {
+        let normalizedY = -touchOffset.height / maxOffset  // up = positive = forward
+        return max(-1, min(1, normalizedY))
+    }
+
+    private var angleNormalized: Double {
+        let normalizedX = touchOffset.width / maxOffset  // right = positive
+        let normalizedY = -touchOffset.height / maxOffset
+
+        // Angle scales with X offset, but also consider the "intent":
+        // - Pure horizontal (Y≈0): full rotation (±120°) for on-the-spot turning
+        // - Diagonal (Y strong): moderate angle for steering while driving
+        let absY = abs(normalizedY)
+        let absX = abs(normalizedX)
+
+        // Dead-zone: if barely touching, no angle
+        guard absX > 0.05 else { return 0 }
+
+        // Base angle from X position (0..120°)
+        let baseAngle = normalizedX * 120.0
+
+        // When driving forward/backward (high Y), reduce angle for smoother steering
+        // When stationary (low Y), allow full rotation
+        let steeringFactor = absY > 0.3 ? (1.0 - absY * 0.5) : 1.0
+
+        return max(-120, min(120, -baseAngle * steeringFactor))
+    }
+
+    // Display values for UI
     private var velocity: Int {
-        let normalizedY = -touchOffset.height / maxOffset  // Negative because up = forward
-        return Int(max(-300, min(300, normalizedY * 300)))
+        Int(velocityNormalized * 100)
     }
 
     private var angle: Int {
-        let normalizedX = touchOffset.width / maxOffset
-        return Int(max(-90, min(90, -normalizedX * 90)))  // Negative for correct rotation direction
+        Int(angleNormalized)
     }
 
     var body: some View {
@@ -94,14 +130,21 @@ struct ManualControlView: View {
 
                         if !isTouching {
                             isTouching = true
-                        }
-
-                        // Send movement command
-                        Task {
-                            await sendMovement()
+                            // Start heartbeat: send move commands every 500ms while touching.
+                            // Valetudo auto-disables manual control if no move command arrives
+                            // within its watchdog window (~1-2s), so we must send continuously.
+                            heartbeatTask = Task {
+                                while !Task.isCancelled {
+                                    await sendMovement()
+                                    try? await Task.sleep(nanoseconds: 150_000_000)
+                                }
+                            }
                         }
                     }
                     .onEnded { _ in
+                        // Cancel heartbeat first, then stop
+                        heartbeatTask?.cancel()
+                        heartbeatTask = nil
                         // Reset and stop
                         withAnimation(.spring(response: 0.3, dampingFraction: 0.6)) {
                             touchOffset = .zero
@@ -150,6 +193,7 @@ struct ManualControlView: View {
         do {
             let capabilities = try await api.getCapabilities()
             useHighRes = capabilities.contains("HighResolutionManualControlCapability")
+            logger.info("ManualControl capability check: useHighRes=\(useHighRes, privacy: .public), capabilities=\(capabilities.joined(separator: ","), privacy: .public)")
         } catch {
             logger.error("Failed to check capabilities: \(error.localizedDescription, privacy: .public)")
         }
@@ -158,10 +202,14 @@ struct ManualControlView: View {
     private func enableManualControl() async {
         guard let api = api else { return }
         do {
+            logger.info("Enabling manual control (useHighRes=\(useHighRes, privacy: .public))")
             if useHighRes {
                 try await api.enableHighResManualControl()
+            } else {
+                try await api.enableManualControl()
             }
             isEnabled = true
+            logger.info("Manual control enabled successfully")
         } catch {
             logger.error("Failed to enable manual control: \(error.localizedDescription, privacy: .public)")
         }
@@ -172,6 +220,8 @@ struct ManualControlView: View {
         do {
             if useHighRes {
                 try await api.disableHighResManualControl()
+            } else {
+                try await api.disableManualControl()
             }
             isEnabled = false
         } catch {
@@ -181,22 +231,32 @@ struct ManualControlView: View {
 
     @MainActor
     private func sendMovement() async {
-        guard let api = api, isEnabled else { return }
+        guard let api = api else {
+            logger.warning("sendMovement: api is nil, skipping")
+            return
+        }
+        guard isEnabled else {
+            logger.warning("sendMovement: isEnabled=false, skipping (enable may still be in progress)")
+            return
+        }
 
         do {
             if useHighRes {
-                try await api.highResManualControl(velocity: velocity, angle: angle)
+                logger.info("sendMovement: highRes velocity=\(velocityNormalized, privacy: .public) angle=\(angleNormalized, privacy: .public)")
+                try await api.highResManualControl(velocity: velocityNormalized, angle: angleNormalized)
             } else {
                 // Fallback for regular ManualControl - determine direction
-                let direction: String
+                let movementCommand: String
                 if abs(touchOffset.height) > abs(touchOffset.width) {
-                    direction = touchOffset.height < 0 ? "forward" : "backward"
+                    movementCommand = touchOffset.height < 0 ? "forward" : "backward"
                 } else if abs(touchOffset.width) > 20 {
-                    direction = touchOffset.width < 0 ? "rotate_counterclockwise" : "rotate_clockwise"
+                    movementCommand = touchOffset.width < 0 ? "rotate_counterclockwise" : "rotate_clockwise"
                 } else {
+                    logger.info("sendMovement: standard, offset too small, skipping")
                     return
                 }
-                try await api.manualControl(action: direction, movementSpeed: 100)
+                logger.info("sendMovement: standard movementCommand=\(movementCommand, privacy: .public)")
+                try await api.manualControl(movementCommand: movementCommand)
             }
         } catch {
             logger.error("Movement failed: \(error.localizedDescription, privacy: .public)")
@@ -208,10 +268,12 @@ struct ManualControlView: View {
 
         do {
             if useHighRes {
-                try await api.highResManualControl(velocity: 0, angle: 0)
-            } else {
-                try await api.manualControl(action: "stop")
+                try await api.highResManualControl(velocity: 0.0, angle: 0.0)
             }
+            // Standard ManualControl: no "stop" movementCommand exists in Valetudo.
+            // Valid commands are only: forward, backward, rotate_clockwise, rotate_counterclockwise.
+            // The robot stops on its own after the last discrete command — just cancel the
+            // heartbeat task (done in onEnded before calling here) and do nothing else.
         } catch {
             logger.error("Stop failed: \(error.localizedDescription, privacy: .public)")
         }
