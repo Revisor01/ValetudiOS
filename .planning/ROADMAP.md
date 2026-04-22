@@ -82,6 +82,7 @@
 - [x] **Phase 30: Bug Fixes** - Support-Symbol-Fix und SSE Zombie-Socket-Reconnection reparieren, bevor Screenshots und Review-Einreichung erfolgen (completed 2026-04-05)
 - [x] **Phase 31: Web-Präsenz** - Privacy Policy (DSGVO + Apple-konform) und App-Beschreibung auf simonluthe.de schreiben (completed 2026-04-05)
 - [x] **Phase 32: App Store Listing** - Titel, Untertitel, Keywords, Beschreibung (DE+EN), Screenshots-Anleitung und Review Notes erstellen (completed 2026-04-05)
+- [ ] **Phase 33: App Store Screenshots** - iPhone-only (6.9" Pro Max), DE+EN, schlicht-dynamisch im Logo-Branding — Mock-Ups mit Device-Frame, Headline, Hintergrund; Rendering-Pipeline für beide Locales; finale Assets für App Store Connect
 
 ## Phase Details
 
@@ -632,3 +633,13 @@ v4.0.0: 30 -> 31 -> 32
 
 Plans:
 - [ ] TBD (promote with /gsd:review-backlog when ready)
+
+### Phase 1000: App Store Screenshots produzieren — iPhone-only 6.9 Pro Max, Sprachen DE+EN, Stil schlicht-dynamisch im Logo-Branding (blaue Gradient-Blobs). Scope: Screen-Konzept, Tooling-Entscheidung, Mock-Up-Produktion mit Device-Frame+Headline+Hintergrund, Screenshots aus Simulator, Rendering pro Locale, finale Assets für App Store Connect. Ausgeschlossen: iPad, FR-Lokalisierung. Abgrenzung Phase 32 (Text-Listing) vs diese Phase (visuelle Assets).
+
+**Goal:** [To be planned]
+**Requirements**: TBD
+**Depends on:** Phase 999
+**Plans:** 0 plans
+
+Plans:
+- [ ] TBD (run /gsd-plan-phase 1000 to break down)

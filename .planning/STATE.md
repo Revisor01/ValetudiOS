@@ -50,6 +50,10 @@ Progress: [░░░░░░░░░░] 0%
 
 ## Accumulated Context
 
+### Roadmap Evolution
+
+- Phase 33 added (2026-04-13): App Store Screenshots — iPhone-only, DE+EN, Logo-Branding-Stil
+
 ### Decisions
 
 - v3.0.0 completed: Quality, Performance & Hardening (Phases 22-29)
