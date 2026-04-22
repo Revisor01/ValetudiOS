@@ -5,6 +5,7 @@ struct SettingsView: View {
     var notificationService = NotificationService.shared
     @State private var robotToEdit: RobotConfig?
     @State private var showAddRobot = false
+    @State private var showSupport = false
 
     var body: some View {
         NavigationStack {
@@ -82,12 +83,45 @@ struct SettingsView: View {
 
                 // MARK: - Support Section
                 Section {
-                    NavigationLink {
-                        SupportView()
+                    Button {
+                        showSupport = true
                     } label: {
-                        Label(String(localized: "support.title"), systemImage: "heart.fill")
-                            .foregroundStyle(.pink)
+                        HStack(spacing: 16) {
+                            ZStack {
+                                Circle()
+                                    .fill(
+                                        LinearGradient(
+                                            colors: [.pink, .orange],
+                                            startPoint: .topLeading,
+                                            endPoint: .bottomTrailing
+                                        )
+                                    )
+                                    .frame(width: 44, height: 44)
+
+                                Image(systemName: "heart.fill")
+                                    .font(.title2)
+                                    .foregroundStyle(.white)
+                            }
+
+                            VStack(alignment: .leading, spacing: 2) {
+                                Text("settings.support.title")
+                                    .font(.headline)
+                                    .foregroundStyle(.primary)
+                                Text("settings.support.subtitle")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+
+                            Spacer()
+
+                            Image(systemName: "chevron.right")
+                                .font(.caption)
+                                .foregroundStyle(.tertiary)
+                        }
+                        .padding(.vertical, 4)
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(.plain)
                 }
 
                 // MARK: - About Section
@@ -138,22 +172,28 @@ struct SettingsView: View {
                     Text("settings.about")
                 } footer: {
                     VStack(spacing: 4) {
-                        Text("settings.license_footer")
+                        Text("ValetudiOS v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")")
                         HStack(spacing: 4) {
                             Text("Made with")
                             Image(systemName: "bird")
                                 .foregroundStyle(.red)
                             Text("in Hennstedt")
                         }
-                        .font(.caption)
-                        .padding(.top, 8)
-                        Text("Friede. Schalom. Salam.")
+                        Text(String(localized: "Friede. Schalom. Salam."))
                             .font(.caption2)
                             .italic()
+                            .foregroundStyle(.tertiary)
                     }
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                    .frame(maxWidth: .infinity)
+                    .padding(.top, 16)
                 }
             }
             .navigationTitle(String(localized: "settings.title"))
+            .sheet(isPresented: $showSupport) {
+                SupportView()
+            }
             .sheet(isPresented: $showAddRobot) {
                 AddRobotView()
             }

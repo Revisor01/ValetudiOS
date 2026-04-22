@@ -19,6 +19,8 @@ struct OnboardingView: View {
             subtitle: String(localized: "onboarding.map.subtitle"),
             features: [
                 OnboardingFeature(icon: "square.split.2x2", text: String(localized: "onboarding.map.feature1")),
+                OnboardingFeature(icon: "square.and.pencil", text: String(localized: "onboarding.map.feature4")),
+                OnboardingFeature(icon: "list.number", text: String(localized: "onboarding.map.feature5")),
                 OnboardingFeature(icon: "rectangle.dashed", text: String(localized: "onboarding.map.feature2")),
                 OnboardingFeature(icon: "star.fill", text: String(localized: "onboarding.map.feature3"))
             ]
