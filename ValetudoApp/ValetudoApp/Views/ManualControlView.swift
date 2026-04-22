@@ -54,7 +54,7 @@ struct ManualControlView: View {
         // When stationary (low Y), allow full rotation
         let steeringFactor = absY > 0.3 ? (1.0 - absY * 0.5) : 1.0
 
-        return max(-120, min(120, -baseAngle * steeringFactor))
+        return max(-120, min(120, baseAngle * steeringFactor))
     }
 
     // Display values for UI
