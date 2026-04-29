@@ -11,10 +11,10 @@
 
 <p align="center">
   <img src="https://img.shields.io/badge/Platform-iOS%2017%2B-blue?logo=apple" alt="Platform">
-  <img src="https://img.shields.io/github/v/tag/Revisor01/ValetudiOS?label=Version&color=green" alt="Version">
+  <img src="https://img.shields.io/badge/Version-1.0.0-green" alt="Version">
   <img src="https://img.shields.io/badge/Swift-5.9-orange?logo=swift" alt="Swift">
   <img src="https://img.shields.io/badge/Dependencies-Zero-brightgreen" alt="Dependencies">
-  <img src="https://img.shields.io/badge/Tests-143-blue" alt="Tests">
+  <img src="https://img.shields.io/badge/Tests-121-blue" alt="Tests">
   <img src="https://img.shields.io/github/license/Revisor01/ValetudiOS" alt="License">
 </p>
 
@@ -112,15 +112,7 @@ ValetudiOS works with all robots supported by [Valetudo](https://valetudo.cloud)
 
 | Version | Date | Highlights |
 |---------|------|------------|
-| **v3.0.0** | 2026-04-05 | Map performance (SSE streaming, CGImage pre-rendering, O(1) room tap), view architecture refactoring, security hardening (Keychain encryption, HTTP/SSL warnings), VoiceOver accessibility, 143 unit tests, ErrorRouter for all user actions |
-| **v2.2.0** | 2026-04-04 | Room tap selection on map, cleaning order with numbered badges, centralized room/iteration state |
-| **v2.1.0** | 2026-04-02 | @Observable migration (iOS 17+), background monitoring with push notifications, offline map caching, UI reorganization |
-| **v2.0.0** | 2026-04-01 | Firmware update state machine (8 phases), fullscreen apply protection, idle timer, reboot detection |
-| **v1.4.0** | 2026-03-29 | Complete os.Logger migration, force-unwrap elimination, view decomposition (MapView -66%, SettingsView -72%) |
-| **v1.3.0** | 2026-03-28 | Voice packs, auto-empty dock duration, mop drying time, coordinate precision fix, 85 unit tests |
-| **v1.2.0** | 2026-03-28 | SSE real-time updates, Bonjour discovery, map pixel caching, events/snapshots/clean routes API |
-| **v1.1.0** | — | Keychain credential storage, ErrorRouter, structured logging |
-| **v1.0** | — | Initial release — multi-robot, live map, room/zone cleaning, manual control |
+| **v1.0.0** | 2026-04 | Initial App Store release — multi-robot control, live interactive map, room/zone cleaning with order, firmware updates, background monitoring, VoiceOver accessibility, EN/DE/FR localization |
 
 ## Architecture
 
@@ -131,11 +123,11 @@ ValetudiOS
 │                      UpdateService, MapCacheService, BackgroundMonitorService,
 │                      NotificationService, KeychainStore, NetworkScanner
 ├── ViewModels/      — MapViewModel, RobotDetailViewModel, RobotSettingsViewModel
-├── Views/           — 29 SwiftUI views organized by feature
-│   ├── Detail/      — Robot detail sections (12 extracted components)
-│   ├── Settings/    — Robot settings sections (6 components)
-│   ���── Map/         — Map overlays, drawing, controls
-└── Tests/           — 143 unit tests (models, geometry, state machines, caching)
+├── Views/           — SwiftUI views organized by feature
+│   ├── Detail/      — Robot detail sections
+│   ├── Settings/    — Robot settings sections
+│   └── Map/         — Map overlays, drawing, controls
+└── Tests/           — 121 unit tests (models, geometry, state machines, caching)
 ```
 
 **Key design decisions:**
