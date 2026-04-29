@@ -9,7 +9,7 @@
 - [x] **v2.1.0 Architecture & Background** - Phases 16-19 (completed 2026-04-02)
 - [x] **v2.2.0 Room Interaction & Cleaning Order** - Phases 20-21 (completed 2026-04-04)
 - [x] **v3.0.0 Quality, Performance & Hardening** - Phases 22-29 (completed 2026-04-05)
-- 🚧 **v4.0.0 App Store Release** - Phases 30-32 (in progress)
+- [x] **v4.0.0 App Store Release** - Phases 30-33 (completed 2026-04-29)
 
 ## Phases
 
@@ -75,14 +75,15 @@
 - [x] **Phase 28: Test Coverage Expansion** - Unit-Tests für Koordinaten-Transforms, UpdateService State Machine, SSE-Reconnection, MapCacheService (completed 2026-04-05)
 - [x] **Phase 29: UX Robustness** - ErrorRouter systematisch verdrahten, Confirmation-Dialogs für destruktive Aktionen, Multi-Robot-Polling-Optimierung (completed 2026-04-05)
 
-### 🚧 v4.0.0 App Store Release (In Progress)
+### v4.0.0 App Store Release (Completed)
 
 **Milestone Goal:** App Store-Einreichung vorbereiten — Bug Fixes im App-Code, Website-Präsenz (Privacy Policy + App-Beschreibung) und vollständiges App Store Listing (Texte, Keywords, Screenshots-Anleitung, Review Notes).
 
 - [x] **Phase 30: Bug Fixes** - Support-Symbol-Fix und SSE Zombie-Socket-Reconnection reparieren, bevor Screenshots und Review-Einreichung erfolgen (completed 2026-04-05)
 - [x] **Phase 31: Web-Präsenz** - Privacy Policy (DSGVO + Apple-konform) und App-Beschreibung auf simonluthe.de schreiben (completed 2026-04-05)
 - [x] **Phase 32: App Store Listing** - Titel, Untertitel, Keywords, Beschreibung (DE+EN), Screenshots-Anleitung und Review Notes erstellen (completed 2026-04-05)
-- [ ] **Phase 33: App Store Screenshots** - iPhone-only (6.9" Pro Max), DE+EN, schlicht-dynamisch im Logo-Branding — Mock-Ups mit Device-Frame, Headline, Hintergrund; Rendering-Pipeline für beide Locales; finale Assets für App Store Connect
+- [x] **Phase 32.1: Pre-Release Polish** - Bonjour-Discovery-Bugfix (Hostname mit Bindestrich, korrekte IP-Erkennung via X-Valetudo-Version Header) und Settings-About-Cleanup (Version-Zeile entfernt) (completed 2026-04-29)
+- [x] **Phase 33: App Store Screenshots** - iPhone-only (6.9" Pro Max), DE+EN, schlicht-dynamisch im Logo-Branding — Mock-Ups mit Device-Frame, Headline, Hintergrund; Rendering-Pipeline für beide Locales; finale Assets für App Store Connect (completed 2026-04-21)
 
 ## Phase Details
 

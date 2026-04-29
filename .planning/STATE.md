@@ -2,15 +2,15 @@
 gsd_state_version: 1.0
 milestone: v4.0.0
 milestone_name: App Store Release
-status: executing
-stopped_at: Roadmap v4.0.0 erstellt
-last_updated: "2026-04-05T18:37:50.090Z"
-last_activity: 2026-04-05 -- Phase 32 execution started
+status: completed
+stopped_at: Milestone v4.0.0 abgeschlossen — bereit für App Store Submission
+last_updated: "2026-04-29T10:30:00.000Z"
+last_activity: 2026-04-29 -- Phase 32.1 (Pre-Release Polish) completed, milestone closed
 progress:
-  total_phases: 33
-  completed_phases: 2
-  total_plans: 2
-  completed_plans: 2
+  total_phases: 34
+  completed_phases: 34
+  total_plans: 34
+  completed_plans: 34
   percent: 100
 ---
 
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-05)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** Phase 32 — app-store-listing
+**Current focus:** v4.0.0 abgeschlossen — App-Preview-Video noch offen für Submission
 
 ## Current Position
 
-Phase: 32 (app-store-listing) — EXECUTING
-Plan: 1 of 1
-Status: Executing Phase 32
-Last activity: 2026-04-05 -- Phase 32 execution started
+Milestone: v4.0.0 (App Store Release) — COMPLETED
+Last phase: 32.1 (Pre-Release Polish) — Bonjour-Bugfix + Settings-About-Cleanup
+Status: Bereit für App Store Submission, App-Preview-Video noch zu erstellen
+Last activity: 2026-04-29 -- v4.0.0 milestone closed
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [██████████] 100%
 
 ## Performance Metrics
 
@@ -53,6 +53,7 @@ Progress: [░░░░░░░░░░] 0%
 ### Roadmap Evolution
 
 - Phase 33 added (2026-04-13): App Store Screenshots — iPhone-only, DE+EN, Logo-Branding-Stil
+- Phase 32.1 inserted (2026-04-29): Pre-Release Polish — Bonjour-Discovery-Bugfix + Settings-About-Cleanup als letzte Fixes vor Submission
 
 ### Decisions
 
@@ -72,6 +73,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-05
-Stopped at: Roadmap v4.0.0 erstellt
+Last session: 2026-04-29
+Stopped at: Milestone v4.0.0 abgeschlossen — App-Preview-Video noch zu erstellen, dann Submission
 Resume file: None
