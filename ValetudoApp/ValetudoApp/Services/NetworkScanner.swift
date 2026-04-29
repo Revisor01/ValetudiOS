@@ -163,13 +163,23 @@ class NetworkScanner {
         do {
             let (data, response) = try await URLSession.shared.data(for: request)
 
-            guard let httpResponse = response as? HTTPURLResponse,
-                  httpResponse.statusCode == 200 else {
+            guard let httpResponse = response as? HTTPURLResponse else {
                 return nil
             }
 
-            let decoder = JSONDecoder()
-            if let robotInfo = try? decoder.decode(RobotInfo.self, from: data) {
+            // Identify a Valetudo robot by the X-Valetudo-Version response header.
+            // value(forHTTPHeaderField:) is case-insensitive on iOS 13+.
+            // Robots with Basic Auth enabled return HTTP 401 (still with the header set);
+            // robots without auth return HTTP 200. Both are valid Valetudo responses.
+            // Other 200-OK devices on /api/v2/robot are filtered out by the missing header.
+            let isValetudo = httpResponse.value(forHTTPHeaderField: "X-Valetudo-Version") != nil
+
+            guard isValetudo else { return nil }
+            guard httpResponse.statusCode == 200 || httpResponse.statusCode == 401 else { return nil }
+
+            // For 200 OK we can decode the body for model info; for 401 we have no body.
+            if httpResponse.statusCode == 200,
+               let robotInfo = try? JSONDecoder().decode(RobotInfo.self, from: data) {
                 return DiscoveredRobot(
                     host: host,
                     name: nil,

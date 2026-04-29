@@ -74,16 +74,29 @@ final class NWBrowserService {
         for result in results {
             guard case let .service(name, _, _, _) = result.endpoint else { continue }
 
+            var robotId: String? = nil
             var friendlyName: String? = nil
             var model: String? = nil
 
             if case let .bonjour(txtRecord) = result.metadata {
-                friendlyName = self.txtRecordValue(txtRecord, key: "friendlyName")
+                robotId = self.txtRecordValue(txtRecord, key: "id")
+                // Valetudo emits "name" in the TXT record (e.g. "S5 Max"); legacy "friendlyName" kept as fallback.
+                friendlyName = self.txtRecordValue(txtRecord, key: "name")
+                    ?? self.txtRecordValue(txtRecord, key: "friendlyName")
                 model = self.txtRecordValue(txtRecord, key: "model")
             }
 
-            // Use <name>.local as host (simpler than NWConnection resolution per D-10)
-            let host = "\(name).local"
+            // Build the actual mDNS hostname Valetudo announces: "valetudo-<id-lowercased>.local"
+            // Service-instance name (e.g. "Valetudo CriticalMetallicMole") is NOT URL-safe (contains spaces)
+            // and is not the hostname Valetudo registers via mDNS.
+            let host: String
+            if let id = robotId, !id.isEmpty {
+                host = "valetudo-\(id.lowercased()).local"
+            } else {
+                // Fallback: sanitize service-instance name (replace spaces) — should rarely happen.
+                let sanitized = name.replacingOccurrences(of: " ", with: "-")
+                host = "\(sanitized).local"
+            }
 
             let robot = DiscoveredRobot(
                 host: host,

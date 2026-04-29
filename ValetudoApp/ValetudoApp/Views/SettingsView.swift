@@ -126,13 +126,6 @@ struct SettingsView: View {
 
                 // MARK: - About Section
                 Section {
-                    HStack {
-                        Text(String(localized: "settings.version"))
-                        Spacer()
-                        Text(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")
-                            .foregroundStyle(.secondary)
-                    }
-
                     if let url = URL(string: Constants.valetudoWebsiteUrl) {
                         Link(destination: url) {
                             HStack {
