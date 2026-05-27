@@ -1,11 +1,16 @@
-# What's New — für nächstes Update (v1.0.1)
+# What's New — interner Vorlauf
 
-Bei v1.0 (First Release) akzeptiert Apple kein `whatsNew`-Feld, deshalb hier vorgehalten.
-Beim nächsten Submission via API auf allen drei Localizations der v1.0.1 setzen.
+**Aktueller Stand:** v1.0 ist noch nicht im App Store live. Die initiale Submission läuft als v1.0 ohne `whatsNew`-Feld (Apple akzeptiert das bei First-Release nicht).
+
+**Diese Datei ist nur eine interne Sammlung** für den jeweils nächsten Submission-Zyklus. Wenn v1.0 live ist und v1.0.1 (oder höher) folgt, hier den passenden Text in alle drei Localizations übernehmen.
 
 ---
 
-## DE
+## Vorgemerkt für v1.0.1 (OTA-Fix, Commit b754e24 vom 2026-05-27)
+
+Nur relevant, falls v1.0.1 nach v1.0-Launch nachgeschoben wird. Beim Submission via ASC API auf alle drei Localizations setzen.
+
+### DE
 
 Bugfix-Release für den Firmware-Update-Flow:
 
@@ -15,9 +20,7 @@ Bugfix-Release für den Firmware-Update-Flow:
 • Während eines laufenden Updates erscheint eine Warnung beim Wegnavigieren
 • Download-Anzeige bereinigt (kein irreführender 0%-Balken mehr)
 
----
-
-## EN
+### EN
 
 Bugfix release for the firmware update flow:
 
@@ -27,9 +30,7 @@ Bugfix release for the firmware update flow:
 • Warning prompt when navigating away during a running update
 • Download indicator cleaned up (no more misleading 0% bar)
 
----
-
-## FR
+### FR
 
 Correctifs pour le processus de mise à jour du firmware :
 
@@ -41,11 +42,11 @@ Correctifs pour le processus de mise à jour du firmware :
 
 ---
 
-## Hinweis für initiale v1.0-Submission
+## v1.0 Launch-Features (für App-Description, nicht Whats-New)
 
-Falls v1.0 noch nicht im Store ist und v1.0.1 direkt nachgeschoben wird, hier zusätzlich die v1.0-Launch-Features für die App-Description (nicht Whats-New):
+Bei der initialen Submission gehören diese in die normale App-Beschreibung (`description`), nicht in `whatsNew`.
 
-### DE (Launch-Features)
+### DE
 
 Native iOS-App zur lokalen Steuerung deiner Valetudo-Saugroboter.
 
@@ -59,7 +60,7 @@ Native iOS-App zur lokalen Steuerung deiner Valetudo-Saugroboter.
 • Consumables-Tracking
 • Volle Valetudo-Kontrolle
 
-### EN (Launch-Features)
+### EN
 
 Native iOS app for local control of your Valetudo vacuum robots.
 
@@ -73,7 +74,7 @@ Native iOS app for local control of your Valetudo vacuum robots.
 • Consumables tracking
 • Full Valetudo control
 
-### FR (Launch-Features)
+### FR
 
 Application iOS native pour piloter vos robots Valetudo en local.
 
