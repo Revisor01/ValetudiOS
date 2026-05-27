@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
-milestone: v4.0.0
-milestone_name: App Store Release
+milestone: v4.0.1
+milestone_name: OTA Hotfix
 status: completed
-stopped_at: Milestone v4.0.0 abgeschlossen — bereit für App Store Submission
-last_updated: "2026-04-29T10:30:00.000Z"
-last_activity: 2026-04-29 -- Phase 32.1 (Pre-Release Polish) completed, milestone closed
+stopped_at: Phase 34 (OTA Flow Bugfixes) deployed via hotfix b754e24
+last_updated: "2026-05-27T10:00:00.000Z"
+last_activity: 2026-05-27 -- Phase 34 (OTA Flow Bugfixes) completed, hotfix shipped
 progress:
-  total_phases: 34
-  completed_phases: 34
-  total_plans: 34
-  completed_plans: 34
+  total_phases: 35
+  completed_phases: 35
+  total_plans: 35
+  completed_plans: 35
   percent: 100
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-05)
 
 **Core value:** Zuverlässige, native iOS-Steuerung von Valetudo-Robotern ohne Cloud-Abhängigkeit
-**Current focus:** v4.0.0 abgeschlossen — App-Preview-Video noch offen für Submission
+**Current focus:** v4.0.1 Hotfix für OTA-Flow live (Commit b754e24), nächste App-Store-Submission als v1.0.1
 
 ## Current Position
 
-Milestone: v4.0.0 (App Store Release) — COMPLETED
-Last phase: 32.1 (Pre-Release Polish) — Bonjour-Bugfix + Settings-About-Cleanup
-Status: Bereit für App Store Submission, App-Preview-Video noch zu erstellen
-Last activity: 2026-04-29 -- v4.0.0 milestone closed
+Milestone: v4.0.1 (OTA Hotfix) — COMPLETED
+Last phase: 34 (OTA Flow Bugfixes) — Install-Button, Auto-Refresh nach Reboot, Leave-Warning
+Status: Hotfix gepusht (b754e24), live an zwei Robotern verifiziert; App-Store-Submission noch ausstehend
+Last activity: 2026-05-27 -- OTA Hotfix shipped
 
 Progress: [██████████] 100%
 
@@ -52,6 +52,7 @@ Progress: [██████████] 100%
 
 ### Roadmap Evolution
 
+- Phase 34 added (2026-05-27): OTA Flow Bugfixes als v4.0.1-Hotfix — Install-Button, Refresh nach Reboot, Leave-Warning, Tap-Target-Trennung
 - Phase 33 added (2026-04-13): App Store Screenshots — iPhone-only, DE+EN, Logo-Branding-Stil
 - Phase 32.1 inserted (2026-04-29): Pre-Release Polish — Bonjour-Discovery-Bugfix + Settings-About-Cleanup als letzte Fixes vor Submission
 
@@ -73,6 +74,6 @@ None.
 
 ## Session Continuity
 
-Last session: 2026-04-29
-Stopped at: Milestone v4.0.0 abgeschlossen — App-Preview-Video noch zu erstellen, dann Submission
+Last session: 2026-05-27
+Stopped at: v4.0.1 OTA Hotfix verifiziert und gepusht (b754e24) — App-Store-Submission als v1.0.1 noch ausstehend
 Resume file: None

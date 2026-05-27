@@ -10,6 +10,7 @@
 - [x] **v2.2.0 Room Interaction & Cleaning Order** - Phases 20-21 (completed 2026-04-04)
 - [x] **v3.0.0 Quality, Performance & Hardening** - Phases 22-29 (completed 2026-04-05)
 - [x] **v4.0.0 App Store Release** - Phases 30-33 (completed 2026-04-29)
+- [x] **v4.0.1 OTA Hotfix** - Phase 34 (completed 2026-05-27)
 
 ## Phases
 
@@ -84,6 +85,12 @@
 - [x] **Phase 32: App Store Listing** - Titel, Untertitel, Keywords, Beschreibung (DE+EN), Screenshots-Anleitung und Review Notes erstellen (completed 2026-04-05)
 - [x] **Phase 32.1: Pre-Release Polish** - Bonjour-Discovery-Bugfix (Hostname mit Bindestrich, korrekte IP-Erkennung via X-Valetudo-Version Header) und Settings-About-Cleanup (Version-Zeile entfernt) (completed 2026-04-29)
 - [x] **Phase 33: App Store Screenshots** - iPhone-only (6.9" Pro Max), DE+EN, schlicht-dynamisch im Logo-Branding — Mock-Ups mit Device-Frame, Headline, Hintergrund; Rendering-Pipeline für beide Locales; finale Assets für App Store Connect (completed 2026-04-21)
+
+### v4.0.1 OTA Hotfix (Completed)
+
+**Milestone Goal:** Den Firmware-Update-Flow nach Live-Test gegen zwei Roboter real benutzbar machen — Install-Button erscheint zuverlässig, GitHub-Link und Install-Button reagieren getrennt, Banner refresht sich nach Reboot automatisch, Wegnavigieren während Update wird abgesichert.
+
+- [x] **Phase 34: OTA Flow Bugfixes** - HTTP-400-Fix für check-Action, Install-Button in DeviceInfoView, Tap-Target-Trennung (Borderless ButtonStyle + ContentShape), Auto-Refresh nach onRebootComplete, Leave-Confirm-Alert während Download/Apply/Reboot, Spinner statt 0%-Progress-Bar (completed 2026-05-27, commit b754e24)
 
 ## Phase Details
 
