@@ -3,14 +3,26 @@ import SwiftUI
 struct RobotDetailView: View {
     @State private var viewModel: RobotDetailViewModel
     @Environment(ErrorRouter.self) var errorRouter
+    @Environment(\.dismiss) private var dismiss
 
     @State private var showFullMap = false
     @State private var showUpdateWarning = false
+    @State private var showLeaveDuringUpdateWarning = false
 
     private var showUpdateOverlay: Bool {
         guard let phase = viewModel.updateService?.phase else { return false }
         switch phase {
         case .applying, .rebooting:
+            return true
+        default:
+            return false
+        }
+    }
+
+    private var updateInProgress: Bool {
+        guard let phase = viewModel.updateService?.phase else { return false }
+        switch phase {
+        case .downloading, .applying, .rebooting:
             return true
         default:
             return false
@@ -103,14 +115,36 @@ struct RobotDetailView: View {
         } message: {
             Text(String(localized: "update.warning_message"))
         }
+        .alert(String(localized: "update.leave_warning_title"), isPresented: $showLeaveDuringUpdateWarning) {
+            Button(String(localized: "update.cancel"), role: .cancel) { }
+            Button(String(localized: "update.leave_confirm"), role: .destructive) {
+                dismiss()
+            }
+        } message: {
+            Text(String(localized: "update.leave_warning_message"))
+        }
         .overlay {
             if showUpdateOverlay {
                 UpdateOverlayView(viewModel: viewModel)
             }
         }
         .animation(.easeInOut(duration: 0.3), value: showUpdateOverlay)
-        .navigationBarBackButtonHidden(showUpdateOverlay)
-        .interactiveDismissDisabled(showUpdateOverlay)
+        .navigationBarBackButtonHidden(updateInProgress)
+        .interactiveDismissDisabled(updateInProgress)
+        .toolbar {
+            if updateInProgress {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button {
+                        showLeaveDuringUpdateWarning = true
+                    } label: {
+                        HStack(spacing: 4) {
+                            Image(systemName: "chevron.left")
+                            Text(String(localized: "common.back"))
+                        }
+                    }
+                }
+            }
+        }
         .task {
             viewModel.errorRouter = errorRouter
             await viewModel.loadData()

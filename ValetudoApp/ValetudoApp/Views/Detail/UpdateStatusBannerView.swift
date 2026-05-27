@@ -26,7 +26,10 @@ struct UpdateStatusBannerView: View {
                             Link(destination: releaseURL) {
                                 Image(systemName: "arrow.up.forward.square")
                                     .foregroundStyle(.secondary)
+                                    .padding(8)
+                                    .contentShape(Rectangle())
                             }
+                            .buttonStyle(.borderless)
                         }
                     }
 
@@ -42,27 +45,24 @@ struct UpdateStatusBannerView: View {
                         .background(Color.orange)
                         .foregroundStyle(.white)
                         .clipShape(RoundedRectangle(cornerRadius: 8))
+                        .contentShape(Rectangle())
                     }
+                    .buttonStyle(.borderless)
                 }
             }
         } else if case .downloading = viewModel.updateService?.phase {
             Section {
                 VStack(spacing: 12) {
-                    ProgressView(value: viewModel.updateService?.downloadProgress ?? 0.0)
-                        .progressViewStyle(.linear)
+                    ProgressView()
+                        .scaleEffect(1.2)
                         .tint(.orange)
-                    HStack {
-                        Text(String(localized: "update.downloading"))
-                            .font(.subheadline)
-                        Spacer()
-                        Text("\(Int((viewModel.updateService?.downloadProgress ?? 0.0) * 100))%")
-                            .font(.subheadline)
-                            .fontWeight(.medium)
-                            .monospacedDigit()
-                    }
+                    Text(String(localized: "update.downloading"))
+                        .font(.subheadline)
+                        .fontWeight(.medium)
                     Text(String(localized: "update.do_not_disconnect"))
                         .font(.caption)
                         .foregroundStyle(.orange)
+                        .multilineTextAlignment(.center)
                 }
                 .frame(maxWidth: .infinity)
                 .padding(.vertical, 8)

@@ -101,9 +101,26 @@ class UpdateService {
         lastCheckDate = Date()
 
         do {
-            try await api.checkForUpdates()
-            let state = try await api.getUpdaterState()
-            setPhase(mapUpdaterState(state))
+            // Erst aktuellen State holen — Valetudo erlaubt "check" nur in Idle/Error.
+            // Wenn bereits ApprovalPending/Downloading/ApplyPending, direkt nutzen.
+            let initialState = try await api.getUpdaterState()
+            let initialMapped = mapUpdaterState(initialState)
+            if case .idle = initialMapped {
+                // Nur dann triggern wir einen neuen Check.
+                try await api.checkForUpdates()
+                // Valetudo verarbeitet den Check asynchron — pollen bis State wechselt.
+                var mapped: UpdatePhase = .idle
+                for attempt in 0..<10 {
+                    try? await Task.sleep(for: .milliseconds(attempt == 0 ? 500 : 1500))
+                    let state = try await api.getUpdaterState()
+                    mapped = mapUpdaterState(state)
+                    if case .idle = mapped { continue }
+                    break
+                }
+                setPhase(mapped)
+            } else {
+                setPhase(initialMapped)
+            }
         } catch {
             logger.error("checkForUpdates failed: \(error.localizedDescription, privacy: .public)")
             setPhase(.error(error.localizedDescription))

@@ -314,6 +314,13 @@ final class RobotDetailViewModel {
                 guard let self = self else { return }
                 self.robotManager.invalidateCapabilities(for: self.robot.id)
                 self.logger.info("Capabilities cache invalidated after OTA reboot for robot \(self.robot.id, privacy: .public)")
+                Task { @MainActor in
+                    // Nach OTA-Reboot: alle Update-relevanten Daten neu laden,
+                    // sonst zeigt der Banner weiterhin "Update verfuegbar".
+                    self.updateService?.reset()
+                    await self.updateService?.loadVersionInfo()
+                    await self.updateService?.checkForUpdates()
+                }
             }
         }
     }

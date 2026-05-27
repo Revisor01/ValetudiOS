@@ -10780,6 +10780,94 @@
         }
       }
     },
+    "update.leave_confirm" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Trotzdem verlassen"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Leave anyway"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Quitter quand même"
+          }
+        }
+      }
+    },
+    "update.leave_warning_message" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Das Update läuft gerade auf dem Roboter weiter, auch wenn du diese Ansicht verlässt. Du verlierst aber den Fortschritts-Status in der App und musst später neu prüfen, ob das Update erfolgreich war."
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "The update will continue on the robot even if you leave this view. You will however lose the progress indicator in the app and need to check later if the update succeeded."
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "La mise à jour continue sur le robot même si vous quittez cette vue. Vous perdrez cependant l'indicateur de progression dans l'app."
+          }
+        }
+      }
+    },
+    "update.leave_warning_title" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update läuft"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Update in progress"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Mise à jour en cours"
+          }
+        }
+      }
+    },
+    "common.back" : {
+      "localizations" : {
+        "de" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Zurück"
+          }
+        },
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Back"
+          }
+        },
+        "fr" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Retour"
+          }
+        }
+      }
+    },
     "update.warning_message" : {
       "extractionState" : "stale",
       "localizations" : {

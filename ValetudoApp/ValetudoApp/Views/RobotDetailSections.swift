@@ -115,6 +115,7 @@ struct DeviceInfoView: View {
     @State private var robotProperties: RobotProperties?
     @State private var latestRelease: GitHubRelease?
     @State private var isLoading = false
+    @State private var showUpdateWarning = false
 
     private var api: ValetudoAPI? {
         robotManager.getAPI(for: robot.id)
@@ -131,8 +132,51 @@ struct DeviceInfoView: View {
 
     var body: some View {
         List {
-            // Update Available Banner
-            if hasUpdate, let latest = latestRelease {
+            // Update Available Banner — bei aktivem OTA-Flow Install-Button, sonst GitHub-Link
+            if case .updateAvailable = updateService?.phase {
+                Section {
+                    VStack(alignment: .leading, spacing: 8) {
+                        HStack {
+                            Image(systemName: "arrow.down.circle.fill")
+                                .foregroundStyle(.orange)
+                            VStack(alignment: .leading) {
+                                Text(String(localized: "update.available"))
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                Text("\(updateService?.currentVersion ?? version?.release ?? "?") → \(updateService?.latestVersion ?? latestRelease?.tag_name ?? "?")")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                            Spacer()
+                            if let urlStr = updateService?.updateUrl ?? latestRelease?.html_url,
+                               let releaseURL = URL(string: urlStr) {
+                                Link(destination: releaseURL) {
+                                    Image(systemName: "arrow.up.forward.square")
+                                        .foregroundStyle(.secondary)
+                                        .padding(8)
+                                        .contentShape(Rectangle())
+                                }
+                                .buttonStyle(.borderless)
+                            }
+                        }
+                        Button {
+                            showUpdateWarning = true
+                        } label: {
+                            HStack {
+                                Image(systemName: "arrow.down.to.line")
+                                Text(String(localized: "update.install"))
+                            }
+                            .frame(maxWidth: .infinity)
+                            .padding(.vertical, 8)
+                            .background(Color.orange)
+                            .foregroundStyle(.white)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            .contentShape(Rectangle())
+                        }
+                        .buttonStyle(.borderless)
+                    }
+                }
+            } else if hasUpdate, let latest = latestRelease {
                 Section {
                     Link(destination: URL(string: latest.html_url)!) {
                         HStack {
@@ -240,6 +284,14 @@ struct DeviceInfoView: View {
         .refreshable {
             await loadInfo()
         }
+        .alert(String(localized: "update.warning_title"), isPresented: $showUpdateWarning) {
+            Button(String(localized: "update.cancel"), role: .cancel) { }
+            Button(String(localized: "update.confirm"), role: .destructive) {
+                Task { await startUpdate() }
+            }
+        } message: {
+            Text(String(localized: "update.warning_message"))
+        }
         .overlay {
             if isLoading && version == nil {
                 ProgressView()
@@ -264,6 +316,7 @@ struct DeviceInfoView: View {
         }
 
         await checkForUpdate()
+        await updateService?.checkForUpdates()
     }
 
     private func checkForUpdate() async {
@@ -273,6 +326,18 @@ struct DeviceInfoView: View {
             latestRelease = try JSONDecoder().decode(GitHubRelease.self, from: data)
         } catch {
             detailSectionsLogger.error("Failed to check for updates: \(error, privacy: .public)")
+        }
+    }
+
+    private func startUpdate() async {
+        guard let svc = updateService else { return }
+        if case .updateAvailable = svc.phase {
+            await svc.startDownload()
+            if case .readyToApply = svc.phase {
+                await svc.startApply()
+            }
+        } else if case .readyToApply = svc.phase {
+            await svc.startApply()
         }
     }
 
