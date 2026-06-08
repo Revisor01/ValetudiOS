@@ -148,24 +148,13 @@ class RobotManager {
     private func startRefreshing() {
         refreshTask = Task {
             while !Task.isCancelled {
-                // When a robot is active (dashboard open), only that robot needs a live
-                // SSE stream. Streaming all robots in parallel accumulated long-lived
-                // Basic-Auth connections and eventually exhausted the Valetudo server's
-                // connection limit (→ 401). Inactive robots are disconnected here.
-                let robotsToStream = activeRobotId != nil
-                    ? robots.filter { $0.id == activeRobotId }
-                    : robots
-
-                if activeRobotId != nil {
-                    for robot in robots where robot.id != activeRobotId {
-                        if await sseManager.isSSEActive(for: robot.id) {
-                            await sseManager.disconnect(robotId: robot.id)
-                        }
-                    }
-                }
-
-                // Connect SSE for each streamed robot that doesn't have an active connection yet
-                for robot in robotsToStream {
+                // Keep a live SSE stream for every robot so the list view stays current and
+                // robots don't drop to "unreachable" when they aren't the active one.
+                // (The 401 issue is handled at the connection layer: sessions are invalidated
+                // on deinit, state/map use separate single-connection sessions, and a 401/403
+                // suspends instead of hammering reconnects.)
+                // Connect SSE for each robot that doesn't have an active connection yet
+                for robot in robots {
                     guard let api = apis[robot.id] else { continue }
                     let sseActive = await sseManager.isSSEActive(for: robot.id)
                     let sseSuspended = await sseManager.isSuspended(for: robot.id)

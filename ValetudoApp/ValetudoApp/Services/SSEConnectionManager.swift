@@ -238,14 +238,18 @@ actor SSEConnectionManager {
                 // URLSession task was cancelled — exit cleanly
                 break
             } catch let APIError.httpError(status) where status == 401 || status == 403 {
-                // Auth-Fehler ist fatal: erneutes Verbinden über dieselbe (überlastete)
-                // Basic-Auth-Verbindung würde nur weitere 401 produzieren (Rückkopplung).
-                // Roboter suspendieren — Reconnect erst wieder bei Netzwerkwechsel/explizitem Resume.
-                logger.warning("SSE auth error \(status, privacy: .public) for robot \(robotId, privacy: .public) — suspending, no reconnect")
+                // Auth-Fehler: NICHT sofort über dieselbe Verbindung reconnecten (das würde nur
+                // weitere 401 produzieren — Rückkopplung), aber den Roboter auch NICHT dauerhaft
+                // suspendieren. Ein 401 ist hier meist transient (Server handelt Basic-Auth neu
+                // aus, schließt die Verbindung kurz). Daher: langer, fester Backoff (30s) und
+                // weiter versuchen, damit der Roboter nicht dauerhaft "nicht erreichbar" bleibt.
+                logger.warning("SSE auth error \(status, privacy: .public) for robot \(robotId, privacy: .public) — backing off 30s, then retry")
                 isConnected[robotId] = false
                 onConnectionChange(false)
-                suspended.insert(robotId)
-                break
+                do {
+                    try await Task.sleep(for: .seconds(30))
+                } catch { break }
+                continue
             } catch {
                 logger.warning("SSE connection error for robot \(robotId, privacy: .public): \(error.localizedDescription, privacy: .public)")
                 isConnected[robotId] = false
