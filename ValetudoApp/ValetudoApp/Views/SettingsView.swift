@@ -376,7 +376,6 @@ struct NotificationSettingsView: View {
     @AppStorage("notify_robot_error") private var notifyRobotError = true
     @AppStorage("notify_robot_stuck") private var notifyRobotStuck = true
     @AppStorage("notify_consumable_low") private var notifyConsumableLow = true
-    @AppStorage("notify_robot_offline") private var notifyRobotOffline = true
 
     var body: some View {
         List {
@@ -437,19 +436,6 @@ struct NotificationSettingsView: View {
                     }
                 }
 
-                Toggle(isOn: $notifyRobotOffline) {
-                    Label {
-                        VStack(alignment: .leading) {
-                            Text(String(localized: "settings.notify_offline"))
-                            Text(String(localized: "settings.notify_offline_desc"))
-                                .font(.caption)
-                                .foregroundStyle(.secondary)
-                        }
-                    } icon: {
-                        Image(systemName: "wifi.slash")
-                            .foregroundStyle(.gray)
-                    }
-                }
             } footer: {
                 Text("settings.notification_settings_footer")
             }

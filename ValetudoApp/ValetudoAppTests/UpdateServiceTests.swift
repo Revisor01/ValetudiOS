@@ -82,20 +82,19 @@ final class UpdateServiceTests: XCTestCase {
         XCTAssertEqual(service.phase, .idle)
     }
 
-    // MARK: - checkForUpdates: idle → checking → error
+    // MARK: - checkForUpdates: idle → checking → idle (Fehler bei der Prüfung ist still)
 
-    func testCheckForUpdates_whenAPIThrows_transitionsToError() async throws {
+    func testCheckForUpdates_whenAPIThrows_fallsBackToIdleSilently() async throws {
         let mock = MockValetudoAPI()
         mock.shouldThrowOnCheck = true
         let service = UpdateService(api: mock)
 
         await service.checkForUpdates()
 
-        if case .error = service.phase {
-            // expected
-        } else {
-            XCTFail("Expected error phase, got \(service.phase)")
-        }
+        // Eine fehlgeschlagene Update-PRÜFUNG (z.B. View verlassen, Verbindung weg, 401
+        // beim Navigieren) darf KEINEN dauerhaften Fehler-Banner erzeugen — sie fällt
+        // still auf .idle zurück. Echte Fehler-Banner gibt es nur bei Download/Apply.
+        XCTAssertEqual(service.phase, .idle)
     }
 
     // MARK: - startDownload: updateAvailable → downloading (then poll to readyToApply)

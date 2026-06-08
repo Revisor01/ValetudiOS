@@ -92,7 +92,12 @@ class UpdateService {
     func checkForUpdates() async {
         if let last = lastCheckDate, Date().timeIntervalSince(last) < 3600 { return }
 
-        guard case .idle = phase else {
+        // Ein hängengebliebener .error aus einem früheren (abgebrochenen) Check darf einen
+        // neuen Check nicht blockieren — aus .error oder .idle heraus neu prüfen ist ok.
+        switch phase {
+        case .idle, .error:
+            break
+        default:
             logger.warning("checkForUpdates called in non-idle phase: \(String(describing: self.phase), privacy: .public)")
             return
         }
@@ -122,8 +127,15 @@ class UpdateService {
                 setPhase(initialMapped)
             }
         } catch {
-            logger.error("checkForUpdates failed: \(error.localizedDescription, privacy: .public)")
-            setPhase(.error(error.localizedDescription))
+            // Ein fehlgeschlagener Update-PRÜFUNG ist unkritisch (z.B. View verlassen,
+            // Verbindung kurz weg, 401 beim Navigieren). Sie darf KEINEN dauerhaften
+            // Fehler-Banner erzeugen — still zurück auf .idle, beim nächsten Öffnen
+            // wird erneut geprüft. Echte Fehler-Banner gibt es nur bei Download/Apply.
+            logger.info("checkForUpdates failed (silent, back to idle): \(error.localizedDescription, privacy: .public)")
+            setPhase(.idle)
+            // lastCheckDate zurücksetzen, damit der nächste Aufruf nicht wegen des
+            // 1h-Throttles übersprungen wird.
+            lastCheckDate = nil
         }
     }
 

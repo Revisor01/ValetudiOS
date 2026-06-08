@@ -50,6 +50,11 @@ class RobotManager {
     @ObservationIgnored private var apis: [UUID: ValetudoAPI] = [:]
     @ObservationIgnored private var refreshTask: Task<Void, Never>?
     @ObservationIgnored private var previousStates: [UUID: RobotStatus] = [:]
+    // Aufeinanderfolgende fehlgeschlagene Polls pro Roboter. Erst ab dem Schwellwert
+    // gilt ein Roboter als offline — ein einzelner kurzer Timeout (WLAN-Hicker, 10s-
+    // Request-Timeout) soll die Anzeige NICHT sofort auf "nicht erreichbar" kippen.
+    @ObservationIgnored private var consecutiveFailures: [UUID: Int] = [:]
+    private let offlineFailureThreshold = 3
     @ObservationIgnored private var lastConsumableCheck: [UUID: Date] = [:]
     private let storageKey = "valetudo_robots"
     private let robotIdsKey = "valetudo_robot_ids"
@@ -196,7 +201,9 @@ class RobotManager {
                     }
                 }
 
-                try? await Task.sleep(for: .seconds(5))
+                // Hintergrund-Polling gedrosselt (15s statt 5s) — die Live-Aktualität
+                // kommt primär über die SSE-Streams; das Polling ist nur Fallback.
+                try? await Task.sleep(for: .seconds(15))
             }
         }
     }
@@ -224,6 +231,9 @@ class RobotManager {
                 info: info
             )
 
+            // Erfolgreicher Poll — Fehlerzähler zurücksetzen
+            consecutiveFailures[id] = 0
+
             // Check for state changes and send notifications
             checkStateChanges(robotName: robotName, previous: previousState, current: newStatus)
 
@@ -238,10 +248,18 @@ class RobotManager {
                 await self.checkConsumables(for: id)
             }
         } catch {
-            // Treat any error as offline signal — avoids double-request overhead of checkConnection()
-            if previousState?.isOnline == true {
-                notificationService.notifyRobotOffline(robotName: robotName)
+            // Einen einzelnen Fehler NICHT sofort als offline werten — erst nach mehreren
+            // Fehlversuchen in Folge. Solange unter dem Schwellwert: bisherigen (Online-)
+            // Status beibehalten, damit die Anzeige nicht bei jedem kurzen Timeout flackert.
+            let failures = (consecutiveFailures[id] ?? 0) + 1
+            consecutiveFailures[id] = failures
+
+            if failures < offlineFailureThreshold {
+                logger.info("Robot \(id, privacy: .public) poll failed (\(failures)/\(self.offlineFailureThreshold)) — keeping previous status")
+                return
             }
+
+            // Schwellwert erreicht — jetzt als offline markieren
             previousStates[id] = robotStates[id]
             let offlineStatus = RobotStatus(isOnline: false)
             if robotStates[id] != offlineStatus {
