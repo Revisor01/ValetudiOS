@@ -97,7 +97,9 @@ struct RobotStatusHeaderView: View {
         case "cleaning": return String(localized: "status.cleaning")
         case "paused": return String(localized: "status.paused")
         case "returning": return String(localized: "status.returning")
+        case "moving": return String(localized: "status.moving")
         case "docked": return String(localized: "status.docked")
+        case "charging": return String(localized: "status.charging")
         case "error": return String(localized: "status.error")
         default: return status.capitalized
         }
@@ -105,7 +107,7 @@ struct RobotStatusHeaderView: View {
 
     private func statusColor(_ status: String) -> Color {
         switch status.lowercased() {
-        case "cleaning": return .blue
+        case "cleaning", "moving": return .blue
         case "paused": return .orange
         case "returning": return .purple
         case "error": return .red

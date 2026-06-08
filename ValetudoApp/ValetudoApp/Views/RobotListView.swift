@@ -171,7 +171,9 @@ struct StatusBadge: View {
         case "cleaning": return String(localized: "status.cleaning")
         case "paused": return String(localized: "status.paused")
         case "returning": return String(localized: "status.returning")
+        case "moving": return String(localized: "status.moving")
         case "docked": return String(localized: "status.docked")
+        case "charging": return String(localized: "status.charging")
         case "error": return String(localized: "status.error")
         case "offline": return String(localized: "robot.offline")
         default: return status
@@ -180,7 +182,7 @@ struct StatusBadge: View {
 
     private var statusColor: Color {
         switch status.lowercased() {
-        case "cleaning": return .blue
+        case "cleaning", "moving": return .blue
         case "paused": return .orange
         case "returning": return .purple
         case "error", "offline": return .red
