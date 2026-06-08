@@ -237,6 +237,15 @@ actor SSEConnectionManager {
             } catch let error as NSError where error.domain == NSURLErrorDomain && error.code == NSURLErrorCancelled {
                 // URLSession task was cancelled — exit cleanly
                 break
+            } catch let APIError.httpError(status) where status == 401 || status == 403 {
+                // Auth-Fehler ist fatal: erneutes Verbinden über dieselbe (überlastete)
+                // Basic-Auth-Verbindung würde nur weitere 401 produzieren (Rückkopplung).
+                // Roboter suspendieren — Reconnect erst wieder bei Netzwerkwechsel/explizitem Resume.
+                logger.warning("SSE auth error \(status, privacy: .public) for robot \(robotId, privacy: .public) — suspending, no reconnect")
+                isConnected[robotId] = false
+                onConnectionChange(false)
+                suspended.insert(robotId)
+                break
             } catch {
                 logger.warning("SSE connection error for robot \(robotId, privacy: .public): \(error.localizedDescription, privacy: .public)")
                 isConnected[robotId] = false

@@ -46,7 +46,9 @@ final class RobotDetailViewModel {
     var updateInProgress: Bool {
         guard let svc = updateService else { return false }
         switch svc.phase {
-        case .downloading, .applying, .rebooting, .checking:
+        // NOTE: .checking absichtlich NICHT enthalten — sonst zeigt UpdateStatusBannerView
+        // während der reinen Update-Prüfung das große "in_progress"-Panel (bleibt gefühlt hängen).
+        case .downloading, .applying, .rebooting:
             return true
         default:
             return false

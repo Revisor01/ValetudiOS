@@ -25,21 +25,44 @@ actor ValetudoAPI {
     private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "com.valetudio", category: "API")
     private let decoder: JSONDecoder
     private let sessionDelegate: SSLSessionDelegate?
-    private var _sseSession: URLSession?
+    // Getrennte SSE-Sessions für State- und Map-Stream, damit ein hängender Map-Stream
+    // nicht den State-Stream blockiert und umgekehrt. Beide werden in deinit invalidiert.
+    private var _sseStateSession: URLSession?
+    private var _sseMapSession: URLSession?
 
-    private var sseSession: URLSession {
-        if let existing = _sseSession { return existing }
+    private func makeSSESession() -> URLSession {
         let sseConfig = URLSessionConfiguration.default
         sseConfig.timeoutIntervalForRequest = .infinity
         sseConfig.timeoutIntervalForResource = .infinity
-        let newSession: URLSession
+        // Pro Session nur eine Verbindung zum Valetudo-Host — verhindert dass beim
+        // Navigieren mehrere parallele Auth-Verbindungen aufgemacht werden (→ 401).
+        sseConfig.httpMaximumConnectionsPerHost = 1
         if let delegate = sessionDelegate {
-            newSession = URLSession(configuration: sseConfig, delegate: delegate, delegateQueue: nil)
-        } else {
-            newSession = URLSession(configuration: sseConfig)
+            return URLSession(configuration: sseConfig, delegate: delegate, delegateQueue: nil)
         }
-        _sseSession = newSession
-        return newSession
+        return URLSession(configuration: sseConfig)
+    }
+
+    private var sseStateSession: URLSession {
+        if let existing = _sseStateSession { return existing }
+        let s = makeSSESession()
+        _sseStateSession = s
+        return s
+    }
+
+    private var sseMapSession: URLSession {
+        if let existing = _sseMapSession { return existing }
+        let s = makeSSESession()
+        _sseMapSession = s
+        return s
+    }
+
+    deinit {
+        // SSE-Sessions hielten langlebige (timeout=.infinity) Verbindungen offen.
+        // Ohne explizites Invalidieren leakten sie beim Navigieren und erschöpften
+        // irgendwann die gleichzeitigen Auth-Verbindungen des Valetudo-Servers (→ 401).
+        _sseStateSession?.invalidateAndCancel()
+        _sseMapSession?.invalidateAndCancel()
     }
 
     init(config: RobotConfig) {
@@ -661,7 +684,7 @@ extension ValetudoAPI {
             }
         }
 
-        let (bytes, response) = try await sseSession.bytes(for: request)
+        let (bytes, response) = try await sseStateSession.bytes(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.invalidResponse
@@ -691,7 +714,7 @@ extension ValetudoAPI {
             }
         }
 
-        let (bytes, response) = try await sseSession.bytes(for: request)
+        let (bytes, response) = try await sseMapSession.bytes(for: request)
 
         guard let httpResponse = response as? HTTPURLResponse else {
             throw APIError.invalidResponse

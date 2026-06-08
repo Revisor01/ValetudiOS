@@ -1,9 +1,14 @@
 ---
-status: investigating
+status: resolved
+resolved: 2026-06-08
 trigger: "Manuelle Steuerung (Joystick/Richtungssteuerung) ist unfunktional — Modus wird aktiviert, aber Roboter fährt in keine Richtung."
 created: 2026-04-12T00:00:00Z
-updated: 2026-04-12T03:00:00Z
+updated: 2026-06-08T00:00:00Z
 ---
+
+> VERIFIZIERT 2026-06-08: User bestätigt — manuelle Steuerung läuft einwandfrei.
+> Root Cause waren die Fixes aus Runden 1+2 (Enable-Befehl fehlte, falsches Payload-Format,
+> ungültiger stop-movementCommand). Das Runde-3-Logging hat die Bestätigung geliefert.
 
 ## Current Focus
 
