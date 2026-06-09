@@ -56,7 +56,7 @@ struct MapPreviewView: View {
     @State private var refreshTask: Task<Void, Never>?
     @Binding var showFullMap: Bool
 
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "MapView")
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "VacuPilot", category: "MapView")
 
     private var api: ValetudoAPI? {
         robotManager.getAPI(for: robot.id)

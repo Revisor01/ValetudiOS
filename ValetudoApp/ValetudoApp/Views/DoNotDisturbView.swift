@@ -2,7 +2,7 @@ import SwiftUI
 import os
 
 struct DoNotDisturbView: View {
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "DoNotDisturbView")
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "VacuPilot", category: "DoNotDisturbView")
     let robot: RobotConfig
     @Environment(RobotManager.self) var robotManager
 

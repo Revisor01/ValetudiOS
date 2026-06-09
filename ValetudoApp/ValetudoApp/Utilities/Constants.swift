@@ -7,7 +7,7 @@ enum Constants {
     // MARK: - External Links
     static let valetudoWebsiteUrl = "https://valetudo.cloud"
     static let valetudoGithubUrl = "https://github.com/Hypfer/Valetudo"
-    static let appGithubUrl = "https://github.com/Revisor01/ValetudiOS"
+    static let appGithubUrl = "https://github.com/Revisor01/VacuPilot"
 
     // MARK: - StoreKit Product IDs
     static let supportSmallId = "de.godsapp.valetudoapp.support.small"

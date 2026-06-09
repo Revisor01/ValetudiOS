@@ -2,7 +2,7 @@ import SwiftUI
 import os
 
 struct IntensityControlView: View {
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "IntensityControlView")
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "VacuPilot", category: "IntensityControlView")
     let robot: RobotConfig
     @Environment(RobotManager.self) var robotManager
 

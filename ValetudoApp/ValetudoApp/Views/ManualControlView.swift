@@ -2,7 +2,7 @@ import SwiftUI
 import os
 
 struct ManualControlView: View {
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "ManualControlView")
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "VacuPilot", category: "ManualControlView")
     let robot: RobotConfig
     @Environment(RobotManager.self) var robotManager
 

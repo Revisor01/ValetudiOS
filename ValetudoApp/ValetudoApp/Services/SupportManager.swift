@@ -9,7 +9,7 @@ import Observation
 class SupportManager {
     static let shared = SupportManager()
 
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "SupportManager")
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "VacuPilot", category: "SupportManager")
 
     var products: [Product] = []
     var isLoading = false

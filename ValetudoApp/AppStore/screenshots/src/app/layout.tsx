@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "ValetudiOS — App Store Screenshots",
+  title: "VacuPilot — App Store Screenshots",
   description: "Screenshot generator",
 };
 

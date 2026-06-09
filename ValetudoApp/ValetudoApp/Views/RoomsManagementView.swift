@@ -2,7 +2,7 @@ import SwiftUI
 import os
 
 struct RoomsManagementView: View {
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "RoomsManagementView")
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "VacuPilot", category: "RoomsManagementView")
     let robot: RobotConfig
     @Environment(RobotManager.self) var robotManager
 
@@ -386,7 +386,7 @@ struct SplitSegmentSheet: View {
     @Environment(\.dismiss) var dismiss
     @Environment(RobotManager.self) var robotManager
 
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "RoomsManagementView")
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "VacuPilot", category: "RoomsManagementView")
 
     @State private var selectedSegmentId: String?
     @State private var map: RobotMap?

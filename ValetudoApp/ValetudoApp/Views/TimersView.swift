@@ -2,7 +2,7 @@ import SwiftUI
 import os
 
 struct TimersView: View {
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "TimersView")
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "VacuPilot", category: "TimersView")
     @Environment(RobotManager.self) var robotManager
     let robot: RobotConfig
 
@@ -172,7 +172,7 @@ struct TimerEditView: View {
     let timer: ValetudoTimer?
     let onSave: () async -> Void
 
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "TimersView")
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "VacuPilot", category: "TimersView")
 
     @State private var label = ""
     @State private var hour = 9

@@ -1,11 +1,11 @@
 <p align="center">
-  <img src="AppIcon.png" alt="ValetudiOS" width="128" height="128">
+  <img src="AppIcon.png" alt="VacuPilot" width="128" height="128">
 </p>
 
-<h1 align="center">ValetudiOS</h1>
+<h1 align="center">VacuPilot</h1>
 
 <p align="center">
-  The first native iOS app for <a href="https://valetudo.cloud">Valetudo</a> robot vacuums.<br>
+  The native iOS app for robot vacuums running <a href="https://valetudo.cloud">Valetudo</a> firmware.<br>
   Full control. No cloud. No tracking. Just your robot, your network, your data.
 </p>
 
@@ -15,7 +15,7 @@
   <img src="https://img.shields.io/badge/Swift-5.9-orange?logo=swift" alt="Swift">
   <img src="https://img.shields.io/badge/Dependencies-Zero-brightgreen" alt="Dependencies">
   <img src="https://img.shields.io/badge/Tests-121-blue" alt="Tests">
-  <img src="https://img.shields.io/github/license/Revisor01/ValetudiOS" alt="License">
+  <img src="https://img.shields.io/github/license/Revisor01/VacuPilot" alt="License">
 </p>
 
 ## Features
@@ -82,8 +82,8 @@ Coming soon.
 ### Build from Source
 
 ```bash
-git clone https://github.com/Revisor01/ValetudiOS.git
-cd ValetudiOS
+git clone https://github.com/Revisor01/VacuPilot.git
+cd VacuPilot
 open ValetudoApp/ValetudoApp.xcodeproj
 ```
 
@@ -97,7 +97,7 @@ Build and run on your device. No external dependencies to install.
 
 ## Supported Robots
 
-ValetudiOS works with all robots supported by [Valetudo](https://valetudo.cloud):
+VacuPilot works with all robots supported by [Valetudo](https://valetudo.cloud):
 
 - **Roborock** — S5, S5 Max, S6, S7, Q Revo, and more
 - **Dreame** — L10 Pro, Z10 Pro, L20 Ultra, X40 Ultra, and more
@@ -117,7 +117,7 @@ ValetudiOS works with all robots supported by [Valetudo](https://valetudo.cloud)
 ## Architecture
 
 ```
-ValetudiOS
+VacuPilot
 ├── Models/          — Codable API models, RobotConfig
 ├── Services/        — ValetudoAPI, RobotManager, SSEConnectionManager,
 │                      UpdateService, MapCacheService, BackgroundMonitorService,
@@ -152,7 +152,7 @@ This project is licensed under the GNU General Public License v3.0 — see [LICE
 
 ## Disclaimer
 
-This is an unofficial companion app. ValetudiOS is not affiliated with or endorsed by the Valetudo project.
+This is an unofficial companion app. VacuPilot is not affiliated with or endorsed by the Valetudo project.
 
 ---
 
@@ -170,7 +170,7 @@ Web: [simonluthe.de](https://simonluthe.de)
 
 ### Data Processing
 
-**ValetudiOS stores and processes the following data exclusively on your device:**
+**VacuPilot stores and processes the following data exclusively on your device:**
 
 - IP addresses / hostnames of your Valetudo robots
 - Optional credentials (username/password) for robot authentication
@@ -182,7 +182,7 @@ Web: [simonluthe.de](https://simonluthe.de)
 
 ### No Tracking or Analytics
 
-ValetudiOS uses:
+VacuPilot uses:
 - No analytics or tracking tools
 - No advertising
 - No cloud services

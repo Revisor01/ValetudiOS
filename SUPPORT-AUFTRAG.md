@@ -1,4 +1,4 @@
-# Auftrag: Support & Branding für ValetudiOS
+# Auftrag: Support & Branding für VacuPilot
 
 Implementiere die gleiche Support/Spenden-Funktion und das Branding wie in PrivacyFlow (InsightFlow).
 Das Design muss identisch sein — nur die App-spezifischen Texte und Product-IDs ändern sich.
@@ -154,7 +154,7 @@ HStack(spacing: 4) {
 ```
 "button.done" = "Fertig";
 "support.title" = "Unterstützen";
-"support.header" = "Unterstütze ValetudiOS";
+"support.header" = "Unterstütze VacuPilot";
 "support.message" = "Software sollte frei sein.\n\nWenn du es dir gerade leisten kannst, freue ich mich über deine Unterstützung. Ansonsten nutze die App einfach gerne – das ist völlig in Ordnung.";
 "support.small" = "Kleine Geste";
 "support.medium" = "Nette Geste";
@@ -167,7 +167,7 @@ HStack(spacing: 4) {
 "support.error" = "Fehler";
 "support.error.unverified" = "Kauf konnte nicht verifiziert werden";
 "support.error.pending" = "Kauf wird bearbeitet";
-"support.reminder.title" = "Dir gefällt ValetudiOS?";
+"support.reminder.title" = "Dir gefällt VacuPilot?";
 "support.reminder.message" = "Diese App ist kostenlos und werbefrei. Sie wurde mit viel Liebe entwickelt.\n\nSoftware sollte frei sein. Wenn du es dir leisten kannst, unterstütze die Entwicklung gerne. Ansonsten nutze die App einfach weiter – das ist völlig okay!";
 "support.reminder.support" = "Gerne unterstützen";
 "support.reminder.already" = "Hab ich schon";
@@ -178,7 +178,7 @@ HStack(spacing: 4) {
 ```
 "button.done" = "Done";
 "support.title" = "Support";
-"support.header" = "Support ValetudiOS";
+"support.header" = "Support VacuPilot";
 "support.message" = "Software should be free.\n\nIf you can afford it right now, I'd appreciate your support. Otherwise, just enjoy using the app – that's totally fine.";
 "support.small" = "Small Gesture";
 "support.medium" = "Nice Gesture";
@@ -191,7 +191,7 @@ HStack(spacing: 4) {
 "support.error" = "Error";
 "support.error.unverified" = "Purchase could not be verified";
 "support.error.pending" = "Purchase is being processed";
-"support.reminder.title" = "Enjoying ValetudiOS?";
+"support.reminder.title" = "Enjoying VacuPilot?";
 "support.reminder.message" = "This app is free and ad-free. It was built with love.\n\nSoftware should be free. If you can afford it, please consider supporting the development. Otherwise, just keep using the app – that's totally okay!";
 "support.reminder.support" = "Happy to Support";
 "support.reminder.already" = "Already Did";
@@ -201,7 +201,7 @@ HStack(spacing: 4) {
 ## Wichtig
 
 - **Bundle ID Prefix:** `de.godsapp.valetudoapp` (NICHT insightflow!)
-- **App-Name in Texten:** "ValetudiOS" (NICHT PrivacyFlow)
+- **App-Name in Texten:** "VacuPilot" (NICHT PrivacyFlow)
 - **Design identisch:** Gleiche SF Symbols, gleiche Farben, gleiches Layout
 - **StoreKit 2:** Kein StoreKit 1 — direkt `Product.products(for:)` und `product.purchase()`
 - **Keine externen Dependencies**

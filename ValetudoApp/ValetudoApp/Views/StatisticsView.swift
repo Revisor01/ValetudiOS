@@ -2,7 +2,7 @@ import SwiftUI
 import os
 
 struct StatisticsView: View {
-    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "StatisticsView")
+    private let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "VacuPilot", category: "StatisticsView")
     let robot: RobotConfig
     @Environment(RobotManager.self) var robotManager
 

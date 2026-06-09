@@ -153,7 +153,7 @@ struct SettingsView: View {
                     if let url = URL(string: Constants.appGithubUrl) {
                         Link(destination: url) {
                             HStack {
-                                Label("ValetudiOS GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
+                                Label("VacuPilot GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
                                 Spacer()
                                 Image(systemName: "arrow.up.right.square")
                                     .font(.caption)
@@ -165,7 +165,7 @@ struct SettingsView: View {
                     Text("settings.about")
                 } footer: {
                     VStack(spacing: 4) {
-                        Text("ValetudiOS v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")")
+                        Text("VacuPilot v\(Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0")")
                         HStack(spacing: 4) {
                             Text("Made with")
                             Image(systemName: "bird")

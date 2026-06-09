@@ -34,7 +34,7 @@ targets:
           - UIInterfaceOrientationLandscapeRight
         CFBundleShortVersionString: "$(MARKETING_VERSION)"
         CFBundleVersion: "$(CURRENT_PROJECT_VERSION)"
-        CFBundleDisplayName: ValetudiOS
+        CFBundleDisplayName: VacuPilot
         UIRequiresFullScreen: true
         CFBundleIconName: AppIcon
         NSLocalNetworkUsageDescription: "Access local network to communicate with Valetudo robots"

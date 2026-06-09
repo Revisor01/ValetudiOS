@@ -383,7 +383,7 @@
         }
       }
     },
-    "ValetudiOS v%@": {},
+    "VacuPilot v%@": {},
     "Version": {
       "localizations": {
         "fr": {
@@ -5377,19 +5377,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Willkommen bei ValetudiOS"
+            "value": "Willkommen bei VacuPilot"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Welcome to ValetudiOS"
+            "value": "Welcome to VacuPilot"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Bienvenue dans ValetudiOS"
+            "value": "Bienvenue dans VacuPilot"
           }
         }
       }
@@ -8752,19 +8752,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Hilf uns, ValetudiOS zu verbessern"
+            "value": "Hilf uns, VacuPilot zu verbessern"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Help us improve ValetudiOS"
+            "value": "Help us improve VacuPilot"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Aidez-nous à améliorer ValetudiOS"
+            "value": "Aidez-nous à améliorer VacuPilot"
           }
         }
       }
@@ -9761,19 +9761,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Unterstütze ValetudiOS"
+            "value": "Unterstütze VacuPilot"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Support ValetudiOS"
+            "value": "Support VacuPilot"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Soutenir ValetudiOS"
+            "value": "Soutenir VacuPilot"
           }
         }
       }
@@ -9939,19 +9939,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Dir gefällt ValetudiOS?"
+            "value": "Dir gefällt VacuPilot?"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Enjoying ValetudiOS?"
+            "value": "Enjoying VacuPilot?"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Vous aimez ValetudiOS ?"
+            "value": "Vous aimez VacuPilot ?"
           }
         }
       }

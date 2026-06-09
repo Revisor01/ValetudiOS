@@ -4,7 +4,7 @@ import Security
 
 struct KeychainStore {
     private static let service = "com.valetudio.robot.password"
-    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "ValetudiOS", category: "KeychainStore")
+    private static let logger = Logger(subsystem: Bundle.main.bundleIdentifier ?? "VacuPilot", category: "KeychainStore")
 
     static func password(for robotId: UUID) -> String? {
         let query: [CFString: Any] = [

@@ -1,15 +1,15 @@
-# ValetudiOS — App Store Listing
+# VacuPilot — App Store Listing
 
 ## App Name
-**ValetudiOS**
+**VacuPilot**
 
 ## Subtitle (30 chars max)
 
 | Language | Text | Chars |
 |----------|------|-------|
-| DE | Native Valetudo Steuerzentrale | 30 |
-| EN | Native Valetudo Control Center | 30 |
-| FR | Centre de contrôle Valetudo | 27 |
+| DE | Lokale Saugroboter-Steuerung | 28 |
+| EN | Local robot vacuum control | 26 |
+| FR | Contrôle local d'aspirateur | 27 |
 
 ---
 
@@ -17,9 +17,9 @@
 
 | Language | Text |
 |----------|------|
-| DE | Die erste native iOS-App für Valetudo. Steuere deinen Saugroboter direkt, ohne Cloud, ohne Umwege. Volle Kontrolle in deinem lokalen Netzwerk. |
-| EN | The first native iOS app for Valetudo. Control your robot vacuum directly �� no cloud, no detours. Full control on your local network. |
-| FR | La première app iOS native pour Valetudo. Contrôle ton aspirateur robot directement, sans cloud, sans détour. Contrôle total sur ton réseau local. |
+| DE | Die native iOS-App für Saugroboter mit Valetudo-Firmware. Steuere deinen Roboter direkt, ohne Cloud, ohne Umwege. Volle Kontrolle in deinem lokalen Netzwerk. |
+| EN | The native iOS app for robot vacuums running Valetudo firmware. Control your robot directly — no cloud, no detours. Full control on your local network. |
+| FR | L'app iOS native pour aspirateurs robots avec firmware Valetudo. Contrôle ton robot directement, sans cloud, sans détour. Contrôle total sur ton réseau local. |
 
 ---
 
@@ -27,17 +27,17 @@
 
 ### DEUTSCH
 
-**Die erste native iOS-App für Valetudo-Saugroboter.**
+**Die native iOS-App für Saugroboter mit Valetudo-Firmware.**
 
-ValetudiOS ist die Companion-App, die Valetudo-Nutzer verdienen: Eine echte, von Grund auf für iOS entwickelte App — keine Web-Wrapper, keine Electron-Ports, keine Kompromisse.
+VacuPilot ist eine echte, von Grund auf für iOS entwickelte Companion-App — keine Web-Wrapper, keine Electron-Ports, keine Kompromisse.
 
-**WARUM VALETUDIÖS?**
+**WARUM VACUPILOT?**
 
 • 100% Native Swift & SwiftUI
 Entwickelt mit den neuesten Apple-Technologien für ein flüssiges, responsives Erlebnis. Keine Web-Views, keine Ladezeiten — pure iOS-Performance.
 
 • Keine Cloud, keine Datensammlung
-Deine Daten bleiben bei dir. ValetudiOS kommuniziert ausschließlich lokal mit deinen Robotern. Kein Tracking, keine Werbung, keine versteckten Dienste.
+Deine Daten bleiben bei dir. VacuPilot kommuniziert ausschließlich lokal mit deinen Robotern. Kein Tracking, keine Werbung, keine versteckten Dienste.
 
 • Multi-Roboter-Support
 Verwalte alle deine Valetudo-Roboter in einer App. Perfekt für Smart Homes mit mehreren Etagen.
@@ -90,23 +90,23 @@ Alle Roboter mit Valetudo-Firmware: Roborock, Dreame, Xiaomi, Viomi und viele we
 
 **DATENSCHUTZ**
 
-ValetudiOS ist DSGVO-konform. Keine Daten verlassen dein Gerät. Keine Analytics, keine Tracker, keine Cloud. Null externe Abhängigkeiten — auch kein SDK eines Drittanbieters.
+VacuPilot ist DSGVO-konform. Keine Daten verlassen dein Gerät. Keine Analytics, keine Tracker, keine Cloud. Null externe Abhängigkeiten — auch kein SDK eines Drittanbieters.
 
 ---
 
 ### ENGLISH
 
-**The first native iOS app for Valetudo robot vacuums.**
+**The native iOS app for robot vacuums running Valetudo firmware.**
 
-ValetudiOS is the companion app Valetudo users deserve: A true native iOS app — no web wrappers, no Electron ports, no compromises.
+VacuPilot is a true native iOS app, built from the ground up — no web wrappers, no Electron ports, no compromises.
 
-**WHY VALETUDIOS?**
+**WHY VACUPILOT?**
 
 • 100% Native Swift & SwiftUI
 Built with the latest Apple technologies for a fluid, responsive experience. No web views, no loading times — pure iOS performance.
 
 • No Cloud, No Data Collection
-Your data stays with you. ValetudiOS communicates exclusively locally with your robots. No tracking, no ads, no hidden services.
+Your data stays with you. VacuPilot communicates exclusively locally with your robots. No tracking, no ads, no hidden services.
 
 • Multi-Robot Support
 Manage all your Valetudo robots in one app. Perfect for smart homes with multiple floors.
@@ -159,23 +159,23 @@ All robots running Valetudo firmware: Roborock, Dreame, Xiaomi, Viomi, and many 
 
 **PRIVACY**
 
-ValetudiOS is GDPR compliant. No data leaves your device. No analytics, no trackers, no cloud. Zero external dependencies — not even a third-party SDK.
+VacuPilot is GDPR compliant. No data leaves your device. No analytics, no trackers, no cloud. Zero external dependencies — not even a third-party SDK.
 
 ---
 
 ### FRANÇAIS
 
-**La première app iOS native pour les aspirateurs robots Valetudo.**
+**L'app iOS native pour les aspirateurs robots avec firmware Valetudo.**
 
-ValetudiOS est l'app compagnon que les utilisateurs de Valetudo méritent : une vraie app iOS native — pas de wrapper web, pas de port Electron, pas de compromis.
+VacuPilot est une vraie app iOS native, conçue de A à Z — pas de wrapper web, pas de port Electron, pas de compromis.
 
-**POURQUOI VALETUDIOS ?**
+**POURQUOI VACUPILOT ?**
 
 • 100% Native Swift & SwiftUI
 Développée avec les dernières technologies Apple pour une expérience fluide et réactive. Pas de web views, pas de temps de chargement — la performance iOS pure.
 
 • Pas de cloud, pas de collecte de données
-Tes données restent chez toi. ValetudiOS communique exclusivement en local avec tes robots. Pas de tracking, pas de pub, pas de services cachés.
+Tes données restent chez toi. VacuPilot communique exclusivement en local avec tes robots. Pas de tracking, pas de pub, pas de services cachés.
 
 • Support multi-robots
 Gère tous tes robots Valetudo dans une seule app. Parfait pour les maisons connectées avec plusieurs étages.
@@ -228,7 +228,7 @@ Tous les robots avec le firmware Valetudo : Roborock, Dreame, Xiaomi, Viomi et b
 
 **VIE PRIVÉE**
 
-ValetudiOS est conforme au RGPD. Aucune donnée ne quitte ton appareil. Pas d'analytics, pas de trackers, pas de cloud. Zéro dépendance externe — pas même un SDK tiers.
+VacuPilot est conforme au RGPD. Aucune donnée ne quitte ton appareil. Pas d'analytics, pas de trackers, pas de cloud. Zéro dépendance externe — pas même un SDK tiers.
 
 ---
 
@@ -246,7 +246,7 @@ ValetudiOS est conforme au RGPD. Aucune donnée ne quitte ton appareil. Pas d'an
 
 ### DEUTSCH
 
-Erste Veröffentlichung von ValetudiOS!
+Erste Veröffentlichung von VacuPilot!
 
 • Interaktive Live-Karte mit Raum-Tap und Reinigungsreihenfolge
 • Multi-Roboter-Unterstützung
@@ -266,7 +266,7 @@ Erste Veröffentlichung von ValetudiOS!
 
 ### ENGLISH
 
-First release of ValetudiOS!
+First release of VacuPilot!
 
 • Interactive live map with room tap and cleaning order
 • Multi-robot support
@@ -286,7 +286,7 @@ First release of ValetudiOS!
 
 ### FRANÇAIS
 
-Première version de ValetudiOS !
+Première version de VacuPilot !
 
 • Carte interactive en direct avec sélection de pièces et ordre de nettoyage
 • Support multi-robots
@@ -329,9 +329,9 @@ Première version de ValetudiOS !
 | **Secondary Category** | Lifestyle |
 | **Age Rating** | 4+ |
 | **Price** | Free |
-| **Support URL** | https://github.com/Revisor01/ValetudiOS/issues |
-| **Marketing URL** | https://github.com/Revisor01/ValetudiOS |
-| **Privacy Policy URL** | https://simonluthe.de/valetudios/privacy |
+| **Support URL** | https://github.com/Revisor01/VacuPilot/issues |
+| **Marketing URL** | https://github.com/Revisor01/VacuPilot |
+| **Privacy Policy URL** | https://simonluthe.de/apps/vacupilot/datenschutz/ |
 
 ---
 
@@ -340,3 +340,24 @@ Première version de ValetudiOS !
 - iOS 17.0+
 - Valetudo 2024.06.0+
 - Robot reachable on local network
+
+---
+
+## App Review Notes (Review Information → Notes)
+
+> Hinweis für App Review (5.2.1 / 5.2.5):
+>
+> VacuPilot ist eine unabhängige, inoffizielle Companion-App. Sie steuert Saugroboter,
+> auf denen die quelloffene Firmware "Valetudo" (Apache License 2.0) läuft, ausschließlich
+> lokal über deren dokumentierte REST-API. Die App enthält keinen Valetudo-Quellcode und
+> keine Valetudo-Assets.
+>
+> "Valetudo" wird ausschließlich beschreibend genannt, um die Kompatibilität anzugeben
+> ("kompatibel mit Robotern, die Valetudo-Firmware nutzen"). Der App-Name "VacuPilot"
+> ist ein eigenständiger Name ohne Bezug zu Apple-Produkten oder zur Marke Valetudo.
+>
+> EN: VacuPilot is an independent, unofficial companion app. It controls robot vacuums
+> running the open-source "Valetudo" firmware (Apache License 2.0) purely locally via its
+> documented REST API. The app bundles no Valetudo source code or assets. "Valetudo" is
+> used descriptively only, to indicate compatibility. The app name "VacuPilot" is
+> independent and references neither an Apple product nor the Valetudo trademark.

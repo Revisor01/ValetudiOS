@@ -629,7 +629,7 @@ export default function Home() {
   return (
     <div style={{ padding: 40, background: "#0f172a", minHeight: "100vh" }}>
       <h1 style={{ color: "white", fontSize: 32, marginBottom: 24 }}>
-        ValetudiOS — App Store Screenshots (9 Screens × DE/EN)
+        VacuPilot — App Store Screenshots (9 Screens × DE/EN)
       </h1>
       <p style={{ color: "#94a3b8", marginBottom: 32 }}>
         Klicke „Export" unter einem Slide, um ihn als 1320×2868 PNG herunterzuladen.
