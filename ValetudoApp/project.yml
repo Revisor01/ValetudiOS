@@ -23,11 +23,6 @@ targets:
           UIApplicationSupportsMultipleScenes: false
         UIApplicationSupportsIndirectInputEvents: true
         UILaunchScreen: {}
-        UISupportedInterfaceOrientations~iPad:
-          - UIInterfaceOrientationPortrait
-          - UIInterfaceOrientationPortraitUpsideDown
-          - UIInterfaceOrientationLandscapeLeft
-          - UIInterfaceOrientationLandscapeRight
         UISupportedInterfaceOrientations~iPhone:
           - UIInterfaceOrientationPortrait
           - UIInterfaceOrientationLandscapeLeft
@@ -45,9 +40,10 @@ targets:
     settings:
       base:
         MARKETING_VERSION: "1.0"
-        CURRENT_PROJECT_VERSION: "95"
+        CURRENT_PROJECT_VERSION: "96"
         PRODUCT_BUNDLE_IDENTIFIER: de.simonluthe.ValetudiOS
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+        TARGETED_DEVICE_FAMILY: "1"
         DEVELOPMENT_TEAM: "J459G9CJT5"
 
   ValetudoAppTests:
