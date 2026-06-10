@@ -5193,19 +5193,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Valetudo-Updates direkt installieren"
+            "value": "Firmware-Updates direkt installieren"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Install Valetudo updates directly"
+            "value": "Install firmware updates directly"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Installez les mises à jour de Valetudo directement"
+            "value": "Installez les mises à jour du firmware directement"
           }
         }
       }
@@ -5285,19 +5285,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Füge deinen ersten Roboter hinzu. Du brauchst nur die IP-Adresse deines Valetudo-Roboters."
+            "value": "Füge deinen ersten Roboter hinzu. Du brauchst nur die IP-Adresse deines Roboters."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Add your first robot. You just need the IP address of your Valetudo robot."
+            "value": "Add your first robot. You just need the IP address of your robot."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Ajoutez votre premier robot. Vous avez juste besoin de l’adresse IP de votre robot Valetudo."
+            "value": "Ajoutez votre premier robot. Vous avez juste besoin de l’adresse IP de votre robot."
           }
         }
       }
@@ -5354,19 +5354,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Die native iOS-App für deinen Valetudo-Saugroboter. Volle Kontrolle, keine Cloud."
+            "value": "Die native iOS-App für deinen Saugroboter. Volle Kontrolle, keine Cloud."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "The native iOS app for your Valetudo robot vacuum. Full control, no cloud."
+            "value": "The native iOS app for your robot vacuum. Full control, no cloud."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "L’app native iOS pour votre robot aspirateur Valetudo.\nUn contrôle total sans cloud."
+            "value": "L’app native iOS pour votre aspirateur robot.\nUn contrôle total sans cloud."
           }
         }
       }
@@ -6526,19 +6526,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Sucht automatisch nach Valetudo-Robotern im lokalen Netzwerk."
+            "value": "Sucht automatisch nach kompatiblen Robotern im lokalen Netzwerk."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Automatically searches for Valetudo robots on your local network."
+            "value": "Automatically searches for compatible robots on your local network."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Recherche automatiquement les robots Valetudo sur votre réseau local."
+            "value": "Recherche automatiquement les robots compatibles sur votre réseau local."
           }
         }
       }
@@ -8569,19 +8569,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Verwalte deine Valetudo-Roboter. Tippe auf einen Roboter, um ihn zu bearbeiten."
+            "value": "Verwalte deine Roboter. Tippe auf einen Roboter, um ihn zu bearbeiten."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Manage your Valetudo robots. Tap a robot to edit it."
+            "value": "Manage your robots. Tap a robot to edit it."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Gérez votre robot Valetudo. Appuyez sur un robot pour l’éditer."
+            "value": "Gérez vos robots. Appuyez sur un robot pour l’éditer."
           }
         }
       }

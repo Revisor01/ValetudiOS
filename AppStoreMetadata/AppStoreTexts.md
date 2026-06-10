@@ -40,7 +40,7 @@ Entwickelt mit den neuesten Apple-Technologien für ein flüssiges, responsives 
 Deine Daten bleiben bei dir. VacuPilot kommuniziert ausschließlich lokal mit deinen Robotern. Kein Tracking, keine Werbung, keine versteckten Dienste.
 
 • Multi-Roboter-Support
-Verwalte alle deine Valetudo-Roboter in einer App. Perfekt für Smart Homes mit mehreren Etagen.
+Verwalte alle deine Roboter in einer App. Perfekt für Smart Homes mit mehreren Etagen.
 
 **INTERAKTIVE KARTE**
 
@@ -109,7 +109,7 @@ Built with the latest Apple technologies for a fluid, responsive experience. No 
 Your data stays with you. VacuPilot communicates exclusively locally with your robots. No tracking, no ads, no hidden services.
 
 • Multi-Robot Support
-Manage all your Valetudo robots in one app. Perfect for smart homes with multiple floors.
+Manage all your robots in one app. Perfect for smart homes with multiple floors.
 
 **INTERACTIVE MAP**
 
@@ -178,7 +178,7 @@ Développée avec les dernières technologies Apple pour une expérience fluide 
 Tes données restent chez toi. VacuPilot communique exclusivement en local avec tes robots. Pas de tracking, pas de pub, pas de services cachés.
 
 • Support multi-robots
-Gère tous tes robots Valetudo dans une seule app. Parfait pour les maisons connectées avec plusieurs étages.
+Gère tous tes robots dans une seule app. Parfait pour les maisons connectées avec plusieurs étages.
 
 **CARTE INTERACTIVE**
 
@@ -236,9 +236,9 @@ VacuPilot est conforme au RGPD. Aucune donnée ne quitte ton appareil. Pas d'ana
 
 | Language | Keywords |
 |----------|----------|
-| DE | valetudo,saugroboter,roboter,staubsauger,smart home,roborock,dreame,xiaomi,lokal,ohne cloud |
-| EN | valetudo,robot vacuum,smart home,roborock,dreame,xiaomi,local control,no cloud,home automation |
-| FR | valetudo,aspirateur robot,maison connectée,roborock,dreame,xiaomi,contrôle local,sans cloud |
+| DE | saugroboter,staubsauger,smart home,roboter,dreame,roborock,vacuum,robot,lokal,reinigung |
+| EN | vacuum,robot,smart home,cleaner,dreame,roborock,cleaning,home automation,local,mapping |
+| FR | aspirateur,robot,maison connectée,dreame,roborock,nettoyage,domotique,vacuum,local,carte |
 
 ---
 
