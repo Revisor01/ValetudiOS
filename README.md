@@ -79,6 +79,14 @@
 
 Coming soon.
 
+### TestFlight (Public Beta)
+
+Try the latest beta build directly on your iPhone:
+
+**[Join the TestFlight Beta »](https://testflight.apple.com/join/N11Ncb1D)**
+
+You'll need Apple's [TestFlight](https://apps.apple.com/app/testflight/id899247664) app installed.
+
 ### Build from Source
 
 ```bash
