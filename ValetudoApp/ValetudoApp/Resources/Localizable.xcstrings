@@ -1803,19 +1803,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Geräteinfo-Valetudo"
+            "value": "Firmware-Info"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Device Info-Valetudo"
+            "value": "Firmware Info"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Info appareil-Valetudo"
+            "value": "Info firmware"
           }
         }
       }
@@ -7608,19 +7608,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Valetudo ist Open Source Software unter der Apache License 2.0. Diese App ist nicht mit dem Valetudo-Projekt verbunden."
+            "value": "Diese App nutzt die dokumentierte, quelloffene REST-API kompatibler Saugroboter-Firmware. Sie ist nicht mit dem Firmware-Projekt verbunden."
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Valetudo is open source software under the Apache License 2.0. This app is not affiliated with the Valetudo project."
+            "value": "This app uses the documented, open-source REST API of compatible vacuum robot firmware. It is not affiliated with the firmware project."
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Valetudo is open source software under the Apache License 2.0. This app is not affiliated with the Valetudo project."
+            "value": "Cette app utilise l'API REST open source documentée d'un firmware compatible pour aspirateurs robots. Elle n'est pas affiliée au projet de firmware."
           }
         }
       }
@@ -8935,19 +8935,19 @@
         "de": {
           "stringUnit": {
             "state": "translated",
-            "value": "Valetudo Website"
+            "value": "Firmware-Website"
           }
         },
         "en": {
           "stringUnit": {
             "state": "translated",
-            "value": "Valetudo Website"
+            "value": "Firmware Website"
           }
         },
         "fr": {
           "stringUnit": {
             "state": "translated",
-            "value": "Site Valetudo"
+            "value": "Site du firmware"
           }
         }
       }

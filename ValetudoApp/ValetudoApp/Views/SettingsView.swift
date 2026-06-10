@@ -126,30 +126,6 @@ struct SettingsView: View {
 
                 // MARK: - About Section
                 Section {
-                    if let url = URL(string: Constants.valetudoWebsiteUrl) {
-                        Link(destination: url) {
-                            HStack {
-                                Label(String(localized: "settings.valetudo_website"), systemImage: "globe")
-                                Spacer()
-                                Image(systemName: "arrow.up.right.square")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-
-                    if let url = URL(string: Constants.valetudoGithubUrl) {
-                        Link(destination: url) {
-                            HStack {
-                                Label("Valetudo GitHub", systemImage: "chevron.left.forwardslash.chevron.right")
-                                Spacer()
-                                Image(systemName: "arrow.up.right.square")
-                                    .font(.caption)
-                                    .foregroundStyle(.secondary)
-                            }
-                        }
-                    }
-
                     if let url = URL(string: Constants.appGithubUrl) {
                         Link(destination: url) {
                             HStack {

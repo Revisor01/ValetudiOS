@@ -33,7 +33,7 @@
 		<string>_valetudo._tcp</string>
 	</array>
 	<key>NSLocalNetworkUsageDescription</key>
-	<string>Access local network to communicate with Valetudo robots</string>
+	<string>Access local network to communicate with your vacuum robots</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>

@@ -5,8 +5,6 @@ enum Constants {
     static let githubApiLatestReleaseUrl = "https://api.github.com/repos/Hypfer/Valetudo/releases/latest"
 
     // MARK: - External Links
-    static let valetudoWebsiteUrl = "https://valetudo.cloud"
-    static let valetudoGithubUrl = "https://github.com/Hypfer/Valetudo"
     static let appGithubUrl = "https://github.com/Revisor01/VacuPilot"
 
     // MARK: - StoreKit Product IDs

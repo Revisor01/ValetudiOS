@@ -72,9 +72,9 @@ const COPY: Record<string, Copy> = {
     fr: { headline: "L'usure\nsous contrôle.", subline: "Filtres, brosses, serpillère —\nvoyez ce qu'il faut remplacer." },
   },
   "09-full-control": {
-    de: { headline: "Alles was\nValetudo kann.", subline: "Jede Einstellung, jede API —\nnativ als iOS-App." },
-    en: { headline: "Everything\nValetudo does.", subline: "Every setting, every API —\nnative iOS." },
-    fr: { headline: "Tout ce que\nValetudo peut.", subline: "Chaque réglage, chaque API —\nen natif iOS." },
+    de: { headline: "Alles, was dein\nRoboter kann.", subline: "Jede Einstellung, jede API —\nnativ als iOS-App." },
+    en: { headline: "Everything your\nrobot can do.", subline: "Every setting, every API —\nnative iOS." },
+    fr: { headline: "Tout ce que ton\nrobot sait faire.", subline: "Chaque réglage, chaque API —\nen natif iOS." },
   },
 };
 

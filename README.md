@@ -5,7 +5,7 @@
 <h1 align="center">VacuPilot</h1>
 
 <p align="center">
-  The native iOS app for robot vacuums running <a href="https://valetudo.cloud">Valetudo</a> firmware.<br>
+  The native iOS app for robot vacuums running open-source firmware with a local REST API.<br>
   Full control. No cloud. No tracking. Just your robot, your network, your data.
 </p>
 
@@ -21,7 +21,7 @@
 ## Features
 
 ### Robot Control
-- **Multi-Robot Support** — Manage all your Valetudo robots in one app
+- **Multi-Robot Support** — Manage all your robots in one app
 - **Real-Time Status** — Battery, cleaning status, and live statistics via SSE (Server-Sent Events)
 - **Full Control** — Start, stop, pause, return to dock
 - **Manual Control** — Joystick-style driving with high-resolution controls
@@ -54,7 +54,7 @@
 - **Quirks** — Robot-specific configuration options
 - **Carpet Mode** — Toggle automatic carpet boost
 - **Auto-Empty Dock** — Configure auto-empty duration and behavior
-- **Device Info** — Hardware details, Valetudo version, system health
+- **Device Info** — Hardware details, firmware version, system health
 
 ### App
 - **Automatic Discovery** — Finds robots via Bonjour (mDNS) and IP scan
@@ -70,7 +70,7 @@
 ## Requirements
 
 - iOS 17.0+
-- Valetudo 2024.06.0+
+- Compatible open-source vacuum firmware (2024.06.0+) with local REST API
 - Robot reachable on local network (or via VPN)
 
 ## Installation
@@ -101,16 +101,16 @@ Build and run on your device. No external dependencies to install.
 
 1. Open the app
 2. Tap the scan button to discover robots automatically, or add manually by IP/hostname
-3. Optionally enable authentication if configured in Valetudo
+3. Optionally enable authentication if configured on your robot's firmware
 
 ## Supported Robots
 
-VacuPilot works with all robots supported by [Valetudo](https://valetudo.cloud):
+VacuPilot works with all robot vacuums running a compatible open-source firmware that exposes a local REST API:
 
 - **Roborock** — S5, S5 Max, S6, S7, Q Revo, and more
 - **Dreame** — L10 Pro, Z10 Pro, L20 Ultra, X40 Ultra, and more
 - **Xiaomi / Viomi** — Various models
-- And many more — see [Valetudo's supported robots](https://valetudo.cloud/pages/general/supported-robots.html)
+- And many more
 
 ## Screenshots
 
@@ -153,14 +153,9 @@ Contributions are welcome! Feel free to open issues or submit pull requests.
 
 This project is licensed under the GNU General Public License v3.0 — see [LICENSE](LICENSE) for details.
 
-## Acknowledgments
-
-- [Valetudo](https://valetudo.cloud) — The open-source robot vacuum firmware
-- The Valetudo developers and community
-
 ## Disclaimer
 
-This is an unofficial companion app. VacuPilot is not affiliated with or endorsed by the Valetudo project.
+This is an independent companion app. It communicates with robot vacuums that run a compatible open-source firmware purely over their documented local REST API. It is not affiliated with or endorsed by any firmware project, and it bundles no third-party source code, assets, or branding.
 
 ---
 
@@ -180,13 +175,13 @@ Web: [simonluthe.de](https://simonluthe.de)
 
 **VacuPilot stores and processes the following data exclusively on your device:**
 
-- IP addresses / hostnames of your Valetudo robots
+- IP addresses / hostnames of your robots
 - Optional credentials (username/password) for robot authentication
 - App settings and preferences
 - Saved GoTo locations
 - Cached map data for offline viewing
 
-**No data is transmitted to external servers.** All communication happens exclusively between your iOS device and your Valetudo robots on your local network.
+**No data is transmitted to external servers.** All communication happens exclusively between your iOS device and your robots on your local network.
 
 ### No Tracking or Analytics
 
@@ -198,7 +193,7 @@ VacuPilot uses:
 
 ### Network Connections
 
-The app only connects to the Valetudo robots you configure. These connections stay entirely within your local network (unless you use a VPN).
+The app only connects to the robots you configure. These connections stay entirely within your local network (unless you use a VPN).
 
 ### Data Storage
 

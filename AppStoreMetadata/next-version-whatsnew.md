@@ -48,7 +48,7 @@ Bei der initialen Submission gehören diese in die normale App-Beschreibung (`de
 
 ### DE
 
-Native iOS-App zur lokalen Steuerung deiner Valetudo-Saugroboter.
+Native iOS-App zur lokalen Steuerung deiner Saugroboter mit quelloffener Firmware.
 
 • Live-Karte in Echtzeit
 • Karte bearbeiten
@@ -58,11 +58,11 @@ Native iOS-App zur lokalen Steuerung deiner Valetudo-Saugroboter.
 • Firmware-Updates lokal
 • Multi-Roboter
 • Consumables-Tracking
-• Volle Valetudo-Kontrolle
+• Volle lokale Kontrolle
 
 ### EN
 
-Native iOS app for local control of your Valetudo vacuum robots.
+Native iOS app for local control of your vacuum robots running open-source firmware.
 
 • Real-time live map
 • Edit your map
@@ -72,11 +72,11 @@ Native iOS app for local control of your Valetudo vacuum robots.
 • Local firmware updates
 • Multi-robot
 • Consumables tracking
-• Full Valetudo control
+• Full local control
 
 ### FR
 
-Application iOS native pour piloter vos robots Valetudo en local.
+Application iOS native pour piloter en local vos aspirateurs robots avec firmware open source.
 
 • Carte en direct
 • Édition de la carte
@@ -86,4 +86,4 @@ Application iOS native pour piloter vos robots Valetudo en local.
 • Mises à jour firmware locales
 • Multi-robots
 • Suivi des consommables
-• Contrôle Valetudo complet
+• Contrôle local complet
